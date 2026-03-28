@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday RSVP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="text"], input[type="date"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RSVP for Birthday Party</h1>
+        <form id="rsvpForm">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" required>
+
+            <label for="date">Date of the Party:</label>
+            <input type="date" id="date" required>
+
+            <label for="guests">Number of Guests:</label>
+            <input type="number" id="guests" min="1" required>
+
+            <button type="submit">Submit RSVP</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('rsvpForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const date = document.getElementById('date').value;
+            const guests = document.getElementById('guests').value;
+            alert(`Thank you, ${name}!\nWe have received your RSVP for the party on ${date} with ${guests} guests.`);
+        });
+    </script>
+</body>
+</html>

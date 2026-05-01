@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tiny Invites — Beautiful Birthday RSVPs</title>
+<title>Tiny Invites — Birthday Party Planning Made Easy</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -581,6 +581,63 @@
 
 
 
+  /* ── PARTY FINDER PROMO ── */
+  .party-finder-section {
+    background: var(--warm-white);
+    padding: 80px 40px;
+    position: relative;
+  }
+  .party-finder-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 40px; right: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+  }
+  .pf-inner { max-width: 620px; }
+  .pf-body {
+    color: var(--mid);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 1.8rem;
+  }
+  .pf-features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 0;
+  }
+  .pf-feat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: var(--mid);
+  }
+  .pf-icon {
+    width: 32px; height: 32px;
+    background: var(--gold-pale);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .pf-stats-inline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: var(--mid);
+  }
+  .pf-stats-inline strong { color: var(--dark); }
+  .pf-sep { opacity: 0.4; }
+  .pf-coverage {
+    font-size: 0.78rem;
+    color: var(--soft);
+    margin-top: 1rem;
+    letter-spacing: 0.02em;
+  }
+
   /* ── SHOP ── */
   .shop {
     padding: 80px 40px;
@@ -801,13 +858,49 @@
   </nav>
 
   <div class="hero-content">
-    <p class="eyebrow">Children's birthday RSVPs</p>
-    <h1>Beautiful<br><em>RSVPs</em> for<br>tiny guests.</h1>
-    <p class="hero-sub">A free online birthday RSVP page designed to help you manage your child's guest list, collect allergy information, and track responses — all in one elegant place.</p>
+    <p class="eyebrow">Birthday party planning, made easy</p>
+    <h1>Plan the <em>perfect</em><br>tiny party.</h1>
+    <p class="hero-sub">Find a brilliant venue near you, then manage your guest list, collect allergy info, and track RSVPs — all in one place. Free, always.</p>
     <div class="cta-group">
-      <a href="#generate" class="btn-primary">Create Your RSVP Page</a>
-      <a href="/partyfinder.html" class="btn-primary">Find a Party</a>
+      <a href="/partyfinder.html" class="btn-primary">Find a Party Venue</a>
+      <a href="#generate" class="btn-ghost">Create RSVP Page</a>
       <a href="#how" class="btn-ghost">See how it works</a>
+    </div>
+  </div>
+</section>
+
+<!-- PARTY FINDER SECTION -->
+<section class="party-finder-section" id="find-a-venue">
+  <div class="pf-inner">
+    <div class="pf-content">
+      <p class="section-label">New on Tiny Invites</p>
+      <h2>Find the perfect<br><em style="font-family:'Cormorant Garamond',serif;font-style:italic;">party venue</em> near you.</h2>
+      <p class="pf-body">Search and compare toddler birthday party venues across the UK — with real prices, what's included, and honest package breakdowns. No guesswork, no hidden surprises.</p>
+      <div class="pf-features">
+        <div class="pf-feat">
+          <span class="pf-icon">💷</span>
+          <span>Real prices shown upfront — no "contact us" surprises</span>
+        </div>
+        <div class="pf-feat">
+          <span class="pf-icon">📍</span>
+          <span>Search by postcode — results sorted by distance</span>
+        </div>
+        <div class="pf-feat">
+          <span class="pf-icon">🎂</span>
+          <span>Soft play, farms, pools, gymnastics &amp; more</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:2rem;">
+        <a href="/partyfinder.html" class="btn-primary">Find a party venue →</a>
+        <div class="pf-stats-inline">
+          <span><strong>72</strong> venues</span>
+          <span class="pf-sep">·</span>
+          <span><strong>7</strong> types</span>
+          <span class="pf-sep">·</span>
+          <span><strong>Free</strong></span>
+        </div>
+      </div>
+      <p class="pf-coverage">🏴󠁧󠁢󠁥󠁮󠁧󠁿 UK-wide · Most venues in <strong>London</strong> &amp; <strong>the Midlands</strong></p>
     </div>
   </div>
 </section>

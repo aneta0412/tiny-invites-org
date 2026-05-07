@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>We'll miss you 💛 — Tiny Invites</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf6ef;
+    --warm-white: #fff9f2;
+    --gold: #c9a84c;
+    --gold-light: #e8d5a3;
+    --gold-pale: #f5edda;
+    --dark: #2a2218;
+    --mid: #6b5c45;
+    --soft: #a89880;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  nav {
+    display: flex;
+    justify-content: center;
+    padding: 24px 40px;
+    border-bottom: 1px solid var(--gold-pale);
+  }
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--dark);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); display: inline-block; }
+
+  .hero {
+    text-align: center;
+    padding: 60px 24px 48px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .heart {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 24px;
+    animation: pulse 1.5s ease-in-out infinite alternate;
+  }
+  @keyframes pulse {
+    from { transform: scale(1); }
+    to   { transform: scale(1.15); }
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 8vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--dark);
+    margin-bottom: 16px;
+  }
+  h1 em { font-style: italic; color: var(--gold); }
+  .hero-sub {
+    font-size: 1rem;
+    color: var(--mid);
+    line-height: 1.7;
+    max-width: 420px;
+    margin: 0 auto 40px;
+  }
+  .divider {
+    width: 40px; height: 1px;
+    background: var(--gold-light);
+    margin: 0 auto 48px;
+  }
+
+  .intro {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 24px 16px;
+    text-align: center;
+  }
+  .section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .section-label::before, .section-label::after {
+    content: '';
+    display: block;
+    width: 20px; height: 1px;
+    background: var(--gold);
+  }
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    font-weight: 300;
+    color: var(--dark);
+    margin-bottom: 12px;
+  }
+  h2 em { font-style: italic; color: var(--gold); }
+  .intro-sub {
+    font-size: 0.9rem;
+    color: var(--mid);
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  .cards {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: white;
+    border: 1px solid var(--gold-pale);
+    border-radius: 4px;
+    padding: 28px;
+    text-decoration: none;
+    display: block;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-top: 2px solid var(--gold);
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(201,168,76,0.12);
+  }
+  .card-icon { font-size: 1.8rem; margin-bottom: 14px; display: block; }
+  .card-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--dark);
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  .card-desc {
+    font-size: 0.83rem;
+    color: var(--mid);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .card-cta {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
+  .card:hover .card-cta { color: var(--gold); }
+  .card-cta::after { content: '→'; transition: transform 0.2s; }
+  .card:hover .card-cta::after { transform: translateX(4px); }
+
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    border-top: 1px solid var(--gold-pale);
+  }
+  footer p { font-size: 0.75rem; color: var(--soft); }
+  footer a { color: var(--gold); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://tinyinvites.org" class="logo"><span class="logo-dot"></span> Tiny Invites</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="heart">💛</span>
+  <h1>We'll<br><em>miss you!</em></h1>
+  <p class="hero-sub">Thank you so much for letting us know — it truly means a lot. We hope to celebrate together another time soon. 🎂</p>
+  <div class="divider"></div>
+</div>
+
+<!-- STILL LOVE CELEBRATIONS -->
+<div class="intro">
+  <p class="section-label">Still here?</p>
+  <h2>Still love beautiful<br><em>family celebrations?</em></h2>
+  <p class="intro-sub">Tiny Invites is a free home for children's party planning — beautiful RSVPs, venue inspiration, party supplies and more. Come explore whenever you're ready.</p>
+</div>
+
+<!-- CARDS -->
+<div class="cards">
+
+  <a class="card" href="https://tinyinvites.org/#generate">
+    <span class="card-icon">💌</span>
+    <p class="card-eyebrow">Free tool</p>
+    <p class="card-title">Planning Your Own Party Soon?</p>
+    <p class="card-desc">Create a beautiful personalised RSVP page for your child's party in under 2 minutes. Free, always.</p>
+    <span class="card-cta">Create your RSVP</span>
+  </a>
+
+  <a class="card" href="https://tinyinvites.org/find-a-venue/">
+    <span class="card-icon">🎪</span>
+    <p class="card-eyebrow">Party Finder</p>
+    <p class="card-title">Find a Beautiful Party Venue</p>
+    <p class="card-desc">Search hundreds of children's birthday party venues near you — soft play, garden rooms, and more.</p>
+    <span class="card-cta">Find a venue</span>
+  </a>
+
+  <a class="card" href="https://tinyinvites.org/#shop">
+    <span class="card-icon">🎁</span>
+    <p class="card-eyebrow">Gift Ideas</p>
+    <p class="card-title">Need a Gift for the Birthday Child?</p>
+    <p class="card-desc">Browse our curated gift inspiration for children of every age — thoughtful, beautiful, and ready to order.</p>
+    <span class="card-cta">Browse gifts</span>
+  </a>
+
+</div>
+
+<footer>
+  <p>Powered by <a href="https://tinyinvites.org">Tiny Invites</a> · Free beautiful RSVPs for children's parties 🎂</p>
+</footer>
+
+</body>
+</html>

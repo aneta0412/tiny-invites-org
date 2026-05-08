@@ -195,7 +195,7 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
       <h1 class="hero">Find the <em>perfect</em><br>birthday party venue</h1>
       <p class="hero-sub">Soft play · Gymnastics · Swimming · Farms · Museums · Private clubs<br>Real packages, real prices, sorted by distance from you.</p>
       <div class="stat-row">
-        <div class="stat"><strong>88</strong> verified venues</div>
+        <div class="stat"><strong>103</strong> verified venues</div>
         <div class="stat"><strong>7</strong> activity types</div>
         <div class="stat"><strong>UK-wide</strong> coverage</div>
       </div>
@@ -203,7 +203,7 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
     <div class="search-card">
       <div class="sc-label">Your postcode</div>
       <div class="postcode-wrap">
-        <input class="pc" id="pc" type="text" placeholder="e.g. CV37 7F8" maxlength="8" autocomplete="off">
+        <input class="pc" id="pc" type="text" placeholder="e.g. SW1, M1, B1, LS1, EH1" maxlength="8" autocomplete="off">
         <button class="btn-search" onclick="doSearch()">Search →</button>
       </div>
       <div class="radius-chips">
@@ -217,9 +217,9 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
       <div class="quick-searches">
         <div class="qs-lbl">Quick searches</div>
         <div class="qs-chips">
-          <button class="qc" onclick="qs('CV37 7F8')">CV37 – Stratford</button>
+          <button class="qc" onclick="qs('CV37 7F8')">West Midlands</button>
           <button class="qc" onclick="qs('B1 1AA')">Birmingham</button>
-          <button class="qc" onclick="qs('SW6 2PY')">SW6 – Chelsea</button>
+          <button class="qc" onclick="qs('SW6 2PY')">London</button>
           <button class="qc" onclick="qs('M1 1AE')">Manchester</button>
           <button class="qc" onclick="qs('LS1 1BA')">Leeds</button>
           <button class="qc" onclick="qs('BS1 1AA')">Bristol</button>
@@ -252,9 +252,9 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
     <h2 class="hs-title">Where's the party?</h2>
     <p class="hs-sub">Enter your postcode above to find the nearest toddler birthday party venues, sorted by distance. Every venue shows full package details and prices.</p>
     <div class="sample-grid">
-      <button class="sg" onclick="qs('CV37 7F8')">📍 CV37 – Stratford-upon-Avon</button>
+      <button class="sg" onclick="qs('CV37 7F8')">📍 West Midlands</button>
       <button class="sg" onclick="qs('B1 1AA')">🏙️ Birmingham</button>
-      <button class="sg" onclick="qs('SW6 2PY')">🌆 SW London</button>
+      <button class="sg" onclick="qs('SW6 2PY')">🌆 London</button>
       <button class="sg" onclick="qs('M1 1AE')">🐝 Manchester</button>
       <button class="sg" onclick="qs('G1 1AB')">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Glasgow</button>
     </div>
@@ -2102,6 +2102,260 @@ slots:"Book via edinburghzoo.org.uk/events-experiences/birthday-parties or email
 extras:["Bespoke zoo-nique add-on experiences available — contact zoo for details","Members receive 10% discount — quote membership number at booking"],
 notes:"Located at 134 Corstorphine Road, Edinburgh EH12 6TS. Frequent bus service from city centre. Free parking on site. Operated by RZSS (Royal Zoological Society of Scotland). Arrive 15 minutes before party start time — a ranger will meet guests at the main entrance. No alcohol. No external entertainers. Balloon policy — check with zoo at booking.",
 website:"https://www.edinburghzoo.org.uk/events-experiences/birthday-parties"},
+
+// ── LONDON TODDLER & UNDER-5 BATCH ──
+
+{id:89,cat:"soft",name:"Big Little Fun ⚠️ Temporarily Closed",sub:"Under-5s Soft Play — Seeking New Location in Greenwich",postcode:"SE8 3BU",city:"Greenwich, South East London",type:"Soft Play Café (Under-5s Specialist)",lat:51.479,lng:-0.023,
+h1:"Big Little Fun Birthday Parties in Greenwich",h2:"Under-5s Birthday Parties at Big Little Fun SE8",h3:"Soft Play, Inflatable and Disco Party Packages — Exclusively for Ages 0–5",metaTitle:"Big Little Fun Birthday Parties | Under-5s Soft Play Greenwich SE8",metaDesc:"Birthday parties exclusively for under-5s at Big Little Fun, Greenwich SE8. Soft play, inflatable and disco packages with party host, food, face painting and Big Bear Cool Bear mascot. Book at biglittlefun.co.uk.",
+ages:"6 months – 5 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"yes",
+shortDesc:"Greenwich's dedicated under-5s soft play café, designed from the ground up for babies and toddlers. Sensory room (SEN and autism-friendly), role play area, arts and puzzles area, selfie booth, sing-along and baby gym classes, story time and more. Birthday party packages are exclusively for the 0–5 age group — no older children — making it ideal for toddler groups. Packages include a party host, inflatable castle, face painting, food, party bags, printed invitations, and a visit from Big Bear Cool Bear the mascot. Staff handle all setup and cleanup.",
+packages:[
+{name:"Soft Play Party",price:"Contact venue",priceNote:"party host, soft play access, food and drink for children included",maxKids:"Up to 30 children",featured:false,
+includes:["Exclusive party area within the venue","Party host throughout","Soft play access","Children's food and drink","Party bags","Printed and digital party invitations","Visit from Big Bear Cool Bear mascot"],
+excludes:["Birthday cake (bring your own)"],
+slots:"Book via biglittlefun.co.uk or call venue"},
+{name:"Inflatable Party",price:"Contact venue",priceNote:"adds inflatable castle to soft play party setup",maxKids:"Up to 30 children",featured:true,
+includes:["Everything in Soft Play Party","Inflatable castle for the party duration"],
+excludes:["Birthday cake"],
+slots:"Book via biglittlefun.co.uk"},
+{name:"Disco Party",price:"Contact venue",priceNote:"adds disco lights and music setup",maxKids:"Up to 30 children",featured:false,
+includes:["Everything in Soft Play Party","Disco lights and music"],
+excludes:["Birthday cake"],
+slots:"Book via biglittlefun.co.uk"},
+{name:"Exclusive Venue Hire",price:"Contact venue",priceNote:"full venue hire — bring your own food or add catering",maxKids:"Up to 60 people",featured:false,
+includes:["Exclusive use of entire venue","Option to bring own food","Servery remains open for hot/cold drinks and snacks"],
+excludes:["Hot meals during exclusive hire"],
+slots:"Contact venue for evening/weekend slots"},
+],
+extras:["Face painting","Mascot (Big Bear Cool Bear)","SEN-friendly quiet party options available"],
+notes:"Located at 137 Creek Road, Greenwich SE8 3BU. Restricted street parking on Stowage SE8 3EF (Mon–Fri 12–2pm). Under-5s only — no older children permitted at standard sessions. Deep cleaned after every party session. SEN and autism-friendly.",
+website:"https://biglittlefun.co.uk/parties/"},
+
+{id:90,cat:"soft",name:"Cheeky Chops",sub:"Under-5s Soft Play Birthday Parties in Twickenham",postcode:"TW1 1NL",city:"Twickenham, South West London",type:"Soft Play Café (Under-5s)",lat:51.449,lng:-0.336,
+h1:"Cheeky Chops Birthday Parties in Twickenham",h2:"Under-5s Birthday Parties at Cheeky Chops TW1",h3:"Soft Play Party Packages for Ages 0–5 in South West London",metaTitle:"Cheeky Chops Birthday Parties | Under-5s Soft Play Twickenham TW1",metaDesc:"Birthday parties for ages 0–5 at Cheeky Chops, Twickenham TW1. Soft play café specialising in toddler parties. Book via cheekychops.co.uk.",
+ages:"0–5 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"opt",
+shortDesc:"Dedicated under-5s soft play café and party venue in Twickenham town centre, popular with Richmond, Hampton and Whitton families. Warm, intimate venue designed specifically for babies and toddlers — no older children means a calmer, safer party environment. Birthday parties include exclusive use of the play space, party host, food and a dedicated party area. Convenient for families across the TW postcode area and south west London.",
+packages:[
+{name:"Exclusive Hire Party",price:"Flat hire fee",priceNote:"90 min exclusive hire for 18 children included · additional children £12 each · max 25 children · Sat pm and Sun only",maxKids:"Up to 25 children (ages 0–5)",featured:true,
+includes:["90 min exclusive use of entire café and both play frames","18 children included in flat hire fee","Catered or self-catered options available","Licensed bar with alcoholic and soft drinks for adults","BYO birthday cake"],
+excludes:["Party bags","Food not included in base hire — catering available as add-on"],
+slots:"Saturday afternoons and Sundays only · book via cheekychopsplaycafe.co.uk or call 07878 984603"},
+],
+extras:["Party bags available","Themed decorations on request"],
+notes:"Located in Twickenham town centre TW1. Short walk from Twickenham station. Under-5s only venue.",
+website:"https://www.cheekychops.co.uk/"},
+
+{id:91,cat:"soft",name:"Apple Tree",sub:"Under-5s Café and Birthday Parties in Herne Hill",postcode:"SE24 9HZ",city:"Herne Hill, South London",type:"Soft Play Café (Under-5s, Community-Focused)",lat:51.452,lng:-0.100,
+h1:"Apple Tree Birthday Parties in Herne Hill",h2:"Under-5s Soft Play Birthday Parties in Herne Hill SE24",h3:"Community Soft Play Café Party Packages for Babies and Toddlers",metaTitle:"Apple Tree Birthday Parties | Under-5s Soft Play Herne Hill SE24",metaDesc:"Birthday parties for under-5s at Apple Tree soft play café, Herne Hill SE24. Community-focused venue for babies and toddlers. Book via appletreehernhill.co.uk.",
+ages:"0–5 yrs",maxKids:"25",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Beloved community soft play café in the heart of Herne Hill, popular with SE24, SE21 and SE22 families. Warm, welcoming atmosphere specifically for under-5s — a genuine neighbourhood venue rather than a commercial chain. Birthday parties include exclusive use of the space, party host, and a simple food setup. Brilliant for small, intimate toddler birthday parties where a relaxed environment matters more than bells and whistles. Strong community following.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"community-run venue · pricing on request · email via appletreehernhill.co.uk",maxKids:"Up to 25 children",featured:true,
+includes:["Exclusive use of soft play space","Party host","Children's food setup","Soft play access throughout"],
+excludes:["Birthday cake (bring your own)","Party bags"],
+slots:"Book via appletreehernhill.co.uk or contact venue directly"},
+],
+extras:["Simple, community-style food available"],
+notes:"Located in Herne Hill SE24. Community-run venue with strong local following. Check website for current availability and pricing. Under-5s only.",
+website:"https://www.appletreehernhill.co.uk/"},
+
+{id:92,cat:"soft",name:"Globetrotters Soft Play",sub:"Around-the-World Themed Birthday Parties in Bexleyheath",postcode:"DA7 4BT",city:"Bexleyheath, South East London",type:"Soft Play (World-Themed, 4 Zones + Go-Kart Track)",lat:51.440,lng:0.151,
+h1:"Globetrotters Soft Play Birthday Parties in Bexleyheath",h2:"World-Themed Soft Play Birthday Parties in Bexleyheath DA7",h3:"Party Packages with Dedicated Party Room — Exclusive Hire from £600",metaTitle:"Globetrotters Soft Play Birthday Parties | Bexleyheath DA7",metaDesc:"Birthday parties at Globetrotters Soft Play, Bexleyheath DA7. 4 play zones (baby, toddler, junior, go-kart track), dedicated party room, party host and food included. Exclusive hire £600. Book via gtsoftplay.co.uk.",
+ages:"0–12 yrs",maxKids:"50",duration:"2 hrs",loc:"yes",food:"yes",bags:"yes",
+shortDesc:"Bexleyheath's around-the-world themed indoor soft play and party venue with 4 dedicated zones: a baby sensory area, toddler zone, junior multi-tier frame, and a separate Formula One go-kart track. Themed around global landmarks — Big Ben, Egyptian pyramids, Amazon rainforest, Route 66. Birthday parties include a dedicated party room with party host, food (children's buffet with nuggets, sandwiches, pizza, chips), unlimited juice, ice cream dessert, birthday card and free return pass for the birthday child. Exclusive hire available for up to 50 guests. Air-conditioned, free Wi-Fi, free on-site parking.",
+packages:[
+{name:"Kids Party Package",price:"~£9 pp",priceNote:"per child (age 5–12) · 2–4 yrs £8 pp · under 1 £4 · party room + host + food included · book via gtsoftplay.co.uk",maxKids:"Up to 30 children",featured:true,
+includes:["Dedicated party room for 40 minutes","Party host throughout","Children's buffet: nuggets/fish fingers/sausages + chips + sandwiches + pizza slices","Unlimited juice and ice cream dessert","Birthday card for birthday child","Globetrotters balloon per child","Free return pass for birthday child"],
+excludes:["Birthday cake (bring your own)","Party bags (order separately)"],
+slots:"Mon–Sun · 3 time slots per day · book via gtsoftplay.co.uk"},
+{name:"Exclusive Private Hire",price:"£600 flat",priceNote:"full venue exclusive · up to 50 guests · cold catering £150 or hot food £200 extra · BYO food option +£100",maxKids:"Up to 50 guests",featured:false,
+includes:["Exclusive use of entire venue","Servery open for hot/cold drinks and snacks"],
+excludes:["Meals not included in hire fee — add cold food £150 or hot food £200","Kitchen closed during BYO option"],
+slots:"Contact venue for available hire slots"},
+],
+extras:["Cold food catering up to 30 children £150","Hot food catering £200","BYO food option £100 (kitchen closed, servery only)"],
+notes:"Located at Unit 3, Crown House, Queen Street, Bexleyheath DA7 4BT. Free on-site parking. Additional parking across the road (cash only, until 12pm) or at Tenpin/Oaklands car park on Albion Road. Phone: 020 3172 8218. All bank and school holidays covered. Peak and off-peak pricing applies.",
+website:"https://www.gtsoftplay.co.uk/parties.php"},
+
+{id:93,cat:"soft",name:"KB02 Soft Play",sub:"3-Storey Soft Play Birthday Parties in Palmers Green",postcode:"N13 5QA",city:"Palmers Green, North London",type:"Soft Play (3-Storey Frame)",lat:51.617,lng:-0.109,
+h1:"KB02 Soft Play Birthday Parties in Palmers Green",h2:"3-Storey Soft Play Birthday Parties in North London N13",h3:"Party Packages at KB02 Palmers Green — Serving Enfield, Wood Green and Southgate",metaTitle:"KB02 Soft Play Birthday Parties | Palmers Green N13",metaDesc:"Birthday parties at KB02 3-storey soft play centre, Palmers Green N13. Party room, host and food included. Serving North London including Enfield, Wood Green and Southgate. Book via kb02.co.uk.",
+ages:"0–12 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Three-storey indoor soft play centre in Palmers Green serving North London families across N13, N14, N21 and the Enfield area. Large multi-level play structure with separate toddler and baby areas on the ground floor. Birthday parties include exclusive use of the party room, party host, food and soft play access throughout. Popular for its size, cleanliness and strong local following. Convenient A406/A10 access with parking nearby.",
+packages:[
+{name:"Exclusive Venue Hire",price:"From £347 flat",priceNote:"Mon–Thu term-time · Fri and school holidays £447 · weekends from £497 · 2 hr exclusive hire · up to 50 guests · BYO food",maxKids:"Up to 50 children + adults",featured:true,
+includes:["2 hr exclusive hire of entire venue","3-storey soft play frame","Free-play arcade room (Dance Machine, Boxing, Foosball, retro games)","Computerised disco sound and lighting system","Licensed bar: tea, coffee, soft drinks, beer, wine, spirits","Photo booth"],
+excludes:["Food not provided — fully self-catered","Party bags"],
+slots:"7 days a week · book online at kb02.net/KBbook.php or email info@kb02.net"},
+],
+extras:["Mascot hire available","Drinks packages available","DJ hire available"],
+notes:"Located in Palmers Green N13. Parking available nearby. Serves Enfield, Southgate, Wood Green, Tottenham and surrounding areas.",
+website:"https://www.kb02.co.uk/"},
+
+{id:94,cat:"soft",name:"Bounceagogo",sub:"Exclusive Disco Inflatable Birthday Parties in South Wimbledon",postcode:"SW19 1HN",city:"South Wimbledon / Wimbledon SW19 (+ Southfields, Mitcham, Putney, Esher)",type:"Exclusive Inflatable Disco Party (School Venue Hire)",lat:51.413,lng:-0.192,
+h1:"Bounceagogo Birthday Parties in Wimbledon and South West London",h2:"Exclusive Inflatable Disco Birthday Parties in SW19",h3:"Bounceagogo Party Packages from £489 for 25 Children — Fully Staffed",metaTitle:"Bounceagogo Birthday Parties | Exclusive Inflatable Disco | Wimbledon SW19",metaDesc:"Exclusive inflatable and disco birthday parties by Bounceagogo at school venues across Wimbledon, Southfields, South Wimbledon, Mitcham, Putney and Esher. From £489 for 25 children. Fully staffed, food included, adults free. Book at bounceagogo.co.uk.",
+ages:"1–11 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Award-winning, fully exclusive children's party provider operating from school venues across South West London and Surrey. Transforms school halls into disco-lit, inflatable-filled party spaces — 40-foot obstacle course slides, go-kart roller coasters, giant beach balls, space hoppers, ride-ons and soft play. No shared parties, ever — your group has the entire venue exclusively. Multiple party types to match the birthday child's age: Bounceagogo (1–3 yrs), Discoagogo (4–6 yrs), Discoagogo Club Classic (7–11 yrs), and Nerfagogo (7+ yrs). All food, staffing, setup and cleanup included. Adults attend free with unlimited hot drinks. SEN-inclusive.",
+packages:[
+{name:"Bounceagogo (Ages 1–3)",price:"From £489",priceNote:"for up to 25 children · adults free · all food, setup and staffing included",maxKids:"Up to 25–30 children",featured:true,
+includes:["2 hr exclusive venue hire","Inflatable obstacle course, ride-ons, roller coasters, giant beach balls, soft play","Disco lighting and music","Children's buffet: sandwiches (ham/cheese), fruit, crisps, cookies, marshmallows, squash and water","Tableware and festive lighting","Unlimited tea and coffee for adults","Full setup and cleanup by Bounceagogo team"],
+excludes:["Birthday cake (bring your own — no nuts)","Party bags (bring your own)","Gluten/dairy free meals £4.50 extra per child"],
+slots:"Sat/Sun: 10am–12pm, 12:30–2:30pm, 3–5pm · Book at bounceagogo.book.app"},
+{name:"Discoagogo (Ages 4–6)",price:"From £489",priceNote:"same pricing as Bounceagogo · age-adjusted equipment setup",maxKids:"Up to 25–30 children",featured:false,
+includes:["As above — larger inflatable setup, smaller ride-ons removed","Free play, treasure hunts, games and dancing","Same food and staffing inclusions"],
+excludes:["Birthday cake","Party bags"],
+slots:"Book at bounceagogo.book.app"},
+{name:"Nerfagogo (Ages 7+)",price:"From £489",priceNote:"Nerf dart gun games added to Discoagogo format",maxKids:"Up to 25–30 children",featured:false,
+includes:["As Discoagogo","Nerf dart gun games with structured game formats"],
+excludes:["Birthday cake","Party bags","Younger children cannot join Nerf games unaccompanied"],
+slots:"Book at bounceagogo.book.app"},
+],
+extras:["Glow stick and sweetie hunt add-on","Candyfloss machine hire","SEN-friendly quiet party options available"],
+notes:"Operates from school venues — no permanent location. SW19 venue: All Saints Primary School, South Wimbledon; also Albermarle Primary SW19, Southfields SW20, Mitcham, Putney SW15, Esher KT10. Waivers must be completed by all guests including party host family. No nuts on site. No food brought in by guests. Parents must remain on site with children who cannot manage food/toileting independently. 50% deposit required at booking; full balance due 7 days before party.",
+website:"https://bounceagogo.co.uk/Parties-Camps-Events/"},
+
+{id:95,cat:"unique",name:"Polka Theatre",sub:"Children's Theatre Birthday Parties in Wimbledon",postcode:"SW19 1SB",city:"Wimbledon, South West London",type:"Children's Theatre (Tea Party + Drama)",lat:51.423,lng:-0.201,
+h1:"Polka Theatre Birthday Parties in Wimbledon",h2:"Children's Theatre Birthday Parties at Polka Theatre SW19",h3:"Tea Party, Theatre Show and Drama Workshop Birthday Packages",metaTitle:"Polka Theatre Birthday Parties | Children's Theatre Wimbledon SW19",metaDesc:"Birthday parties at Polka Theatre, Wimbledon. Tea party in the café, theatre show tickets and optional drama practitioner session. Party room hire £175. Lunch boxes £9.80 per child. Book via polkatheatre.com.",
+ages:"2–11 yrs",maxKids:"30",duration:"2–3 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"One of London's most celebrated children's theatres, located in Wimbledon. Birthday parties combine a reserved table or private party room in the Polka café, theatre show tickets for the current production, and an optional one-hour session with a drama practitioner. Lunch boxes include sandwich, crisps, drink, fruit and a cookie. Perfect for children who love stories and performance. A genuinely unique, culturally enriching birthday experience that most guests will never have had before.",
+packages:[
+{name:"Café Table Party",price:"From £9.80 pp",priceNote:"lunch boxes £9.80 per child · theatre show tickets from £10 pp · table reservation free",maxKids:"Up to 20 children",featured:false,
+includes:["Reserved tables in Polka Theatre café","Option to add lunch boxes: sandwich, crisps, drink, fruit and cookie — £9.80 each","Theatre show tickets from £10 per child"],
+excludes:["Private room","Birthday cake (bring your own)","Drama session (add-on)"],
+slots:"Book around current show schedule at polkatheatre.com"},
+{name:"Party Room + Theatre",price:"£175 room hire",priceNote:"2 hr exclusive party room · lunch boxes £9.80 pp · show tickets from £10 pp · Polka Practitioner games session from £150 optional",maxKids:"Up to 30 children",featured:true,
+includes:["Private party room hire for 2 hours","Option to add lunch boxes at £9.80 each","Theatre show tickets for all guests from £10 per child"],
+excludes:["Birthday cake (bring your own)","Drama session is optional add-on (from £150)"],
+slots:"Book via polkatheatre.com or call box office"},
+{name:"Polka Practitioner Games Session",price:"From £150",priceNote:"1 hour drama games session led by a Polka Practitioner · added to party room hire · children must be supervised by parents/guardians at all times",maxKids:"Up to 20 children",featured:false,
+includes:["1 hour drama practitioner-led activity","Age-appropriate theatre/storytelling games"],
+excludes:["Included in room hire price — additional cost"],
+slots:"Subject to practitioner availability — book in advance"},
+],
+extras:["Current show tickets from £10 per child","Lunch boxes £9.80 each","Drama practitioner from £150 for 1 hour"],
+notes:"Located at 240 The Broadway, Wimbledon SW19 1SB. Accessible by tube (South Wimbledon), tram and bus. One of the UK's most respected children's theatres. Birthday parties subject to show programme — check current schedule at polkatheatre.com before booking. Ideal for ages 3–10.",
+website:"https://www.polkatheatre.com/your-visit/birthday-parties/"},
+
+{id:96,cat:"unique",name:"Discover Story Centre",sub:"Creative Story Birthday Parties in Stratford",postcode:"E15 1EL",city:"Stratford, East London",type:"Children's Story Centre (Creative & Interactive)",lat:51.542,lng:-0.001,
+h1:"Discover Story Centre Birthday Parties in Stratford",h2:"Creative Story Birthday Parties at Discover E15",h3:"Imaginative Party Packages at East London's Children's Story Centre",metaTitle:"Discover Story Centre Birthday Parties | Creative Parties Stratford E15",metaDesc:"Birthday parties at Discover Story Centre, Stratford E15. Creative, story-themed birthday experiences for ages 2–11. Party room hire available. Book via discover.org.uk.",
+ages:"2–11 yrs",maxKids:"25",duration:"2 hrs",loc:"yes",food:"opt",bags:"no",
+shortDesc:"⚠️ Closed for building works until June 2026 — reopening with new spaces. Discover is a unique children's story centre in Stratford, East London — an immersive, hands-on space where children create, tell and explore stories through interactive installations, props and costumes. Birthday parties are centred around storytelling and creative play, making them unlike any soft play party. Dedicated party room available for hire. Staff-led storytelling sessions can be added. Perfect for imaginative, book-loving children aged 2–11. Located next to Stratford station — easy DLR, Overground and Elizabeth Line access.",
+packages:[
+{name:"Birthday Party Visit",price:"From £10 pp",priceNote:"per person centre admission · children's food included · no exclusive private hire · book group visit via discover.org.uk · reopening June 2026 after building works",maxKids:"Up to 25 children",featured:true,
+includes:["Party room hire","Full access to Discover Story Centre interactive spaces","Staff available to support the party","Optional storyteller-led session"],
+excludes:["Birthday cake (bring your own)","Party food (self-catered — café on site)"],
+slots:"Book via discover.org.uk or call 020 8536 5555"},
+],
+extras:["Storyteller-led session available","Workshop activities available for add-on"],
+notes:"Located at 1 Bridge Terrace, Stratford E15 4BG. Next to Stratford station (Jubilee, Central, DLR, Overground, Elizabeth Line). Open Tuesday to Sunday. Charity-run — profits support children's literacy. Members get discounts.",
+website:"https://discover.org.uk/"},
+
+{id:97,cat:"farm",name:"Mudchute Park and Farm",sub:"Free Community Farm Birthday Parties on the Isle of Dogs",postcode:"E14 3HP",city:"Isle of Dogs, East London",type:"Urban Farm (Rare Breeds + Party Room)",lat:51.493,lng:-0.016,
+h1:"Mudchute Farm Birthday Parties on the Isle of Dogs",h2:"Urban Farm Birthday Parties at Mudchute Park E14",h3:"Community Farm Party Packages in East London — Free Farm Entry Included",metaTitle:"Mudchute Farm Birthday Parties | Urban Farm Parties Isle of Dogs E14",metaDesc:"Birthday parties at Mudchute Park and Farm, Isle of Dogs E14. London's largest urban farm — rare breeds, ponies, llamas, pigs and more. Party room hire available. Book via mudchute.org.",
+ages:"All ages",maxKids:"30",duration:"2 hrs",loc:"yes",food:"opt",bags:"no",
+shortDesc:"London's largest urban farm — 32 acres on the Isle of Dogs, home to cattle, pigs, goats, sheep, horses, ponies, llamas, alpacas, ducks and over 100 rare breed animals. A genuine working farm in the heart of East London, free to visit every day. Birthday parties use the farm's party room with access to the farm included. Self-catered, giving full flexibility over food. A wonderfully unusual and affordable party option for East London families — less than 5 minutes from Mudchute DLR station.",
+packages:[
+{name:"Barn Party Package",price:"Contact venue",priceNote:"converted barn hire · up to 45 people · farm entry free for all guests · self-catered · email events@mudchute.org",maxKids:"Up to 30 guests",featured:true,
+includes:["Party room hire","Free farm entry for all party guests","Access to 32 acres and all farm animals"],
+excludes:["Food — fully self-catered","Party bags","Hosted activities (bring your own entertainer)"],
+slots:"Book via mudchute.org or call 020 7515 5901"},
+],
+extras:["Animal encounters available as add-on (seasonal)","Pony rides available (check seasonal availability)"],
+notes:"Located at Pier Street, Isle of Dogs E14 3HP. Mudchute DLR station 5 minutes walk. Free entry to the farm every day (party room hire charged separately). A charity — proceeds support the farm and community outreach. Bring wellies in wet weather.",
+website:"https://www.mudchute.org/"},
+
+// ── WEST MIDLANDS TODDLER BATCH ──
+
+{id:98,cat:"soft",name:"Scallywags",sub:"Soft Play Birthday Parties in Brierley Hill",postcode:"DY5 1LB",city:"Brierley Hill, West Midlands",type:"Soft Play (Multi-Level)",lat:52.481,lng:-2.120,
+h1:"Scallywags Birthday Parties in Brierley Hill",h2:"Soft Play Birthday Parties Near Dudley and Brierley Hill DY5",h3:"Party Packages with Food and Host at Scallywags Brierley Hill",metaTitle:"Scallywags Birthday Parties | Soft Play Brierley Hill DY5",metaDesc:"Birthday parties at Scallywags soft play, Brierley Hill DY5. Food, party host and party room included. Serving Dudley, Stourbridge, Halesowen and the Black Country. Book via scallywags.co.uk.",
+ages:"0–11 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Popular indoor soft play centre in Brierley Hill serving families across the Black Country — Dudley, Stourbridge, Halesowen, Quarry Bank and Cradley Heath. Multi-level play frame with toddler-dedicated lower section and older children's upper areas with slides and climbing. Birthday parties include a private party room, party host, children's food and full soft play access. Well-established venue with a strong local following.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"per child pricing · min 8 · check website for current rates",maxKids:"Up to 30 children",featured:true,
+includes:["Private party room","Party host","Children's party food and drink","Full soft play access"],
+excludes:["Birthday cake (bring your own)","Party bags"],
+slots:"Book via scallywags.co.uk or call venue"},
+],
+extras:["Themed decorations available"],
+notes:"Located in Brierley Hill DY5. Convenient for Dudley, Stourbridge and the Black Country. Free parking on site.",
+website:"https://www.scallywags.co.uk/"},
+
+{id:99,cat:"soft",name:"Chilly Kiddys",sub:"Soft Play Birthday Parties with Dedicated Under-5s Zone in Stourbridge",postcode:"DY8 4BS",city:"Stourbridge, West Midlands",type:"Soft Play (Under-5s Dedicated Zone)",lat:52.457,lng:-2.147,
+h1:"Chilly Kiddys Birthday Parties in Stourbridge",h2:"Soft Play Birthday Parties with Under-5s Zone in Stourbridge DY8",h3:"Party Packages with Dedicated Baby and Toddler Area",metaTitle:"Chilly Kiddys Birthday Parties | Soft Play Stourbridge DY8",metaDesc:"Birthday parties at Chilly Kiddys, Stourbridge DY8. Soft play with dedicated under-5s toddler zone. Party room, host and food included. Book via chillykiddys.co.uk.",
+ages:"0–12 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Indoor soft play and café in Stourbridge with a dedicated under-5s and toddler zone — making it particularly well-suited to parties where the youngest guests matter as much as the older ones. Soft play party packages include a private party area, party host and children's food. Strong reputation among Stourbridge, Hagley and Kidderminster families for cleanliness and friendly staff.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"per child pricing · check website for current rates · min 8 children",maxKids:"Up to 30 children",featured:true,
+includes:["Private party area","Party host","Children's food and drink","Full soft play access including dedicated under-5s zone"],
+excludes:["Birthday cake (bring your own)","Party bags"],
+slots:"Book via chillykiddys.co.uk or contact venue"},
+],
+extras:["Dedicated under-5s toddler zone — ideal for mixed-age parties"],
+notes:"Located in Stourbridge DY8. Free parking on site. Convenient for Stourbridge, Hagley, Kidderminster and the wider Black Country.",
+website:"https://www.chillykiddys.co.uk/"},
+
+{id:100,cat:"soft",name:"Adventureland",sub:"Soft Play Birthday Parties in Aldridge — Toddler Tummy Package",postcode:"WS9 8HE",city:"Aldridge, Walsall",type:"Soft Play (Budget-Friendly, Toddler Specialist)",lat:52.606,lng:-1.913,
+h1:"Adventureland Birthday Parties in Aldridge",h2:"Toddler Soft Play Birthday Parties in Aldridge WS9",h3:"Toddler Tummy Party Package — £8.50 per Child",metaTitle:"Adventureland Birthday Parties | Soft Play Aldridge WS9",metaDesc:"Birthday parties at Adventureland soft play, Aldridge WS9. Toddler Tummy package £8.50 per child — one of the best-value toddler party packages in the West Midlands. Book via adventurelandaldridge.co.uk.",
+ages:"0–12 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Established soft play centre in Aldridge serving Walsall, Sutton Coldfield, Great Barr and the surrounding area. Offers one of the best-value toddler party packages in the West Midlands — the Toddler Tummy package at just £8.50 per child is specifically designed for the youngest party guests and includes food. Suitable for all ages but with strong toddler credentials. Private party room and party host included.",
+packages:[
+{name:"Toddler Tummy Party",price:"£8.50 pp",priceNote:"per child · specifically designed for toddlers and under-5s · food included",maxKids:"Up to 25 children",featured:true,
+includes:["Toddler-appropriate party food","Private party area","Soft play access","Party host"],
+excludes:["Birthday cake (bring your own)","Party bags"],
+slots:"Book via adventurelandaldridge.co.uk or call venue"},
+{name:"Standard Party Package",price:"Contact venue",priceNote:"for older children — see website for pricing",maxKids:"Up to 30 children",featured:false,
+includes:["Private party room","Party host","Food and drink","Full soft play access"],
+excludes:["Birthday cake","Party bags"],
+slots:"Book via website or phone"},
+],
+extras:["Themed party rooms available"],
+notes:"Located in Aldridge WS9. Free parking. Serves Walsall, Sutton Coldfield, Great Barr, Brownhills, Lichfield and Cannock.",
+website:"https://www.adventurelandaldridge.co.uk/"},
+
+{id:101,cat:"soft",name:"Berzerk",sub:"Soft Play and Laser Tag Birthday Parties in Kings Heath",postcode:"B14 7AX",city:"Kings Heath, Birmingham",type:"Soft Play + Laser Tag",lat:52.418,lng:-1.893,
+h1:"Berzerk Birthday Parties in Kings Heath Birmingham",h2:"Soft Play and Laser Tag Birthday Parties in Birmingham B14",h3:"Combo Soft Play and Laser Tag Party Packages in South Birmingham",metaTitle:"Berzerk Birthday Parties | Soft Play and Laser Tag Kings Heath B14",metaDesc:"Birthday parties at Berzerk, Kings Heath, Birmingham B14. Soft play and laser tag combo parties. Party room, host and food included. Book via berzerk.co.uk.",
+ages:"0–12 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Indoor soft play and laser tag centre in Kings Heath, South Birmingham. Offers single-activity soft play parties and combined soft play plus laser tag packages — making it a versatile option for mixed-age groups. Birthday packages include a private party room, party host and children's food. Laser tag add-on is ideal for older children (7+) while younger siblings can enjoy the soft play. Popular with Moseley, Stirchley, Bournville and Selly Oak families.",
+packages:[
+{name:"Soft Play Party",price:"Contact venue",priceNote:"per child pricing · min 8 · check berzerk.co.uk",maxKids:"Up to 30 children",featured:false,
+includes:["Private party room","Party host","Children's food and drink","Soft play access"],
+excludes:["Birthday cake (bring your own)","Party bags","Laser tag"],
+slots:"Book via berzerk.co.uk or call venue"},
+{name:"Soft Play and Laser Tag Combo Party",price:"Contact venue",priceNote:"adds laser tag session to soft play party · ages 7+ for laser tag",maxKids:"Up to 30 children",featured:true,
+includes:["Everything in Soft Play Party","Laser tag session for suitable age guests (7+)","Combined schedule managed by party host"],
+excludes:["Birthday cake","Party bags"],
+slots:"Book via berzerk.co.uk"},
+],
+extras:["Laser tag only parties available for older groups"],
+notes:"Located in Kings Heath B14. Convenient for Moseley, Stirchley, Bournville, Selly Oak and South Birmingham. Free parking on site.",
+website:"https://www.berzerk.co.uk/"},
+
+{id:102,cat:"soft",name:"Jungle Boogie",sub:"Soft Play Birthday Parties in Walsall",postcode:"WS2 8LT",city:"Walsall, West Midlands",type:"Soft Play (Jungle-Themed)",lat:52.585,lng:-1.988,
+h1:"Jungle Boogie Birthday Parties in Walsall",h2:"Jungle-Themed Soft Play Birthday Parties in Walsall WS2",h3:"Party Packages for Ages 0–12 in the Heart of Walsall",metaTitle:"Jungle Boogie Birthday Parties | Soft Play Walsall WS2",metaDesc:"Birthday parties at Jungle Boogie, Walsall WS2. Jungle-themed indoor soft play with party room, host and food included. Serving Walsall, Wolverhampton and the Black Country. Book via jungleboogiewalsall.co.uk.",
+ages:"0–12 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Jungle-themed indoor soft play centre in Walsall serving families across the West Midlands. Multi-level play frame with jungle decor, dedicated toddler area, and party rooms for group hire. Birthday packages include a party room, host and food. One of the key soft play options for Walsall, Wolverhampton, Wednesbury and Bloxwich families looking for a local, independent venue with strong community appeal.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"per child pricing · contact venue for current rates · min 8 children",maxKids:"Up to 30 children",featured:true,
+includes:["Private party room","Party host","Children's food and drink","Full soft play access"],
+excludes:["Birthday cake (bring your own)","Party bags"],
+slots:"Book via website or call venue"},
+],
+extras:["Themed jungle party décor"],
+notes:"Located in Walsall WS2. Free parking on site. Serves Walsall, Wolverhampton, Wednesbury, Bloxwich and Aldridge.",
+website:"https://www.jungleboogiewalsall.co.uk/"},
+
+{id:103,cat:"soft",name:"Play-Tropolis",sub:"Role-Play Village Birthday Parties in Wombourne",postcode:"WV5 9JE",city:"Wombourne, South Staffordshire",type:"Soft Play + Role-Play Village",lat:52.531,lng:-2.193,
+h1:"Play-Tropolis Birthday Parties in Wombourne",h2:"Role-Play Village Birthday Parties in Wombourne WV5",h3:"Soft Play and Role-Play Party Packages Near Wolverhampton",metaTitle:"Play-Tropolis Birthday Parties | Role-Play Soft Play Wombourne WV5",metaDesc:"Birthday parties at Play-Tropolis, Wombourne WV5. Unique role-play village combined with soft play. Party packages for ages 0–10. Serving Wolverhampton, Stourbridge and South Staffordshire. Book via playtropolis.co.uk.",
+ages:"0–10 yrs",maxKids:"25",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Unique combination of soft play and a role-play village in Wombourne, South Staffordshire — one of very few West Midlands venues offering dedicated imaginative role-play alongside physical play. The role-play village includes themed areas such as a café, shop, hospital and fire station, allowing children to develop social and creative skills while playing. Birthday parties include a private room, host and food. A distinctive option for families seeking something beyond standard soft play in the WV postcode area.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"per child pricing · contact venue for current rates · min 8 children",maxKids:"Up to 25 children",featured:true,
+includes:["Private party room","Party host","Children's food and drink","Soft play and role-play village access"],
+excludes:["Birthday cake (bring your own)","Party bags"],
+slots:"Book via playtropolis.co.uk or call venue"},
+],
+extras:["Role-play village dressing-up costumes","Themed party rooms"],
+notes:"Located in Wombourne WV5. Free parking on site. Convenient for Wolverhampton, Stourbridge, Dudley and South Staffordshire.",
+website:"https://www.playtropolis.co.uk/"},
 
 ];
 

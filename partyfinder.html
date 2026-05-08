@@ -2537,7 +2537,7 @@ function card(v){
   const fp=v.food==="yes"?`<div class="ii yes" title="Food included">🍕</div>`:v.food==="opt"?`<div class="ii opt" title="Food optional">🍕</div>`:`<div class="ii no" title="Self-catered">🍕</div>`;
   const bp=v.bags==="yes"?`<div class="ii yes" title="Gift bags included">🎁</div>`:v.bags==="opt"?`<div class="ii opt" title="Bags available">🎁</div>`:`<div class="ii no" title="No gift bags">🎁</div>`;
   const bestPrice=v.packages[0]?.price||"Contact venue";
-  return `<div class="card" onclick="window.location.href='venue.html?venue='+encodeURIComponent(v.slug||v.id)">
+  return `<div class="card" onclick="window.location.href='venue.html?venue=${encodeURIComponent(v.slug||String(v.id))}'">
     <div class="card-top-bar" style="background:${c.color}"></div>
     <div class="card-body">
       <div class="card-row1">

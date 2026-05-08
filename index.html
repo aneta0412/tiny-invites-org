@@ -305,6 +305,53 @@
   }
   .designs-note-icon { font-size:1.1rem; flex-shrink:0; }
 
+
+  /* SEE IT IN ACTION */
+  .preview-section {
+    padding:80px 40px;
+    background:var(--dark);
+    position:relative;
+    overflow:hidden;
+    text-align:center;
+  }
+  .preview-section::before {
+    content:"";
+    position:absolute;
+    top:-80px; right:-80px;
+    width:350px; height:350px;
+    border-radius:50%;
+    border:1px solid rgba(201,168,76,0.1);
+  }
+  .preview-section .section-label { color:var(--gold-light); justify-content:center; }
+  .preview-section .section-label::before { background:var(--gold-light); }
+  .preview-section h2 { color:var(--cream); margin-bottom:12px; }
+  .preview-sub {
+    font-size:0.9rem;
+    color:rgba(250,246,239,0.6);
+    line-height:1.7;
+    max-width:480px;
+    margin:0 auto 48px;
+  }
+  .preview-frame {
+    max-width:480px;
+    margin:0 auto;
+    position:relative;
+  }
+  .preview-frame img {
+    width:100%;
+    border-radius:12px;
+    box-shadow:0 24px 80px rgba(0,0,0,0.4);
+    border:1px solid rgba(201,168,76,0.2);
+    display:block;
+  }
+  .preview-cta {
+    margin-top:36px;
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
   /* CONTACT */
   .contact {
     padding:80px 40px;
@@ -458,8 +505,8 @@
   <div class="hero-bg"></div>
   <div class="hero-content">
     <p class="eyebrow">Everything for the perfect party</p>
-    <h1>Your child's<br>perfect party,<br><em>all in one place.</em></h1>
-    <p class="hero-sub">Find a venue, create beautiful invitations, order printed QR-coded invites, and browse party supplies — all free, all in one place.</p>
+    <h1>Your child's<br>perfect party,<br><em>beautifully simple.</em></h1>
+    <p class="hero-sub">No more chasing replies in group chats. Tiny Invites collects who is coming, how many, and any allergies — all in one beautiful link. Plus find a venue, download free invitations, and shop for supplies. Free, always.</p>
     <div class="hero-pills">
       <a class="pill" href="/partyfinder/">&#128205; Party venues</a>
       <a class="pill" href="#rsvp">&#128140; Free RSVPs</a>
@@ -618,7 +665,7 @@
             <div>
               <p class="next-label">Get your free template</p>
               <p class="next-desc">Click below to open the template in Tally. You will need a free Tally account — takes 30 seconds to sign up. Once duplicated it is completely yours to edit: add your own photos, change colours, or keep our design. No rules! &#127775;</p>
-              <a class="next-btn" href="https://tally.so/templates/birthday-rsvp/mBgR13" target="_blank" rel="noopener">Open Free Template &#8594;</a>
+              <a class="next-btn" href="https://tally.so/templates/birthday-party-rspv/3xgVEm" target="_blank" rel="noopener">Open Free Template &#8594;</a>
               <p style="font-size:0.72rem;color:var(--soft);margin-top:10px;">&#10003; Fully customisable &nbsp;&#10003; Add your own photos &nbsp;&#10003; No design restrictions</p>
             </div>
           </div>
@@ -666,6 +713,20 @@
   </div>
 </section>
 
+
+
+<!-- SEE IT IN ACTION -->
+<section class="preview-section" id="preview">
+  <p class="section-label">See it in action</p>
+  <h2>Everything you need<br>to know, <em>beautifully collected.</em></h2>
+  <p class="preview-sub">Who is coming, how many guests, and any allergies — that is all you really need to plan a children's party. This is what your guests see when they open your RSVP link. Warm, simple, and works perfectly on any phone. No app needed, no account required.</p>
+  <div class="preview-frame">
+    <img src="./form-preview.png" alt="Tiny Invites RSVP form preview">
+  </div>
+  <div class="preview-cta">
+    <a href="#rsvp" class="btn-primary">Create Your Free RSVP</a>
+  </div>
+</section>
 
 <!-- INVITATION DESIGNS -->
 <section class="designs" id="designs">

@@ -450,9 +450,10 @@
   .qr-f input { width:100%; padding:10px 13px; border:1px solid var(--gold-pale); border-radius:2px; font-family:"DM Sans",sans-serif; font-size:0.9rem; color:var(--dark); background:var(--cream); outline:none; transition:border-color 0.2s; }
   .qr-f input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,0.1); }
   .qr-f input::placeholder { color:var(--soft); }
-  .qr-swatches { display:flex; gap:8px; flex-wrap:wrap; }
-  .qr-sw { width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform 0.15s, border-color 0.15s; }
-  .qr-sw:hover { transform:scale(1.15); }
+  .qr-swatches { display:flex; gap:7px; flex-wrap:wrap; }
+  .qr-sw { width:24px; height:24px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform 0.15s, border-color 0.15s; position:relative; }
+  .qr-sw:hover { transform:scale(1.2); }
+  .qr-sw:hover::after { content:attr(title); position:absolute; bottom:calc(100% + 5px); left:50%; transform:translateX(-50%); background:var(--dark); color:var(--cream); font-size:0.65rem; letter-spacing:0.06em; white-space:nowrap; padding:3px 7px; border-radius:2px; pointer-events:none; }
   .qr-sw.active { border-color:var(--dark); transform:scale(1.1); }
   .qr-gen-btn { width:100%; background:var(--dark); color:var(--cream); padding:14px; border:none; border-radius:2px; font-family:"DM Sans",sans-serif; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; margin-top:6px; transition:background 0.2s; }
   .qr-gen-btn:hover { background:var(--gold); }
@@ -501,9 +502,9 @@
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-content">
-    <p class="eyebrow">Everything for the perfect party</p>
-    <h1>Your child's<br>perfect party,<br><em>beautifully simple.</em></h1>
-    <p class="hero-sub">No more chasing replies in group chats. Tiny Invites collects who is coming, how many, and any allergies — all in one beautiful link with a QR code guests can scan straight from the invite. Plus find a venue, download free invitations, and shop for supplies. Free, always.</p>
+    <p class="eyebrow">Free tools for every step of the party</p>
+    <h1>Everything you need,<br><em>step by step.</em></h1>
+    <p class="hero-sub">From finding the perfect venue to designing invitations and managing RSVPs with Tally — Tiny Invites guides you through every step of planning your child's birthday party. Free, always.</p>
     <div class="hero-pills">
       <a class="pill" href="/partyfinder/">&#128205; Party venues</a>
       <a class="pill" href="#rsvp">&#128140; Free RSVPs</a>
@@ -618,50 +619,64 @@
 <section class="rsvp-section" id="rsvp">
   <div class="rsvp-inner">
     <div>
-      <p class="section-label">Free invitations</p>
-      <h2>Your party,<br><em>your style.</em><br>All the magic.</h2>
-      <p class="section-sub">We give you a beautiful ready-made template — but it is fully yours to customise. Add your own photos, change the colours, use your child's favourite characters. You are not tied to our beige theme at all.<br><br>What you do get — no matter how you style it — is everything that matters: allergy collection, guest count tracking, a <strong style="font-weight:500;color:var(--dark);">QR code for easy sharing on printed invites</strong>, and all responses going directly to you. Free, always. &#127881;</p>
+      <p class="section-label">How it works</p>
+      <h2>Everything you need,<br><em>step by step.</em></h2>
+      <p class="section-sub">From finding the perfect venue to designing invitations and managing RSVPs — Tiny Invites guides you through every step of planning your child's birthday party. Free, always. &#127881;</p>
     </div>
     <div class="form-card">
 
-      <p style="font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;">Three simple steps</p>
+      <p style="font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;">Five simple steps</p>
 
       <div style="display:flex;flex-direction:column;gap:0;">
 
         <div style="display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--gold-pale);">
           <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);opacity:0.5;min-width:32px;line-height:1;">01</span>
           <div>
-            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">Get your free template</p>
-            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;margin-bottom:12px;">Click below to open the  template and duplicate it to your free account. Takes 30 seconds — no paid upgrade needed. &#127775;</p>
-            <a href="https://tally.so/templates/birthday-rsvp/mBgR13" target="_blank" rel="noopener" style="display:inline-block;background:var(--dark);color:var(--cream);padding:10px 22px;border-radius:2px;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#c9a84c'" onmouseout="this.style.background='#2a2218'">Open Free Template &#8594;</a>
-            <p style="font-size:0.7rem;color:var(--soft);margin-top:10px;">&#10003; Fully customisable &nbsp;&#10003; Add your own photos &nbsp;&#10003; No design restrictions</p>
-            <img src="./form1.png" alt="Tally template preview" style="width:75%;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.1);border:1px solid var(--gold-pale);margin-top:12px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">&#128205; Find a party venue</p>
+            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;margin-bottom:12px;">Browse kids' party venues and soft plays near you.</p>
+            <a href="/partyfinder/" style="display:inline-block;background:var(--dark);color:var(--cream);padding:10px 22px;border-radius:2px;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#c9a84c'" onmouseout="this.style.background='#2a2218'">Find venues near me &#8594;</a>
           </div>
         </div>
 
         <div style="display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--gold-pale);">
           <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);opacity:0.5;min-width:32px;line-height:1;">02</span>
           <div>
-            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">Personalise it</p>
-            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;">Add your child's name, age and party location. Change colours, add a photo, use your favourite theme. You are not tied to our beige style at all — make it completely yours.</p>
-            <img src="./form2.png" alt="Personalise your form" style="width:75%;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.1);border:1px solid var(--gold-pale);margin-top:12px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">&#127912; Choose an invitation design</p>
+            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;margin-bottom:12px;">Pick a postcard-style invitation template for your party.</p>
+            <a href="#designs" style="display:inline-block;background:var(--dark);color:var(--cream);padding:10px 22px;border-radius:2px;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#c9a84c'" onmouseout="this.style.background='#2a2218'">Browse free designs &#8594;</a>
+            <img src="./bear1.jpeg" alt="Invitation design preview" style="width:75%;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.1);border:1px solid var(--gold-pale);margin-top:12px;display:block;" onerror="this.style.display='none'">
           </div>
         </div>
 
         <div style="display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--gold-pale);">
           <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);opacity:0.5;min-width:32px;line-height:1;">03</span>
           <div>
-            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">Get your QR code &#9639;</p>
-            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;margin-bottom:12px;">Paste your RSVP link into our free generator below — download a PNG in seconds, ready to drop onto any printed or digital invite.</p>
-            <a href="#qr-tool" style="display:inline-block;background:var(--dark);color:var(--cream);padding:9px 20px;border-radius:2px;font-size:0.72rem;letter-spacing:0.09em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='var(--gold)'" onmouseout="this.style.background='var(--dark)'">Generate your QR code &rarr;</a>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">&#128221; Create your RSVP form &amp; QR code</p>
+            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;margin-bottom:12px;">Generate a guest response form powered by Tally and create a QR code for easy replies — both free, takes two minutes.</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <a href="https://tally.so/templates/birthday-rsvp/mBgR13" target="_blank" rel="noopener" style="display:inline-block;background:var(--dark);color:var(--cream);padding:10px 22px;border-radius:2px;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#c9a84c'" onmouseout="this.style.background='#2a2218'">Get free RSVP template &#8594;</a>
+              <a href="#qr-tool" style="display:inline-block;background:transparent;color:var(--dark);padding:10px 22px;border-radius:2px;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;border:1px solid var(--gold-light);transition:all 0.2s;" onmouseover="this.style.background='var(--gold-pale)'" onmouseout="this.style.background='transparent'">Generate QR code &#8594;</a>
+            </div>
+            <p style="font-size:0.7rem;color:var(--soft);margin-top:10px;">&#10003; Collects names, guest count &amp; allergies &nbsp;&#10003; QR code included &nbsp;&#10003; Free, always</p>
+            <img src="./form1.png" alt="Tally RSVP template preview" style="width:75%;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.1);border:1px solid var(--gold-pale);margin-top:12px;display:block;" onerror="this.style.display='none'">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--gold-pale);">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);opacity:0.5;min-width:32px;line-height:1;">04</span>
+          <div>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">&#128424;&#65039; Add your QR code &amp; print invitations</p>
+            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;margin-bottom:12px;">Place the QR code onto your invitation design and print your postcards.</p>
+            <a href="#print" style="display:inline-block;background:var(--dark);color:var(--cream);padding:10px 22px;border-radius:2px;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#c9a84c'" onmouseout="this.style.background='#2a2218'">Browse print services &#8594;</a>
           </div>
         </div>
 
         <div style="display:flex;gap:20px;padding:20px 0;">
-          <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);opacity:0.5;min-width:32px;line-height:1;">04</span>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);opacity:0.5;min-width:32px;line-height:1;">05</span>
           <div>
-            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">Print your invitations &#128424;&#65039;</p>
-            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;">Want printed invitations with envelopes? <a href="#print" style="color:var(--gold);text-decoration:none;">Browse our recommended UK print services</a> — add your QR code and order delivery straight to your door.</p>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">&#127881; Plan the finishing touches</p>
+            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;margin-bottom:12px;">Shop for decorations, party supplies, and extras.</p>
+            <a href="#shop" style="display:inline-block;background:var(--dark);color:var(--cream);padding:10px 22px;border-radius:2px;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#c9a84c'" onmouseout="this.style.background='#2a2218'">Shop party supplies &#8594;</a>
           </div>
         </div>
 
@@ -684,15 +699,21 @@
       <p class="qr-card-label">Generate your code</p>
       <div class="qr-f"><label>Event name</label><input type="text" id="qrName" placeholder="e.g. Lily's 5th Birthday" maxlength="60"/></div>
       <div class="qr-f"><label>RSVP page URL</label><input type="url" id="qrUrl" placeholder="https://tally.so/r/yourpage"/></div>
-      <div class="qr-f">
+        <div class="qr-f">
         <label>QR colour</label>
         <div class="qr-swatches" id="qrSwatches">
-          <div class="qr-sw active" data-color="#2a2218" style="background:#2a2218"></div>
-          <div class="qr-sw" data-color="#c9a84c" style="background:#c9a84c"></div>
-          <div class="qr-sw" data-color="#6b5c45" style="background:#6b5c45"></div>
-          <div class="qr-sw" data-color="#4a6741" style="background:#4a6741"></div>
-          <div class="qr-sw" data-color="#6a5270" style="background:#6a5270"></div>
-          <div class="qr-sw" data-color="#3b5f7a" style="background:#3b5f7a"></div>
+          <div class="qr-sw active" data-color="#2a2218" style="background:#2a2218" title="Espresso"></div>
+          <div class="qr-sw" data-color="#c9a84c" style="background:#c9a84c" title="Gold"></div>
+          <div class="qr-sw" data-color="#8b7355" style="background:#8b7355" title="Warm tan"></div>
+          <div class="qr-sw" data-color="#a89070" style="background:#a89070" title="Biscuit"></div>
+          <div class="qr-sw" data-color="#c4b49a" style="background:#c4b49a" title="Sand"></div>
+          <div class="qr-sw" data-color="#7a9e8e" style="background:#7a9e8e" title="Sage"></div>
+          <div class="qr-sw" data-color="#4a6741" style="background:#4a6741" title="Forest"></div>
+          <div class="qr-sw" data-color="#5c7a8a" style="background:#5c7a8a" title="Soft blue"></div>
+          <div class="qr-sw" data-color="#7a8fa0" style="background:#7a8fa0" title="Slate blue"></div>
+          <div class="qr-sw" data-color="#9e8a7a" style="background:#9e8a7a" title="Terracotta"></div>
+          <div class="qr-sw" data-color="#6a5270" style="background:#6a5270" title="Plum"></div>
+          <div class="qr-sw" data-color="#5c4a3a" style="background:#5c4a3a" title="Dark oak"></div>
         </div>
       </div>
       <button class="qr-gen-btn" onclick="tiQR()">Generate QR Code &rarr;</button>

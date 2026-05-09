@@ -587,90 +587,47 @@
       <p class="section-sub">We give you a beautiful ready-made template — but it is fully yours to customise. Add your own photos, change the colours, use your child's favourite characters. You are not tied to our beige theme at all.<br><br>What you do get — no matter how you style it — is everything that matters: allergy collection, guest count tracking, QR code, and all responses going directly to you. Free, always. &#127881;</p>
     </div>
     <div class="form-card">
-      <div class="preview-text" id="preview">
-        A party for <span id="prev-name">___</span> <span id="prev-age">turning ___</span> at <span id="prev-location">___</span> &#127874;
-      </div>
-      <div class="field-group">
-        <label for="child-name">Child's name</label>
-        <input type="text" id="child-name" placeholder="e.g. Olivia" oninput="updatePreview()">
-      </div>
-      <div class="field-group">
-        <label for="child-age">Child's new age</label>
-        <select id="child-age" onchange="updatePreview()">
-          <option value="">Select age...</option>
-          <option value="Under 1">Under 1 &#127868;</option>
-          <option value="1st">1st</option>
-          <option value="2nd">2nd</option>
-          <option value="3rd">3rd</option>
-          <option value="4th">4th</option>
-          <option value="5th">5th</option>
-          <option value="6th">6th</option>
-          <option value="7th">7th</option>
-          <option value="8th">8th</option>
-          <option value="9th">9th</option>
-          <option value="10th">10th</option>
-          <option value="11th">11th</option>
-          <option value="12th">12th</option>
-          <option value="13th">13th</option>
-        </select>
-      </div>
-      <div class="field-group">
-        <label for="party-location">Party location</label>
-        <input type="text" id="party-location" placeholder="e.g. The Garden Room, Bristol" oninput="updatePreview()">
-      </div>
-      <button class="generate-btn" onclick="generateLink()">Generate My RSVP Page</button>
 
-      <div class="link-output" id="link-output">
-        <div style="margin-top:20px;">
-          <div class="next-step-item">
-            <span class="next-num">01</span>
-            <div>
-              <p class="next-label">Get your free template</p>
-              <p class="next-desc">Click below to open the template in Tally. You will need a free Tally account — takes 30 seconds to sign up. Once duplicated it is completely yours to edit: add your own photos, change colours, or keep our design. No rules! &#127775;</p>
-              <a class="next-btn" href="https://tally.so/templates/birthday-party-rspv/3xgVEm" target="_blank" rel="noopener">Open Free Template &#8594;</a>
-              <p style="font-size:0.72rem;color:var(--soft);margin-top:10px;">&#10003; Fully customisable &nbsp;&#10003; Add your own photos &nbsp;&#10003; No design restrictions</p>
-            </div>
-          </div>
-          <div class="next-step-item">
-            <span class="next-num">02</span>
-            <div style="flex:1;">
-              <p class="next-label">Personalise your welcome message</p>
-              <p class="next-desc">Paste this into the welcome block in your Tally form — or write your own! This is just a starting point:</p>
-              <div class="details-card" id="details-card"></div>
-              <button class="copy-btn" id="welcome-copy-btn" onclick="copyWelcomeMsg()" style="margin-top:10px;">Copy welcome message</button>
-            </div>
-          </div>
-          <div class="next-step-item">
-            <span class="next-num">03</span>
-            <div>
-              <p class="next-label">Add your location link &#128205;</p>
-              <p class="next-desc">Paste this Google Maps link into your form so guests get directions instantly.</p>
-              <div id="maps-output">
-                <div class="link-row">
-                  <a id="maps-link" href="#" target="_blank" class="link-url"></a>
-                  <button id="maps-copy-btn" class="copy-btn" onclick="copyMapsLink()">Copy</button>
-                </div>
-                <a id="maps-preview-btn" href="#" target="_blank" style="font-size:0.72rem;color:var(--mid);text-decoration:underline;">Preview on Google Maps</a>
-              </div>
-            </div>
-          </div>
-          <div class="next-step-item">
-            <span class="next-num">04</span>
-            <div>
-              <p class="next-label">Get your QR code &#128242;</p>
-              <p class="next-desc">In Tally go to <strong>Share &rarr; QR Code</strong> and download as PNG. You can add this QR code to a printed invitation so guests just scan and RSVP instantly.</p>
-              <a class="next-btn" href="#print" style="margin-top:8px;">Browse UK Print Services &#8594;</a>
-            </div>
-          </div>
-          <div class="next-step-item">
-            <span class="next-num">05</span>
-            <div>
-              <p class="next-label">Share with guests &#127881;</p>
-              <p class="next-desc">Send your link via WhatsApp, text, or email — or print your QR code on invitations. All responses go directly to your Tally dashboard.</p>
-            </div>
+      <p style="font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;">Three simple steps</p>
+
+      <div style="display:flex;flex-direction:column;gap:0;">
+
+        <div style="display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--gold-pale);">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);opacity:0.5;min-width:32px;line-height:1;">01</span>
+          <div>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">Get your free template</p>
+            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;margin-bottom:12px;">Click below to open the Tally template and duplicate it to your free account. Takes 30 seconds — no paid upgrade needed. &#127775;</p>
+            <a href="https://tally.so/templates/birthday-party-rspv/3xgVEm" target="_blank" rel="noopener" style="display:inline-block;background:var(--dark);color:var(--cream);padding:10px 22px;border-radius:2px;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#c9a84c'" onmouseout="this.style.background='#2a2218'">Open Free Template &#8594;</a>
+            <p style="font-size:0.7rem;color:var(--soft);margin-top:10px;">&#10003; Fully customisable &nbsp;&#10003; Add your own photos &nbsp;&#10003; No design restrictions</p>
           </div>
         </div>
+
+        <div style="display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--gold-pale);">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);opacity:0.5;min-width:32px;line-height:1;">02</span>
+          <div>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">Personalise it</p>
+            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;">Add your child's name, age and party location. Change colours, add a photo, use your favourite theme. You are not tied to our beige style at all — make it completely yours.</p>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--gold-pale);">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);opacity:0.5;min-width:32px;line-height:1;">03</span>
+          <div>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">Get your QR code &#128242;</p>
+            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;">In Tally go to <strong>Share &#8594; QR Code</strong> and download it. Print it on invitations or share your link via WhatsApp. All responses go directly to you.</p>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:20px;padding:20px 0;">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);opacity:0.5;min-width:32px;line-height:1;">04</span>
+          <div>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">Print your invitations &#128424;&#65039;</p>
+            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;">Want printed invitations with envelopes? <a href="#print" style="color:var(--gold);text-decoration:none;">Browse our recommended UK print services</a> — add your QR code and order delivery straight to your door.</p>
+          </div>
+        </div>
+
       </div>
+
     </div>
   </div>
 </section>

@@ -439,8 +439,43 @@
     .rsvp-inner { grid-template-columns:1fr; gap:36px; }
     footer { flex-direction:column; align-items:flex-start; }
   }
+  /* ── QR GENERATOR ── */
+  .qr-section { padding:80px 40px; background:var(--warm-white); position:relative; }
+  .qr-section::before { content:""; position:absolute; top:0; left:40px; right:40px; height:1px; background:linear-gradient(90deg,transparent,var(--gold-light),transparent); }
+  .qr-wrap { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start; }
+  .qr-card { background:white; border:1px solid var(--gold-pale); border-radius:4px; padding:32px; box-shadow:0 4px 40px rgba(201,168,76,0.08); }
+  .qr-card-label { font-size:0.68rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); margin-bottom:22px; }
+  .qr-f { margin-bottom:16px; }
+  .qr-f label { display:block; font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--soft); margin-bottom:7px; }
+  .qr-f input { width:100%; padding:10px 13px; border:1px solid var(--gold-pale); border-radius:2px; font-family:"DM Sans",sans-serif; font-size:0.9rem; color:var(--dark); background:var(--cream); outline:none; transition:border-color 0.2s; }
+  .qr-f input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,0.1); }
+  .qr-f input::placeholder { color:var(--soft); }
+  .qr-swatches { display:flex; gap:8px; flex-wrap:wrap; }
+  .qr-sw { width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform 0.15s, border-color 0.15s; }
+  .qr-sw:hover { transform:scale(1.15); }
+  .qr-sw.active { border-color:var(--dark); transform:scale(1.1); }
+  .qr-gen-btn { width:100%; background:var(--dark); color:var(--cream); padding:14px; border:none; border-radius:2px; font-family:"DM Sans",sans-serif; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; margin-top:6px; transition:background 0.2s; }
+  .qr-gen-btn:hover { background:var(--gold); }
+  .qr-err { display:none; margin-top:10px; font-size:0.8rem; color:#b04a4a; padding:8px 12px; border:1px solid #f0d0d0; border-radius:2px; background:#fdf5f5; }
+  .qr-out { display:none; margin-top:24px; padding-top:22px; border-top:1px solid var(--gold-pale); animation:fadeUp 0.35s ease both; }
+  .qr-out.on { display:block; }
+  .qr-preview-row { display:flex; gap:20px; align-items:flex-start; }
+  .qr-box { padding:12px; background:white; border:1px solid var(--gold-light); border-radius:4px; flex-shrink:0; display:inline-block; }
+  .qr-box canvas, .qr-box img { display:block; }
+  .qr-meta { flex:1; min-width:0; }
+  .qr-ev-name { font-family:"Cormorant Garamond",serif; font-size:1.05rem; color:var(--dark); margin-bottom:6px; line-height:1.3; }
+  .qr-ev-url { font-size:0.72rem; color:var(--gold); word-break:break-all; margin-bottom:14px; line-height:1.5; }
+  .qr-dl-btn { display:inline-flex; align-items:center; gap:7px; background:var(--dark); color:var(--cream); padding:9px 20px; border-radius:2px; font-family:"DM Sans",sans-serif; font-size:0.72rem; letter-spacing:0.09em; text-transform:uppercase; text-decoration:none; cursor:pointer; border:none; transition:background 0.2s; }
+  .qr-dl-btn:hover { background:var(--gold); }
+  .qr-hint { margin-top:8px; font-size:0.72rem; color:var(--soft); }
+  .qr-info { padding-top:8px; }
+  .qr-info h3 { font-family:"Cormorant Garamond",serif; font-size:1.5rem; font-weight:300; color:var(--dark); margin-bottom:10px; line-height:1.2; }
+  .qr-info h3 em { font-style:italic; color:var(--gold); }
+  .qr-info p { font-size:0.85rem; color:var(--mid); line-height:1.7; margin-bottom:20px; }
+  .qr-note { padding:14px 18px; background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:2px; font-size:0.8rem; color:var(--mid); line-height:1.65; }
+  @media(max-width:768px) { .qr-section { padding-left:24px; padding-right:24px; } .qr-wrap { grid-template-columns:1fr; gap:36px; } .qr-preview-row { flex-direction:column; } }
 </style>
-</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <body>
 
 <!-- NAV -->
@@ -468,7 +503,7 @@
   <div class="hero-content">
     <p class="eyebrow">Everything for the perfect party</p>
     <h1>Your child's<br>perfect party,<br><em>beautifully simple.</em></h1>
-    <p class="hero-sub">No more chasing replies in group chats. Tiny Invites collects who is coming, how many, and any allergies — all in one beautiful link. Plus find a venue, download free invitations, and shop for supplies. Free, always.</p>
+    <p class="hero-sub">No more chasing replies in group chats. Tiny Invites collects who is coming, how many, and any allergies — all in one beautiful link with a QR code guests can scan straight from the invite. Plus find a venue, download free invitations, and shop for supplies. Free, always.</p>
     <div class="hero-pills">
       <a class="pill" href="/partyfinder/">&#128205; Party venues</a>
       <a class="pill" href="#rsvp">&#128140; Free RSVPs</a>
@@ -506,14 +541,15 @@
     </a>
 
     <a class="tool-card" href="#rsvp">
-      <span class="tool-icon">&#128140;</span>
+      <span class="tool-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;"><rect x="1" y="1" width="12" height="12" rx="1.5" fill="none" stroke="#c9a84c" stroke-width="2"/><rect x="4" y="4" width="6" height="6" rx="0.5" fill="#c9a84c"/><rect x="19" y="1" width="12" height="12" rx="1.5" fill="none" stroke="#c9a84c" stroke-width="2"/><rect x="22" y="4" width="6" height="6" rx="0.5" fill="#c9a84c"/><rect x="1" y="19" width="12" height="12" rx="1.5" fill="none" stroke="#c9a84c" stroke-width="2"/><rect x="4" y="22" width="6" height="6" rx="0.5" fill="#c9a84c"/><rect x="19" y="19" width="4" height="4" rx="0.5" fill="#c9a84c"/><rect x="25" y="19" width="6" height="4" rx="0.5" fill="#c9a84c"/><rect x="19" y="25" width="6" height="4" rx="0.5" fill="#c9a84c"/><rect x="27" y="25" width="4" height="6" rx="0.5" fill="#c9a84c"/></svg></span>
       <p class="tool-tag">Free Invitations</p>
-      <p class="tool-title">Beautiful RSVP Pages</p>
-      <p class="tool-desc">Create a personalised online RSVP page in under 2 minutes. Share a link or QR code — guests RSVP instantly.</p>
+      <p class="tool-title">Beautiful RSVP Pages with QR Code</p>
+      <p class="tool-desc">Create a personalised online RSVP page in under 2 minutes. Share a link or QR code — guests RSVP instantly, no app needed.</p>
       <ul class="tool-features">
         <li>Personalised with child's name and age</li>
         <li>Collects dietary requirements</li>
         <li>Guest count tracking</li>
+        <li>QR code included for easy sharing</li>
         <li>Export to Excel — free always</li>
       </ul>
       <span class="tool-cta">Create your RSVP</span>
@@ -584,7 +620,7 @@
     <div>
       <p class="section-label">Free invitations</p>
       <h2>Your party,<br><em>your style.</em><br>All the magic.</h2>
-      <p class="section-sub">We give you a beautiful ready-made template — but it is fully yours to customise. Add your own photos, change the colours, use your child's favourite characters. You are not tied to our beige theme at all.<br><br>What you do get — no matter how you style it — is everything that matters: allergy collection, guest count tracking, QR code, and all responses going directly to you. Free, always. &#127881;</p>
+      <p class="section-sub">We give you a beautiful ready-made template — but it is fully yours to customise. Add your own photos, change the colours, use your child's favourite characters. You are not tied to our beige theme at all.<br><br>What you do get — no matter how you style it — is everything that matters: allergy collection, guest count tracking, a <strong style="font-weight:500;color:var(--dark);">QR code for easy sharing on printed invites</strong>, and all responses going directly to you. Free, always. &#127881;</p>
     </div>
     <div class="form-card">
 
@@ -615,9 +651,9 @@
         <div style="display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--gold-pale);">
           <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);opacity:0.5;min-width:32px;line-height:1;">03</span>
           <div>
-            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">Get your QR code &#128242;</p>
-            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;margin-bottom:10px;">Copy your Tally form link, then head to <a href="https://www.qrcode-monkey.com" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">QR Code Monkey</a> — free, no account needed, takes ten seconds. Paste your link, download your QR code and add it to your printed invitation. For a fully customised design, a paid plan is available but completely optional.</p>
-            <img src="./qr-monkey-preview.png" alt="QR Code Monkey screenshot" style="width:120%;max-width:320px;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.1);border:1px solid var(--gold-pale);margin-top:12px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark);margin-bottom:6px;">Get your QR code &#9639;</p>
+            <p style="font-size:0.82rem;color:var(--mid);line-height:1.6;margin-bottom:12px;">Paste your RSVP link into our free generator below — download a PNG in seconds, ready to drop onto any printed or digital invite.</p>
+            <a href="#qr-tool" style="display:inline-block;background:var(--dark);color:var(--cream);padding:9px 20px;border-radius:2px;font-size:0.72rem;letter-spacing:0.09em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='var(--gold)'" onmouseout="this.style.background='var(--dark)'">Generate your QR code &rarr;</a>
           </div>
         </div>
 
@@ -631,6 +667,47 @@
 
       </div>
 
+    </div>
+  </div>
+</section>
+
+<!-- QR CODE GENERATOR -->
+<section class="qr-section" id="qr-tool">
+  <div class="qr-wrap">
+    <div class="qr-info">
+      <p class="section-label">Free QR Generator</p>
+      <h3>Your QR code,<br><em>in seconds.</em></h3>
+      <p>Paste your RSVP link, choose a colour, download a PNG. Print it on every invitation so guests scan and RSVP instantly — no typing, no group chats.</p>
+      <div class="qr-note">&#8212;&ensp;Your QR code never expires. It simply encodes a URL — as long as your RSVP page is live, guests can scan it. Free, always.</div>
+    </div>
+    <div class="qr-card">
+      <p class="qr-card-label">Generate your code</p>
+      <div class="qr-f"><label>Event name</label><input type="text" id="qrName" placeholder="e.g. Lily's 5th Birthday" maxlength="60"/></div>
+      <div class="qr-f"><label>RSVP page URL</label><input type="url" id="qrUrl" placeholder="https://tally.so/r/yourpage"/></div>
+      <div class="qr-f">
+        <label>QR colour</label>
+        <div class="qr-swatches" id="qrSwatches">
+          <div class="qr-sw active" data-color="#2a2218" style="background:#2a2218"></div>
+          <div class="qr-sw" data-color="#c9a84c" style="background:#c9a84c"></div>
+          <div class="qr-sw" data-color="#6b5c45" style="background:#6b5c45"></div>
+          <div class="qr-sw" data-color="#4a6741" style="background:#4a6741"></div>
+          <div class="qr-sw" data-color="#6a5270" style="background:#6a5270"></div>
+          <div class="qr-sw" data-color="#3b5f7a" style="background:#3b5f7a"></div>
+        </div>
+      </div>
+      <button class="qr-gen-btn" onclick="tiQR()">Generate QR Code &rarr;</button>
+      <div class="qr-err" id="qrErr"></div>
+      <div class="qr-out" id="qrOut">
+        <div class="qr-preview-row">
+          <div class="qr-box" id="qrBox"></div>
+          <div class="qr-meta">
+            <p class="qr-ev-name" id="qrEvName"></p>
+            <p class="qr-ev-url" id="qrEvUrl"></p>
+            <a class="qr-dl-btn" id="qrDl" href="#" download="qr.png">&#8595;&ensp;Download PNG</a>
+            <p class="qr-hint">Print it, place it on an invite, or send digitally.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1076,13 +1153,47 @@
     document.querySelectorAll(".shop-cat-btn").forEach(function(b) { b.classList.remove("active"); });
     btn.classList.add("active");
     document.querySelectorAll(".shop-item").forEach(function(item) {
-      if (cat === "all" || item.dataset.cat === cat) {
-        item.classList.remove("hidden");
-      } else {
-        item.classList.add("hidden");
-      }
+      if (cat === "all" || item.dataset.cat === cat) { item.classList.remove("hidden"); } else { item.classList.add("hidden"); }
     });
   }
+
+  /* QR GENERATOR */
+  (function(){
+    var col="#2a2218", sz=200;
+    document.querySelectorAll(".qr-sw").forEach(function(el){
+      el.addEventListener("click",function(){
+        document.querySelectorAll(".qr-sw").forEach(function(s){s.classList.remove("active");});
+        el.classList.add("active"); col=el.dataset.color;
+      });
+    });
+    window.tiQR=function(){
+      var name=document.getElementById("qrName").value.trim();
+      var url=document.getElementById("qrUrl").value.trim();
+      var err=document.getElementById("qrErr");
+      err.style.display="none";
+      if(!url){err.textContent="Please enter your RSVP page URL.";err.style.display="block";return;}
+      try{new URL(url);}catch(e){err.textContent="That doesn\u2019t look like a valid URL \u2014 make sure it starts with https://";err.style.display="block";return;}
+      var box=document.getElementById("qrBox"); box.innerHTML="";
+      new QRCode(box,{text:url,width:sz,height:sz,colorDark:col,colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
+      document.getElementById("qrEvName").textContent=name||"Party RSVP";
+      document.getElementById("qrEvUrl").textContent=url;
+      setTimeout(function(){
+        var c=box.querySelector("canvas");
+        if(c){
+          var pad=16,lh=name?32:0,out=document.createElement("canvas");
+          out.width=c.width+pad*2; out.height=c.height+pad*2+lh;
+          var ctx=out.getContext("2d");
+          ctx.fillStyle="#fff"; ctx.fillRect(0,0,out.width,out.height);
+          ctx.drawImage(c,pad,pad);
+          if(name){ctx.fillStyle=col;ctx.font="500 "+(sz*0.052)+"px 'DM Sans',sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(name,out.width/2,c.height+pad+lh/2);}
+          var safe=(name||"qr").replace(/[^a-z0-9]/gi,"-").toLowerCase();
+          var dl=document.getElementById("qrDl"); dl.href=out.toDataURL("image/png"); dl.download=safe+"-qr.png";
+        }
+      },120);
+      var o=document.getElementById("qrOut"); o.classList.add("on");
+      o.scrollIntoView({behavior:"smooth",block:"nearest"});
+    };
+  })();
 </script>
 </body>
 </html>

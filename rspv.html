@@ -564,7 +564,9 @@
     document.getElementById('inv-name').textContent = name;
 
     // Subtitle
-    const ageStr = age ? `${childName}'s <strong>${age}${ordinal(age)}</strong> birthday` : `${childName}'s birthday`;
+    const ageStr = age
+      ? `${childName}'s <strong>${age}${ordinal(age)}</strong> birthday`
+      : `${childName}'s birthday`;
     document.getElementById('inv-subtitle').innerHTML =
       `You're invited to celebrate ${ageStr}!`;
 

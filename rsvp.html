@@ -594,9 +594,12 @@
     // Store for success page
     window._partyData = { partyId, name, childName, age, location, hostEmail };
 
-    // Load hero image from sessionStorage (set by index.html)
-    const heroKey = 'invite_hero_' + (childName || 'party');
-    const heroData = sessionStorage.getItem('invite_hero') || sessionStorage.getItem(heroKey);
+    // Load hero image saved by index.html. Party id is the stable key for database/link handoff.
+    const heroKey = partyId ? 'invite_hero_' + partyId : 'invite_hero_' + (childName || 'party');
+    let heroData = '';
+    try {
+      heroData = sessionStorage.getItem(heroKey) || localStorage.getItem(heroKey) || sessionStorage.getItem('invite_hero') || '';
+    } catch(e) {}
     if (heroData) {
       const heroEl  = document.getElementById('invite-hero');
       const heroImg = document.getElementById('invite-hero-img');

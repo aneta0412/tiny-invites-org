@@ -542,7 +542,7 @@
             <p style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:var(--dark);margin-bottom:8px;line-height:1.3;">&#x270F;&#xFE0F; Create Your RSVP Page</p>
             <p style="font-size:0.84rem;color:var(--mid);line-height:1.7;margin-bottom:14px;">Create a personalised RSVP page with your party details, matching invitation design, and instant QR code for guests. Guests open it on any phone &#x2014; no app needed.</p>
             <a href="#create" style="display:inline-block;background:var(--dark);color:var(--cream);padding:11px 22px;border-radius:2px;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#c9a84c'" onmouseout="this.style.background='#2a2218'">Create RSVP Page &#x2192;</a>
-            <p style="font-size:0.72rem;color:var(--soft);margin-top:11px;line-height:1.9;">&#x2713; Custom colours &amp; photos &nbsp;&#x2013;&nbsp; &#x2713; QR code included &nbsp;&#x2013;&nbsp; &#x2713; Works on every phone</p>
+            <p style="font-size:0.72rem;color:var(--soft);margin-top:11px;line-height:1.9;">&#x2713; Custom party details &nbsp;&#x2013;&nbsp; &#x2713; QR code included &nbsp;&#x2013;&nbsp; &#x2713; Works on every phone</p>
             <img src="./rsvp-screen.png" alt="RSVP page screenshot" style="width:60%;border-radius:8px;border:1px solid var(--gold-pale);margin-top:14px;display:block;box-shadow:0 2px 12px rgba(42,34,24,0.07);" onerror="this.style.display='none'">
           </div>
         </div>
@@ -807,46 +807,6 @@
     letter-spacing: 0.03em;
   }
 
-  /* image upload zone */
-  .img-upload-zone {
-    border: 2px dashed var(--gold-light);
-    border-radius: 12px;
-    padding: 12px 14px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: var(--cream);
-    position: relative;
-    overflow: hidden;
-  }
-  .img-upload-zone:hover { border-color: var(--gold); background: var(--gold-pale); }
-  .img-upload-zone input[type="file"] {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    pointer-events: none;
-  }
-  .img-upload-zone .upload-icon { font-size: 1.25rem; margin-bottom: 2px; }
-  .img-upload-zone .upload-label { font-size: 0.76rem; color: var(--mid); line-height: 1.35; }
-  .img-upload-zone .upload-label strong { color: var(--gold); }
-  .img-preview-wrap {
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    aspect-ratio: 16/9;
-    background: var(--dark);
-  }
-  .img-preview-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .img-preview-wrap .img-remove {
-    position: absolute; top: 8px; right: 8px;
-    background: rgba(42,34,24,0.7); color: white;
-    border: none; border-radius: 20px;
-    padding: 4px 12px; font-size: 0.72rem;
-    cursor: pointer; letter-spacing: 0.05em;
-    transition: background 0.15s;
-  }
-  .img-preview-wrap .img-remove:hover { background: rgba(201,168,76,0.9); }
   .designs-note {
     justify-content: center;
     text-align: center;
@@ -1181,7 +1141,7 @@
         <h2 style="font-size:1.6rem;margin-bottom:0;">Create your<br><em>event RSVP page</em></h2>
       </div>
     </div>
-    <p class="sub" style="text-align:left;margin-bottom:22px;">Add your email and an optional photo — your child, a favourite character, or the design you created in the previous step. We'll generate your personalised invite page, unique link, and QR code instantly.</p>
+    <p class="sub" style="text-align:left;margin-bottom:22px;">Add your email so guest replies can reach you. We'll generate your personalised invite page, unique link, and QR code instantly.</p>
 
     <div class="invite-divider"><span></span><i>◆</i><span></span></div>
 
@@ -1190,21 +1150,6 @@
         <label>Your email <span style="color:var(--gold);">— for RSVPs &amp; updates</span></label>
         <input type="email" id="ci-email" placeholder="e.g. sarah@email.com" autocomplete="email">
         <p style="font-size:0.72rem;color:var(--soft);margin-top:5px;line-height:1.55;">Every guest RSVP lands in your inbox the moment it&#x2019;s submitted — name, guest count, and allergies included. Please use a real email address you check regularly.</p>
-      </div>
-      <div class="invite-field">
-        <label>Party photo <span style="color:var(--soft);font-weight:300;">(optional)</span></label>
-        <p style="font-size:0.72rem;color:var(--soft);margin-bottom:8px;line-height:1.55;">Upload a photo of your child, your party theme, or the invitation design you created in Step 2 — it appears as a hero image at the top of your invite page.</p>
-        <!-- Upload zone -->
-        <div class="img-upload-zone" id="ci-upload-zone" role="button" tabindex="0" onclick="openImgPicker()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openImgPicker();}">
-          <input type="file" id="ci-img-input" accept="image/*" onchange="handleImgUpload(event)">
-          <div class="upload-icon">🖼️</div>
-          <p class="upload-label">Tap to upload a photo<br><strong>JPG, PNG or HEIC</strong> · max 10 MB</p>
-        </div>
-        <!-- Preview -->
-        <div class="img-preview-wrap" id="ci-img-preview" style="display:none;">
-          <img id="ci-img-thumb" src="" alt="Preview">
-          <button class="img-remove" onclick="removeImg()">✕ Remove</button>
-        </div>
       </div>
     </div>
 
@@ -1263,35 +1208,6 @@
     return s[(v-20)%10] || s[v] || s[0];
   }
 
-  var _heroDataUrl = null;
-
-  function openImgPicker() {
-    document.getElementById('ci-img-input').click();
-  }
-
-  function handleImgUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > 10 * 1024 * 1024) { alert('Image must be under 10 MB 📷'); return; }
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      _heroDataUrl = ev.target.result;
-      document.getElementById('ci-img-thumb').src   = _heroDataUrl;
-      document.getElementById('ci-upload-zone').style.display  = 'none';
-      document.getElementById('ci-img-preview').style.display  = 'block';
-      document.getElementById('ci-img-input').value = '';
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function removeImg() {
-    _heroDataUrl = null;
-    document.getElementById('ci-img-input').value  = '';
-    document.getElementById('ci-img-thumb').src    = '';
-    document.getElementById('ci-upload-zone').style.display   = 'block';
-    document.getElementById('ci-img-preview').style.display   = 'none';
-  }
-
   function generateInvite() {
     const name     = document.getElementById('ci-name').value.trim();
     const age      = document.getElementById('ci-age').value.trim();
@@ -1315,22 +1231,6 @@
     const partyId = generatePartyId();
     const params  = new URLSearchParams({ partyId, name, child: name, age, location, host: email });
     const inviteUrl = window.location.origin + window.location.pathname.replace(/index\.html$/, '') + 'rsvp.html?' + params.toString();
-
-    // Store hero image under the party id so rsvp.html can read it in the new tab.
-    const heroKey = 'invite_hero_' + partyId;
-    if (_heroDataUrl) {
-      try {
-        sessionStorage.setItem('invite_hero', _heroDataUrl);
-        sessionStorage.setItem(heroKey, _heroDataUrl);
-        localStorage.setItem(heroKey, _heroDataUrl);
-      } catch(e) {}
-    } else {
-      try {
-        sessionStorage.removeItem('invite_hero');
-        sessionStorage.removeItem(heroKey);
-        localStorage.removeItem(heroKey);
-      } catch(e) {}
-    }
 
     // Open invite in new tab
     window.open(inviteUrl, '_blank');

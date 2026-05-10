@@ -347,18 +347,17 @@
      PAGE 1 — INVITATION
 ══════════════════════════════════════ -->
 <div class="page active" id="page-invite">
-  <!-- Hero image + card wrapped together when image present -->
+  <!-- Generic hero image + card -->
   <div class="hero-card-wrap" id="invite-wrap" style="width:calc(100% - 40px);max-width:540px;animation:fadeUp 0.55s cubic-bezier(.22,.61,.36,1) both;">
 
-    <!-- Hero photo — hidden until image is set -->
-    <div class="invite-hero" id="invite-hero" style="display:none;">
-      <img id="invite-hero-img" src="" alt="Party photo">
+    <div class="invite-hero" id="invite-hero">
+      <img id="invite-hero-img" src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80" alt="Party decorations">
       <div class="invite-hero-overlay"></div>
     </div>
 
-    <div class="card" id="invite-card">
+    <div class="card has-hero" id="invite-card">
       <div class="brand">Tiny Invites</div>
-      <div class="ornament" id="invite-ornament">✦ ✦ ✦</div>
+      <div class="ornament" id="invite-ornament" style="display:none;">✦ ✦ ✦</div>
 
       <h1>Hello, <em id="inv-name">Friend</em>!</h1>
       <p class="subtitle" id="inv-subtitle">
@@ -594,21 +593,6 @@
     // Store for success page
     window._partyData = { partyId, name, childName, age, location, hostEmail };
 
-    // Load hero image saved by index.html. Party id is the stable key for database/link handoff.
-    const heroKey = partyId ? 'invite_hero_' + partyId : 'invite_hero_' + (childName || 'party');
-    let heroData = '';
-    try {
-      heroData = sessionStorage.getItem(heroKey) || localStorage.getItem(heroKey) || sessionStorage.getItem('invite_hero') || '';
-    } catch(e) {}
-    if (heroData) {
-      const heroEl  = document.getElementById('invite-hero');
-      const heroImg = document.getElementById('invite-hero-img');
-      const card    = document.getElementById('invite-card');
-      heroImg.src   = heroData;
-      heroEl.style.display = 'block';
-      card.classList.add('has-hero');
-      document.getElementById('invite-ornament').style.display = 'none';
-    }
   });
 
   function ordinal(n) {

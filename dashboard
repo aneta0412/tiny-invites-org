@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Your Party Dashboard | Tiny Invites</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+:root {
+  --cream: #faf6ef;
+  --warm-white: #fff9f2;
+  --gold: #c9a84c;
+  --gold-light: #e8d5a3;
+  --gold-pale: #f5edda;
+  --dark: #2a2218;
+  --mid: #6b5c45;
+  --soft: #a89880;
+  --yes: #5a8a6a;
+  --yes-lt: #eaf2ec;
+  --no: #a0907e;
+  --no-lt: #f5f0e8;
+}
+
+body {
+  background: var(--cream);
+  color: var(--dark);
+  font-family: "DM Sans", sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── NAV ── */
+nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 22px 40px;
+  border-bottom: 1px solid var(--gold-pale);
+  background: var(--cream);
+  position: relative; z-index: 10;
+}
+.logo {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.4rem; font-weight: 400;
+  color: var(--dark); text-decoration: none;
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-back {
+  font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--soft); text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-back:hover { color: var(--gold); }
+
+/* ── PAGE ── */
+.page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 52px 20px 80px;
+}
+
+/* ── HEADER ── */
+.dash-header {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: fadeUp 0.55s ease both;
+}
+.dash-eyebrow {
+  font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.dash-eyebrow::before,
+.dash-eyebrow::after { content:""; display:block; width:28px; height:1px; background:var(--gold); }
+.dash-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2.8rem; font-weight: 400; line-height: 1.15;
+  color: var(--dark); margin-bottom: 6px;
+}
+.dash-title em { font-style: italic; color: var(--gold); }
+.dash-sub { font-size: 0.85rem; color: var(--mid); }
+
+/* ── CARD ── */
+.card {
+  background: var(--warm-white);
+  border: 1px solid var(--gold-pale);
+  border-radius: 18px;
+  padding: 22px 24px;
+  position: relative;
+  box-shadow: 0 4px 24px rgba(42,34,24,0.06);
+  margin-bottom: 14px;
+  animation: fadeUp 0.5s ease both;
+}
+.card::before {
+  content: '';
+  position: absolute; inset: 8px;
+  border: 1px solid var(--gold-pale);
+  border-radius: 12px;
+  pointer-events: none; opacity: 0.5;
+}
+
+/* ── PARTY STRIP ── */
+.party-strip {
+  display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+}
+.party-detail {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.82rem; color: var(--mid);
+}
+.party-detail strong { color: var(--dark); font-weight: 500; }
+
+/* ── STATS ── */
+.stats {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+  margin-bottom: 14px;
+}
+.stat-card {
+  background: var(--warm-white);
+  border: 1px solid var(--gold-pale);
+  border-radius: 14px; padding: 20px 12px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(42,34,24,0.05);
+  position: relative; overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+}
+.stat-card::after {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+}
+.stat-card.confirmed::after { background: var(--yes); }
+.stat-card.declined::after  { background: var(--soft); }
+.stat-card.total::after     { background: var(--gold); }
+.stat-number {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2.8rem; font-weight: 400; line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-card.confirmed .stat-number { color: var(--yes); }
+.stat-card.declined  .stat-number { color: var(--soft); }
+.stat-card.total     .stat-number { color: var(--gold); }
+.stat-label {
+  font-size: 0.6rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--soft);
+}
+.stat-pct { font-size: 0.7rem; color: var(--soft); margin-top: 3px; }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 0.62rem; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 14px;
+}
+
+/* ── PROGRESS ── */
+.progress-meta {
+  display: flex; justify-content: space-between;
+  font-size: 0.78rem; color: var(--mid); margin-bottom: 10px;
+}
+.progress-track {
+  height: 8px; background: var(--gold-pale);
+  border-radius: 99px; overflow: hidden; display: flex;
+}
+.progress-yes     { background: var(--yes); border-radius: 99px 0 0 99px; transition: width .8s ease; }
+.progress-no      { background: var(--soft); transition: width .8s ease; }
+.progress-pending { background: var(--gold-light); border-radius: 0 99px 99px 0; transition: width .8s ease; }
+.progress-legend  { display:flex; gap:16px; margin-top:10px; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--mid); }
+.legend-dot  { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+/* ── FLAGS ── */
+.flags { display:flex; flex-wrap:wrap; gap:8px; }
+.flag {
+  background: var(--gold-pale); border: 1px solid var(--gold-light);
+  border-radius: 99px; padding: 5px 12px;
+  font-size: 0.75rem; color: var(--mid);
+  display: flex; align-items: center; gap: 6px;
+}
+.flag-count {
+  background: var(--gold); color: #fff;
+  border-radius: 50%; width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.62rem; font-weight: 600;
+}
+
+/* ── RESEND BTN ── */
+.resend-btn {
+  width: 100%;
+  background: var(--dark); color: var(--cream);
+  border: none; border-radius: 2px;
+  padding: 14px; font-size: 0.78rem; font-weight: 400;
+  font-family: "DM Sans", sans-serif;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-bottom: 14px;
+}
+.resend-btn:hover { background: var(--gold); }
+.resend-btn.sent  { background: var(--yes); }
+.resend-btn:disabled { opacity: 0.7; cursor: default; }
+
+/* ── TABLE ── */
+.table-card {
+  background: var(--warm-white);
+  border: 1px solid var(--gold-pale);
+  border-radius: 18px; overflow: hidden;
+  box-shadow: 0 4px 24px rgba(42,34,24,0.06);
+  animation: fadeUp 0.5s ease both;
+}
+.table-header {
+  background: var(--gold-pale);
+  padding: 13px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--gold-light);
+}
+.table-wrap { overflow-x: auto; }
+table { width:100%; border-collapse:collapse; min-width:480px; }
+thead tr { background: var(--gold-pale); }
+th {
+  padding: 10px 16px; text-align: left;
+  font-size: 0.6rem; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--soft);
+  border-bottom: 1px solid var(--gold-light); white-space: nowrap;
+}
+tbody tr { transition: background 0.15s; }
+tbody tr:hover { background: var(--gold-pale); }
+tbody tr:not(:last-child) td { border-bottom: 1px solid var(--gold-pale); }
+td { padding: 12px 16px; font-size: 0.84rem; color: var(--dark); vertical-align: middle; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  border-radius: 99px; padding: 3px 10px;
+  font-size: 0.7rem; font-weight: 500;
+}
+.badge.yes { background: var(--yes-lt); color: var(--yes); }
+.badge.no  { background: var(--no-lt);  color: var(--no); }
+
+.diet-tag {
+  display: inline-block;
+  background: var(--gold-pale); border-radius: 99px;
+  padding: 2px 8px; font-size: 0.68rem; color: var(--mid); margin: 2px;
+}
+
+.empty-state { text-align:center; padding:40px 20px; color:var(--soft); }
+.empty-icon  { font-size:2rem; margin-bottom:10px; }
+.empty-state p { font-family:"Cormorant Garamond",serif; font-size:1.1rem; color:var(--mid); }
+
+/* ── FOOTER ── */
+.footer {
+  text-align:center; padding:24px;
+  font-size:0.72rem; color:var(--soft); letter-spacing:0.04em;
+}
+.footer em { color:var(--gold); font-style:normal; }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed; bottom:24px; left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--dark); color:var(--cream);
+  border-radius:10px; padding:11px 20px;
+  font-size:0.82rem;
+  box-shadow:0 8px 32px rgba(42,34,24,0.18);
+  transition:transform 0.3s cubic-bezier(.34,1.56,.64,1);
+  z-index:999; white-space:nowrap;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+@media(max-width:520px) {
+  nav { padding:18px 20px; }
+  .page { padding:32px 16px 60px; }
+  .dash-title { font-size:2rem; }
+  .stat-number { font-size:2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="logo">
+    <svg width="28" height="28" viewBox="0 0 100 100">
+      <rect width="100" height="100" fill="#faf6ef" rx="12"/>
+      <text x="50" y="75" font-family="Cormorant Garamond,serif" font-size="80" font-style="italic" text-anchor="middle" fill="#c9a84c">T</text>
+    </svg>
+    Tiny Invites
+  </a>
+  <a href="/" class="nav-back">← Back to home</a>
+</nav>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="dash-header">
+    <div class="dash-eyebrow">Party Dashboard</div>
+    <h1 class="dash-title"><em id="partyTitle">Your Party</em></h1>
+    <p class="dash-sub" id="partyMeta">—</p>
+  </div>
+
+  <!-- PARTY STRIP -->
+  <div class="card" style="animation-delay:0.05s">
+    <div class="party-strip">
+      <div class="party-detail">🎉 Hosted by <strong id="hostName">—</strong></div>
+      <div class="party-detail">📍 <strong id="partyLocation">—</strong></div>
+      <div class="party-detail">✉️ <strong id="hostEmail">—</strong></div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card confirmed" style="animation-delay:0.1s">
+      <div class="stat-number" id="statYes">0</div>
+      <div class="stat-label">Confirmed</div>
+      <div class="stat-pct"   id="pctYes">—</div>
+    </div>
+    <div class="stat-card declined" style="animation-delay:0.15s">
+      <div class="stat-number" id="statNo">0</div>
+      <div class="stat-label">Declined</div>
+      <div class="stat-pct"   id="pctNo">—</div>
+    </div>
+    <div class="stat-card total" style="animation-delay:0.2s">
+      <div class="stat-number" id="statTotal">0</div>
+      <div class="stat-label">Total</div>
+      <div class="stat-pct"   id="statPending">0 pending</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="card" style="animation-delay:0.25s">
+    <div class="section-label">Response breakdown</div>
+    <div class="progress-meta">
+      <span id="progressText">0 of ~20 expected</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-yes"     id="barYes"     style="width:0%"></div>
+      <div class="progress-no"      id="barNo"      style="width:0%"></div>
+      <div class="progress-pending" id="barPending" style="width:100%"></div>
+    </div>
+    <div class="progress-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--yes)"></div>Confirmed</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--soft)"></div>Declined</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--gold-light)"></div>Awaiting</div>
+    </div>
+  </div>
+
+  <!-- DIETARY FLAGS -->
+  <div class="card" style="animation-delay:0.3s">
+    <div class="section-label">⚠️ Dietary &amp; allergy flags</div>
+    <div class="flags" id="dietaryFlags">
+      <div style="color:var(--soft);font-size:0.84rem;">No dietary requirements yet</div>
+    </div>
+  </div>
+
+  <!-- RESEND -->
+  <button class="resend-btn" id="resendBtn" onclick="resendEmail()">
+    ✉️ Email me the full guest list
+  </button>
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <div class="table-header">
+      <div class="section-label" style="margin:0">All responses</div>
+      <div style="font-size:0.72rem;color:var(--soft)" id="lastUpdated">Just now</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Child</th>
+            <th>Attending</th>
+            <th>Dietary</th>
+            <th>Allergy note</th>
+            <th>Contact</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">Made with ♥ by <em>Tiny Invites</em></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const EXPECTED_GUESTS = 20;
+
+window.addEventListener('DOMContentLoaded', () => {
+  const p        = new URLSearchParams(location.search);
+  const child    = p.get('child')    || 'Your Child';
+  const age      = p.get('age')      || '';
+  const loc      = p.get('location') || '—';
+  const host     = p.get('host')     || '—';
+
+  document.getElementById('partyTitle').textContent =
+    age ? `${child}'s ${age}${ordSuffix(age)} Birthday` : `${child}'s Party`;
+  document.getElementById('partyMeta').textContent      = loc;
+  document.getElementById('partyLocation').textContent  = loc;
+  document.getElementById('hostEmail').textContent      = host;
+
+  // Production: fetch(`/api/rsvp?eventId=${p.get('event')}`)
+  //   .then(r => r.json()).then(renderDashboard);
+  renderDashboard([]);
+});
+
+function ordSuffix(n) {
+  const s = ['th','st','nd','rd'], v = n % 100;
+  return s[(v - 20) % 10] || s[v] || s[0];
+}
+
+function renderDashboard(responses) {
+  const yes     = responses.filter(r => r.attending);
+  const no      = responses.filter(r => !r.attending);
+  const total   = responses.length;
+  const pctYes  = total ? Math.round(yes.length / total * 100) : 0;
+  const pctNo   = total ? Math.round(no.length  / total * 100) : 0;
+  const pending = Math.max(0, EXPECTED_GUESTS - total);
+
+  document.getElementById('statYes').textContent      = yes.length;
+  document.getElementById('statNo').textContent       = no.length;
+  document.getElementById('statTotal').textContent    = total;
+  document.getElementById('pctYes').textContent       = total ? `${pctYes}% of responses` : '—';
+  document.getElementById('pctNo').textContent        = total ? `${pctNo}% of responses`  : '—';
+  document.getElementById('statPending').textContent  = `${pending} pending`;
+  document.getElementById('progressText').textContent = `${total} of ~${EXPECTED_GUESTS} expected`;
+
+  const pY = (yes.length / EXPECTED_GUESTS * 100).toFixed(1);
+  const pN = (no.length  / EXPECTED_GUESTS * 100).toFixed(1);
+  const pP = Math.max(0, 100 - pY - pN).toFixed(1);
+  setTimeout(() => {
+    document.getElementById('barYes').style.width     = pY + '%';
+    document.getElementById('barNo').style.width      = pN + '%';
+    document.getElementById('barPending').style.width = pP + '%';
+  }, 200);
+
+  const dietCount = {};
+  yes.forEach(r => {
+    (r.dietary || []).forEach(d => {
+      if (d && d !== 'none') dietCount[d] = (dietCount[d] || 0) + 1;
+    });
+    if (r.allergy_note) dietCount['custom allergy'] = (dietCount['custom allergy'] || 0) + 1;
+  });
+  const flagsEl = document.getElementById('dietaryFlags');
+  flagsEl.innerHTML = Object.keys(dietCount).length
+    ? Object.entries(dietCount).map(([k, v]) =>
+        `<div class="flag">${k}<span class="flag-count">${v}</span></div>`
+      ).join('')
+    : '<div style="color:var(--soft);font-size:0.84rem;">No dietary requirements yet</div>';
+
+  const tbody = document.getElementById('tableBody');
+  if (!responses.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">
+      <div class="empty-icon">🎈</div>
+      <p>No responses yet — share your QR code!</p>
+    </div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = responses.map(r => {
+    const att    = r.attending
+      ? '<span class="badge yes">✓ Coming</span>'
+      : '<span class="badge no">✗ Declined</span>';
+    const diet   = (r.dietary || []).filter(d => d !== 'none')
+      .map(d => `<span class="diet-tag">${d}</span>`).join('') || '<span style="color:var(--soft)">—</span>';
+    const allerg = r.allergy_note
+      ? `<span style="color:var(--mid);font-weight:500">⚠️ ${r.allergy_note}</span>`
+      : '<span style="color:var(--soft)">—</span>';
+    return `<tr>
+      <td><strong>${r.child_name}</strong></td>
+      <td>${att}</td>
+      <td>${diet}</td>
+      <td>${allerg}</td>
+      <td style="color:var(--soft);font-size:0.78rem">${r.contact_email || '—'}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('lastUpdated').textContent = 'Updated just now';
+}
+
+async function resendEmail() {
+  const btn   = document.getElementById('resendBtn');
+  const email = document.getElementById('hostEmail').textContent;
+  btn.textContent = '⏳ Sending…';
+  btn.disabled    = true;
+  // Production: await fetch('/api/resend-summary?eventId=...', { method:'POST' });
+  await new Promise(r => setTimeout(r, 1400));
+  btn.classList.add('sent');
+  btn.textContent = '✓ Sent to your inbox!';
+  showToast(`✉️ Guest list sent to ${email}`);
+  setTimeout(() => {
+    btn.classList.remove('sent');
+    btn.textContent = '✉️ Email me the full guest list';
+    btn.disabled    = false;
+  }, 4000);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>

@@ -15,7 +15,7 @@ export default async function handler(req, res) {
       .from('parties')
       .select('*')
       .eq('dashboard_token', token)
-      .single();
+      .maybeSingle();
 
     if (partyError) throw partyError;
 

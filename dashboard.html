@@ -387,49 +387,99 @@ td { padding: 12px 16px; font-size: 0.84rem; color: var(--dark); vertical-align:
 <div class="toast" id="toast"></div>
 
 <script>
-const EXPECTED_GUESTS = 20;
+// ─────────────────────────────────────────────────────────────────────────────
+// dashboard.html  ←→  /api/dashboard.js  (Supabase backend)
+//
+// URL expected:  /dashboard.html?token=<dashboard_token>
+//   dashboard_token is the UUID returned by create-party.js when the host
+//   created the party.  It maps to a row in `parties` and its guest_responses.
+//
+// API contract (dashboard.js response):
+//   { party, responses, stats: { yes, no, pending } }
+//
+//   party fields used:  child_name, age, venue, party_date, parent_email
+//   response fields:    guest_name, attending ('yes'|'no'), guest_count,
+//                       allergies, contact_email (optional)
+// ─────────────────────────────────────────────────────────────────────────────
 
-window.addEventListener('DOMContentLoaded', () => {
-  const p        = new URLSearchParams(location.search);
-  const child    = p.get('child')    || 'Your Child';
-  const age      = p.get('age')      || '';
-  const loc      = p.get('location') || '—';
-  const host     = p.get('host')     || '—';
+const EXPECTED_GUESTS = 20;  // fallback — overridden if party has expected_guests
+let   _partyData      = null;
+let   _token          = null;
 
-  document.getElementById('partyTitle').textContent =
-    age ? `${child}'s ${age}${ordSuffix(age)} Birthday` : `${child}'s Party`;
-  document.getElementById('partyMeta').textContent      = loc;
-  document.getElementById('partyLocation').textContent  = loc;
-  document.getElementById('hostEmail').textContent      = host;
+// ── 1. BOOT ──────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(location.search);
+  _token = params.get('token');
 
-  // Production: fetch(`/api/rsvp?eventId=${p.get('event')}`)
-  //   .then(r => r.json()).then(renderDashboard);
-  renderDashboard([]);
+  if (!_token) {
+    showError('No dashboard token found in the URL. Please use the link from your invitation email.');
+    return;
+  }
+
+  showLoading(true);
+
+  try {
+    // Calls /api/dashboard?token=<uuid>  →  dashboard.js
+    const res  = await fetch(`/api/dashboard?token=${encodeURIComponent(_token)}`);
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Failed to load dashboard');
+
+    _partyData = data.party;
+    populateHeader(data.party);
+    renderDashboard(data.responses, data.stats);
+
+  } catch (err) {
+    showError(err.message);
+  } finally {
+    showLoading(false);
+  }
 });
 
-function ordSuffix(n) {
-  const s = ['th','st','nd','rd'], v = n % 100;
-  return s[(v - 20) % 10] || s[v] || s[0];
+// ── 2. POPULATE PARTY HEADER ─────────────────────────────────────────────────
+function populateHeader(party) {
+  const age = party.age;
+  document.getElementById('partyTitle').textContent =
+    age ? `${party.child_name}'s ${age}${ordSuffix(age)} Birthday`
+        : `${party.child_name}'s Party`;
+
+  // Format date nicely if present
+  let meta = party.venue || '—';
+  if (party.party_date) {
+    try {
+      const d = new Date(party.party_date);
+      meta = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
+           + (party.venue ? ' · ' + party.venue : '');
+    } catch { /* keep venue only */ }
+  }
+  document.getElementById('partyMeta').textContent     = meta;
+  document.getElementById('partyLocation').textContent = party.venue || '—';
+  document.getElementById('hostEmail').textContent     = party.parent_email || '—';
 }
 
-function renderDashboard(responses) {
-  const yes     = responses.filter(r => r.attending);
-  const no      = responses.filter(r => !r.attending);
+// ── 3. RENDER DASHBOARD ───────────────────────────────────────────────────────
+function renderDashboard(responses, stats) {
+  // dashboard.js already counts yes/no — use those, but also recount for UI
+  const yes     = responses.filter(r => r.attending === 'yes');
+  const no      = responses.filter(r => r.attending === 'no');
   const total   = responses.length;
-  const pctYes  = total ? Math.round(yes.length / total * 100) : 0;
-  const pctNo   = total ? Math.round(no.length  / total * 100) : 0;
-  const pending = Math.max(0, EXPECTED_GUESTS - total);
+  const expected = (_partyData && _partyData.expected_guests) || EXPECTED_GUESTS;
+  const pending  = Math.max(0, expected - total);
+  const pctYes   = total ? Math.round(yes.length / total * 100) : 0;
+  const pctNo    = total ? Math.round(no.length  / total * 100) : 0;
 
-  document.getElementById('statYes').textContent      = yes.length;
-  document.getElementById('statNo').textContent       = no.length;
-  document.getElementById('statTotal').textContent    = total;
-  document.getElementById('pctYes').textContent       = total ? `${pctYes}% of responses` : '—';
-  document.getElementById('pctNo').textContent        = total ? `${pctNo}% of responses`  : '—';
-  document.getElementById('statPending').textContent  = `${pending} pending`;
-  document.getElementById('progressText').textContent = `${total} of ~${EXPECTED_GUESTS} expected`;
+  // Stats
+  document.getElementById('statYes').textContent     = yes.length;
+  document.getElementById('statNo').textContent      = no.length;
+  document.getElementById('statTotal').textContent   = total;
+  document.getElementById('pctYes').textContent      = total ? `${pctYes}% of responses` : '—';
+  document.getElementById('pctNo').textContent       = total ? `${pctNo}% of responses`  : '—';
+  document.getElementById('statPending').textContent = `${pending} pending`;
+  document.getElementById('progressText').textContent = `${total} of ~${expected} expected`;
 
-  const pY = (yes.length / EXPECTED_GUESTS * 100).toFixed(1);
-  const pN = (no.length  / EXPECTED_GUESTS * 100).toFixed(1);
+  // Progress bars
+  const pY = (yes.length / expected * 100).toFixed(1);
+  const pN = (no.length  / expected * 100).toFixed(1);
   const pP = Math.max(0, 100 - pY - pN).toFixed(1);
   setTimeout(() => {
     document.getElementById('barYes').style.width     = pY + '%';
@@ -437,20 +487,23 @@ function renderDashboard(responses) {
     document.getElementById('barPending').style.width = pP + '%';
   }, 200);
 
+  // Dietary / allergy flags  (field name: allergies from submit-rsvp.js)
   const dietCount = {};
   yes.forEach(r => {
-    (r.dietary || []).forEach(d => {
-      if (d && d !== 'none') dietCount[d] = (dietCount[d] || 0) + 1;
-    });
-    if (r.allergy_note) dietCount['custom allergy'] = (dietCount['custom allergy'] || 0) + 1;
+    if (r.allergies && r.allergies.trim() && r.allergies.toLowerCase() !== 'none') {
+      const key = r.allergies.trim();
+      dietCount[key] = (dietCount[key] || 0) + 1;
+    }
   });
   const flagsEl = document.getElementById('dietaryFlags');
   flagsEl.innerHTML = Object.keys(dietCount).length
     ? Object.entries(dietCount).map(([k, v]) =>
-        `<div class="flag">${k}<span class="flag-count">${v}</span></div>`
+        `<div class="flag">⚠️ ${k}<span class="flag-count">${v}</span></div>`
       ).join('')
     : '<div style="color:var(--soft);font-size:0.84rem;">No dietary requirements yet</div>';
 
+  // Response table
+  // submit-rsvp.js stores: guest_name, attending, guest_count, allergies
   const tbody = document.getElementById('tableBody');
   if (!responses.length) {
     tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">
@@ -459,41 +512,107 @@ function renderDashboard(responses) {
     </div></td></tr>`;
     return;
   }
+
   tbody.innerHTML = responses.map(r => {
-    const att    = r.attending
+    const att    = r.attending === 'yes'
       ? '<span class="badge yes">✓ Coming</span>'
       : '<span class="badge no">✗ Declined</span>';
-    const diet   = (r.dietary || []).filter(d => d !== 'none')
-      .map(d => `<span class="diet-tag">${d}</span>`).join('') || '<span style="color:var(--soft)">—</span>';
-    const allerg = r.allergy_note
-      ? `<span style="color:var(--mid);font-weight:500">⚠️ ${r.allergy_note}</span>`
+    const guests = r.guest_count
+      ? `<span style="font-size:0.78rem;color:var(--mid)">${r.guest_count} guest${r.guest_count > 1 ? 's' : ''}</span>`
       : '<span style="color:var(--soft)">—</span>';
+    const allerg = r.allergies && r.allergies.toLowerCase() !== 'none'
+      ? `<span style="color:var(--mid);font-weight:500">⚠️ ${r.allergies}</span>`
+      : '<span style="color:var(--soft)">—</span>';
+    const contact = r.contact_email
+      ? `<a href="mailto:${r.contact_email}" style="color:var(--gold);font-size:0.78rem;text-decoration:none">${r.contact_email}</a>`
+      : '<span style="color:var(--soft);font-size:0.78rem">—</span>';
     return `<tr>
-      <td><strong>${r.child_name}</strong></td>
+      <td><strong>${r.guest_name || '—'}</strong></td>
       <td>${att}</td>
-      <td>${diet}</td>
+      <td>${guests}</td>
       <td>${allerg}</td>
-      <td style="color:var(--soft);font-size:0.78rem">${r.contact_email || '—'}</td>
+      <td>${contact}</td>
     </tr>`;
   }).join('');
-  document.getElementById('lastUpdated').textContent = 'Updated just now';
+
+  document.getElementById('lastUpdated').textContent =
+    'Updated ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
 }
 
+// ── 4. RESEND EMAIL  →  /api/send-email.js ───────────────────────────────────
 async function resendEmail() {
+  if (!_partyData) return;
+
   const btn   = document.getElementById('resendBtn');
-  const email = document.getElementById('hostEmail').textContent;
+  const email = _partyData.parent_email;
   btn.textContent = '⏳ Sending…';
   btn.disabled    = true;
-  // Production: await fetch('/api/resend-summary?eventId=...', { method:'POST' });
-  await new Promise(r => setTimeout(r, 1400));
-  btn.classList.add('sent');
-  btn.textContent = '✓ Sent to your inbox!';
-  showToast(`✉️ Guest list sent to ${email}`);
-  setTimeout(() => {
-    btn.classList.remove('sent');
+
+  try {
+    // Build a plain-text summary to email via send-email.js / Resend
+    const rows = Array.from(document.querySelectorAll('#tableBody tr'))
+      .map(tr => Array.from(tr.querySelectorAll('td')).map(td => td.innerText).join(' | '))
+      .join('\n');
+
+    const html = `
+      <h2 style="font-family:serif">${document.getElementById('partyTitle').textContent}</h2>
+      <p>${document.getElementById('partyMeta').textContent}</p>
+      <p>✅ Confirmed: ${document.getElementById('statYes').textContent} &nbsp;
+         ❌ Declined: ${document.getElementById('statNo').textContent} &nbsp;
+         ⏳ Pending: ${document.getElementById('statPending').textContent}</p>
+      <pre style="font-family:monospace;font-size:13px;line-height:1.6">${rows || 'No responses yet.'}</pre>
+      <p style="color:#999;font-size:12px">Sent from your Tiny Invites dashboard.</p>
+    `;
+
+    const res = await fetch('/api/send-email', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        to:      email,
+        subject: `Guest list for ${_partyData.child_name}'s party`,
+        html
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to send');
+
+    btn.classList.add('sent');
+    btn.textContent = '✓ Sent to your inbox!';
+    showToast(`✉️ Guest list sent to ${email}`);
+
+  } catch (err) {
     btn.textContent = '✉️ Email me the full guest list';
-    btn.disabled    = false;
-  }, 4000);
+    showToast('⚠️ ' + err.message);
+  } finally {
+    btn.disabled = false;
+    setTimeout(() => {
+      btn.classList.remove('sent');
+      btn.textContent = '✉️ Email me the full guest list';
+    }, 4000);
+  }
+}
+
+// ── 5. HELPERS ────────────────────────────────────────────────────────────────
+function ordSuffix(n) {
+  const s = ['th','st','nd','rd'], v = n % 100;
+  return s[(v - 20) % 10] || s[v] || s[0];
+}
+
+function showLoading(on) {
+  // Simple: dim the page content while fetching
+  document.querySelector('.page').style.opacity = on ? '0.4' : '1';
+}
+
+function showError(msg) {
+  document.querySelector('.page').innerHTML = `
+    <div style="text-align:center;padding:80px 20px">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--mid);margin-bottom:16px;">
+        Couldn't load dashboard
+      </p>
+      <p style="font-size:0.85rem;color:var(--soft);">${msg}</p>
+      <a href="/" style="display:inline-block;margin-top:32px;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);text-decoration:none;">← Back to home</a>
+    </div>`;
 }
 
 function showToast(msg) {

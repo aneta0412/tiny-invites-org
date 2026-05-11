@@ -19,6 +19,12 @@ export default async function handler(req, res) {
       console.log("TOKEN:", token);
       console.log("PARTY:", party);
       console.log("ERROR:", partyError);
+      if (!party) {
+        return res.status(404).json({
+          error: 'Party not found',
+          token
+      });
+      }
 
     if (partyError) throw partyError;
 

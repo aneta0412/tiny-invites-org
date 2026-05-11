@@ -666,12 +666,12 @@
   }
   #create-step3 {
     width: 100%;
-    margin: 64px 0 0;
-    padding: 80px 40px 90px;
+    margin: 24px 0 0;
+    padding: 40px 0 60px;
     border: 0;
     border-radius: 0;
     box-shadow: none;
-    background: var(--cream);
+    background: transparent;
     text-align: left;
   }
   #create-step3::before { display: none; }
@@ -837,9 +837,12 @@
 
 <!-- INVITATION DESIGNS -->
 <section class="designs" id="designs">
-  <p class="section-label">Free invitation designs</p>
-  <h2>Ready-made designs<br><em>&amp; AI prompt generator</em></h2>
-  <p class="designs-sub">Download any design instantly — or use the AI prompt at the bottom of this section to generate something completely unique. Every design includes a dedicated QR code space. Once you have your design, continue to Step 3 below to create your event page.</p>
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;">
+    <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">03</span>
+    <p class="section-label" style="margin:0;">Create your invitation</p>
+  </div>
+  <h2>Four simple steps<br><em>to a beautiful invite.</em></h2>
+  <p class="designs-sub">Fill in your party details, pick a ready-made design or generate your own with AI, then create your free event page with a QR code guests can scan to RSVP.</p>
 
   <div class="designs-setup">
     <!-- ── STEP 1: PARTY DETAILS ─────────────────────────── -->
@@ -1131,17 +1134,17 @@
   });
 </script>
 
-<!-- ── STEP 3: CREATE EVENT PAGE ───────────────────── -->
-  <div class="invite-creator-card" id="create-step3">
+<!-- ── STEP 4: CREATE EVENT PAGE ───────────────────── -->
+<section style="padding:80px 40px 0;background:var(--cream);">
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;">
+    <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">04</span>
+    <p class="section-label" style="margin:0;">Almost done</p>
+  </div>
+  <h2 style="margin-bottom:14px;">Create your<br><em>event RSVP page.</em></h2>
+  <p class="section-sub">Add your email so guest replies can reach you. We'll generate your personalised invite page, unique link, and QR code instantly.</p>
+</section>
 
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
-      <span style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:var(--gold);opacity:0.5;line-height:1;">04</span>
-      <div>
-        <p class="eyebrow" style="text-align:left;margin-bottom:2px;">Almost done</p>
-        <h2 style="font-size:1.6rem;margin-bottom:0;">Create your<br><em>event RSVP page</em></h2>
-      </div>
-    </div>
-    <p class="sub" style="text-align:left;margin-bottom:22px;">Add your email so guest replies can reach you. We'll generate your personalised invite page, unique link, and QR code instantly.</p>
+  <div class="invite-creator-card" id="create-step3">
 
     <div class="invite-divider"><span></span><i>◆</i><span></span></div>
 

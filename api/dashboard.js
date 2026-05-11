@@ -16,6 +16,9 @@ export default async function handler(req, res) {
       .select('*')
       .eq('dashboard_token', token)
       .maybeSingle();
+      console.log("TOKEN:", token);
+      console.log("PARTY:", party);
+      console.log("ERROR:", partyError);
 
     if (partyError) throw partyError;
 

@@ -917,19 +917,10 @@ function filterShop(cat, btn) {
   document.querySelectorAll('.shop-categories .shop-cat-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('#shop-grid .shop-item').forEach(item => {
-    const matches = cat === 'all' || item.dataset.cat === cat;
-    item.style.display = matches && !item.classList.contains('shop-extra') ? '' : 'none';
-    item.classList.toggle('hidden', !matches || item.classList.contains('shop-extra'));
+    const cats = (item.dataset.cat || '').split(' ');
+    const show = cat === 'all' || cats.includes(cat);
+    item.style.display = show ? '' : 'none';
   });
-  if (cat !== 'all') {
-    // show first 2 extras for this cat
-    let shown = 0;
-    document.querySelectorAll('#shop-grid .shop-item.shop-extra').forEach(item => {
-      if (item.dataset.cat === cat && shown < 0) { item.style.display=''; item.classList.remove('hidden'); shown++; }
-    });
-  }
-  document.getElementById('shop-show-more').style.display = '';
-  document.getElementById('shop-show-more')._cat = cat;
 }
 
 function shopShowMore() {
@@ -943,14 +934,13 @@ function shopShowMore() {
   document.getElementById('shop-show-more').style.display = 'none';
 }
 
+/* ── GIFT FILTER ── */
 function filterGifts(age, btn) {
   document.querySelectorAll('#gifts .shop-cat-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.gift-item').forEach(item => {
-    const ages = item.dataset.age ? item.dataset.age.split(' ') : [];
-    const show = age === 'all' || ages.includes(age);
-    item.style.display = show ? '' : 'none';
-    item.classList.toggle('hidden', !show);
+    const ages = (item.dataset.age || '').split(' ');
+    item.style.display = (age === 'all' || ages.includes(age)) ? '' : 'none';
   });
 }
 

@@ -580,37 +580,17 @@ function renderDashboard(responses, stats) {
 
 // ── 4. RESEND EMAIL  →  /api/send-email.js ───────────────────────────────────
 async function resendEmail() {
-  if (!_partyData) return;
+  if (!_partyData || !_token) return;
 
-  const btn   = document.getElementById('resendBtn');
-  const email = _partyData.parent_email;
+  const btn = document.getElementById('resendBtn');
   btn.textContent = '⏳ Sending…';
   btn.disabled    = true;
 
   try {
-    // Build a plain-text summary to email via send-email.js / Resend
-    const rows = Array.from(document.querySelectorAll('#tableBody tr'))
-      .map(tr => Array.from(tr.querySelectorAll('td')).map(td => td.innerText).join(' | '))
-      .join('\n');
-
-    const html = `
-      <h2 style="font-family:serif">${document.getElementById('partyTitle').textContent}</h2>
-      <p>${document.getElementById('partyMeta').textContent}</p>
-      <p>✅ Confirmed: ${document.getElementById('statYes').textContent} &nbsp;
-         ❌ Declined: ${document.getElementById('statNo').textContent} &nbsp;
-         ⏳ Pending: ${document.getElementById('statPending').textContent}</p>
-      <pre style="font-family:monospace;font-size:13px;line-height:1.6">${rows || 'No responses yet.'}</pre>
-      <p style="color:#999;font-size:12px">Sent from your Tiny Invites dashboard.</p>
-    `;
-
     const res = await fetch('/api/send-email', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({
-        to:      email,
-        subject: `Guest list for ${_partyData.child_name}'s party`,
-        html
-      })
+      body:    JSON.stringify({ token: _token })
     });
 
     const data = await res.json();
@@ -618,7 +598,7 @@ async function resendEmail() {
 
     btn.classList.add('sent');
     btn.textContent = '✓ Sent to your inbox!';
-    showToast(`✉️ Guest list sent to ${email}`);
+    showToast(`✉️ Guest list sent to ${_partyData.parent_email}`);
 
   } catch (err) {
     btn.textContent = '✉️ Email me the full guest list';

@@ -461,72 +461,276 @@
   <a href="/" style="font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--soft);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--soft)'">← Back to home</a>
 </nav>
 
-<section class="shop" id="shop">
+  <section class="shop" id="shop">
   <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;">
     <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">06</span>
     <p class="section-label" style="margin:0;">Party supplies</p>
   </div>
   <h2>Browse party supplies<br>for the <em>perfect party.</em></h2>
-  <p class="shop-intro">Hand-picked party supplies across all the most popular themes. Every purchase supports Tiny Invites at no extra cost to you. &#128155;</p>
+  <p class="shop-intro">Hand-picked party supplies across every theme — jungle, unicorn, mermaid, superhero, princess, dinosaur and more. Every purchase supports Tiny Invites at no extra cost to you. 🤍</p>
+
   <div class="shop-categories">
-    <button class="shop-cat-btn active" onclick="filterShop('all', this)">All</button>
-    <button class="shop-cat-btn" onclick="filterShop('jungle', this)">🌿 Jungle</button>
-    <button class="shop-cat-btn" onclick="filterShop('unicorn', this)">🦄 Unicorn</button>
-    <button class="shop-cat-btn" onclick="filterShop('superhero', this)">🦸 Superhero</button>
-    <button class="shop-cat-btn" onclick="filterShop('princess', this)">👑 Princess</button>
-    <button class="shop-cat-btn" onclick="filterShop('dinosaur', this)">🦕 Dinosaur</button>
-    <button class="shop-cat-btn" onclick="filterShop('beige', this)">🤍 Neutral/Beige</button>
-    <button class="shop-cat-btn" onclick="filterShop('balloons', this)">🎈 Balloons</button>
-    <button class="shop-cat-btn" onclick="filterShop('cake', this)">🎂 Cake</button>
-    <button class="shop-cat-btn" onclick="filterShop('bags', this)">🎁 Party Bags</button>
+    <button class="shop-cat-btn active" onclick="filterShop('all',this)">All</button>
+    <button class="shop-cat-btn" onclick="filterShop('fullset',this)">🎉 Full Party Sets</button>
+    <button class="shop-cat-btn" onclick="filterShop('balloons',this)">🎈 Balloons</button>
+    <button class="shop-cat-btn" onclick="filterShop('tableware',this)">🍽️ Plates &amp; Cups</button>
+    <button class="shop-cat-btn" onclick="filterShop('bags',this)">🛍️ Party Bags</button>
+    <button class="shop-cat-btn" onclick="filterShop('fillers',this)">🎁 Bag Fillers</button>
+    <button class="shop-cat-btn" onclick="filterShop('cake',this)">🎂 Cake &amp; Candles</button>
+    <button class="shop-cat-btn" onclick="filterShop('neutral',this)">🤍 Neutral &amp; Boho</button>
+    <button class="shop-cat-btn" onclick="filterShop('unicorn',this)">🦄 Unicorn</button>
+    <button class="shop-cat-btn" onclick="filterShop('mermaid',this)">🧜 Mermaid</button>
+    <button class="shop-cat-btn" onclick="filterShop('jungle',this)">🦁 Jungle</button>
+    <button class="shop-cat-btn" onclick="filterShop('princess',this)">👑 Princess</button>
+    <button class="shop-cat-btn" onclick="filterShop('superhero',this)">🦸 Superhero</button>
+    <button class="shop-cat-btn" onclick="filterShop('dinosaur',this)">🦕 Dinosaur</button>
   </div>
+
   <div class="shop-grid" id="shop-grid">
 
-    <a class="shop-card shop-item" data-cat="jungle" href="https://www.amazon.co.uk/s?k=Jungle+Wild+One+Birthday+Decorations+Safari+Party+Tableware+Set&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🌿</div><div class="shop-card-body"><p class="shop-card-tag">Jungle</p><p class="shop-card-title">Jungle Wild One Safari Party Set – 132 Pcs (Banner, Plates, Cups, Tablecloth)</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="jungle" href="https://www.amazon.co.uk/s?k=jungle+safari+birthday+balloon+garland+kit&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🐆</div><div class="shop-card-body"><p class="shop-card-tag">Jungle</p><p class="shop-card-title">Safari Jungle Balloon Garland Kit – Green, Brown & Gold</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="jungle" href="https://www.amazon.co.uk/s?k=jungle+animal+party+bags+kids&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🦁</div><div class="shop-card-body"><p class="shop-card-tag">Jungle</p><p class="shop-card-title">Jungle Animal Party Favour Bags Pack of 20</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="jungle" href="https://www.amazon.co.uk/s?k=wild+one+cake+topper+jungle&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎂</div><div class="shop-card-body"><p class="shop-card-tag">Jungle</p><p class="shop-card-title">Wild One Jungle Cake Topper & Cupcake Picks Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+```
+<!-- ══ FULL PARTY SETS ══ -->
+<!-- YOUR LINK: Unicorn party kit 16 guests -->
+<a class="shop-card shop-item" data-cat="fullset unicorn" href="https://amzn.eu/d/04ElRMGz" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦄</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Full Party Set · Unicorn · ~£18</p><p class="shop-card-title">Unicorn Party Kit for 16 – Plates, Cups, Napkins & Banner</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<!-- YOUR LINK: Jungle Wild One 132pcs -->
+<a class="shop-card shop-item" data-cat="fullset jungle" href="https://amzn.eu/d/095y7eFe" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦁</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Full Party Set · Jungle · ~£16</p><p class="shop-card-title">Jungle Safari Party Kit – 132 pcs, Banner, Balloons, Plates & Cups</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fullset mermaid" href="https://www.amazon.co.uk/dp/B0B6CPN6MX" target="_blank" rel="noopener">
+  <div class="shop-card-img">🧜</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Full Party Set · Mermaid · ~£16</p><p class="shop-card-title">Mermaid Party Kit for 16 – Plates, Cups, Napkins & Tablecloth</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fullset princess" href="https://www.amazon.co.uk/s?k=princess+party+supplies+full+set+16+guests+plates+cups+napkins+banner" target="_blank" rel="noopener">
+  <div class="shop-card-img">👑</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Full Party Set · Princess · ~£18</p><p class="shop-card-title">Princess Party Kit for 16 – Plates, Cups, Napkins & Banner</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fullset superhero" href="https://www.amazon.co.uk/s?k=superhero+party+supplies+full+set+16+guests+plates+cups+napkins+tablecloth+banner" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦸</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Full Party Set · Superhero · ~£16</p><p class="shop-card-title">Superhero Party Kit for 16 – Plates, Cups, Napkins & Banner</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fullset dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+party+supplies+full+set+16+guests+plates+cups+napkins+tablecloth" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦕</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Full Party Set · Dinosaur · ~£16</p><p class="shop-card-title">Dinosaur Party Kit for 16 – Plates, Cups, Napkins & Banner</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fullset neutral" href="https://www.amazon.co.uk/s?k=beige+gold+scalloped+party+tableware+full+set+plates+cups+napkins+straws+25+guests" target="_blank" rel="noopener">
+  <div class="shop-card-img">🤍</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Full Party Set · Neutral · ~£18</p><p class="shop-card-title">Beige & Gold Party Kit for 25 – Plates, Cups, Napkins & Straws</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fullset space" href="https://www.amazon.co.uk/s?k=space+astronaut+party+supplies+full+set+16+guests+plates+cups+napkins+tablecloth" target="_blank" rel="noopener">
+  <div class="shop-card-img">🚀</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Full Party Set · Space · ~£16</p><p class="shop-card-title">Space Adventure Party Kit for 16 – Plates, Cups, Napkins & Banner</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
 
-    <a class="shop-card shop-item" data-cat="unicorn" href="https://www.amazon.co.uk/s?k=unicorn+party+supplies+tableware+set+girls&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🦄</div><div class="shop-card-body"><p class="shop-card-tag">Unicorn</p><p class="shop-card-title">Unicorn Party Tableware Set – Plates, Cups, Napkins & Tablecloth</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="unicorn" href="https://www.amazon.co.uk/s?k=unicorn+balloon+garland+arch+kit+pink&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🌈</div><div class="shop-card-body"><p class="shop-card-tag">Unicorn</p><p class="shop-card-title">Unicorn Rainbow Balloon Arch & Garland Kit</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="unicorn" href="https://www.amazon.co.uk/s?k=unicorn+birthday+cake+topper+decoration&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">✨</div><div class="shop-card-body"><p class="shop-card-tag">Unicorn</p><p class="shop-card-title">Unicorn Cake Topper & Horn Decoration Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="unicorn" href="https://www.amazon.co.uk/s?k=unicorn+party+bags+fillers+girls&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎀</div><div class="shop-card-body"><p class="shop-card-tag">Unicorn</p><p class="shop-card-title">Unicorn Party Bag Fillers Set for Girls</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+<!-- ══ BALLOONS ══ -->
+<a class="shop-card shop-item" data-cat="balloons neutral" href="https://www.amazon.co.uk/s?k=white+gold+balloon+arch+garland+kit+birthday+neutral+cream" target="_blank" rel="noopener">
+  <div class="shop-card-img">🤍</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Balloons · Neutral · ~£14</p><p class="shop-card-title">White & Gold Balloon Arch</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="balloons neutral" href="https://www.amazon.co.uk/s?k=sage+green+gold+balloon+arch+kit+birthday+neutral" target="_blank" rel="noopener">
+  <div class="shop-card-img">🌿</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Balloons · Neutral · ~£14</p><p class="shop-card-title">Sage Green & Gold Balloon Arch</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="balloons unicorn" href="https://www.amazon.co.uk/s?k=unicorn+balloon+arch+garland+kit+pink+purple+birthday" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦄</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Balloons · Unicorn · ~£14</p><p class="shop-card-title">Unicorn Balloon Arch – Pink & Purple</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="balloons mermaid" href="https://www.amazon.co.uk/s?k=mermaid+balloon+arch+kit+pink+teal+purple+birthday" target="_blank" rel="noopener">
+  <div class="shop-card-img">🧜</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Balloons · Mermaid · ~£13</p><p class="shop-card-title">Mermaid Balloon Arch – Pink, Teal & Purple</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<!-- YOUR LINK: Jungle Safari Animal Foil Balloons -->
+<a class="shop-card shop-item" data-cat="balloons jungle" href="https://amzn.eu/d/0fUcjjRL" target="_blank" rel="noopener">
+  <div class="shop-card-img">🐘</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Balloons · Jungle · ~£10</p><p class="shop-card-title">Jungle Safari Animal Foil Balloons – Lion, Elephant & Friends</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="balloons jungle" href="https://www.amazon.co.uk/s?k=jungle+safari+balloon+arch+kit+green+orange+birthday" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦁</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Balloons · Jungle · ~£13</p><p class="shop-card-title">Jungle Safari Balloon Arch Kit</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="balloons princess" href="https://www.amazon.co.uk/s?k=princess+balloon+arch+kit+pink+gold+birthday+girls" target="_blank" rel="noopener">
+  <div class="shop-card-img">👑</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Balloons · Princess · ~£13</p><p class="shop-card-title">Princess Balloon Arch – Pink & Gold</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="balloons superhero" href="https://www.amazon.co.uk/s?k=superhero+balloon+arch+kit+birthday+children+red+blue" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦸</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Balloons · Superhero · ~£13</p><p class="shop-card-title">Superhero Balloon Arch Kit</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="balloons dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+balloon+arch+kit+birthday+green+orange+children" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦕</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Balloons · Dinosaur · ~£13</p><p class="shop-card-title">Dinosaur Balloon Arch – Green & Orange</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
 
-    <a class="shop-card shop-item" data-cat="superhero" href="https://www.amazon.co.uk/s?k=superhero+party+supplies+tableware+set+kids&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🦸</div><div class="shop-card-body"><p class="shop-card-tag">Superhero</p><p class="shop-card-title">Superhero Party Tableware Set – Plates, Cups & Decorations</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="superhero" href="https://www.amazon.co.uk/s?k=superhero+capes+masks+kids+party+favour&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🦹</div><div class="shop-card-body"><p class="shop-card-tag">Superhero</p><p class="shop-card-title">Superhero Capes & Masks Party Favour Set (12 pack)</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="superhero" href="https://www.amazon.co.uk/s?k=superhero+birthday+balloon+set&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">💥</div><div class="shop-card-body"><p class="shop-card-tag">Superhero</p><p class="shop-card-title">Superhero POW Balloon Decoration Bundle</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="superhero" href="https://www.amazon.co.uk/s?k=superhero+cake+topper+birthday+kids&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎂</div><div class="shop-card-body"><p class="shop-card-tag">Superhero</p><p class="shop-card-title">Superhero Birthday Cake Topper & Cupcake Decorations</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+<!-- ══ PLATES & CUPS ══ -->
+<a class="shop-card shop-item" data-cat="tableware unicorn" href="https://www.amazon.co.uk/dp/B0DJMHHSPV" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦄</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Plates & Cups · Unicorn · ~£16</p><p class="shop-card-title">Unicorn Tableware Set – Plates, Cups & Napkins (16 guests)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="tableware jungle" href="https://www.amazon.co.uk/dp/B09KZCJWT9" target="_blank" rel="noopener">
+  <div class="shop-card-img">🐒</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Plates & Cups · Jungle · ~£18</p><p class="shop-card-title">Jungle Safari Tableware Set – Plates, Cups & Napkins (25 guests)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="tableware mermaid" href="https://www.amazon.co.uk/s?k=mermaid+paper+plates+cups+napkins+tableware+set+birthday+girls" target="_blank" rel="noopener">
+  <div class="shop-card-img">🧜</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Plates & Cups · Mermaid · ~£16</p><p class="shop-card-title">Mermaid Tableware Set – Plates, Cups & Napkins</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="tableware neutral" href="https://www.amazon.co.uk/s?k=ivory+scalloped+paper+plates+50+pack+cream+birthday" target="_blank" rel="noopener">
+  <div class="shop-card-img">🥗</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Plates & Cups · Neutral · ~£9</p><p class="shop-card-title">Ivory Scalloped Paper Plates (50 pack)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="tableware princess" href="https://www.amazon.co.uk/s?k=princess+paper+plates+cups+napkins+tableware+set+birthday+girls+pink+gold" target="_blank" rel="noopener">
+  <div class="shop-card-img">👑</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Plates & Cups · Princess · ~£16</p><p class="shop-card-title">Princess Tableware Set – Plates, Cups & Napkins</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="tableware superhero" href="https://www.amazon.co.uk/s?k=superhero+paper+plates+cups+napkins+tableware+birthday+children" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦸</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Plates & Cups · Superhero · ~£15</p><p class="shop-card-title">Superhero Tableware Set – Plates, Cups & Napkins</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="tableware dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+paper+plates+cups+napkins+tableware+birthday+children" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦕</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Plates & Cups · Dinosaur · ~£15</p><p class="shop-card-title">Dinosaur Tableware Set – Plates, Cups & Napkins</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
 
-    <a class="shop-card shop-item" data-cat="princess" href="https://www.amazon.co.uk/s?k=princess+party+supplies+tableware+set+girls&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">👑</div><div class="shop-card-body"><p class="shop-card-tag">Princess</p><p class="shop-card-title">Princess Party Tableware Set – Plates, Cups, Napkins</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="princess" href="https://www.amazon.co.uk/s?k=princess+tiara+wand+party+bag+fillers+girls&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🪄</div><div class="shop-card-body"><p class="shop-card-tag">Princess</p><p class="shop-card-title">Princess Tiara & Wand Party Bag Fillers (12 pack)</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="princess" href="https://www.amazon.co.uk/s?k=princess+castle+birthday+balloon+decoration&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🏰</div><div class="shop-card-body"><p class="shop-card-tag">Princess</p><p class="shop-card-title">Princess Castle Balloon & Banner Decoration Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="princess" href="https://www.amazon.co.uk/s?k=pink+gold+princess+cake+topper+birthday&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎀</div><div class="shop-card-body"><p class="shop-card-tag">Princess</p><p class="shop-card-title">Pink & Gold Princess Cake Topper Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+<!-- ══ PARTY BAGS ══ -->
+<!-- YOUR LINK: AMFUN Mermaid Paper Party Bags 18pcs -->
+<a class="shop-card shop-item" data-cat="bags mermaid" href="https://amzn.eu/d/06Xax51l" target="_blank" rel="noopener">
+  <div class="shop-card-img">🧜</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Party Bags · Mermaid · ~£8</p><p class="shop-card-title">Mermaid Paper Party Bags with Handles (18 pack)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<!-- YOUR LINK -->
+<a class="shop-card shop-item" data-cat="bags" href="https://amzn.eu/d/03at6Bpz" target="_blank" rel="noopener">
+  <div class="shop-card-img">🎁</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Party Bags · ~£8</p><p class="shop-card-title">Paper Party Bags with Handles & Stickers</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="bags neutral" href="https://www.amazon.co.uk/s?k=kraft+brown+paper+party+bags+handles+birthday+children+pack+30" target="_blank" rel="noopener">
+  <div class="shop-card-img">🛍️</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Party Bags · Neutral · ~£8</p><p class="shop-card-title">Brown Kraft Party Bags (Pack of 30)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="bags unicorn" href="https://www.amazon.co.uk/s?k=unicorn+party+bags+children+birthday+pink+purple+pack" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦄</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Party Bags · Unicorn · ~£7</p><p class="shop-card-title">Unicorn Party Bags (Pack of 16)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="bags princess" href="https://www.amazon.co.uk/s?k=princess+party+bags+girls+birthday+pink+favour+pack" target="_blank" rel="noopener">
+  <div class="shop-card-img">👑</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Party Bags · Princess · ~£7</p><p class="shop-card-title">Princess Party Bags (Pack of 16)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="bags superhero" href="https://www.amazon.co.uk/s?k=superhero+party+bags+children+birthday+favour+loot+pack" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦸</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Party Bags · Superhero · ~£7</p><p class="shop-card-title">Superhero Party Bags (Pack of 16)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="bags dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+party+bags+children+birthday+favour+loot+pack" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦕</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Party Bags · Dinosaur · ~£7</p><p class="shop-card-title">Dinosaur Party Bags (Pack of 16)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="bags jungle" href="https://www.amazon.co.uk/s?k=jungle+safari+party+bags+children+birthday+animals+favour" target="_blank" rel="noopener">
+  <div class="shop-card-img">🌿</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Party Bags · Jungle · ~£7</p><p class="shop-card-title">Jungle Safari Party Bags (Pack of 16)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
 
-    <a class="shop-card shop-item" data-cat="dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+party+supplies+tableware+set+kids&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🦕</div><div class="shop-card-body"><p class="shop-card-tag">Dinosaur</p><p class="shop-card-title">Dinosaur Party Tableware Set – 60 Pcs Plates, Cups & Napkins</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+balloon+garland+arch+green&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🦖</div><div class="shop-card-body"><p class="shop-card-tag">Dinosaur</p><p class="shop-card-title">Dino Roar Green Balloon Garland Kit</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+birthday+cake+topper+decoration&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎂</div><div class="shop-card-body"><p class="shop-card-tag">Dinosaur</p><p class="shop-card-title">Dinosaur Cake Topper & Cupcake Picks Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+party+bag+fillers+kids&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎁</div><div class="shop-card-body"><p class="shop-card-tag">Dinosaur</p><p class="shop-card-title">Dinosaur Party Bag Fillers Pack of 48</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+<!-- ══ BAG FILLERS ══ -->
+<a class="shop-card shop-item" data-cat="fillers" href="https://www.amazon.co.uk/s?k=bubble+wands+party+bag+fillers+children+birthday+pack+48" target="_blank" rel="noopener">
+  <div class="shop-card-img">🫧</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Bag Fillers · ~£8</p><p class="shop-card-title">Bubble Wands Party Bag Fillers (Pack of 48)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fillers" href="https://www.amazon.co.uk/s?k=mini+crayons+wax+colouring+pencils+party+bag+fillers+children" target="_blank" rel="noopener">
+  <div class="shop-card-img">🖍️</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Bag Fillers · ~£5</p><p class="shop-card-title">Mini Crayons Party Bag Fillers (Pack of 12 sets)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fillers" href="https://www.amazon.co.uk/s?k=mini+notebooks+party+bag+fillers+children+birthday+A7" target="_blank" rel="noopener">
+  <div class="shop-card-img">📓</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Bag Fillers · ~£7</p><p class="shop-card-title">Mini Notebooks Party Bag Fillers (Pack of 12)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fillers" href="https://www.amazon.co.uk/s?k=punch+balloons+party+bag+fillers+children+birthday+large" target="_blank" rel="noopener">
+  <div class="shop-card-img">🥊</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Bag Fillers · ~£6</p><p class="shop-card-title">Punch Balloons Party Bag Fillers (Pack of 25)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fillers unicorn" href="https://www.amazon.co.uk/s?k=unicorn+party+bag+fillers+stickers+tattoos+keyrings+children" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦄</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Bag Fillers · Unicorn · ~£8</p><p class="shop-card-title">Unicorn Party Bag Fillers – Stickers, Tattoos & More</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fillers jungle" href="https://www.amazon.co.uk/s?k=jungle+animal+party+bag+fillers+safari+keychains+tattoos+children" target="_blank" rel="noopener">
+  <div class="shop-card-img">🐯</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Bag Fillers · Jungle · ~£9</p><p class="shop-card-title">Jungle Animal Bag Fillers – Mini Figures & Tattoos</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fillers superhero" href="https://www.amazon.co.uk/s?k=superhero+cape+mask+party+bag+fillers+children+dress+up" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦸‍♂️</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Bag Fillers · Superhero · ~£12</p><p class="shop-card-title">Superhero Cape & Mask Set – Party Bag Filler</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="fillers dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+mini+figures+party+bag+fillers+children+birthday" target="_blank" rel="noopener">
+  <div class="shop-card-img">🐊</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Bag Fillers · Dinosaur · ~£9</p><p class="shop-card-title">Mini Dinosaur Figures – Party Bag Fillers</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
 
-    <a class="shop-card shop-item" data-cat="beige" href="https://www.amazon.co.uk/s?k=neutral+boho+party+decoration+bundle+beige&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🤍</div><div class="shop-card-body"><p class="shop-card-tag">Neutral/Beige</p><p class="shop-card-title">Neutral Boho Party Decoration Bundle</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="beige" href="https://www.amazon.co.uk/s?k=cream+gold+balloon+garland+kit&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">✨</div><div class="shop-card-body"><p class="shop-card-tag">Neutral/Beige</p><p class="shop-card-title">Cream & Gold Balloon Garland Kit</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="beige" href="https://www.amazon.co.uk/s?k=kraft+paper+party+bags+pack+20&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎁</div><div class="shop-card-body"><p class="shop-card-tag">Neutral/Beige</p><p class="shop-card-title">Kraft Paper Party Favour Bags Pack of 20</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="beige" href="https://www.amazon.co.uk/s?k=beige+paper+plates+napkins+birthday&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🍽️</div><div class="shop-card-body"><p class="shop-card-tag">Neutral/Beige</p><p class="shop-card-title">Beige Paper Plates & Napkins Birthday Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+<!-- ══ CAKE & CANDLES ══ -->
+<a class="shop-card shop-item" data-cat="cake neutral" href="https://www.amazon.co.uk/s?k=gold+number+birthday+candles+cake+topper+3D+party" target="_blank" rel="noopener">
+  <div class="shop-card-img">🕯️</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Cake & Candles · Neutral · ~£5</p><p class="shop-card-title">Gold Number Birthday Candles</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="cake neutral" href="https://www.amazon.co.uk/s?k=gold+glitter+happy+birthday+cake+topper+stars" target="_blank" rel="noopener">
+  <div class="shop-card-img">✨</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Cake & Candles · Neutral · ~£7</p><p class="shop-card-title">Gold Glitter Cake Topper with Stars</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="cake neutral" href="https://www.amazon.co.uk/s?k=personalised+birthday+cake+topper+gold+glitter+custom+name+age" target="_blank" rel="noopener">
+  <div class="shop-card-img">🏷️</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Cake & Candles · Neutral · ~£5</p><p class="shop-card-title">Personalised Birthday Cake Topper (custom name & age)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="cake unicorn" href="https://www.amazon.co.uk/s?k=unicorn+cake+topper+decoration+set+birthday+rainbow+girls" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦄</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Cake & Candles · Unicorn · ~£7</p><p class="shop-card-title">Unicorn Rainbow Cake Decoration Set</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="cake mermaid" href="https://www.amazon.co.uk/s?k=mermaid+cake+topper+birthday+girls+under+the+sea+decoration" target="_blank" rel="noopener">
+  <div class="shop-card-img">🧜</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Cake & Candles · Mermaid · ~£6</p><p class="shop-card-title">Mermaid Cake Topper & Decoration Set</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="cake jungle" href="https://www.amazon.co.uk/s?k=jungle+safari+wild+one+cake+topper+birthday+children" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦁</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Cake & Candles · Jungle · ~£6</p><p class="shop-card-title">Jungle Safari Cake Topper Set</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="cake princess" href="https://www.amazon.co.uk/s?k=princess+crown+castle+cake+topper+birthday+girls+pink+gold" target="_blank" rel="noopener">
+  <div class="shop-card-img">🏰</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Cake & Candles · Princess · ~£6</p><p class="shop-card-title">Princess Crown & Castle Cake Topper</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="cake superhero" href="https://www.amazon.co.uk/s?k=superhero+cake+topper+birthday+children+decoration+set" target="_blank" rel="noopener">
+  <div class="shop-card-img">⚡</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Cake & Candles · Superhero · ~£6</p><p class="shop-card-title">Superhero Cake Topper & Candle Set</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="cake dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+cake+topper+birthday+children+jungle+party" target="_blank" rel="noopener">
+  <div class="shop-card-img">🦕</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Cake & Candles · Dinosaur · ~£6</p><p class="shop-card-title">Dinosaur Cake Topper & Decoration Set</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
 
-    <a class="shop-card shop-item" data-cat="balloons" href="https://www.amazon.co.uk/s?k=pastel+balloon+arch+garland+kit+birthday&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎈</div><div class="shop-card-body"><p class="shop-card-tag">Balloons</p><p class="shop-card-title">Pastel Rainbow Balloon Arch & Garland Kit</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="balloons" href="https://www.amazon.co.uk/s?k=gold+foil+number+balloons+birthday&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🔢</div><div class="shop-card-body"><p class="shop-card-tag">Balloons</p><p class="shop-card-title">Gold Foil Number Balloons</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="balloons" href="https://www.amazon.co.uk/s?k=confetti+balloons+birthday+party&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎊</div><div class="shop-card-body"><p class="shop-card-tag">Balloons</p><p class="shop-card-title">Confetti Balloons Birthday Party Pack 50</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-
-    <a class="shop-card shop-item" data-cat="cake" href="https://www.amazon.co.uk/s?k=gold+number+birthday+candles&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🕯️</div><div class="shop-card-body"><p class="shop-card-tag">Cake</p><p class="shop-card-title">Gold Number Birthday Candles</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="cake" href="https://www.amazon.co.uk/s?k=happy+birthday+cake+topper+gold&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎂</div><div class="shop-card-body"><p class="shop-card-tag">Cake</p><p class="shop-card-title">Happy Birthday Acrylic Cake Topper – Gold</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item shop-extra" data-cat="cake" href="https://www.amazon.co.uk/s?k=rainbow+birthday+candles+spiral&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🌈</div><div class="shop-card-body"><p class="shop-card-tag">Cake</p><p class="shop-card-title">Rainbow Spiral Birthday Candles Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-
-    <a class="shop-card shop-item" data-cat="bags" href="https://www.amazon.co.uk/s?k=party+bag+fillers+kids+assorted&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎁</div><div class="shop-card-body"><p class="shop-card-tag">Party Bags</p><p class="shop-card-title">Assorted Party Bag Fillers Kids Pack of 48</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="bags" href="https://www.amazon.co.uk/s?k=personalised+party+bags+kraft&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🛍️</div><div class="shop-card-body"><p class="shop-card-tag">Party Bags</p><p class="shop-card-title">Kraft Paper Party Bags with Handles Pack of 24</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+<!-- ══ NEUTRAL & BOHO ══ -->
+<a class="shop-card shop-item" data-cat="neutral" href="https://www.amazon.co.uk/s?k=neutral+boho+party+decoration+bundle+pampas+birthday+beige+cream" target="_blank" rel="noopener">
+  <div class="shop-card-img">🤎</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Neutral & Boho · ~£12</p><p class="shop-card-title">Boho Neutral Party Decoration Set</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="neutral" href="https://www.amazon.co.uk/s?k=kraft+paper+bunting+banner+birthday+party+brown" target="_blank" rel="noopener">
+  <div class="shop-card-img">🎏</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Neutral & Boho · ~£8</p><p class="shop-card-title">Kraft Paper Bunting & Birthday Banner</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="neutral" href="https://www.amazon.co.uk/s?k=cream+gold+glitter+table+runner+birthday+neutral" target="_blank" rel="noopener">
+  <div class="shop-card-img">✨</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Neutral & Boho · ~£7</p><p class="shop-card-title">Cream & Gold Glitter Table Runner</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="neutral" href="https://www.amazon.co.uk/s?k=white+gold+full+party+tableware+set+20+guests+plates+cups+napkins" target="_blank" rel="noopener">
+  <div class="shop-card-img">🥂</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Neutral & Boho · ~£22</p><p class="shop-card-title">White & Gold Party Tableware Set (20 guests)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="neutral" href="https://www.amazon.co.uk/s?k=kraft+gold+paper+straws+50+pack+birthday+neutral+eco" target="_blank" rel="noopener">
+  <div class="shop-card-img">🥢</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Neutral & Boho · ~£4</p><p class="shop-card-title">Kraft & Gold Paper Straws (50 pack)</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+<a class="shop-card shop-item" data-cat="neutral" href="https://www.amazon.co.uk/s?k=boho+photo+booth+props+birthday+children+neutral" target="_blank" rel="noopener">
+  <div class="shop-card-img">📸</div>
+  <div class="shop-card-body"><p class="shop-card-tag">Neutral & Boho · ~£10</p><p class="shop-card-title">Boho Photo Booth Props Set</p><span class="shop-card-cta">Shop on Amazon</span></div>
+</a>
+```
 
   </div>
-  <div style="text-align:center;margin-top:20px;">
-    <button id="shop-show-more" onclick="shopShowMore()" style="padding:10px 28px;border:1px solid var(--gold-light);border-radius:2px;background:transparent;font-family:'DM Sans',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='var(--dark)';this.style.color='var(--cream)'" onmouseout="this.style.background='transparent';this.style.color='var(--mid)'">Show more ↓</button>
-  </div>
+
   <p class="shop-note">* As an Amazon Associate, Tiny Invites earns a small commission from qualifying purchases at no extra cost to you.</p>
 </section>
   

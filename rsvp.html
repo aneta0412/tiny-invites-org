@@ -300,8 +300,6 @@
 
   .invite-hero {
     width: 100%;
-    max-width: 540px;
-    margin: 0 auto 0;
     position: relative;
     border-radius: 24px 24px 0 0;
     overflow: hidden;
@@ -324,18 +322,19 @@
 
 <!-- PAGE 1 — INVITATION -->
 <div class="page active" id="page-invite">
-  <div class="hero-card-wrap" id="invite-wrap" style="width:calc(100% - 40px);max-width:540px;animation:fadeUp 0.55s cubic-bezier(.22,.61,.36,1) both;">
+  <div id="invite-wrap" style="width:calc(100% - 40px);max-width:540px;animation:fadeUp 0.55s cubic-bezier(.22,.61,.36,1) both;border-radius:24px;overflow:hidden;box-shadow:0 8px 40px rgba(42,34,24,0.07);">
 
-    <div class="invite-hero" id="invite-hero">
-      <img id="invite-hero-img" src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80" alt="Party decorations">
-      <div class="invite-hero-overlay"></div>
+    <div id="invite-hero" style="position:relative;width:100%;aspect-ratio:16/9;background:var(--gold-pale);overflow:hidden;">
+      <img id="invite-hero-img" src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80" alt="Party decorations" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(42,34,24,0.08) 0%,rgba(42,34,24,0.45) 100%);"></div>
     </div>
 
-    <div class="card has-hero" id="invite-card">
-      <div class="brand">Tiny Invites</div>
-      <div class="ornament" id="invite-ornament" style="display:none;">✦ ✦ ✦</div>
+    <div style="background:var(--warm-white);border:1px solid var(--gold-pale);border-top:none;border-radius:0 0 24px 24px;padding:48px 48px 44px;position:relative;" id="invite-card">
+      <div style="position:absolute;inset:0 10px 10px;border:1px solid var(--gold-pale);border-top:none;border-radius:0 0 18px 18px;pointer-events:none;opacity:0.6;"></div>
 
-      <h1>Hello, <em id="inv-name">Friend</em>!</h1>
+      <div class="brand">Tiny Invites</div>
+
+      <h1 id="inv-greeting">Hello!</h1>
       <p class="subtitle" id="inv-subtitle">You are warmly invited to celebrate a very special day.</p>
 
       <div class="divider"><span></span><i>◆</i><span></span></div>
@@ -345,18 +344,24 @@
         <div class="info-item"><span class="icon">📍</span> <span id="inv-location-line">Loading…</span></div>
       </div>
 
-      <p style="font-size:0.92rem;color:var(--mid);text-align:center;margin-bottom:22px;line-height:1.65;">
+      <p style="font-size:0.92rem;color:var(--mid);text-align:center;margin-bottom:24px;line-height:1.65;">
         We'd love to have you join us for cake, laughter, and all the good things. We can't wait! 🎈
       </p>
+
+      <div style="margin-bottom:20px;">
+        <label>Your name</label>
+        <input type="text" id="landing-guest-name" placeholder="e.g. Sarah Johnson">
+      </div>
 
       <p style="font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--soft);text-align:center;margin-bottom:14px;">
         Will you be joining us?
       </p>
 
       <div class="btn-group">
-        <button class="btn btn-yes" onclick="showPage('page-yes')">🎉 Yes, I'll be there!</button>
-        <button class="btn btn-no" onclick="showPage('page-no')">Can't make it</button>
+        <button class="btn btn-yes" onclick="proceedYes()">🎉 Yes, I'll be there!</button>
+        <button class="btn btn-no" onclick="proceedNo()">Can't make it</button>
       </div>
+      <p id="landing-name-error" style="display:none;text-align:center;font-size:0.8rem;color:#e05555;margin-top:10px;">Please enter your name first 😊</p>
     </div>
 
   </div>
@@ -368,15 +373,15 @@
     <div class="brand">Tiny Invites</div>
     <div class="ornament">🎊</div>
 
-    <h2>Hello, friend! 👋</h2>
-    <p class="subtitle">Wonderful — we're so excited to see you! Just a couple of quick details…</p>
+    <h2>Wonderful!</h2>
+    <p class="subtitle">We're so excited to see you. Just a couple of quick details…</p>
 
     <div class="divider"><span></span><i>◆</i><span></span></div>
 
     <div class="field-group">
       <div>
         <label>Your name</label>
-        <input type="text" id="guest-name" placeholder="e.g. Sarah Johnson">
+        <input type="text" id="guest-name" placeholder="e.g. Sarah Johnson" readonly style="background:var(--gold-pale);cursor:default;">
       </div>
       <div>
         <label>Your email</label>
@@ -385,22 +390,6 @@
       <div>
         <label>Your phone (optional)</label>
         <input type="tel" id="guest-phone" placeholder="+44 7700 000000">
-      </div>
-    </div>
-
-    <div class="divider"><span></span><i>◆</i><span></span></div>
-
-    <p style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:12px;">How many children are coming?</p>
-
-    <div style="margin-bottom:14px;">
-      <label>Children (age 1+)</label>
-      <div class="counter-row">
-        <span>Children (age 1+)</span>
-        <div class="counter-btns">
-          <button class="counter-btn" onclick="change('children',-1)">−</button>
-          <span class="counter-val" id="children-val">0</span>
-          <button class="counter-btn" onclick="change('children',1)">+</button>
-        </div>
       </div>
     </div>
 
@@ -436,13 +425,29 @@
 
     <div class="divider"><span></span><i>◆</i><span></span></div>
 
-    <p class="sorry-note">
-      That's a shame — but we completely understand.<br><br>
-      We'll be thinking of you and hope to celebrate together another time. Sending you lots of love 💛
+    <p class="sorry-note" style="margin-bottom:22px;">
+      That's a shame — but we completely understand.<br>
+      We'll let the host know you can't make it.
     </p>
 
-    <div style="margin-top:32px;text-align:center;">
-      <button onclick="showPage('page-invite')" class="btn btn-no" style="display:inline-block;padding:12px 28px;border-radius:10px;">← Actually, let me re-check my diary</button>
+    <input type="hidden" id="no-guest-name">
+
+    <div style="margin-bottom:20px;">
+      <label>Anything you'd like the host to know? <span style="color:var(--soft);font-weight:300;">(optional)</span></label>
+      <textarea id="no-message" placeholder="e.g. We'll be away that weekend, hope it's a wonderful day!"></textarea>
+    </div>
+
+    <button class="btn-primary" id="no-submit-btn" onclick="submitDecline()">
+      <div class="spinner"></div>
+      <span class="btn-label">Send</span>
+    </button>
+
+    <div class="error-banner" id="no-error-banner">
+      ⚠️ <span id="no-error-text">Something went wrong. Please try again.</span>
+    </div>
+
+    <div style="margin-top:16px;text-align:center;">
+      <button onclick="showPage('page-invite')" style="background:none;border:none;color:var(--soft);font-size:0.8rem;cursor:pointer;text-decoration:underline;">← Actually, let me re-check my diary</button>
     </div>
   </div>
 </div>
@@ -478,8 +483,37 @@
   // Point this at your API endpoint (Vercel, Next.js, etc.)
   const RSVP_API_ENDPOINT = '/api/submit-rsvp';
 
-  // ── COUNTERS ────────────────────────────────────────────
-  const counts = { children: 0 };
+  // ── LANDING NAME GATE ───────────────────────────────────
+  function getLandingName() {
+    return document.getElementById('landing-guest-name').value.trim();
+  }
+
+  function proceedYes() {
+    const name = getLandingName();
+    if (!name) {
+      document.getElementById('landing-name-error').style.display = 'block';
+      document.getElementById('landing-guest-name').focus();
+      return;
+    }
+    document.getElementById('landing-name-error').style.display = 'none';
+    document.getElementById('guest-name').value = name;
+    showPage('page-yes');
+  }
+
+  function proceedNo() {
+    const name = getLandingName();
+    if (!name) {
+      document.getElementById('landing-name-error').style.display = 'block';
+      document.getElementById('landing-guest-name').focus();
+      return;
+    }
+    document.getElementById('landing-name-error').style.display = 'none';
+    document.getElementById('no-guest-name').value = name;
+    showPage('page-no');
+  }
+
+  // ── COUNTERS ─────────────────────────────────────────────
+  const counts = { adults: 1, children: 0, babies: 0 };
   function change(key, delta) {
     counts[key] = Math.max(0, counts[key] + delta);
     if (key === 'adults' && counts[key] < 1) counts[key] = 1;
@@ -508,12 +542,18 @@
     const location  = getParam('location') || '';
     const date      = getParam('date')     || '';
     const hostEmail = getParam('host')     || '';
-    const partyId   = getParam('partyId')  || '';
+    const partyId   = getParam('party') || getParam('partyId') || '';
 
     window._hostEmail = hostEmail;
     window._partyId   = partyId;
 
-    document.getElementById('inv-name').textContent = childName;
+    // Greeting — only show child name if we have it
+    const greetingEl = document.getElementById('inv-greeting');
+    if (childName && childName !== 'our little one') {
+      greetingEl.innerHTML = `You're invited, <em>${childName}'s party</em>!`;
+    } else {
+      greetingEl.innerHTML = `Hello! <em>You're invited.</em>`;
+    }
 
     const ageStr = age
       ? `${childName}'s <strong>${age}${ordinal(age)}</strong> birthday`
@@ -563,7 +603,7 @@
     const guestEmail = document.getElementById('guest-email').value.trim();
     const guestPhone = document.getElementById('guest-phone').value.trim();
     const allergies  = document.getElementById('guest-allergies').value.trim();
-    const counted    = counts.children;
+    const counted    = counts.adults + counts.children;
     const pd         = window._partyData || {};
 
     // UI: loading state
@@ -628,7 +668,55 @@
     }
   }
 
-  // ── CONFETTI ────────────────────────────────────────────
+  // ── SUBMIT DECLINE ──────────────────────────────────────
+  async function submitDecline() {
+    const guestName = document.getElementById('no-guest-name').value.trim();
+
+    const btn = document.getElementById('no-submit-btn');
+    const errorBanner = document.getElementById('no-error-banner');
+    btn.disabled = true;
+    btn.classList.add('loading');
+    btn.querySelector('.btn-label').textContent = 'Sending…';
+    errorBanner.classList.remove('visible');
+
+    const pd = window._partyData || {};
+    const payload = {
+      party_id:    pd.partyId || window._partyId || '',
+      guest_name:  guestName,
+      attending:   false,
+      guest_count: 0,
+      allergies:   document.getElementById('no-message').value.trim() || null,
+    };
+
+    try {
+      const res = await fetch(RSVP_API_ENDPOINT, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
+
+      // Show a simple thank-you message in place of the card
+      document.querySelector('#page-no .card').innerHTML = `
+        <div class="brand">Tiny Invites</div>
+        <div class="sorry-emoji">💛</div>
+        <h2>Thank you, ${guestName}!</h2>
+        <div class="divider"><span></span><i>◆</i><span></span></div>
+        <p class="sorry-note">We've let the host know you can't make it.<br><br>
+        We'll be thinking of you and hope to celebrate together another time. Sending lots of love 💛</p>
+      `;
+    } catch (err) {
+      document.getElementById('no-error-text').textContent = err.message || 'Something went wrong.';
+      errorBanner.classList.add('visible');
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      btn.querySelector('.btn-label').textContent = 'Send my apologies';
+    }
+  }
+
+  // ── CONFETTI ─────────────────────────────────────────────
   function launchConfetti() {
     const canvas = document.getElementById('confetti-canvas');
     const ctx    = canvas.getContext('2d');

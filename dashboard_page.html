@@ -291,13 +291,23 @@ td { padding: 12px 16px; font-size: 0.84rem; color: var(--dark); vertical-align:
   <a href="/" class="nav-back">← Back to home</a>
 </nav>
 
+<div id="dash-hero" style="display:none;width:100%;max-height:280px;overflow:hidden;border-radius:0 0 18px 18px;position:relative;margin-bottom:0;">
+  <img id="dash-hero-img" src="" alt="Party" style="width:100%;height:280px;object-fit:cover;display:block;">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(42,34,24,0.05) 0%,rgba(42,34,24,0.6) 100%);"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;padding:28px 40px;">
+    <div style="font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(250,246,239,0.7);margin-bottom:8px;">Party Dashboard</div>
+    <h1 id="partyTitle" style="font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:400;line-height:1.15;color:var(--cream);margin-bottom:4px;">Your Party</h1>
+    <p id="partyMeta" style="font-size:0.85rem;color:rgba(250,246,239,0.75);">—</p>
+  </div>
+</div>
+
 <div class="page">
 
-  <!-- HEADER -->
-  <div class="dash-header">
+  <!-- HEADER (shown only when no hero photo) -->
+  <div class="dash-header" id="dash-header-text">
     <div class="dash-eyebrow">Party Dashboard</div>
-    <h1 class="dash-title"><em id="partyTitle">Your Party</em></h1>
-    <p class="dash-sub" id="partyMeta">—</p>
+    <h1 class="dash-title" id="partyTitleText" style="display:none;">Your Party</h1>
+    <p class="dash-sub" id="partyMetaText" style="display:none;">—</p>
   </div>
 
   <!-- PARTY STRIP -->
@@ -441,11 +451,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 // ── 2. POPULATE PARTY HEADER ─────────────────────────────────────────────────
 function populateHeader(party) {
   const age = party.age;
-  document.getElementById('partyTitle').textContent =
-    age ? `${party.child_name}'s ${age}${ordSuffix(age)} Birthday`
-        : `${party.child_name}'s Party`;
+  const title = age
+    ? `${party.child_name}'s ${age}${ordSuffix(age)} Birthday`
+    : `${party.child_name}'s Party`;
 
-  // Format date nicely if present
   let meta = party.venue || '—';
   if (party.party_date) {
     try {
@@ -454,9 +463,37 @@ function populateHeader(party) {
            + (party.venue ? ' · ' + party.venue : '');
     } catch { /* keep venue only */ }
   }
-  document.getElementById('partyMeta').textContent     = meta;
+
+  // Hero photo — stored in party.photo_url if host provided one
+  const photoUrl = party.photo_url || '';
+  if (photoUrl) {
+    const heroEl  = document.getElementById('dash-hero');
+    const heroImg = document.getElementById('dash-hero-img');
+    heroImg.src   = photoUrl;
+    heroImg.onerror = () => { heroEl.style.display = 'none'; showTextHeader(title, meta); };
+    heroEl.style.display = 'block';
+    document.getElementById('dash-header-text').style.display = 'none';
+    document.getElementById('partyTitle').textContent = title;
+    document.getElementById('partyMeta').textContent  = meta;
+  } else {
+    showTextHeader(title, meta);
+  }
+
   document.getElementById('partyLocation').textContent = party.venue || '—';
   document.getElementById('hostEmail').textContent     = party.parent_email || '—';
+}
+
+function showTextHeader(title, meta) {
+  document.getElementById('dash-header-text').style.display = '';
+  const t = document.getElementById('partyTitleText');
+  const m = document.getElementById('partyMetaText');
+  if (t) { t.textContent = title; t.style.display = ''; }
+  if (m) { m.textContent = meta;  m.style.display = ''; }
+  // also set the overlay ones in case hero is later shown
+  const pt = document.getElementById('partyTitle');
+  const pm = document.getElementById('partyMeta');
+  if (pt) pt.textContent = title;
+  if (pm) pm.textContent = meta;
 }
 
 // ── 3. RENDER DASHBOARD ───────────────────────────────────────────────────────

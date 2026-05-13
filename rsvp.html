@@ -483,6 +483,22 @@
   // Point this at your API endpoint (Vercel, Next.js, etc.)
   const RSVP_API_ENDPOINT = '/api/submit-rsvp';
 
+  // ── DUPLICATE PREVENTION ─────────────────────────────────
+  // One submission per page session — once submitted, block any retry
+  let _submitted = false;
+  // Also store a fingerprint: party_id + guest_name, stored in sessionStorage
+  // so even a fast double-click or accidental refresh won't double-save
+  function isDuplicate(partyId, guestName) {
+    const key = 'rsvp_done_' + partyId;
+    const existing = sessionStorage.getItem(key);
+    if (existing === guestName.toLowerCase().trim()) return true;
+    return false;
+  }
+  function markSubmitted(partyId, guestName) {
+    sessionStorage.setItem('rsvp_done_' + partyId, guestName.toLowerCase().trim());
+    _submitted = true;
+  }
+
   // ── LANDING NAME GATE ───────────────────────────────────
   function getLandingName() {
     return document.getElementById('landing-guest-name').value.trim();
@@ -619,6 +635,14 @@
     const counted    = counts.adults + counts.children;
     const pd         = window._partyData || {};
 
+    // ── Duplicate check ──
+    const pd2 = window._partyData || {};
+    const pid  = pd2.partyId || window._partyId || '';
+    if (_submitted || isDuplicate(pid, guestName)) {
+      showPage('page-success');
+      return;
+    }
+
     // UI: loading state
     const btn = document.getElementById('submit-btn');
     const errorBanner = document.getElementById('error-banner');
@@ -665,6 +689,7 @@
         contactEl.style.display = 'block';
       }
 
+      markSubmitted(pid, guestName);
       showPage('page-success');
       launchConfetti();
 
@@ -692,6 +717,7 @@
     btn.querySelector('.btn-label').textContent = 'Sending…';
     errorBanner.classList.remove('visible');
 
+    if (_submitted) return;
     const pd = window._partyData || {};
     const payload = {
       party_id:    pd.partyId || window._partyId || '',

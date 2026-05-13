@@ -28,11 +28,9 @@
     overflow-x: hidden;
   }
 
-  /* ── PAGES ── */
   .page { display:none; min-height:100vh; }
   .page.active { display:flex; flex-direction:column; align-items:center; justify-content:center; }
 
-  /* ── SHARED CARD ── */
   .card {
     background: var(--warm-white);
     border: 1px solid var(--gold-pale);
@@ -50,7 +48,6 @@
     to   { opacity:1; transform:translateY(0); }
   }
 
-  /* ── DECORATIVE BORDER ── */
   .card::before {
     content: '';
     position: absolute;
@@ -61,7 +58,6 @@
     opacity: 0.6;
   }
 
-  /* ── LOGO / BRAND ── */
   .brand {
     font-family: "Cormorant Garamond", serif;
     font-size: 0.75rem;
@@ -72,7 +68,6 @@
     margin-bottom: 32px;
   }
 
-  /* ── ORNAMENT ── */
   .ornament {
     text-align: center;
     font-size: 1.5rem;
@@ -81,7 +76,6 @@
     letter-spacing: 0.15em;
   }
 
-  /* ── HEADINGS ── */
   h1 {
     font-family: "Cormorant Garamond", serif;
     font-size: 2.6rem;
@@ -110,7 +104,6 @@
     margin-bottom: 28px;
   }
 
-  /* ── DIVIDER ── */
   .divider {
     display: flex;
     align-items: center;
@@ -120,7 +113,6 @@
   .divider span { flex:1; height:1px; background: var(--gold-light); }
   .divider i { color: var(--gold); font-size: 0.7rem; }
 
-  /* ── INFO CHIPS ── */
   .info-row {
     display: flex;
     flex-direction: column;
@@ -141,7 +133,6 @@
   .info-item a { color: var(--gold); text-decoration: none; font-weight: 500; }
   .info-item a:hover { text-decoration: underline; }
 
-  /* ── BUTTONS ── */
   .btn-group {
     display: flex;
     gap: 14px;
@@ -159,16 +150,9 @@
     transition: all 0.2s;
     border: none;
   }
-  .btn-yes {
-    background: var(--dark);
-    color: var(--cream);
-  }
+  .btn-yes { background: var(--dark); color: var(--cream); }
   .btn-yes:hover { background: var(--gold); }
-  .btn-no {
-    background: transparent;
-    color: var(--mid);
-    border: 1px solid var(--gold-light);
-  }
+  .btn-no { background: transparent; color: var(--mid); border: 1px solid var(--gold-light); }
   .btn-no:hover { background: var(--gold-pale); }
 
   .btn-primary {
@@ -181,12 +165,44 @@
     font-size: 0.95rem;
     cursor: pointer;
     border: none;
-    transition: background 0.2s;
+    transition: background 0.2s, opacity 0.2s;
     margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
-  .btn-primary:hover { background: var(--gold); }
+  .btn-primary:hover:not(:disabled) { background: var(--gold); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  /* ── FORM FIELDS ── */
+  /* Loading spinner */
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .btn-primary.loading .spinner { display: block; }
+  .btn-primary.loading .btn-label { opacity: 0.7; }
+
+  /* Error banner */
+  .error-banner {
+    display: none;
+    background: #fff0f0;
+    border: 1px solid #ffc0c0;
+    border-left: 3px solid #e05555;
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-size: 0.83rem;
+    color: #8b2020;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+  .error-banner.visible { display: block; }
+
   .field-group { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
 
   label {
@@ -213,7 +229,6 @@
   input:focus, textarea:focus, select:focus { border-color: var(--gold); }
   textarea { resize: vertical; min-height: 76px; }
 
-  /* counter row */
   .counter-row {
     display: flex;
     align-items: center;
@@ -237,22 +252,14 @@
     display: flex; align-items: center; justify-content: center;
   }
   .counter-btn:hover { background: var(--gold-pale); }
-  .counter-val {
-    min-width: 28px;
-    text-align: center;
-    font-size: 1rem;
-    color: var(--dark);
-  }
+  .counter-val { min-width: 28px; text-align: center; font-size: 1rem; color: var(--dark); }
 
-  /* sorry */
   .sorry-emoji { font-size: 3rem; text-align:center; margin-bottom:16px; }
   .sorry-note { font-size:0.9rem; color:var(--mid); text-align:center; line-height:1.7; }
 
-  /* success */
   .success-emoji { font-size: 3rem; text-align:center; margin-bottom:16px; }
   .success-note { font-size:0.9rem; color:var(--mid); text-align:center; line-height:1.7; }
 
-  /* ── CONFETTI ── */
   #confetti-canvas {
     position: fixed;
     top:0; left:0;
@@ -261,7 +268,6 @@
     z-index: 999;
   }
 
-  /* ── NOTE BOX ── */
   .note-box {
     background: var(--gold-pale);
     border-left: 3px solid var(--gold);
@@ -273,7 +279,6 @@
     line-height: 1.6;
   }
 
-  /* tally badge */
   .tally {
     display: inline-flex;
     align-items: center;
@@ -293,7 +298,6 @@
     h1 { font-size: 2rem; }
   }
 
-  /* ── HERO IMAGE ── */
   .invite-hero {
     width: 100%;
     max-width: 540px;
@@ -304,50 +308,22 @@
     aspect-ratio: 16/9;
     background: var(--gold-pale);
   }
-  .invite-hero img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-  }
+  .invite-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .invite-hero-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(to bottom, rgba(42,34,24,0.08) 0%, rgba(42,34,24,0.45) 100%);
   }
-  /* When hero is present, card loses its top radius */
-  .card.has-hero {
-    border-radius: 0 0 24px 24px;
-    border-top: none;
-    margin-top: 0;
-  }
-  .card.has-hero::before {
-    border-radius: 0 0 18px 18px;
-    top: 0;
-  }
-  /* Page 1 wrapper when hero present */
-  #page-invite.has-hero-layout {
-    padding-top: 40px;
-  }
-  #page-invite.has-hero-layout .hero-card-wrap {
-    max-width: 540px;
-    width: calc(100% - 40px);
-    animation: fadeUp 0.55s cubic-bezier(.22,.61,.36,1) both;
-  }
-  #page-invite.has-hero-layout .hero-card-wrap .card {
-    width: 100%;
-    max-width: none;
-  }
+  .card.has-hero { border-radius: 0 0 24px 24px; border-top: none; margin-top: 0; }
+  .card.has-hero::before { border-radius: 0 0 18px 18px; top: 0; }
 </style>
 </head>
 <body>
 
 <canvas id="confetti-canvas"></canvas>
 
-<!-- ══════════════════════════════════════
-     PAGE 1 — INVITATION
-══════════════════════════════════════ -->
+<!-- PAGE 1 — INVITATION -->
 <div class="page active" id="page-invite">
-  <!-- Generic hero image + card -->
   <div class="hero-card-wrap" id="invite-wrap" style="width:calc(100% - 40px);max-width:540px;animation:fadeUp 0.55s cubic-bezier(.22,.61,.36,1) both;">
 
     <div class="invite-hero" id="invite-hero">
@@ -360,9 +336,7 @@
       <div class="ornament" id="invite-ornament" style="display:none;">✦ ✦ ✦</div>
 
       <h1>Hello, <em id="inv-name">Friend</em>!</h1>
-      <p class="subtitle" id="inv-subtitle">
-        You are warmly invited to celebrate a very special day.
-      </p>
+      <p class="subtitle" id="inv-subtitle">You are warmly invited to celebrate a very special day.</p>
 
       <div class="divider"><span></span><i>◆</i><span></span></div>
 
@@ -372,7 +346,7 @@
       </div>
 
       <p style="font-size:0.92rem;color:var(--mid);text-align:center;margin-bottom:22px;line-height:1.65;">
-        We'd love to have you join us for cake, laughter, and all the good things. Great that you're coming — we can't wait! 🎈
+        We'd love to have you join us for cake, laughter, and all the good things. We can't wait! 🎈
       </p>
 
       <p style="font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--soft);text-align:center;margin-bottom:14px;">
@@ -388,16 +362,14 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     PAGE 2 — YES / RSVP FORM
-══════════════════════════════════════ -->
+<!-- PAGE 2 — YES / RSVP FORM -->
 <div class="page" id="page-yes">
   <div class="card">
     <div class="brand">Tiny Invites</div>
     <div class="ornament">🎊</div>
 
-    <h2>Wonderful!</h2>
-    <p class="subtitle">We're so excited to see you. Just a couple of quick details…</p>
+    <h2>Hello, friend! 👋</h2>
+    <p class="subtitle">Wonderful — we're so excited to see you! Just a couple of quick details…</p>
 
     <div class="divider"><span></span><i>◆</i><span></span></div>
 
@@ -418,23 +390,7 @@
 
     <div class="divider"><span></span><i>◆</i><span></span></div>
 
-    <p style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:12px;">How many people are coming?</p>
-
-    <div class="note-box">
-      🍼 Babies under 1 don't count — just little ones who need a seat at the table!
-    </div>
-
-    <div style="margin-bottom:14px;">
-      <label>Adults</label>
-      <div class="counter-row">
-        <span>Adults</span>
-        <div class="counter-btns">
-          <button class="counter-btn" onclick="change('adults',-1)">−</button>
-          <span class="counter-val" id="adults-val">1</span>
-          <button class="counter-btn" onclick="change('adults',1)">+</button>
-        </div>
-      </div>
-    </div>
+    <p style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:12px;">How many children are coming?</p>
 
     <div style="margin-bottom:14px;">
       <label>Children (age 1+)</label>
@@ -448,18 +404,6 @@
       </div>
     </div>
 
-    <div style="margin-bottom:20px;">
-      <label>Babies under 1</label>
-      <div class="counter-row">
-        <span>Babies under 1 <span style="color:var(--soft);font-size:0.8em;">(not counted)</span></span>
-        <div class="counter-btns">
-          <button class="counter-btn" onclick="change('babies',-1)">−</button>
-          <span class="counter-val" id="babies-val">0</span>
-          <button class="counter-btn" onclick="change('babies',1)">+</button>
-        </div>
-      </div>
-    </div>
-
     <div class="divider"><span></span><i>◆</i><span></span></div>
 
     <div>
@@ -467,15 +411,22 @@
       <textarea id="guest-allergies" placeholder="e.g. nut allergy, vegetarian, no dairy…"></textarea>
     </div>
 
-    <button class="btn-primary" onclick="submitRSVP()">✓ Confirm my RSVP</button>
+    <button class="btn-primary" id="submit-btn" onclick="submitRSVP()">
+      <div class="spinner"></div>
+      <span class="btn-label">✓ Confirm my RSVP</span>
+    </button>
 
-    <p style="text-align:center;margin-top:14px;"><button onclick="showPage('page-invite')" style="background:none;border:none;color:var(--soft);font-size:0.8rem;cursor:pointer;text-decoration:underline;">← Go back</button></p>
+    <div class="error-banner" id="error-banner">
+      ⚠️ <span id="error-text">Something went wrong. Please try again.</span>
+    </div>
+
+    <p style="text-align:center;margin-top:14px;">
+      <button onclick="showPage('page-invite')" style="background:none;border:none;color:var(--soft);font-size:0.8rem;cursor:pointer;text-decoration:underline;">← Go back</button>
+    </p>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     PAGE 3 — NO / SORRY
-══════════════════════════════════════ -->
+<!-- PAGE 3 — NO / SORRY -->
 <div class="page" id="page-no">
   <div class="card">
     <div class="brand">Tiny Invites</div>
@@ -496,9 +447,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     PAGE 4 — SUCCESS
-══════════════════════════════════════ -->
+<!-- PAGE 4 — SUCCESS -->
 <div class="page" id="page-success">
   <div class="card">
     <div class="brand">Tiny Invites</div>
@@ -525,55 +474,56 @@
 </div>
 
 <script>
-  // ── COUNTERS ──
-  const counts = { adults: 1, children: 0, babies: 0 };
+  // ── CONFIG ──────────────────────────────────────────────
+  // Point this at your API endpoint (Vercel, Next.js, etc.)
+  const RSVP_API_ENDPOINT = '/api/submit-rsvp';
+
+  // ── COUNTERS ────────────────────────────────────────────
+  const counts = { children: 0 };
   function change(key, delta) {
     counts[key] = Math.max(0, counts[key] + delta);
     if (key === 'adults' && counts[key] < 1) counts[key] = 1;
     document.getElementById(key + '-val').textContent = counts[key];
   }
 
-  // ── PAGE ROUTING ──
+  // ── PAGE ROUTING ────────────────────────────────────────
   function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
   }
 
-  // ── LOAD PARAMS FROM URL ──
+  // ── URL PARAMS ──────────────────────────────────────────
   function getParam(name) {
     return new URLSearchParams(window.location.search).get(name) || '';
   }
 
   function buildMapsLink(location) {
-    const q = encodeURIComponent(location);
-    return `https://www.google.com/maps/search/?api=1&query=${q}`;
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    const childName= getParam('child') || getParam('name') || 'our little one';
-    const name     = childName;  // greeting uses child's name
-    const age      = getParam('age')      || '';
-    const location = getParam('location') || '';
-    const date     = getParam('date')     || '';
-    const hostEmail= getParam('host')     || '';
-    const partyId  = getParam('partyId')  || '';
+    const childName = getParam('child') || getParam('name') || 'our little one';
+    const age       = getParam('age')      || '';
+    const location  = getParam('location') || '';
+    const date      = getParam('date')     || '';
+    const hostEmail = getParam('host')     || '';
+    const partyId   = getParam('partyId')  || '';
+
     window._hostEmail = hostEmail;
-    window._partyId = partyId;
+    window._partyId   = partyId;
 
-    // Headline
-    document.getElementById('inv-name').textContent = name;
+    document.getElementById('inv-name').textContent = childName;
 
-    // Subtitle
-    const ageStr = age ? `${childName}'s <strong>${age}${ordinal(age)}</strong> birthday` : `${childName}'s birthday`;
-    document.getElementById('inv-subtitle').innerHTML =
-      `You're invited to celebrate ${ageStr}!`;
+    const ageStr = age
+      ? `${childName}'s <strong>${age}${ordinal(age)}</strong> birthday`
+      : `${childName}'s birthday`;
+    document.getElementById('inv-subtitle').innerHTML = `You're invited to celebrate ${ageStr}!`;
 
-    // Age line
-    document.getElementById('inv-age-line').innerHTML =
-      age ? `Celebrating <strong>${childName}</strong> turning <strong>${age}</strong>!` : `Celebrating <strong>${childName}</strong>!`;
+    document.getElementById('inv-age-line').innerHTML = age
+      ? `Celebrating <strong>${childName}</strong> turning <strong>${age}</strong>!`
+      : `Celebrating <strong>${childName}</strong>!`;
 
-    // Location line
     if (location) {
       const mapsUrl = buildMapsLink(location);
       document.getElementById('inv-location-line').innerHTML =
@@ -582,7 +532,6 @@
       document.getElementById('inv-location-line').textContent = 'Location TBC';
     }
 
-    // Date line
     if (date) {
       const dateEl = document.createElement('div');
       dateEl.className = 'info-item';
@@ -590,65 +539,96 @@
       document.getElementById('inv-details').prepend(dateEl);
     }
 
-    // Store for success page
-    window._partyData = { partyId, name, childName, age, location, hostEmail };
-
+    window._partyData = { partyId, childName, age, location, hostEmail };
   });
 
   function ordinal(n) {
     const s = ['th','st','nd','rd'], v = n % 100;
     return s[(v-20)%10] || s[v] || s[0];
   }
+
   function formatDate(d) {
     try {
-      return new Date(d).toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+      return new Date(d).toLocaleDateString('en-GB', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      });
     } catch { return d; }
   }
 
-  // ── SUBMIT RSVP ──
-  function submitRSVP() {
+  // ── SUBMIT RSVP → POST to /api/rsvp ─────────────────────
+  async function submitRSVP() {
     const guestName = document.getElementById('guest-name').value.trim();
     if (!guestName) { alert('Please enter your name 😊'); return; }
+
     const guestEmail = document.getElementById('guest-email').value.trim();
     const guestPhone = document.getElementById('guest-phone').value.trim();
-    const allergies = document.getElementById('guest-allergies').value.trim();
+    const allergies  = document.getElementById('guest-allergies').value.trim();
+    const counted    = counts.children;
+    const pd         = window._partyData || {};
 
-    const counted = counts.adults + counts.children;
-    document.getElementById('tally-count').textContent = counted;
-    document.getElementById('tally-label').textContent = counted === 1 ? 'guest' : 'guests';
+    // UI: loading state
+    const btn = document.getElementById('submit-btn');
+    const errorBanner = document.getElementById('error-banner');
+    btn.disabled = true;
+    btn.classList.add('loading');
+    btn.querySelector('.btn-label').textContent = 'Submitting…';
+    errorBanner.classList.remove('visible');
 
-    const pd = window._partyData || {};
-    window._lastRsvp = {
-      partyId: pd.partyId || window._partyId || '',
-      childName: pd.childName || '',
-      hostEmail: window._hostEmail || '',
-      guestName,
-      guestEmail,
-      guestPhone,
-      allergies,
-      adults: counts.adults,
-      children: counts.children,
-      babies: counts.babies,
-      attending: true,
-      submittedAt: new Date().toISOString()
+    // Payload — keys match your API handler exactly
+    const payload = {
+      party_id:    pd.partyId || window._partyId || '',
+      guest_name:  guestName,
+      attending:   true,
+      guest_count: counted,
+      allergies:   allergies || null,
     };
-    document.getElementById('success-message').innerHTML =
-      `We look forward to seeing <strong>${guestName}</strong> — it's going to be the most wonderful party for ${pd.childName || 'our little one'}!<br><br>
-       Keep an eye on your inbox for any updates. See you there! 🎈`;
 
-    if (window._hostEmail) {
-      const contactEl = document.getElementById('success-contact');
-      const emailLink = document.getElementById('success-host-email');
-      emailLink.href = 'mailto:' + window._hostEmail;
-      emailLink.textContent = window._hostEmail;
-      contactEl.style.display = 'block';
+    try {
+      const res = await fetch(RSVP_API_ENDPOINT, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || `Server error ${res.status}`);
+      }
+
+      // ── Success ──
+      document.getElementById('tally-count').textContent = counted;
+      document.getElementById('tally-label').textContent = counted === 1 ? 'guest' : 'guests';
+
+      document.getElementById('success-message').innerHTML =
+        `We look forward to seeing <strong>${guestName}</strong> — it's going to be the most wonderful party for ${pd.childName || 'our little one'}!<br><br>
+         Keep an eye on your inbox for any updates. See you there! 🎈`;
+
+      if (window._hostEmail) {
+        const contactEl  = document.getElementById('success-contact');
+        const emailLink  = document.getElementById('success-host-email');
+        emailLink.href        = 'mailto:' + window._hostEmail;
+        emailLink.textContent = window._hostEmail;
+        contactEl.style.display = 'block';
+      }
+
+      showPage('page-success');
+      launchConfetti();
+
+    } catch (err) {
+      // ── Error: show banner, re-enable button ──
+      document.getElementById('error-text').textContent =
+        err.message || 'Something went wrong. Please try again.';
+      errorBanner.classList.add('visible');
+
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      btn.querySelector('.btn-label').textContent = '✓ Confirm my RSVP';
     }
-
-    showPage('page-success');
-    launchConfetti();
   }
 
-  // ── CONFETTI ──
+  // ── CONFETTI ────────────────────────────────────────────
   function launchConfetti() {
     const canvas = document.getElementById('confetti-canvas');
     const ctx    = canvas.getContext('2d');
@@ -670,7 +650,7 @@
 
     let angle = 0, frame;
     function draw() {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       angle += 0.01;
       pieces.forEach(p => {
         p.tiltAngle += p.tiltAngleIncremental;
@@ -690,7 +670,6 @@
           ctx.fill();
         }
       });
-      // reset pieces that fall off bottom
       pieces.forEach(p => {
         if (p.y > canvas.height + 20) {
           p.y = -20;
@@ -700,10 +679,9 @@
       frame = requestAnimationFrame(draw);
     }
     draw();
-    // stop after 5s
     setTimeout(() => {
       cancelAnimationFrame(frame);
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     }, 5000);
   }
 </script>

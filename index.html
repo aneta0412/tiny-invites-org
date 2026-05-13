@@ -1173,6 +1173,11 @@
         <input type="email" id="ci-email" placeholder="e.g. sarah@email.com" autocomplete="email">
         <p style="font-size:0.72rem;color:var(--soft);margin-top:5px;line-height:1.55;">Every guest RSVP lands in your inbox the moment it&#x2019;s submitted — name, guest count, and allergies included. Please use a real email address you check regularly.</p>
       </div>
+      <div class="invite-field">
+        <label>Party photo <span style="color:var(--soft);font-weight:300;">— optional, replaces hero image</span></label>
+        <input type="url" id="ci-photo-url" placeholder="Paste a public image URL…" autocomplete="off">
+        <p style="font-size:0.72rem;color:var(--soft);margin-top:5px;line-height:1.55;">Use any <strong>publicly accessible</strong> image — a Google Photos shared link, a public Instagram post image URL, or any landscape photo you find online. The URL must end in <code style="background:var(--gold-pale);padding:1px 5px;border-radius:3px;">.jpg</code>, <code style="background:var(--gold-pale);padding:1px 5px;border-radius:3px;">.png</code> or similar. We don&#x2019;t store or upload anything — the image stays where it already lives.</p>
+      </div>
     </div>
 
     <!-- Consent checkbox -->
@@ -1194,9 +1199,11 @@
         <div style="flex:1;min-width:160px;">
           <p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--dark);margin-bottom:6px;line-height:1.3;" id="ci-qr-label"></p>
           <p style="font-size:0.75rem;color:var(--gold);word-break:break-all;margin-bottom:14px;line-height:1.5;" id="ci-qr-url"></p>
-          <a id="ci-qr-dl" href="#" download="invite-qr.png" style="display:inline-flex;align-items:center;gap:6px;background:var(--dark);color:var(--cream);padding:9px 18px;border-radius:6px;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#c9a84c'" onmouseout="this.style.background='#2a2218'">&#x2193; Download QR PNG</a>
-          <a id="ci-dashboard-link" href="#" target="_blank" rel="noopener" style="display:none;align-items:center;gap:6px;background:var(--gold-pale);color:var(--dark);padding:9px 18px;border-radius:6px;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;margin-top:8px;border:1px solid var(--gold-light);" onmouseover="this.style.background='#e8d5a3'" onmouseout="this.style.background='var(--gold-pale)'">&#128202; View RSVP Dashboard</a>
-          <p style="font-size:0.72rem;color:var(--soft);margin-top:8px;">Print it on every invitation card &#x2713;</p>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:6px;">
+            <a id="ci-qr-dl" href="#" download="invite-qr.png" style="display:flex;align-items:center;justify-content:center;gap:6px;background:var(--dark);color:var(--cream);padding:9px 18px;border-radius:6px;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#c9a84c'" onmouseout="this.style.background='#2a2218'">&#x2193; Download QR PNG</a>
+            <a id="ci-dashboard-link" href="#" target="_blank" rel="noopener" style="display:none;align-items:center;justify-content:center;gap:6px;background:var(--gold-pale);color:var(--dark);padding:9px 18px;border-radius:6px;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;border:1px solid var(--gold-light);" onmouseover="this.style.background='#e8d5a3'" onmouseout="this.style.background='var(--gold-pale)'">&#128202; View RSVP Dashboard</a>
+          </div>
+          <p style="font-size:0.72rem;color:var(--soft);margin-top:4px;">Print it on every invitation card &#x2713;</p>
         </div>
       </div>
     </div>
@@ -1281,8 +1288,11 @@
       const partyId    = data.party_id;
       const dashToken  = data.dashboard_token;
 
+      const photoUrl   = document.getElementById('ci-photo-url').value.trim();
       const base       = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
-      const inviteUrl  = base + 'rsvp.html?party=' + partyId;
+      const rsvpParams = new URLSearchParams({ party: partyId });
+      if (photoUrl) rsvpParams.set('photo', photoUrl);
+      const inviteUrl  = base + 'rsvp.html?' + rsvpParams.toString();
       const dashUrl    = base + 'dashboard_page.html?token=' + dashToken;
 
       // Build QR
@@ -1363,27 +1373,65 @@
     <p class="section-label" style="margin:0;">Party supplies</p>
   </div>
   <h2>Browse party supplies<br>for the <em>perfect party.</em></h2>
-  <p class="shop-intro">Hand-picked party supplies in beautiful neutral and beige tones. Every purchase supports Tiny Invites at no extra cost to you. &#128155;</p>
+  <p class="shop-intro">Hand-picked party supplies across all the most popular themes. Every purchase supports Tiny Invites at no extra cost to you. &#128155;</p>
   <div class="shop-categories">
     <button class="shop-cat-btn active" onclick="filterShop('all', this)">All</button>
-    <button class="shop-cat-btn" onclick="filterShop('balloons', this)">Balloons</button>
-    <button class="shop-cat-btn" onclick="filterShop('beige', this)">Beige Theme</button>
-    <button class="shop-cat-btn" onclick="filterShop('bags', this)">Party Bags</button>
-    <button class="shop-cat-btn" onclick="filterShop('cake', this)">Cake and Candles</button>
-    <button class="shop-cat-btn" onclick="filterShop('tableware', this)">Tableware</button>
+    <button class="shop-cat-btn" onclick="filterShop('jungle', this)">🌿 Jungle</button>
+    <button class="shop-cat-btn" onclick="filterShop('unicorn', this)">🦄 Unicorn</button>
+    <button class="shop-cat-btn" onclick="filterShop('superhero', this)">🦸 Superhero</button>
+    <button class="shop-cat-btn" onclick="filterShop('princess', this)">👑 Princess</button>
+    <button class="shop-cat-btn" onclick="filterShop('dinosaur', this)">🦕 Dinosaur</button>
+    <button class="shop-cat-btn" onclick="filterShop('beige', this)">🤍 Neutral/Beige</button>
+    <button class="shop-cat-btn" onclick="filterShop('balloons', this)">🎈 Balloons</button>
+    <button class="shop-cat-btn" onclick="filterShop('cake', this)">🎂 Cake</button>
+    <button class="shop-cat-btn" onclick="filterShop('bags', this)">🎁 Party Bags</button>
   </div>
-  <div class="shop-grid">
-    <a class="shop-card shop-item" data-cat="balloons" href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank" rel="noopener"><div class="shop-card-img">&#127880;</div><div class="shop-card-body"><p class="shop-card-tag">Balloons</p><p class="shop-card-title">Cream and Gold Balloon Garland Kit</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="balloons" href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank" rel="noopener"><div class="shop-card-img">&#10024;</div><div class="shop-card-body"><p class="shop-card-tag">Balloons</p><p class="shop-card-title">Gold Star Foil Balloons Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="beige" href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank" rel="noopener"><div class="shop-card-img">&#129293;</div><div class="shop-card-body"><p class="shop-card-tag">Beige Theme</p><p class="shop-card-title">Neutral Boho Party Decoration Bundle</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="beige" href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank" rel="noopener"><div class="shop-card-img">&#127872;</div><div class="shop-card-body"><p class="shop-card-tag">Beige Theme</p><p class="shop-card-title">Kraft Paper Bunting and Banner Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="bags" href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank" rel="noopener"><div class="shop-card-img">&#127873;</div><div class="shop-card-body"><p class="shop-card-tag">Party Bags</p><p class="shop-card-title">Kraft Party Favour Bags Pack of 20</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="bags" href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank" rel="noopener"><div class="shop-card-img">&#127775;</div><div class="shop-card-body"><p class="shop-card-tag">Party Bags</p><p class="shop-card-title">Gold Star Sticker Sheets for Kids</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="cake" href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank" rel="noopener"><div class="shop-card-img">&#128557;</div><div class="shop-card-body"><p class="shop-card-tag">Cake and Candles</p><p class="shop-card-title">Gold Number Birthday Candles</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="cake" href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank" rel="noopener"><div class="shop-card-img">&#127874;</div><div class="shop-card-body"><p class="shop-card-tag">Cake and Candles</p><p class="shop-card-title">Cream and Gold Cake Topper Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="tableware" href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank" rel="noopener"><div class="shop-card-img">&#127869;&#65039;</div><div class="shop-card-body"><p class="shop-card-tag">Tableware</p><p class="shop-card-title">Beige Paper Plates and Napkins Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
-    <a class="shop-card shop-item" data-cat="tableware" href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank" rel="noopener"><div class="shop-card-img">&#129346;</div><div class="shop-card-body"><p class="shop-card-tag">Tableware</p><p class="shop-card-title">Gold Rim Clear Plastic Cups Pack</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+  <div class="shop-grid" id="shop-grid">
 
+    <a class="shop-card shop-item" data-cat="jungle" href="https://www.amazon.co.uk/s?k=Jungle+Wild+One+Birthday+Decorations+Safari+Party+Tableware+Set&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🌿</div><div class="shop-card-body"><p class="shop-card-tag">Jungle</p><p class="shop-card-title">Jungle Wild One Safari Party Set – 132 Pcs (Banner, Plates, Cups, Tablecloth)</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item" data-cat="jungle" href="https://www.amazon.co.uk/s?k=jungle+safari+birthday+balloon+garland+kit&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🐆</div><div class="shop-card-body"><p class="shop-card-tag">Jungle</p><p class="shop-card-title">Safari Jungle Balloon Garland Kit – Green, Brown & Gold</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="jungle" href="https://www.amazon.co.uk/s?k=jungle+animal+party+bags+kids&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🦁</div><div class="shop-card-body"><p class="shop-card-tag">Jungle</p><p class="shop-card-title">Jungle Animal Party Favour Bags Pack of 20</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="jungle" href="https://www.amazon.co.uk/s?k=wild+one+cake+topper+jungle&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎂</div><div class="shop-card-body"><p class="shop-card-tag">Jungle</p><p class="shop-card-title">Wild One Jungle Cake Topper & Cupcake Picks Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+
+    <a class="shop-card shop-item" data-cat="unicorn" href="https://www.amazon.co.uk/s?k=unicorn+party+supplies+tableware+set+girls&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🦄</div><div class="shop-card-body"><p class="shop-card-tag">Unicorn</p><p class="shop-card-title">Unicorn Party Tableware Set – Plates, Cups, Napkins & Tablecloth</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item" data-cat="unicorn" href="https://www.amazon.co.uk/s?k=unicorn+balloon+garland+arch+kit+pink&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🌈</div><div class="shop-card-body"><p class="shop-card-tag">Unicorn</p><p class="shop-card-title">Unicorn Rainbow Balloon Arch & Garland Kit</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="unicorn" href="https://www.amazon.co.uk/s?k=unicorn+birthday+cake+topper+decoration&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">✨</div><div class="shop-card-body"><p class="shop-card-tag">Unicorn</p><p class="shop-card-title">Unicorn Cake Topper & Horn Decoration Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="unicorn" href="https://www.amazon.co.uk/s?k=unicorn+party+bags+fillers+girls&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎀</div><div class="shop-card-body"><p class="shop-card-tag">Unicorn</p><p class="shop-card-title">Unicorn Party Bag Fillers Set for Girls</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+
+    <a class="shop-card shop-item" data-cat="superhero" href="https://www.amazon.co.uk/s?k=superhero+party+supplies+tableware+set+kids&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🦸</div><div class="shop-card-body"><p class="shop-card-tag">Superhero</p><p class="shop-card-title">Superhero Party Tableware Set – Plates, Cups & Decorations</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item" data-cat="superhero" href="https://www.amazon.co.uk/s?k=superhero+capes+masks+kids+party+favour&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🦹</div><div class="shop-card-body"><p class="shop-card-tag">Superhero</p><p class="shop-card-title">Superhero Capes & Masks Party Favour Set (12 pack)</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="superhero" href="https://www.amazon.co.uk/s?k=superhero+birthday+balloon+set&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">💥</div><div class="shop-card-body"><p class="shop-card-tag">Superhero</p><p class="shop-card-title">Superhero POW Balloon Decoration Bundle</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="superhero" href="https://www.amazon.co.uk/s?k=superhero+cake+topper+birthday+kids&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎂</div><div class="shop-card-body"><p class="shop-card-tag">Superhero</p><p class="shop-card-title">Superhero Birthday Cake Topper & Cupcake Decorations</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+
+    <a class="shop-card shop-item" data-cat="princess" href="https://www.amazon.co.uk/s?k=princess+party+supplies+tableware+set+girls&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">👑</div><div class="shop-card-body"><p class="shop-card-tag">Princess</p><p class="shop-card-title">Princess Party Tableware Set – Plates, Cups, Napkins</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item" data-cat="princess" href="https://www.amazon.co.uk/s?k=princess+tiara+wand+party+bag+fillers+girls&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🪄</div><div class="shop-card-body"><p class="shop-card-tag">Princess</p><p class="shop-card-title">Princess Tiara & Wand Party Bag Fillers (12 pack)</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="princess" href="https://www.amazon.co.uk/s?k=princess+castle+birthday+balloon+decoration&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🏰</div><div class="shop-card-body"><p class="shop-card-tag">Princess</p><p class="shop-card-title">Princess Castle Balloon & Banner Decoration Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="princess" href="https://www.amazon.co.uk/s?k=pink+gold+princess+cake+topper+birthday&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎀</div><div class="shop-card-body"><p class="shop-card-tag">Princess</p><p class="shop-card-title">Pink & Gold Princess Cake Topper Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+
+    <a class="shop-card shop-item" data-cat="dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+party+supplies+tableware+set+kids&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🦕</div><div class="shop-card-body"><p class="shop-card-tag">Dinosaur</p><p class="shop-card-title">Dinosaur Party Tableware Set – 60 Pcs Plates, Cups & Napkins</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item" data-cat="dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+balloon+garland+arch+green&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🦖</div><div class="shop-card-body"><p class="shop-card-tag">Dinosaur</p><p class="shop-card-title">Dino Roar Green Balloon Garland Kit</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+birthday+cake+topper+decoration&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎂</div><div class="shop-card-body"><p class="shop-card-tag">Dinosaur</p><p class="shop-card-title">Dinosaur Cake Topper & Cupcake Picks Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="dinosaur" href="https://www.amazon.co.uk/s?k=dinosaur+party+bag+fillers+kids&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎁</div><div class="shop-card-body"><p class="shop-card-tag">Dinosaur</p><p class="shop-card-title">Dinosaur Party Bag Fillers Pack of 48</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+
+    <a class="shop-card shop-item" data-cat="beige" href="https://www.amazon.co.uk/s?k=neutral+boho+party+decoration+bundle+beige&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🤍</div><div class="shop-card-body"><p class="shop-card-tag">Neutral/Beige</p><p class="shop-card-title">Neutral Boho Party Decoration Bundle</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item" data-cat="beige" href="https://www.amazon.co.uk/s?k=cream+gold+balloon+garland+kit&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">✨</div><div class="shop-card-body"><p class="shop-card-tag">Neutral/Beige</p><p class="shop-card-title">Cream & Gold Balloon Garland Kit</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="beige" href="https://www.amazon.co.uk/s?k=kraft+paper+party+bags+pack+20&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎁</div><div class="shop-card-body"><p class="shop-card-tag">Neutral/Beige</p><p class="shop-card-title">Kraft Paper Party Favour Bags Pack of 20</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="beige" href="https://www.amazon.co.uk/s?k=beige+paper+plates+napkins+birthday&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🍽️</div><div class="shop-card-body"><p class="shop-card-tag">Neutral/Beige</p><p class="shop-card-title">Beige Paper Plates & Napkins Birthday Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+
+    <a class="shop-card shop-item" data-cat="balloons" href="https://www.amazon.co.uk/s?k=pastel+balloon+arch+garland+kit+birthday&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎈</div><div class="shop-card-body"><p class="shop-card-tag">Balloons</p><p class="shop-card-title">Pastel Rainbow Balloon Arch & Garland Kit</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item" data-cat="balloons" href="https://www.amazon.co.uk/s?k=gold+foil+number+balloons+birthday&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🔢</div><div class="shop-card-body"><p class="shop-card-tag">Balloons</p><p class="shop-card-title">Gold Foil Number Balloons</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="balloons" href="https://www.amazon.co.uk/s?k=confetti+balloons+birthday+party&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎊</div><div class="shop-card-body"><p class="shop-card-tag">Balloons</p><p class="shop-card-title">Confetti Balloons Birthday Party Pack 50</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+
+    <a class="shop-card shop-item" data-cat="cake" href="https://www.amazon.co.uk/s?k=gold+number+birthday+candles&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🕯️</div><div class="shop-card-body"><p class="shop-card-tag">Cake</p><p class="shop-card-title">Gold Number Birthday Candles</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item" data-cat="cake" href="https://www.amazon.co.uk/s?k=happy+birthday+cake+topper+gold&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎂</div><div class="shop-card-body"><p class="shop-card-tag">Cake</p><p class="shop-card-title">Happy Birthday Acrylic Cake Topper – Gold</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item shop-extra" data-cat="cake" href="https://www.amazon.co.uk/s?k=rainbow+birthday+candles+spiral&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🌈</div><div class="shop-card-body"><p class="shop-card-tag">Cake</p><p class="shop-card-title">Rainbow Spiral Birthday Candles Set</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+
+    <a class="shop-card shop-item" data-cat="bags" href="https://www.amazon.co.uk/s?k=party+bag+fillers+kids+assorted&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🎁</div><div class="shop-card-body"><p class="shop-card-tag">Party Bags</p><p class="shop-card-title">Assorted Party Bag Fillers Kids Pack of 48</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+    <a class="shop-card shop-item" data-cat="bags" href="https://www.amazon.co.uk/s?k=personalised+party+bags+kraft&tag=tinyinvites-21" target="_blank" rel="noopener"><div class="shop-card-img">🛍️</div><div class="shop-card-body"><p class="shop-card-tag">Party Bags</p><p class="shop-card-title">Kraft Paper Party Bags with Handles Pack of 24</p><span class="shop-card-cta">Shop on Amazon</span></div></a>
+
+  </div>
+  <div style="text-align:center;margin-top:20px;">
+    <button id="shop-show-more" onclick="shopShowMore()" style="padding:10px 28px;border:1px solid var(--gold-light);border-radius:2px;background:transparent;font-family:'DM Sans',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='var(--dark)';this.style.color='var(--cream)'" onmouseout="this.style.background='transparent';this.style.color='var(--mid)'">Show more ↓</button>
   </div>
   <p class="shop-note">* As an Amazon Associate, Tiny Invites earns a small commission from qualifying purchases at no extra cost to you.</p>
 </section>
@@ -1829,5 +1877,96 @@
   <p class="footer-copy">Everything for the perfect children's party. Free, always.</p>
 </footer>
 
+
+<script>
+// ── SHOP FILTER + SHOW MORE ──────────────────────────────────────
+const SHOP_VISIBLE_PER_CAT = 2; // show 2 per category initially
+
+function filterShop(cat, btn) {
+  document.querySelectorAll('.shop-categories .shop-cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const items = document.querySelectorAll('#shop-grid .shop-item');
+  const catCount = {};
+
+  items.forEach(item => {
+    const itemCat = item.dataset.cat;
+    const matches = (cat === 'all') || (itemCat === cat);
+    if (matches) {
+      catCount[itemCat] = (catCount[itemCat] || 0) + 1;
+      const isExtra = item.classList.contains('shop-extra');
+      const limit = SHOP_VISIBLE_PER_CAT;
+      if (!isExtra || catCount[itemCat] <= limit + 2) {
+        item.style.display = '';
+        item.classList.remove('hidden');
+      }
+      // hide extras beyond initial 2
+      if (isExtra) {
+        item.style.display = 'none';
+        item.classList.add('hidden');
+      }
+    } else {
+      item.style.display = 'none';
+      item.classList.add('hidden');
+    }
+  });
+
+  document.getElementById('shop-show-more').style.display = '';
+  document.getElementById('shop-show-more')._cat = cat;
+}
+
+function shopShowMore() {
+  const cat = document.getElementById('shop-show-more')._cat || 'all';
+  document.querySelectorAll('#shop-grid .shop-item.shop-extra.hidden').forEach(item => {
+    const itemCat = item.dataset.cat;
+    if (cat === 'all' || itemCat === cat) {
+      item.style.display = '';
+      item.classList.remove('hidden');
+    }
+  });
+  document.getElementById('shop-show-more').style.display = 'none';
+}
+
+// ── GIFTS FILTER ─────────────────────────────────────────────────
+function filterGifts(age, btn) {
+  document.querySelectorAll('#gifts .shop-cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('.gift-item').forEach(item => {
+    const ages = item.dataset.age ? item.dataset.age.split(' ') : [];
+    if (age === 'all' || ages.includes(age)) {
+      item.style.display = '';
+      item.classList.remove('hidden');
+    } else {
+      item.style.display = 'none';
+      item.classList.add('hidden');
+    }
+  });
+}
+
+// ── CONTACT FORM ─────────────────────────────────────────────────
+function handleContact(e) {
+  e.preventDefault();
+  const form = document.getElementById('contact-form');
+  fetch(form.action, {
+    method: 'POST',
+    body: new FormData(form),
+    headers: { 'Accept': 'application/json' }
+  }).then(r => {
+    if (r.ok) {
+      form.style.display = 'none';
+      document.getElementById('contact-success').style.display = 'flex';
+    }
+  });
+}
+
+// Init: hide extras on load
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#shop-grid .shop-item.shop-extra').forEach(el => {
+    el.style.display = 'none';
+    el.classList.add('hidden');
+  });
+});
+</script>
 </body>
 </html>

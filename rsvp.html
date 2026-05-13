@@ -543,6 +543,19 @@
     const date      = getParam('date')     || '';
     const hostEmail = getParam('host')     || '';
     const partyId   = getParam('party') || getParam('partyId') || '';
+    const photoUrl  = getParam('photo')    || '';
+
+    // Swap hero image if custom URL provided
+    if (photoUrl) {
+      const heroImg = document.getElementById('invite-hero-img');
+      if (heroImg) {
+        heroImg.src = photoUrl;
+        heroImg.onerror = () => {
+          // silently fall back to default if image fails to load
+          heroImg.src = 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80';
+        };
+      }
+    }
 
     window._hostEmail = hostEmail;
     window._partyId   = partyId;

@@ -709,6 +709,8 @@
 
   // ── SUBMIT DECLINE ──────────────────────────────────────
   async function submitDecline() {
+    if (_submitted) return;
+
     const guestName = document.getElementById('no-guest-name').value.trim();
 
     const btn = document.getElementById('no-submit-btn');
@@ -717,8 +719,6 @@
     btn.classList.add('loading');
     btn.querySelector('.btn-label').textContent = 'Sending…';
     errorBanner.classList.remove('visible');
-
-    if (_submitted) return;
     const pd = window._partyData || {};
     const payload = {
       party_id:    pd.partyId || window._partyId || '',
@@ -737,6 +737,8 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
 
+      _submitted = true;
+
       // Show a simple thank-you message in place of the card
       document.querySelector('#page-no .card').innerHTML = `
         <div class="brand">Tiny Invites</div>
@@ -752,7 +754,7 @@
     } finally {
       btn.disabled = false;
       btn.classList.remove('loading');
-      btn.querySelector('.btn-label').textContent = 'Send my apologies';
+      btn.querySelector('.btn-label').textContent = 'Send';
     }
   }
 

@@ -687,9 +687,13 @@
     width: 100%;
     max-width: 420px;
   }
+  @media(max-width:900px) {
+    .designs-4col { grid-template-columns: 1fr 1fr !important; }
+  }
   @media(max-width:640px) {
     #create-step3 .invite-fields { grid-template-columns: 1fr; }
     #create-step3 .invite-submit { max-width: 100%; }
+    .designs-4col { grid-template-columns: 1fr !important; }
   }
   #create-step3 .field-group,
   #create-step3 .invite-field,
@@ -852,7 +856,7 @@
         <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">01</span>
         <p class="section-label" style="margin:0;">Find a venue</p>
       </div>
-      <h2 style="margin-bottom:16px;">Discover party venues<br><em>near you.</em></h2>
+      <h2 style="margin-bottom:8px;">Discover party venues <em>near you.</em></h2>
       <p style="font-size:0.9rem;color:var(--mid);line-height:1.75;margin-bottom:28px;max-width:400px;">Browse soft plays, activity centres, and zoos in your area. Filter by type, and location — then book directly with the venue.</p>
       <a href="/partyfinder/" style="display:inline-flex;align-items:center;gap:8px;background:var(--dark);color:var(--cream);padding:12px 26px;border-radius:2px;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#c9a84c'" onmouseout="this.style.background='#2a2218'">Find a venue near me →</a>
     </div>
@@ -871,48 +875,15 @@
 <section class="designs" id="designs">
 
   <div class="designs-setup">
-    <!-- ── STEP 1: PARTY DETAILS ─────────────────────────── -->
-    <div class="invite-creator-card compact-details" style="margin-bottom:20px;">
-  
-      <div class="step-heading">
-        <span style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:var(--gold);opacity:0.5;line-height:1;"></span>
-        <div>
-          <p class="eyebrow" style="text-align:left;margin-bottom:2px;">Try it yourself — no commitment</p>
-          <h2 style="font-size:1.6rem;margin-bottom:0;">Fill in your<br><em>party details</em></h2>
-        </div>
-      </div>
-      <p class="sub" style="text-align:left;margin-bottom:22px;">Just three details to get started. These personalise your invitation page, and auto-generate a Google Maps link for guests in the next step.</p>
-  
-  
-      <div class="invite-fields">
-        <div class="invite-field">
-          <label>Child's name</label>
-          <input type="text" id="ci-name" placeholder="e.g. Olivia" autocomplete="off" oninput="updatePreview()">
-        </div>
-        <div class="invite-field">
-          <label>Turning age</label>
-          <input type="number" id="ci-age" placeholder="e.g. 5" min="1" max="18" oninput="updatePreview()">
-        </div>
-        <div class="invite-field">
-          <label>Party location</label>
-          <input type="text" id="ci-location" placeholder="e.g. soft play X, London" oninput="updatePreview()">
-        </div>
-      </div>
-  
-      <!-- Live preview snippet -->
-      <div class="invite-preview" id="ci-preview">
-        Your invitation preview will appear here as you type…
-      </div>
-    </div>
   
   <!-- ── STEP 2: PICK A DESIGN ──────────────────────────── -->
     <div style="margin-bottom:20px;">
   
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-        <span style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:var(--gold);opacity:0.5;line-height:1;">02</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">02</span>
         <div>
-          <p class="eyebrow" style="text-align:left;margin-bottom:2px;">Choose your design</p>
-          <h2 style="font-size:1.6rem;margin-bottom:0;">Pick a design for your invitation card<br><em>or create your own</em></h2>
+          <p class="section-label" style="margin:0 0 4px;">Choose your design</p>
+          <h2 style="margin-bottom:8px;">Pick a design for your invitation card <em>or create your own</em></h2>
         </div>
       </div>
       <p class="sub" style="text-align:left;margin-bottom:18px;">Browse our ready-made invitation designs — or use the AI prompt generator just below to create something unique. Every design includes a QR code space ready for printing.</p>
@@ -1006,12 +977,16 @@
 
 
   <!-- AI DESIGN PROMPT BOX -->
-  <div class="ai-prompt-panel" style="margin-top:28px;background:var(--warm-white);border:1px solid var(--gold-pale);border-radius:14px;padding:24px 26px;position:relative;overflow:hidden;">
-    <div style="position:absolute;inset:8px;border:1px solid var(--gold-pale);border-radius:10px;opacity:0.5;pointer-events:none;"></div>
+  <div class="ai-prompt-panel" style="margin-top:28px;">
 
-    <p style="font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">Make it completely yours</p>
-    <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:400;color:var(--dark);margin-bottom:8px;line-height:1.2;">Design your own invitation postcard <em style="color:var(--gold);">with AI</em></h3>
-    <p style="font-size:0.82rem;color:var(--mid);line-height:1.55;margin-bottom:18px;max-width:620px;">Pick a style and theme, then copy the prompt into ChatGPT, Midjourney, or Canva AI. Optionally adjust your child and party details.</p>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">03</span>
+      <div>
+        <p class="section-label" style="margin:0 0 4px;">Make it completely yours</p>
+        <h2 style="margin-bottom:8px;">Design your own invitation postcard <em>with AI</em></h2>
+      </div>
+    </div>
+    <p style="font-size:0.9rem;color:var(--mid);line-height:1.7;margin-bottom:22px;max-width:none;">Pick a style and theme, then copy the prompt into ChatGPT, Midjourney, or Canva AI. Optionally adjust your child and party details.</p>
 
     <!-- Style toggle -->
     <div style="margin-bottom:16px;">
@@ -1163,14 +1138,33 @@
 <!-- ── STEP 4: CREATE EVENT PAGE ───────────────────── -->
 <!-- ── STEP 4: CREATE EVENT PAGE ───────────────────── -->
 <section style="padding:80px 40px 60px;background:var(--cream);">
-  <div style="display:flex;align-items:left;gap:16px;margin-bottom:10px;">
-    <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">04</span>
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;">
+    <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">03</span>
     <p class="section-label" style="margin:0;">Almost done</p>
   </div>
-  <h2 style="margin-bottom:14px;">Create your <em>event RSVP page.</em></h2>
+  <h2 style="margin-bottom:8px;">Create your <em>event RSVP page.</em></h2>
   <p class="section-sub" style="max-width:none;margin-bottom:36px;">Add your email so guest replies can reach you. We'll generate your personalised invite page, unique link, and QR code instantly.</p>
 
   <div id="create-step3">
+
+    <div class="designs-4col" style="display:grid;grid-template-columns:minmax(180px,1.2fr) minmax(110px,0.7fr) minmax(220px,1.4fr) minmax(260px,1.6fr);gap:14px;align-items:start;margin-bottom:28px;">
+      <div class="invite-field">
+        <label>Child's name</label>
+        <input type="text" id="ci-name" placeholder="e.g. Olivia" autocomplete="off" oninput="updatePreview()">
+      </div>
+      <div class="invite-field">
+        <label>Turning age</label>
+        <input type="number" id="ci-age" placeholder="e.g. 5" min="1" max="18" oninput="updatePreview()">
+      </div>
+      <div class="invite-field">
+        <label>Party location</label>
+        <input type="text" id="ci-location" placeholder="e.g. soft play X, London" oninput="updatePreview()">
+      </div>
+      <div class="invite-field">
+        <label>Preview</label>
+        <div class="invite-preview" id="ci-preview" style="margin:0;min-height:42px;padding:10px 13px;font-size:0.82rem;">Your invitation preview will appear here as you type…</div>
+      </div>
+    </div>
 
     <div class="invite-fields">
       <div class="invite-field">
@@ -1183,6 +1177,12 @@
         <input type="url" id="ci-photo-url" placeholder="Paste a public image URL…" autocomplete="off">
         <p style="font-size:0.72rem;color:var(--soft);margin-top:5px;line-height:1.55;">Use any <strong>publicly accessible</strong> image — a Google Photos shared link, a public Instagram post image URL, or any landscape photo you find online. The URL must end in <code style="background:var(--gold-pale);padding:1px 5px;border-radius:3px;">.jpg</code>, <code style="background:var(--gold-pale);padding:1px 5px;border-radius:3px;">.png</code> or similar. We don&#x2019;t store or upload anything — the image stays where it already lives.</p>
       </div>
+    </div>
+
+    <div class="invite-field" style="margin-bottom:22px;">
+      <label>Special note for guests <span style="color:var(--soft);font-weight:300;">— optional</span></label>
+      <textarea id="ci-note" placeholder="e.g. Please use the rear entrance on Park Lane. Parking is available on the street — the blue gate on the left is ours. No nut products please." autocomplete="off" rows="3" style="width:100%;padding:10px 13px;border:1px solid var(--gold-pale);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--dark);background:var(--cream);outline:none;resize:vertical;line-height:1.6;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)';this.style.boxShadow='0 0 0 3px rgba(201,168,76,0.1)'" onblur="this.style.borderColor='var(--gold-pale)';this.style.boxShadow='none'"></textarea>
+      <p style="font-size:0.72rem;color:var(--soft);margin-top:5px;line-height:1.55;">Anything useful guests should know — entrance details, parking, allergies, dress code, what to bring. Shows on their invitation page.</p>
     </div>
 
     <!-- Consent checkbox -->
@@ -1281,7 +1281,8 @@
           party_date:   null,
           parent_email: email,
           theme:        null,
-          photo_url:    document.getElementById('ci-photo-url').value.trim() || null
+          photo_url:    document.getElementById('ci-photo-url').value.trim() || null,
+          special_note: document.getElementById('ci-note').value.trim() || null
         })
       });
 
@@ -1358,8 +1359,8 @@
     <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">05</span>
     <p class="section-label" style="margin:0;">UK Print Services</p>
   </div>
-  <h2>Printed invitations<br>with your <em>QR code.</em></h2>
-  <p class="section-sub">Order beautifully printed birthday invitations with envelopes included — add your personalised QR code so guests scan and RSVP instantly. Delivered across the UK.</p>
+  <h2 style="margin-bottom:8px;">Printed invitations with your <em>QR code.</em></h2>
+  <p class="section-sub" style="max-width:none;">Order beautifully printed birthday invitations with envelopes included — add your personalised QR code so guests scan and RSVP instantly. Delivered across the UK.</p>
   <div class="print-grid">
     <a class="print-card" href="https://www.vistaprint.co.uk/stationery/children-s-birthday-invitations" target="_blank" rel="noopener">
       <span class="print-card-tag">Most popular</span>
@@ -1384,8 +1385,8 @@
     <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">06</span>
     <p class="section-label" style="margin:0;">Party Shop &amp; Gifts</p>
   </div>
-  <h2>Supplies &amp; gifts<br>for the <em>perfect party.</em></h2>
-  <p class="shop-intro">Jungle, unicorn, superhero, princess, dinosaur and more — hand-picked supplies and gifts across every theme 💛</p>
+  <h2 style="margin-bottom:8px;">Supplies &amp; gifts for the <em>perfect party.</em></h2>
+  <p class="shop-intro" style="max-width:none;">Jungle, unicorn, superhero, princess, dinosaur and more — hand-picked supplies and gifts across every theme 💛</p>
   <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:28px;">
     <a href="/shop.html" style="display:inline-flex;align-items:center;gap:8px;background:var(--dark);color:var(--cream);padding:13px 28px;border-radius:2px;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='var(--gold)'" onmouseout="this.style.background='var(--dark)'">🛍️ Browse Party Supplies →</a>
     <a href="/shop.html#gifts" style="display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--mid);padding:13px 28px;border-radius:2px;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border:1px solid var(--gold-light);transition:all 0.2s;" onmouseover="this.style.background='var(--gold-pale)'" onmouseout="this.style.background='transparent'">🎁 Browse Gift Ideas →</a>

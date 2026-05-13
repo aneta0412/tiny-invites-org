@@ -1,8 +1,15 @@
+import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function sendEmail({ to, subject, html }) {
+async function sendEmail({ to, subject, html }) {
   return resend.emails.send({
     from: 'Tiny Invites <hello@tinyinvites.org>',
     to,
@@ -30,7 +37,7 @@ const btn = (href, text) =>
 
 
 // ── 1. Welcome email to host on party creation ────────────────────────────────
-export function welcomeEmailHtml({ child_name, age, venue, dashboard_token, party_id }) {
+function welcomeEmailHtml({ child_name, age, venue, dashboard_token, party_id }) {
   const dashUrl = `https://tinyinvites.org/dashboard_page.html?token=${dashboard_token}`;
   const rsvpUrl = `https://tinyinvites.org/rsvp.html?party=${party_id}`;
   const ageStr  = age ? `${ordinal(age)} birthday` : 'party';
@@ -53,7 +60,7 @@ export function welcomeEmailHtml({ child_name, age, venue, dashboard_token, part
 
 
 // ── 2. Guest confirmation email ───────────────────────────────────────────────
-export function guestConfirmationHtml({ party, response }) {
+function guestConfirmationHtml({ party, response }) {
   const attending = response.attending === true || response.attending === 'true' || response.attending === 'yes';
   const ageStr    = party.age ? `${ordinal(party.age)} birthday` : 'party';
 
@@ -83,7 +90,7 @@ export function guestConfirmationHtml({ party, response }) {
 
 
 // ── 3. Host first-of-day RSVP notification ────────────────────────────────────
-export function rsvpNotificationHtml({ party, response }) {
+function rsvpNotificationHtml({ party, response }) {
   const dashUrl   = `https://tinyinvites.org/dashboard_page.html?token=${party.dashboard_token}`;
   const attending = response.attending === true || response.attending === 'true' || response.attending === 'yes';
   const emoji     = attending ? '🎉' : '🥺';
@@ -102,7 +109,7 @@ export function rsvpNotificationHtml({ party, response }) {
 
 
 // ── 4. Daily digest email ─────────────────────────────────────────────────────
-export function digestEmailHtml({ party, responses }) {
+function digestEmailHtml({ party, responses }) {
   const dashUrl = `https://tinyinvites.org/dashboard_page.html?token=${party.dashboard_token}`;
   const yes     = responses.filter(r => r.attending === true || r.attending === 'true' || r.attending === 'yes');
   const no      = responses.filter(r => !yes.includes(r));
@@ -140,4 +147,47 @@ export function digestEmailHtml({ party, responses }) {
     </table>
     ${btn(dashUrl, '📊 View full dashboard →')}
   `);
+}
+
+
+export default async function handler(req, res) {
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ error: 'Missing token' });
+
+    const { data: party, error: partyErr } = await supabase
+      .from('parties').select('*').eq('dashboard_token', token).single();
+
+    if (partyErr || !party) return res.status(404).json({ error: 'Party not found' });
+    if (!party.parent_email) return res.status(400).json({ error: 'No email on file' });
+
+    const { data: responses, error: respErr } = await supabase
+      .from('guest_responses').select('*')
+      .eq('party_id', party.party_id)
+      .order('created_at', { ascending: false });
+
+    if (respErr) throw respErr;
+
+    const normalised = (responses || []).map(r => ({
+      ...r,
+      attending: r.attending === true || r.attending === 'true' ? 'yes' : 'no'
+    }));
+
+    await sendEmail({
+      to:      party.parent_email,
+      subject: `📋 Guest list for ${party.child_name}'s party`,
+      html:    digestEmailHtml({ party, responses: normalised }),
+    });
+
+    return res.status(200).json({ success: true, sent_to: party.parent_email });
+
+  } catch (err) {
+    console.error('send-email error:', err);
+    return res.status(500).json({ error: err.message });
+  }
 }

@@ -70,8 +70,15 @@ export default async function handler(req, res) {
   }
   try {
     const {
-      child_name, age, venue, party_date,
-      parent_email, theme, photo_url
+      child_name,
+      age,
+      venue,
+      party_date,
+      parent_email,
+      theme,
+      photo_url,
+      special_note,   // ← new
+      phone_number,   // ← new
     } = req.body;
 
     if (!parent_email) return res.status(400).json({ error: 'Missing parent_email' });
@@ -83,10 +90,17 @@ export default async function handler(req, res) {
     const { error } = await supabase
       .from('parties')
       .insert([{
-        party_id, dashboard_token,
-        child_name, age, venue, party_date,
-        parent_email, theme,
-        photo_url: photo_url || null
+        party_id,
+        dashboard_token,
+        child_name,
+        age,
+        venue,
+        party_date,
+        parent_email,
+        theme,
+        photo_url:    photo_url    || null,
+        special_note: special_note || null,   // ← new
+        phone_number: phone_number || null,   // ← new
       }]);
 
     if (error) throw error;
@@ -101,8 +115,8 @@ export default async function handler(req, res) {
       success:         true,
       party_id,
       dashboard_token,
-      rsvp_link:       `/rsvp.html?party=${party_id}`,
-      dashboard_link:  `/dashboard_page.html?token=${dashboard_token}`,
+      rsvp_link:      `/rsvp.html?party=${party_id}`,
+      dashboard_link: `/dashboard_page.html?token=${dashboard_token}`,
     });
 
   } catch (err) {

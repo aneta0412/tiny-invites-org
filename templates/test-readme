@@ -1,0 +1,185 @@
+In Vercel￼ you normally don’t run Bash scripts manually like on a VPS server with SSH access.
+
+Instead, there are 3 common ways:
+
+⸻
+
+1. Run scripts during deployment (most common)
+
+You put scripts inside:
+
+package.json
+
+Example:
+
+{
+  "scripts": {
+    "build": "node build.js",
+    "test": "node test.js",
+    "cleanup": "node cleanup.js"
+  }
+}
+
+Then Vercel automatically runs:
+
+npm run build
+
+during deployment.
+
+You can also configure:
+
+* prebuild
+* postbuild
+* install hooks
+
+⸻
+
+2. Run scripts locally with Vercel CLI
+
+Install CLI:
+
+npm install -g vercel
+
+Then:
+
+vercel dev
+
+or
+
+npm run cleanup
+
+This runs locally on your machine, not inside Vercel cloud.
+
+⸻
+
+3. Run server-side scripts as Vercel Functions
+
+This is probably what you mean with function.js.
+
+Example structure:
+
+api/
+  cleanup.js
+
+Example:
+
+export default async function handler(req, res) {
+  console.log("Running cleanup");
+  res.status(200).json({ success: true });
+}
+
+Then deployed URL becomes:
+
+https://yourdomain.vercel.app/api/cleanup
+
+Opening that URL RUNS the function.
+
+⸻
+
+There is NO persistent Bash path like:
+
+/usr/bin/bash
+
+because:
+
+* Vercel is serverless
+* functions are ephemeral
+* you don’t SSH into the machine
+
+So you can’t really:
+
+ssh server
+bash script.sh
+
+like traditional hosting.
+
+⸻
+
+If you need Bash specifically
+
+You can execute shell commands inside Node.js:
+
+import { exec } from "child_process";
+exec("ls -la", (error, stdout, stderr) => {
+  console.log(stdout);
+});
+
+But Vercel limits:
+
+* execution time
+* filesystem access
+* background processes
+
+So this is usually only for lightweight automation.
+
+⸻
+
+For your RSVP project
+
+You probably want one of these:
+
+Cleanup cron job
+
+Delete old RSVPs automatically.
+
+Email retry job
+
+Retry failed emails.
+
+Expired invite cleanup
+
+Archive old parties.
+
+⸻
+
+BEST WAY on Vercel: Cron Jobs
+
+Vercel supports scheduled functions now.
+
+Example:
+
+{
+  "crons": [
+    {
+      "path": "/api/cleanup",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}
+
+This runs every day at 3 AM.
+
+Then:
+
+export default async function handler(req, res) {
+  // delete old rows from Supabase
+  res.status(200).send("Cleanup complete");
+}
+
+That’s the modern serverless equivalent of a Bash cron script.
+
+⸻
+
+Your likely ideal architecture
+
+Frontend
+
+* Vercel
+
+Database
+
+* Supabase￼
+
+Emails
+
+* Resend￼
+
+Automation
+
+* Vercel cron jobs
+
+Protection
+
+* Cloudflare Turnstile￼
+
+That’s honestly a very modern SaaS stack already.

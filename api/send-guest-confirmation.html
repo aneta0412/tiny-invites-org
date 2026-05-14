@@ -1,0 +1,804 @@
+
+Claude finished the response
+You said: I like the idea, but I would like to do it differently.
+I like the idea, but I would like to do it differently. I would like -- No. That's it. Okay. Okay. We will take the same action instead of generate my respond page. This battery will be yes. I wanna go.
+
+12:39
+You said: Can you help me to fight the first bottleneck before they become a problem?
+Can you help me to fight the first bottleneck before they become a problem? What are the test cases that I should build? Can you build test cases for me to make sure everything works before we publish?
+Can you do a script or something to automate it
+
+12:44
+Claude responded: I don't have context from a previous conversation about what we were building.
+I don't have context from a previous conversation about what we were building. Let me pull that up.
+
+
+Searched memory
+Searched memory
+Good, I have enough context now. You're working on tinyinvites.org — the RSVP flow goes: host creates party via /api/create-party → Supabase stores it → guests hit the RSVP page → /api/rsvp-response saves their response. You want test cases automated before going live.
+
+Here's a test script that covers the key bottlenecks:
+
+
+Viewed a file, created a file, read a file
+Viewed a file, created a file, read a file
+Run it with:
+
+bash
+BASE_URL=https://your-vercel-url.vercel.app node test-tinyinvites.js
+What it tests — 6 sections:
+
+/api/create-party — happy path, missing fields, bad email, duplicate call
+/api/rsvp-response — yes/no RSVP, missing party_id, fake party_id, negative guest count, XSS in name
+/api/dashboard — valid token, no token, wrong token
+RSVP page — loads with real party_id, handles a fake one without 500
+Thanks/confetti page — smoke test
+Edge cases — oversized payload, SQL injection attempt, wrong HTTP method
+The main bottlenecks it catches before you go live:
+
+Party saved in Supabase but wrong party_id returned → RSVP URL breaks
+Missing dashboard_token → dashboard won't load
+No validation on guest_count → data quality issues
+Foreign key violation on fake party_id → unhandled 500 in prod
+Adjust the URL paths (/rsvp.html, /rsvp-thanks.html, /api/dashboard) if yours differ slightly.
+
+
+Test tinyinvites
+JS 
+You said: Does it cover all of this
+Does it cover all of this
+
+The main systems you need to test
+
+Your app basically has these components:
+
+Invite page
+RSVP form
+Database storage
+Dashboard view
+Email sending
+Authentication / tokens
+Mobile responsiveness
+Performance under load
+Edge cases
+Security/privacy
+⸻
+
+The critical test cases
+
+RSVP Submission Tests
+These are the most important.
+
+Basic success
+
+Submit “Yes”
+Submit “No”
+Submit multiple guests
+Submit dietary requirements
+Verify row appears in Supabase
+Expected:
+
+no duplicate rows
+correct party ID
+timestamp saved
+⸻
+
+Double-click test
+
+Very important.
+
+Test:
+
+rapidly click submit 5 times
+Expected:
+
+ONLY ONE RSVP stored
+Fix if broken:
+
+disable button after first click
+use loading state
+⸻
+
+Refresh-after-submit test
+
+Test:
+
+submit RSVP
+refresh page
+resubmit
+Expected:
+
+app handles gracefully
+either updates existing RSVP or blocks duplicate
+⸻
+
+Internet interruption
+
+Test:
+
+turn WiFi off during submit
+Expected:
+
+proper error message
+no fake success screen
+⸻
+
+Dashboard Tests
+Correct party isolation
+
+MOST IMPORTANT SECURITY TEST.
+
+Create:
+
+Party A
+Party B
+Then test:
+
+dashboard token from A
+try accessing B data
+Expected:
+
+impossible
+⸻
+
+Expired dashboard token
+
+Test:
+
+invalid token
+modified token
+deleted party
+Expected:
+
+friendly error
+NOT raw JSON/database errors
+⸻
+
+Empty-state dashboard
+
+Test:
+
+party with zero responses
+Expected:
+
+beautiful empty screen
+no crashes
+⸻
+
+Email Tests
+Email delivery
+
+Test:
+
+Gmail
+Outlook
+iCloud
+Expected:
+
+arrives inbox
+not spam
+⸻
+
+Broken email retry
+
+Test:
+
+temporarily break Resend API key
+Expected:
+
+RSVP still saves
+email failure handled separately
+Very important.
+
+You NEVER want:
+
+email failure = RSVP lost
+
+⸻
+
+Long names / weird characters
+
+Test:
+
+emojis
+Polish letters
+apostrophes
+Asian characters
+Examples:
+
+Łukasz
+O’Connor
+🎉 Sophie
+Expected:
+
+emails render correctly
+DB stores correctly
+⸻
+
+Mobile Testing
+Honestly this is probably your biggest real-world issue.
+
+You should test:
+
+iPhone Safari
+Android Chrome
+narrow screens
+old phones
+⸻
+
+Mobile keyboard test
+
+Common bug.
+
+Test:
+
+focus input
+keyboard opens
+Expected:
+
+submit button still reachable
+layout doesn’t jump badly
+⸻
+
+Performance Tests
+You do NOT need Netflix-scale testing.
+
+But do simulate:
+
+20–50 simultaneous submits
+This catches:
+
+duplicate inserts
+race conditions
+loading issues
+⸻
+
+Security Tests
+These matter more than fancy features.
+
+Token guessing
+
+Test:
+
+modify URLs manually
+Expected:
+
+impossible access
+⸻
+
+SQL injection test
+
+Try inputs like:
+
+Show more
+12:46
+Claude responded: The script covers maybe 40% of that list.
+The script covers maybe 40% of that list. Here's the honest gap analysis, then I'll build the missing tests.
+
+What's already covered: Basic yes/no RSVP, missing fields, fake party_id, SQL injection, XSS, bad tokens, oversized payload, wrong HTTP method.
+
+What's missing: Double-click deduplication, refresh-after-submit, email failure isolation, party isolation (A can't see B), empty dashboard state, character encoding (Polish/emoji), load test (20-50 simultaneous), and the mobile/UI tests (those can't be automated the same way).
+
+Let me build the full version:
+
+
+Created a file, read a file
+Created a file, read a file
+This version now covers everything. Here's what was added vs the first script:
+
+New in v2:
+
+Double-click — fires 5 identical requests simultaneously, flags if all 5 succeed and prompts you to check Supabase for duplicate rows
+Refresh-after-submit — submits twice, checks if the second is blocked (409) or silently creates a duplicate
+Timeout simulation — 10s hard limit per request, fails the test if the endpoint hangs
+Party isolation — creates Party A and Party B, adds a guest to A, then verifies A's token cannot see B's data (the most critical security test)
+Empty dashboard state — Party B has zero responses, verifies 200 + empty array, not a crash
+Email isolation — verifies RSVP saves even if the email address is undeliverable (Resend failure must never = RSVP lost)
+Special characters — Polish (Łukasz), Irish apostrophe (O'Connor), emoji, Japanese, Greek, HTML tags
+Load test — 50 simultaneous RSVPs, asserts 45+ succeed, zero 500s, completes in 15s
+IDOR check — tries accessing dashboard with raw party_id instead of dashboard_token
+More SQL injection variants — 4 different payloads
+Still manual only (listed at the end of output): WiFi off mid-submit, iPhone Safari keyboard overlap, Android Chrome, old phones, email deliverability.
+
+
+Test tinyinvites full
+JS 
+You said: knowing my infrastructure of the files, I would like to have changed it and the actions that are now being done by generate your free response page should begi…
+knowing my infrastructure of the files, I would like to have changed it and the actions that are now being done by generate your free response page should begin generated on other button that is inside dashboard page. So basically, instead of generating free response page, people see generating free preview, then they click on the dashboard page. Sorry, response page, not dashboard page. And at the top, there will be like the button which says, yes, I want it live. And only then that's causing emails to be sent and a new entry in this database. So which parts do we need to modify to achieve that?
+
+Show more
+12:55
+Claude responded: Let me look at your current file structure first.
+Let me look at your current file structure first.
+
+
+Searched memory
+Searched memory
+Good. Now I have a clear picture of your infrastructure. Here's exactly what needs to change:
+
+Your current flow:
+
+index.html form → POST /api/create-party → Supabase insert + email sent → party_id returned → RSVP URL shown
+Your new flow:
+
+index.html form → generate PREVIEW only (no DB, no email) → user lands on rsvp.html?preview=true → banner: "Go live?" → click YES → POST /api/create-party → Supabase insert + email sent → RSVP page goes live
+Files that need to change — and exactly what:
+
+1. index.html The "Create my free invite" button currently calls generateInvite() which POSTs to /api/create-party. Change it to instead build a preview URL from the form fields client-side (no API call), then redirect to rsvp.html?preview=true&name=Olivia&age=5&venue=.... Nothing hits the database yet.
+
+2. rsvp.html Add logic at the top: if ?preview=true is in the URL, read the name/age/venue from query params and render the page in preview mode — a banner appears at the top saying "This is your preview — click Go Live to publish it." The "Go Live" button fires the actual POST to /api/create-party, gets back the real party_id, then replaces the URL with rsvp.html?party=<real_id> and hides the banner.
+
+3. api/create-party.js No logic change needed. It just gets called later (from rsvp.html instead of index.html).
+
+4. dashboard_page.html No change needed — it still receives ?token=... from the create-party response, same as before. The only difference is the redirect happens from rsvp.html now instead of index.html.
+
+The key decision point: after the user clicks "Go Live" on the preview page, where do you want them to go? Options:
+
+Stay on the RSVP page (now live, guests can already use it)
+Redirect to the dashboard
+And one quick question — does your rsvp.html currently build its content from the ?party=<id> param by fetching from the API, or does it have the party data baked in when the host generates it?
+
+You said: Fetching from supabase
+Fetching from supabase
+
+14:26
+Claude responded: Perfect.
+Perfect. Then the preview mode is straightforward — no API call needed, just render from query params.
+
+Here's the exact change plan for each file:
+
+index.html — 1 change only
+
+The generateInvite() function currently POSTs to /api/create-party
+Change it to build a query string from the form fields and redirect to rsvp.html?preview=true&child_name=Olivia&age=5&venue=...&parent_email=...
+No API call, no Supabase, no email
+rsvp.html — 3 changes
+
+At page load, check if ?preview=true is in the URL
+If yes: skip the Supabase fetch entirely, render the party details from the query params instead
+Show a sticky banner at the top with a "✓ Go Live" button
+When Go Live is clicked: POST to /api/create-party with the params, get back party_id + dashboard_token, hide the banner, replace the URL with ?party=<real_id> (so the page is now live), and show a small confirmation with a link to the dashboard
+api/create-party.js — no changes
+
+dashboard_page.html — no changes
+
+To write the actual code I need to see the current files. Can you paste or share:
+
+The generateInvite() function from index.html
+The top of rsvp.html — specifically the part that reads the URL params and fetches from Supabase
+Those two sections are all I need to write the exact diffs.
+
+You said: That's that's the response.
+
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>You're Invited!</title> <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wg
+
+pasted
+
+That's that's the response. Hot damn hell. At least be be... so you can edit this file. And you've got latest index file that is in the previous conversation. so you can edit it there. Remove the preview as it's a bit useless. We don't need it there. Keep the... yeah. And maybe keep the preview after the name, surname, and location, and remove the
+
+17:01
+Claude responded: Let me grab the latest index.
+Let me grab the latest index.html from the previous conversation first.
+
+
+Relevant chats
+Relevant chats
+Good — I can see from the history that your index.html has a form with child-name, child-age, party-location, parent-email fields, a live preview text, and a generateInvite() function that POSTs to /api/create-party. And you've shared the current rsvp.html above.
+
+Your instructions were a bit fragmented — let me confirm what you want before I write the code:
+
+What I understood:
+
+Remove the separate "preview" step (no redirect to a preview page)
+Keep the live preview text in the form (the "A party for ___ turning ___ at ___" line that updates as they type) — that stays
+Remove something else — but this part cut off
+What did you want removed? Was it:
+
+The QR code section after generation?
+The link output / copy button?
+The "Generate My RSVP Link" button being replaced directly by a "Go Live" button?
+And to confirm the new flow on index.html:
+
+Host fills in the form → clicks one button → goes straight to /api/create-party → gets redirected to dashboard_page.html?token=...
+Is that right, or do you still want them to land on the RSVP page first to see it?
+
+You said: Remove the separate “preview” step (no redirect to a preview page)
+Remove the separate “preview” step (no redirect to a preview page)
+    •    Keep the live preview text in the form (the “A party for ___ turning ___ at ___” line that updates as they type) — that stays
+
+QR code and view dashboard. It's better they are accessible from r s p v at m l page because you move action there. So as soon as a person is confirming with the button, yes, make it live, then you get QR code and the dashboard link there. And you get a message saying the dashboard is accessible through the link anytime, and you get the link in right now with the creation of the party. I
+
+Show more
+17:03
+Claude responded: Perfect, now I have the full picture.
+Perfect, now I have the full picture. Let me get the latest index.html from your repo.
+
+
+Failed to fetch: https://raw.githubusercontent.com/aneta0412/tiny-invites-org/main/index.html
+Failed to fetch: https://raw.githubusercontent.com/aneta0412/tiny-invites-org/main/index.html
+Can't fetch from GitHub directly. Can you paste the current index.html generate section — specifically the generateInvite() function and the form HTML? That's the only part I need to modify.
+
+In the meantime, here's the exact plan so you can confirm before I write it:
+
+index.html changes — remove:
+
+The QR code display block after generation
+The "View Dashboard" button after generation
+The link output / copy button section
+index.html changes — keep:
+
+Live preview text (A party for ___ turning ___ at ___)
+The form fields
+The generate button → still calls /api/create-party directly
+After success: just redirect straight to rsvp.html?party=<id>&preview=false (the live page)
+rsvp.html changes — add at the very top (host-only banner):
+
+Detected via ?host=1 or by matching dashboard_token in sessionStorage
+Banner shows: QR code of the RSVP URL, "Copy link" button, "View Dashboard →" button, message saying "Your dashboard is always accessible at this link — we've emailed it to you"
+Banner dismissable, stays at top above the invite card
+Does that match what you want? And which param should trigger the host banner — a ?host=1 flag in the URL, or the presence of dashboard_token in sessionStorage after creation?
+
+You said: Yes.
+Yes. So perfect. I just worried it now. We've got a SPV response page for the guests. Isn't that mixed up, so should we create another item which is called SPV host? So then we we know it's just one off modification on that page for the host, and normally, the other one stays as it was.
+
+17:04
+Claude responded: Yes, exactly right.
+Yes, exactly right. Keep them separate. Clean separation of concerns.
+
+Current state:
+
+rsvp.html — guest-facing, stays exactly as it is, no changes
+New file:
+
+rsvp-host.html — same invite card visual, but with the host banner on top: QR code, copy link, view dashboard button, "email sent" confirmation message
+Flow after host clicks "Go Live" on index.html:
+
+index.html → POST /api/create-party → redirect to rsvp-host.html?party=<id>&token=<dashboard_token>
+Guest flow stays unchanged:
+
+WhatsApp/QR link → rsvp.html?party=<id>
+The rsvp-host.html would:
+
+Read party and token from URL params
+Fetch party details from Supabase (same as rsvp.html does)
+Render the full invite preview so the host can see exactly what guests see
+Show the host banner on top with QR, copy link, dashboard link, confirmation message
+No shared code risk, no accidental guest seeing host controls.
+
+Paste me the current index.html generate section (generateInvite() function + form HTML) and I'll build both the modified index.html and the new rsvp-host.html in one go.
+
+
+<!-- ── STEP 4: CREATE EVENT PAGE ───────────────────── --> <section style="padding:80px 40px 60px;background:var(--cream);"> <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;"> <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:va
+
+pasted
+
+17:09
+Claude responded: Now I have everything I need.
+Now I have everything I need. Here's the plan:
+
+index.html — remove showInvitePreview(), the preview card HTML, and the QR output block. The "Preview" button becomes the single "Create it" button. After API success, redirect to rsvp-host.html?party=<id>&token=<token> instead of opening a new tab + showing QR inline.
+
+rsvp-host.html — new file, host-only, shows the full invite preview (fetched from Supabase by party_id) plus a top banner with QR code, copy link, dashboard link, and "dashboard email sent" message.
+
+
+Viewed a file, created a file
+Viewed a file, created a file
+Now the index.html patch — remove the preview card, QR output block, and showInvitePreview(), redirect to rsvp-host.html after creation:
+
+
+Created a file, read a file
+Created a file, read a file
+rsvp-host.html — new file, deploy as-is.
+
+index-patch.html — this is a diff guide, not a full file. Open your index.html and make these 3 changes in the step 4 section:
+
+Remove the 👁 Preview my invitation page button
+Remove the ci-preview-card div (the "Looks good — create it" block)
+Remove the ci-qr-out div (the entire QR block at the bottom)
+Add the single ✨ Create my free invite button in their place
+Replace the <script> block with the one in the patch — the key change is the last line of generateInvite() which now does window.location.href = rsvp-host.html?party=...&token=... instead of building QR inline
+The rsvp.html (guest page) is untouched.
+
+One thing to verify — rsvp-host.html fetches party details via /api/dashboard?token=.... Make sure your dashboard API returns the party object at data.party (not just data.responses). If it currently only returns responses, let me know and I'll add a small tweak.
+
+
+Rsvp host
+Code · HTML 
+
+Index patch
+Code · HTML 
+You said: I think we need the SSPV for the guests as well to modify, to make space for additional nodes from the host.
+I think we need the SSPV for the guests as well to modify, to make space for additional nodes from the host. And, yeah, make space for the phone number from the host if it's showing and have a note saying, I would like to inform... get the confirmation via email and that's optional. It take... Only then they get confirmation email as well. Maybe we need a functional confirmation email from the guests.
+
+17:12
+Claude responded: Let me look at the current rsvp.
+Let me look at the current rsvp.html (the one you pasted earlier in this conversation) to work from the exact code.
+
+The changes needed are:
+
+Special note from host — show it in the info row if special_note exists on the party
+Host phone number — show it in the info row if phone_number exists
+Guest email field — already exists (#guest-email) but make it clearly optional with a note: "Add your email to receive a confirmation — optional"
+Confirmation email — if guest provides email, call a new /api/send-guest-confirmation endpoint after successful RSVP submit
+Looking at your rsvp.html from earlier in this conversation — it already has a guest-email field. So the changes are:
+
+Add host note display in the info row (fetched from Supabase via party data)
+Add host phone display in the info row
+Update the email field label/helper text to make it clear it's for confirmation
+After successful submit, if guestEmail is present, fire a POST to /api/send-guest-confirmation
+Before I write the code — two questions:
+
+Does your /api/dashboard endpoint (which rsvp-host.html uses) also get called by rsvp.html to load party details, or does rsvp.html call a separate endpoint like /api/get-party? I need to know which API returns the party data to the guest page so I know where special_note and phone_number will come from.
+For the guest confirmation email — do you already have a Resend email template/function set up, or do I need to build the full /api/send-guest-confirmation.js Vercel function as well?
+You said: Number 2 u need to build it
+Number 2 u need to build it
+
+17:16
+Claude responded: And number 1 — which API does rsvp.
+And number 1 — which API does rsvp.html currently call to load the party details? Is it /api/get-party, /api/dashboard, or something else? Just need to see that one fetch call so I know the response shape and where special_note / phone_number will come from.
+
+You said: That’s create party fs and that’s send email fs
+
+import { createClient } from '@supabase/supabase-js'; import { Resend } from 'resend'; const supabase = createClient( process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY ); const resend = new Resend(process.env.RESEND_API_KEY); async function sendEmail({ to, subject, html }) { r
+
+pasted
+
+
+import { createClient } from '@supabase/supabase-js'; import { Resend } from 'resend'; const supabase = createClient( process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY ); const resend = new Resend(process.env.RESEND_API_KEY); async function sendEmail({ to, subject, html }) {
+
+pasted
+
+That’s create party fs and that’s send email fs
+
+17:17
+Claude responded: I can see the guest confirmation email HTML is already built in send-email.
+I can see the guest confirmation email HTML is already built in send-email.js (guestConfirmationHtml). I just need to build the /api/send-guest-confirmation.js endpoint that calls it, plus update rsvp.html.
+
+Let me also check — create-party.js currently doesn't save special_note or phone_number to Supabase. I'll need to patch that too.
+
+Here's everything I'll build:
+
+api/send-guest-confirmation.js — new endpoint, called after RSVP submit if guest provided email
+api/create-party.js — patch to save special_note and phone_number
+rsvp.html — add host note + phone display, update email field label, fire confirmation after submit
+
+New send-guest-confirmation.js Vercel function
+New send-guest-confirmation.js Vercel function
+Now the create-party patch to save special_note and phone_number:
+
+
+Patched create-party.js with special_note and phone_number
+Patched create-party.js with special_note and phone_number
+Now the rsvp.html patch — I'll work from the full file you pasted earlier:
+
+
+Created a file, read a file
+Created a file, read a file
+Three files. Here's what each does:
+
+api/send-guest-confirmation.js — new Vercel function. Takes party_id, response_id, guest_email. Fetches both the party and the RSVP response from Supabase, sends a tailored email (different copy for yes vs no). Email failure is fire-and-forget — it logs but never blocks anything.
+
+api/create-party.js — now saves special_note and phone_number to the parties table. Run this in Supabase SQL editor first:
+
+sql
+alter table parties add column if not exists special_note text;
+alter table parties add column if not exists phone_number text;
+rsvp.html — four changes:
+
+Loads party from /api/get-party?id=<party_id> and renders special_note and phone_number in the info row if present. Note has a subtle top border to distinguish it from the venue/date info. Phone is a tappable tel: link.
+Guest email field is now hidden behind a checkbox: "Send me a confirmation email — optional". Only appears when checked.
+Same opt-in on the decline page too.
+After successful submit, if they gave an email, fires POST /api/send-guest-confirmation as fire-and-forget, and shows "📬 Confirmation sent to your@email.com" on the success page.
+One thing to check — does your /api/get-party endpoint exist? If the guest page was previously using URL params instead of a Supabase fetch, you may need that endpoint built too.
+
+
+Send guest confirmation
+JS 
+
+Create party
+JS 
+
+Rsvp
+Code · HTML 
+You said: no get party doesnt exist
+no get party doesnt exist
+
+17:49
+Claude responded: I'll build it now — it's a simple read-only endpoint.
+I'll build it now — it's a simple read-only endpoint.
+
+
+Created a file, read a file
+Created a file, read a file
+Deploy as api/get-party.js. Two things worth noting:
+
+Security — it only selects the columns guests need. dashboard_token and parent_email are deliberately excluded, so even if someone probes the endpoint they can't hijack the dashboard or harvest the host's email.
+
+UUID validation — rejects anything that isn't a valid UUID format before it even touches Supabase, so you don't waste queries on garbage input.
+
+Your full api/ folder should now be:
+
+api/
+  create-party.js
+  get-party.js        ← new
+  submit-rsvp.js
+  dashboard.js
+  send-email.js
+  send-guest-confirmation.js  ← new
+
+Get party
+JS 
+
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+Send guest confirmation · JS
+Copy
+
+import { createClient } from '@supabase/supabase-js';
+import { Resend } from 'resend';
+ 
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+ 
+const resend = new Resend(process.env.RESEND_API_KEY);
+ 
+const ordinal = n => {
+  const s = ['th','st','nd','rd'], v = n % 100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
+};
+ 
+const base = inner => `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#faf6ef;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#faf6ef;padding:40px 0;">
+<tr><td align="center">
+<table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
+  <tr><td style="text-align:center;padding-bottom:24px;">
+    <span style="font-family:Georgia,serif;font-size:1.3rem;font-style:italic;color:#c9a84c;">Tiny Invites</span>
+  </td></tr>
+  <tr><td style="background:#fff9f2;border:1px solid #f5edda;border-radius:16px;padding:40px 44px;">
+    ${inner}
+  </td></tr>
+  <tr><td style="text-align:center;padding:24px 0 0;">
+    <p style="font-size:0.7rem;color:#a89880;margin:0;">
+      Sent by <span style="color:#c9a84c;">Tiny Invites</span> ·
+      <a href="https://tinyinvites.org" style="color:#a89880;text-decoration:none;">tinyinvites.org</a>
+    </p>
+  </td></tr>
+</table>
+</td></tr></table></body></html>`;
+ 
+function guestConfirmationHtml({ party, response }) {
+  const attending = response.attending === true
+    || response.attending === 'true'
+    || response.attending === 'yes';
+ 
+  const ageStr = party.age ? `${ordinal(party.age)} birthday` : 'party';
+ 
+  if (!attending) {
+    return base(`
+      <p style="font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:#c9a84c;margin:0 0 14px;">We'll miss you 🥺</p>
+      <h1 style="font-family:Georgia,serif;font-size:1.9rem;font-weight:400;color:#2a2218;margin:0 0 14px;line-height:1.25;">
+        Thanks for letting us know, ${response.guest_name}
+      </h1>
+      <p style="font-size:0.88rem;color:#6b5c45;line-height:1.75;margin:0;">
+        That's a shame — but we completely understand. We've let the host know
+        you can't make it to <strong>${party.child_name}'s ${ageStr}</strong>.
+        We'll be thinking of you and hope to celebrate together another time. 💛
+      </p>
+    `);
+  }
+ 
+  return base(`
+    <p style="font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:#c9a84c;margin:0 0 14px;">You're on the list! 🎉</p>
+    <h1 style="font-family:Georgia,serif;font-size:1.9rem;font-weight:400;color:#2a2218;margin:0 0 14px;line-height:1.25;">
+      See you there, <em style="color:#c9a84c;">${response.guest_name}!</em>
+    </h1>
+    <p style="font-size:0.88rem;color:#6b5c45;line-height:1.75;margin:0 0 18px;">
+      Your RSVP for <strong>${party.child_name}'s ${ageStr}</strong> is confirmed.
+      ${party.venue
+        ? `We'll see you at <strong>${party.venue}</strong>.`
+        : ''}
+      Keep an eye on your inbox for any updates from the host. See you there! 🎈
+    </p>
+    ${response.guest_count > 1
+      ? `<div style="background:#f5edda;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:0.83rem;color:#6b5c45;">
+           👥 <strong style="color:#2a2218;">${response.guest_count} guests</strong> confirmed under your name
+         </div>`
+      : ''}
+    ${response.allergies
+      ? `<div style="background:#fff3e0;border-left:3px solid #c9a84c;border-radius:0 8px 8px 0;padding:12px 16px;font-size:0.82rem;color:#6b5c45;">
+           ⚠️ Dietary note recorded: <strong>${response.allergies}</strong>
+         </div>`
+      : ''}
+    ${party.parent_email
+      ? `<p style="font-size:0.78rem;color:#a89880;margin:20px 0 0;line-height:1.65;">
+           Questions? Reach the host at
+           <a href="mailto:${party.parent_email}" style="color:#c9a84c;text-decoration:none;">
+             ${party.parent_email}
+           </a>
+         </p>`
+      : ''}
+  `);
+}
+ 
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+ 
+  try {
+    const { party_id, response_id, guest_email } = req.body;
+ 
+    if (!party_id)    return res.status(400).json({ error: 'Missing party_id' });
+    if (!guest_email) return res.status(400).json({ error: 'Missing guest_email' });
+ 
+    // Validate email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guest_email)) {
+      return res.status(400).json({ error: 'Invalid guest_email' });
+    }
+ 
+    // Fetch party
+    const { data: party, error: partyErr } = await supabase
+      .from('parties')
+      .select('*')
+      .eq('party_id', party_id)
+      .single();
+ 
+    if (partyErr || !party) {
+      return res.status(404).json({ error: 'Party not found' });
+    }
+ 
+    // Fetch the RSVP response — by response_id if provided, else most recent for this party+email
+    let response;
+    if (response_id) {
+      const { data, error } = await supabase
+        .from('guest_responses')
+        .select('*')
+        .eq('id', response_id)
+        .single();
+      if (error || !data) return res.status(404).json({ error: 'Response not found' });
+      response = data;
+    } else {
+      // Fallback: most recent response for this party with this email
+      const { data, error } = await supabase
+        .from('guest_responses')
+        .select('*')
+        .eq('party_id', party_id)
+        .eq('guest_email', guest_email)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      if (error || !data) return res.status(404).json({ error: 'Response not found' });
+      response = data;
+    }
+ 
+    const attending = response.attending === true
+      || response.attending === 'true'
+      || response.attending === 'yes';
+ 
+    const subject = attending
+      ? `You're confirmed for ${party.child_name}'s party! 🎉`
+      : `We'll miss you at ${party.child_name}'s party 💛`;
+ 
+    // Fire and forget — RSVP is already saved, email failure must not affect response
+    resend.emails.send({
+      from:    'Tiny Invites <onboarding@resend.dev>',
+      to:      guest_email,
+      subject,
+      html:    guestConfirmationHtml({ party, response }),
+    }).catch(err => console.error('Guest confirmation email failed:', err.message));
+ 
+    return res.status(200).json({ success: true });
+ 
+  } catch (err) {
+    console.error('send-guest-confirmation error:', err);
+    return res.status(500).json({ error: err.message });
+  }
+}
+ 

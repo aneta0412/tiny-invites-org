@@ -1,14 +1,15 @@
-const { createClient } = require(’@supabase/supabase-js’);
+import { createClient } from ‘@supabase/supabase-js’;
+import { randomUUID } from ‘crypto’;
 
 const supabase = createClient(
 process.env.SUPABASE_URL,
 process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
 try {
-const party_id        = crypto.randomUUID();
-const dashboard_token = crypto.randomUUID();
+const party_id        = randomUUID();
+const dashboard_token = randomUUID();
 
 ```
 const testPayload = {

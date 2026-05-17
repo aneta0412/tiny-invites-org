@@ -31,10 +31,16 @@
 /* ── TOP BANNER ── */
 #host-banner {
 position: sticky;
-top: 0;
+top: -1px;
+padding-top: 1px;
 z-index: 100;
 background: var(–dark);
-box-shadow: 0 4px 24px rgba(42,34,24,0.2);
+box-shadow: 0 2px 12px rgba(42,34,24,0.25);
+transform: translateZ(0);
+-webkit-transform: translateZ(0);
+will-change: transform;
+-webkit-backface-visibility: hidden;
+backface-visibility: hidden;
 }
 
 .banner-inner {
@@ -348,40 +354,27 @@ gap: 8px;
 /* Live confirmation card */
 #live-confirm-card {
 display: none;
-background: rgba(74,222,128,0.06);
-border: 1px solid rgba(74,222,128,0.2);
+background: var(–warm-white);
+border: 1px solid var(–gold-light);
 border-radius: 16px;
-padding: 20px;
+padding: 22px;
 text-align: center;
 }
 #live-confirm-card .live-icon { font-size: 2rem; margin-bottom: 10px; }
 #live-confirm-card h4 {
 font-family: “Cormorant Garamond”, serif;
-font-size: 1.2rem;
+font-size: 1.5rem;
+font-weight: 400;
 color: var(–dark);
-margin-bottom: 6px;
+margin-bottom: 8px;
+line-height: 1.2;
 }
 #live-confirm-card p {
-font-size: 0.78rem;
+font-size: 0.82rem;
 color: var(–mid);
-line-height: 1.6;
-margin-bottom: 14px;
+line-height: 1.7;
+margin-bottom: 16px;
 }
-#live-confirm-card a {
-display: inline-flex;
-align-items: center;
-gap: 6px;
-background: var(–dark);
-color: var(–cream);
-padding: 10px 20px;
-border-radius: 8px;
-font-size: 0.75rem;
-letter-spacing: 0.06em;
-text-transform: uppercase;
-text-decoration: none;
-transition: background 0.2s;
-}
-#live-confirm-card a:hover { background: var(–gold); color: var(–dark); }
 
 /* ── INVITE PREVIEW LEFT ── */
 #invite-wrap {
@@ -527,9 +520,7 @@ h1 { font-size: 1.9rem; }
   <p id="banner-sub" style="display:none;"></p>
 </div>
 
-<div class="banner-actions" id="live-actions" style="display:none;">
-  <button class="btn-b btn-copy" id="copy-btn" onclick="copyLink()">📋 Copy RSVP link for my guests</button>
-</div>
+<div class="banner-actions" id="live-actions" style="display:none;"></div>
 ```
 
   </div>

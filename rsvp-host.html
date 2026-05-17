@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -28,625 +27,613 @@
     min-height: 100vh;
   }
 
-/* ── TOP BANNER ── */
-#host-banner {
-position: fixed;
-top: 0;
-left: 0;
-right: 0;
-z-index: 100;
-background: var(–dark);
-box-shadow: 0 2px 12px rgba(42,34,24,0.25);
-}
+  /* ── TOP BANNER ── */
+  #host-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--dark);
+    box-shadow: 0 2px 12px rgba(42,34,24,0.25);
+  }
 
-/* Push content down so it doesn’t hide behind fixed banner */
-body { padding-top: 72px; }
+  /* Push content down so it doesn't hide behind fixed banner */
+  body { padding-top: 72px; }
 
-.banner-inner {
-max-width: 1200px;
-margin: 0 auto;
-padding: 16px 32px;
-display: flex;
-align-items: center;
-gap: 20px;
-flex-wrap: wrap;
-}
+  .banner-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
 
-.status-pill {
-display: flex;
-align-items: center;
-gap: 8px;
-padding: 5px 12px;
-border-radius: 99px;
-font-size: 0.68rem;
-letter-spacing: 0.12em;
-text-transform: uppercase;
-font-weight: 500;
-flex-shrink: 0;
-}
-.status-pill.preview {
-background: rgba(251,191,36,0.15);
-color: #fbbf24;
-border: 1px solid rgba(251,191,36,0.3);
-}
-.status-pill.live {
-background: rgba(74,222,128,0.15);
-color: #4ade80;
-border: 1px solid rgba(74,222,128,0.3);
-}
-.status-dot {
-width: 6px; height: 6px;
-border-radius: 50%;
-}
-.status-pill.preview .status-dot { background: #fbbf24; }
-.status-pill.live    .status-dot { background: #4ade80; animation: pulse 2s infinite; }
-@keyframes pulse {
-0%,100% { opacity: 1; }
-50%      { opacity: 0.4; }
-}
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border-radius: 99px;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .status-pill.preview {
+    background: rgba(251,191,36,0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(251,191,36,0.3);
+  }
+  .status-pill.live {
+    background: rgba(74,222,128,0.15);
+    color: #4ade80;
+    border: 1px solid rgba(74,222,128,0.3);
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+  .status-pill.preview .status-dot { background: #fbbf24; }
+  .status-pill.live    .status-dot { background: #4ade80; animation: pulse 2s infinite; }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.4; }
+  }
 
-.banner-title {
-flex: 1;
-min-width: 160px;
-}
-.banner-title h3 {
-font-family: “Cormorant Garamond”, serif;
-font-size: 1.05rem;
-font-weight: 400;
-color: var(–cream);
-line-height: 1.2;
-}
-.banner-title p {
-font-size: 0.72rem;
-color: rgba(250,246,239,0.45);
-margin-top: 2px;
-}
+  .banner-title {
+    flex: 1;
+    min-width: 160px;
+  }
+  .banner-title h3 {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--cream);
+    line-height: 1.2;
+  }
+  .banner-title p {
+    font-size: 0.72rem;
+    color: rgba(250,246,239,0.45);
+    margin-top: 2px;
+  }
 
-.banner-actions {
-display: flex;
-align-items: center;
-gap: 10px;
-flex-wrap: wrap;
-}
+  .banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
 
-.btn-b {
-display: inline-flex;
-align-items: center;
-gap: 6px;
-padding: 9px 16px;
-border-radius: 8px;
-font-family: “DM Sans”, sans-serif;
-font-size: 0.78rem;
-cursor: pointer;
-transition: all 0.2s;
-text-decoration: none;
-white-space: nowrap;
-border: none;
-letter-spacing: 0.02em;
-}
-.btn-copy {
-background: var(–gold);
-color: var(–dark);
-font-weight: 500;
-font-size: 0.82rem;
-padding: 11px 20px;
-}
-.btn-copy:hover { background: var(–gold-light); }
-.btn-copy.copied { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.3); color: #4ade80; }
-.btn-dash {
-background: rgba(255,255,255,0.08);
-color: rgba(250,246,239,0.7);
-border: 1px solid rgba(255,255,255,0.1);
-}
-.btn-dash:hover { background: rgba(255,255,255,0.15); color: var(–cream); }
-.btn-golive {
-background: var(–gold);
-color: var(–dark);
-font-weight: 500;
-}
-.btn-golive:hover { background: var(–gold-light); }
-.btn-golive:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-b {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    white-space: nowrap;
+    border: none;
+    letter-spacing: 0.02em;
+  }
+  .btn-copy {
+    background: var(--gold);
+    color: var(--dark);
+    font-weight: 500;
+    font-size: 0.82rem;
+    padding: 11px 20px;
+  }
+  .btn-copy:hover { background: var(--gold-light); }
+  .btn-copy.copied { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.3); color: #4ade80; }
+  .btn-dash {
+    background: rgba(255,255,255,0.08);
+    color: rgba(250,246,239,0.7);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .btn-dash:hover { background: rgba(255,255,255,0.15); color: var(--cream); }
+  .btn-golive {
+    background: var(--gold);
+    color: var(--dark);
+    font-weight: 500;
+  }
+  .btn-golive:hover { background: var(--gold-light); }
+  .btn-golive:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* ── MAIN LAYOUT: invite left, QR + form right ── */
-#main-layout {
-max-width: 1200px;
-margin: 0 auto;
-padding: 40px 32px 80px;
-display: grid;
-grid-template-columns: 1fr 360px;
-gap: 40px;
-align-items: start;
-}
+  /* ── MAIN LAYOUT: invite left, QR + form right ── */
+  #main-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 40px;
+    align-items: start;
+  }
 
-/* ── RIGHT PANEL ── */
-#right-panel {
-position: sticky;
-top: 80px;
-display: flex;
-flex-direction: column;
-gap: 20px;
-}
+  /* ── RIGHT PANEL ── */
+  #right-panel {
+    position: sticky;
+    top: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
-/* QR card */
-.qr-card {
-background: var(–warm-white);
-border: 1px solid var(–gold-light);
-border-radius: 16px;
-padding: 20px;
-text-align: center;
-}
-.qr-card-label {
-font-size: 0.62rem;
-letter-spacing: 0.14em;
-text-transform: uppercase;
-color: var(–soft);
-margin-bottom: 14px;
-}
-#qr-box-right {
-display: flex;
-justify-content: center;
-margin-bottom: 12px;
-}
-#qr-box-right canvas, #qr-box-right img { border-radius: 4px; display: block; border: none; }
-#host-banner { -webkit-transform: translateZ(0); transform: translateZ(0); }
-.btn-dl-qr {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-gap: 6px;
-width: 100%;
-padding: 9px;
-background: var(–dark);
-color: var(–cream);
-border-radius: 8px;
-font-size: 0.72rem;
-letter-spacing: 0.06em;
-text-transform: uppercase;
-text-decoration: none;
-transition: background 0.2s;
-cursor: pointer;
-border: none;
-font-family: “DM Sans”, sans-serif;
-margin-bottom: 8px;
-}
-.btn-dl-qr:hover { background: var(–gold); color: var(–dark); }
-.qr-url-display {
-font-size: 0.68rem;
-color: var(–gold);
-word-break: break-all;
-line-height: 1.5;
-margin-top: 8px;
-}
+  /* QR card */
+  .qr-card {
+    background: var(--warm-white);
+    border: 1px solid var(--gold-light);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+  }
+  .qr-card-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--soft);
+    margin-bottom: 14px;
+  }
+  #qr-box-right {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  #qr-box-right canvas, #qr-box-right img { border-radius: 4px; display: block; border: none; }
+  #host-banner { -webkit-transform: translateZ(0); transform: translateZ(0); }
+  .btn-dl-qr {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 9px;
+    background: var(--dark);
+    color: var(--cream);
+    border-radius: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s;
+    cursor: pointer;
+    border: none;
+    font-family: "DM Sans", sans-serif;
+    margin-bottom: 8px;
+  }
+  .btn-dl-qr:hover { background: var(--gold); color: var(--dark); }
+  .qr-url-display {
+    font-size: 0.68rem;
+    color: var(--gold);
+    word-break: break-all;
+    line-height: 1.5;
+    margin-top: 8px;
+  }
 
-/* Go live form card */
-#golive-card {
-background: var(–warm-white);
-border: 1px solid var(–gold-light);
-border-radius: 16px;
-padding: 22px;
-}
-#golive-card.hidden { display: none; }
+  /* Go live form card */
+  #golive-card {
+    background: var(--warm-white);
+    border: 1px solid var(--gold-light);
+    border-radius: 16px;
+    padding: 22px;
+  }
+  #golive-card.hidden { display: none; }
 
-.golive-label {
-font-size: 0.62rem;
-letter-spacing: 0.14em;
-text-transform: uppercase;
-color: var(–gold);
-margin-bottom: 10px;
-}
-.golive-heading {
-font-family: “Cormorant Garamond”, serif;
-font-size: 1.15rem;
-font-weight: 400;
-color: var(–dark);
-margin-bottom: 6px;
-line-height: 1.3;
-}
-.golive-sub {
-font-size: 0.78rem;
-color: var(–mid);
-line-height: 1.6;
-margin-bottom: 16px;
-}
+  .golive-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .golive-heading {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--dark);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .golive-sub {
+    font-size: 0.78rem;
+    color: var(--mid);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
 
-.field {
-margin-bottom: 14px;
-}
-.field label {
-display: block;
-font-size: 0.65rem;
-letter-spacing: 0.1em;
-text-transform: uppercase;
-color: var(–soft);
-margin-bottom: 5px;
-}
-.field input {
-width: 100%;
-padding: 10px 13px;
-background: var(–cream);
-border: 1px solid var(–gold-light);
-border-radius: 8px;
-font-family: “DM Sans”, sans-serif;
-font-size: 0.88rem;
-color: var(–dark);
-outline: none;
-transition: border-color 0.2s;
-}
-.field input:focus { border-color: var(–gold); }
-.field .hint {
-font-size: 0.68rem;
-color: var(–soft);
-margin-top: 4px;
-line-height: 1.5;
-}
+  .field {
+    margin-bottom: 14px;
+  }
+  .field label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--soft);
+    margin-bottom: 5px;
+  }
+  .field input {
+    width: 100%;
+    padding: 10px 13px;
+    background: var(--cream);
+    border: 1px solid var(--gold-light);
+    border-radius: 8px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.88rem;
+    color: var(--dark);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input:focus { border-color: var(--gold); }
+  .field .hint {
+    font-size: 0.68rem;
+    color: var(--soft);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
 
-/* Phone opt-in toggle */
-.phone-toggle {
-display: flex;
-align-items: flex-start;
-gap: 9px;
-cursor: pointer;
-margin-bottom: 12px;
-padding: 10px 12px;
-background: var(–gold-pale);
-border-radius: 8px;
-}
-.phone-toggle input[type=“checkbox”] {
-accent-color: var(–gold);
-width: 15px; height: 15px;
-flex-shrink: 0;
-margin-top: 2px;
-cursor: pointer;
-}
-.phone-toggle span {
-font-size: 0.78rem;
-color: var(–mid);
-line-height: 1.55;
-}
-#phone-field-wrap { display: none; margin-bottom: 14px; }
+  /* Phone opt-in toggle */
+  .phone-toggle {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    cursor: pointer;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: var(--gold-pale);
+    border-radius: 8px;
+  }
+  .phone-toggle input[type="checkbox"] {
+    accent-color: var(--gold);
+    width: 15px; height: 15px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+  }
+  .phone-toggle span {
+    font-size: 0.78rem;
+    color: var(--mid);
+    line-height: 1.55;
+  }
+  #phone-field-wrap { display: none; margin-bottom: 14px; }
 
-/* Consent */
-.consent-wrap {
-display: flex;
-align-items: flex-start;
-gap: 9px;
-cursor: pointer;
-margin-bottom: 14px;
-padding: 10px 12px;
-background: var(–gold-pale);
-border-radius: 8px;
-border: 1px solid transparent;
-transition: border-color 0.2s;
-}
-.consent-wrap input[type=“checkbox”] {
-accent-color: var(–gold);
-width: 15px; height: 15px;
-flex-shrink: 0;
-margin-top: 2px;
-cursor: pointer;
-}
-.consent-wrap span {
-font-size: 0.75rem;
-color: var(–mid);
-line-height: 1.6;
-}
+  /* Consent */
+  .consent-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    cursor: pointer;
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    background: var(--gold-pale);
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .consent-wrap input[type="checkbox"] {
+    accent-color: var(--gold);
+    width: 15px; height: 15px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+  }
+  .consent-wrap span {
+    font-size: 0.75rem;
+    color: var(--mid);
+    line-height: 1.6;
+  }
 
-.btn-golive-main {
-width: 100%;
-padding: 13px;
-background: var(–dark);
-color: var(–cream);
-border: none;
-border-radius: 10px;
-font-family: “DM Sans”, sans-serif;
-font-size: 0.88rem;
-cursor: pointer;
-transition: background 0.2s;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 8px;
-}
-.btn-golive-main:hover:not(:disabled) { background: var(–gold); }
-.btn-golive-main:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-golive-main {
+    width: 100%;
+    padding: 13px;
+    background: var(--dark);
+    color: var(--cream);
+    border: none;
+    border-radius: 10px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-golive-main:hover:not(:disabled) { background: var(--gold); }
+  .btn-golive-main:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* Live confirmation card */
-#live-confirm-card {
-display: none;
-background: var(–warm-white);
-border: 1px solid var(–gold-light);
-border-radius: 16px;
-padding: 22px;
-text-align: center;
-}
-#live-confirm-card .live-icon { font-size: 2rem; margin-bottom: 10px; }
-#live-confirm-card h4 {
-font-family: “Cormorant Garamond”, serif;
-font-size: 1.5rem;
-font-weight: 400;
-color: var(–dark);
-margin-bottom: 8px;
-line-height: 1.2;
-}
-#live-confirm-card p {
-font-size: 0.82rem;
-color: var(–mid);
-line-height: 1.7;
-margin-bottom: 16px;
-}
+  /* Live confirmation card */
+  #live-confirm-card {
+    display: none;
+    background: var(--warm-white);
+    border: 1px solid var(--gold-light);
+    border-radius: 16px;
+    padding: 22px;
+    text-align: center;
+  }
+  #live-confirm-card .live-icon { font-size: 2rem; margin-bottom: 10px; }
+  #live-confirm-card h4 {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--dark);
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  #live-confirm-card p {
+    font-size: 0.82rem;
+    color: var(--mid);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
 
-/* ── INVITE PREVIEW LEFT ── */
-#invite-wrap {
-border-radius: 24px;
-overflow: hidden;
-box-shadow: 0 8px 40px rgba(42,34,24,0.08);
-animation: fadeUp 0.5s 0.1s cubic-bezier(.22,.61,.36,1) both;
-}
-@keyframes fadeUp {
-from { opacity:0; transform:translateY(20px); }
-to   { opacity:1; transform:translateY(0); }
-}
+  /* ── INVITE PREVIEW LEFT ── */
+  #invite-wrap {
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(42,34,24,0.08);
+    animation: fadeUp 0.5s 0.1s cubic-bezier(.22,.61,.36,1) both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
 
-#invite-hero {
-position: relative;
-width: 100%;
-aspect-ratio: 16/9;
-background: var(–gold-pale);
-overflow: hidden;
-}
-#invite-hero img { width:100%; height:100%; object-fit:cover; display:block; }
-#invite-hero .overlay {
-position: absolute; inset: 0;
-background: linear-gradient(to bottom, rgba(42,34,24,0.08) 0%, rgba(42,34,24,0.45) 100%);
-}
+  #invite-hero {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: var(--gold-pale);
+    overflow: hidden;
+  }
+  #invite-hero img { width:100%; height:100%; object-fit:cover; display:block; }
+  #invite-hero .overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(42,34,24,0.08) 0%, rgba(42,34,24,0.45) 100%);
+  }
 
-.invite-card {
-background: var(–warm-white);
-border: 1px solid var(–gold-pale);
-border-top: none;
-border-radius: 0 0 24px 24px;
-padding: 44px 44px 40px;
-position: relative;
-}
-.invite-card::before {
-content: ‘’;
-position: absolute;
-inset: 0 10px 10px;
-border: 1px solid var(–gold-pale);
-border-top: none;
-border-radius: 0 0 18px 18px;
-pointer-events: none;
-opacity: 0.6;
-}
+  .invite-card {
+    background: var(--warm-white);
+    border: 1px solid var(--gold-pale);
+    border-top: none;
+    border-radius: 0 0 24px 24px;
+    padding: 44px 44px 40px;
+    position: relative;
+  }
+  .invite-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 10px 10px;
+    border: 1px solid var(--gold-pale);
+    border-top: none;
+    border-radius: 0 0 18px 18px;
+    pointer-events: none;
+    opacity: 0.6;
+  }
 
-.brand {
-font-family: “Cormorant Garamond”, serif;
-font-size: 0.75rem;
-letter-spacing: 0.18em;
-text-transform: uppercase;
-color: var(–soft);
-text-align: center;
-margin-bottom: 28px;
-}
+  .brand {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--soft);
+    text-align: center;
+    margin-bottom: 28px;
+  }
 
-h1 {
-font-family: “Cormorant Garamond”, serif;
-font-size: 2.4rem;
-font-weight: 400;
-line-height: 1.15;
-text-align: center;
-color: var(–dark);
-margin-bottom: 10px;
-}
-h1 em { font-style: italic; color: var(–gold); }
+  h1 {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 2.4rem;
+    font-weight: 400;
+    line-height: 1.15;
+    text-align: center;
+    color: var(--dark);
+    margin-bottom: 10px;
+  }
+  h1 em { font-style: italic; color: var(--gold); }
 
-.subtitle {
-font-size: 0.88rem;
-color: var(–mid);
-text-align: center;
-line-height: 1.65;
-margin-bottom: 24px;
-}
+  .subtitle {
+    font-size: 0.88rem;
+    color: var(--mid);
+    text-align: center;
+    line-height: 1.65;
+    margin-bottom: 24px;
+  }
 
-.divider {
-display: flex; align-items: center; gap: 12px; margin: 18px 0;
-}
-.divider span { flex:1; height:1px; background: var(–gold-light); }
-.divider i { color: var(–gold); font-size: 0.7rem; }
+  .divider {
+    display: flex; align-items: center; gap: 12px; margin: 18px 0;
+  }
+  .divider span { flex:1; height:1px; background: var(--gold-light); }
+  .divider i { color: var(--gold); font-size: 0.7rem; }
 
-.info-row {
-display: flex; flex-direction: column; gap: 10px;
-background: var(–gold-pale); border-radius: 14px;
-padding: 16px 20px; margin-bottom: 24px;
-}
-.info-item {
-display: flex; align-items: flex-start; gap: 12px;
-font-size: 0.88rem; color: var(–mid);
-}
-.info-item .icon { font-size: 1rem; flex-shrink:0; margin-top:1px; }
-.info-item a { color: var(–gold); text-decoration: none; }
+  .info-row {
+    display: flex; flex-direction: column; gap: 10px;
+    background: var(--gold-pale); border-radius: 14px;
+    padding: 16px 20px; margin-bottom: 24px;
+  }
+  .info-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    font-size: 0.88rem; color: var(--mid);
+  }
+  .info-item .icon { font-size: 1rem; flex-shrink:0; margin-top:1px; }
+  .info-item a { color: var(--gold); text-decoration: none; }
 
-.btn-group { display:flex; gap:14px; margin-top:4px; }
-.btn {
-flex:1; padding:14px 20px; border-radius:12px;
-font-family:“DM Sans”,sans-serif; font-size:0.92rem;
-cursor:not-allowed; border:none; opacity:0.5;
-}
-.btn-yes { background:var(–dark); color:var(–cream); }
-.btn-no  { background:transparent; color:var(–mid); border:1px solid var(–gold-light); }
+  .btn-group { display:flex; gap:14px; margin-top:4px; }
+  .btn {
+    flex:1; padding:14px 20px; border-radius:12px;
+    font-family:"DM Sans",sans-serif; font-size:0.92rem;
+    cursor:not-allowed; border:none; opacity:0.5;
+  }
+  .btn-yes { background:var(--dark); color:var(--cream); }
+  .btn-no  { background:transparent; color:var(--mid); border:1px solid var(--gold-light); }
 
-.preview-note {
-text-align: center;
-font-size: 0.72rem;
-color: var(–soft);
-margin-top: 14px;
-letter-spacing: 0.03em;
-}
+  .preview-note {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--soft);
+    margin-top: 14px;
+    letter-spacing: 0.03em;
+  }
 
-/* loading */
-#loading-state {
-text-align: center;
-padding: 80px 40px;
-color: var(–soft);
-font-size: 0.88rem;
-}
+  /* loading */
+  #loading-state {
+    text-align: center;
+    padding: 80px 40px;
+    color: var(--soft);
+    font-size: 0.88rem;
+  }
 
-@media(max-width: 900px) {
-#main-layout { grid-template-columns: 1fr; padding: 24px 20px 60px; }
-#right-panel  { position: static; }
-.banner-inner { padding: 14px 20px; }
-.invite-card  { padding: 32px 24px; }
-h1 { font-size: 1.9rem; }
-}
+  @media(max-width: 900px) {
+    #main-layout { grid-template-columns: 1fr; padding: 24px 20px 60px; }
+    #right-panel  { position: static; }
+    .banner-inner { padding: 14px 20px; }
+    .invite-card  { padding: 32px 24px; }
+    h1 { font-size: 1.9rem; }
+  }
 </style>
-
 </head>
 <body>
 
 <!-- ── TOP BANNER ── -->
-
 <div id="host-banner">
   <div class="banner-inner">
 
-```
-<div class="status-pill preview" id="status-pill">
-  <div class="status-dot"></div>
-  <span id="status-label">Preview</span>
-</div>
+    <div class="status-pill preview" id="status-pill">
+      <div class="status-dot"></div>
+      <span id="status-label">Preview</span>
+    </div>
 
-<div class="banner-title">
-  <h3 id="banner-heading">This is your invite preview</h3>
-  <p id="banner-sub" style="display:none;"></p>
-</div>
+    <div class="banner-title">
+      <h3 id="banner-heading">This is your invite preview</h3>
+      <p id="banner-sub" style="display:none;"></p>
+    </div>
 
-<div class="banner-actions" id="live-actions" style="display:none;"></div>
-```
+    <div class="banner-actions" id="live-actions" style="display:none;"></div>
 
   </div>
 </div>
 
 <!-- ── MAIN LAYOUT ── -->
-
 <div id="main-layout">
 
   <!-- LEFT: Invite preview -->
-
   <div>
     <div id="loading-state">Loading your invitation preview…</div>
 
-```
-<div id="invite-wrap" style="display:none;">
-  <div id="invite-hero">
-    <img id="invite-hero-img"
-      src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80"
-      alt="Party decorations">
-    <div class="overlay"></div>
-  </div>
-  <div class="invite-card">
-    <div class="brand">Tiny Invites</div>
-    <h1 id="inv-greeting">Hello!</h1>
-    <p class="subtitle" id="inv-subtitle">You are warmly invited to celebrate a very special day.</p>
-    <div class="divider"><span></span><i>◆</i><span></span></div>
-    <div class="info-row" id="inv-details">
-      <div class="info-item"><span class="icon">🎂</span><span id="inv-age-line">Loading…</span></div>
-      <div class="info-item"><span class="icon">📍</span><span id="inv-location-line">Loading…</span></div>
+    <div id="invite-wrap" style="display:none;">
+      <div id="invite-hero">
+        <img id="invite-hero-img"
+          src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80"
+          alt="Party decorations">
+        <div class="overlay"></div>
+      </div>
+      <div class="invite-card">
+        <div class="brand">Tiny Invites</div>
+        <h1 id="inv-greeting">Hello!</h1>
+        <p class="subtitle" id="inv-subtitle">You are warmly invited to celebrate a very special day.</p>
+        <div class="divider"><span></span><i>◆</i><span></span></div>
+        <div class="info-row" id="inv-details">
+          <div class="info-item"><span class="icon">🎂</span><span id="inv-age-line">Loading…</span></div>
+          <div class="info-item"><span class="icon">📍</span><span id="inv-location-line">Loading…</span></div>
+        </div>
+        <p id="inv-note-row" style="display:none;font-size:0.9rem;color:var(--mid);text-align:center;margin-bottom:20px;line-height:1.65;"></p>
+        <div style="margin-bottom:18px;">
+          <label style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px;display:block;">Your name</label>
+          <input type="text" placeholder="e.g. Sarah Johnson" disabled style="width:100%;padding:13px 16px;background:var(--cream);border:1px solid var(--gold-light);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:var(--dark);opacity:0.5;cursor:not-allowed;">
+        </div>
+        <p style="font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--soft);text-align:center;margin-bottom:14px;">Will you be joining us?</p>
+        <div class="btn-group">
+          <button class="btn btn-yes" disabled>🎉 Yes, I'll be there!</button>
+          <button class="btn btn-no"  disabled>Can't make it</button>
+        </div>
+        <p class="preview-note">👆 This is exactly what your guests will see</p>
+      </div>
     </div>
-    <p id="inv-note-row" style="display:none;font-size:0.9rem;color:var(--mid);text-align:center;margin-bottom:20px;line-height:1.65;"></p>
-    <div style="margin-bottom:18px;">
-      <label style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px;display:block;">Your name</label>
-      <input type="text" placeholder="e.g. Sarah Johnson" disabled style="width:100%;padding:13px 16px;background:var(--cream);border:1px solid var(--gold-light);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:var(--dark);opacity:0.5;cursor:not-allowed;">
-    </div>
-    <p style="font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--soft);text-align:center;margin-bottom:14px;">Will you be joining us?</p>
-    <div class="btn-group">
-      <button class="btn btn-yes" disabled>🎉 Yes, I'll be there!</button>
-      <button class="btn btn-no"  disabled>Can't make it</button>
-    </div>
-    <p class="preview-note">👆 This is exactly what your guests will see</p>
-  </div>
-</div>
-```
-
   </div>
 
   <!-- RIGHT: QR + Go Live form -->
-
   <div id="right-panel">
 
-```
-<!-- QR code — always visible -->
-<div class="qr-card">
-  <p class="qr-card-label">Your QR code</p>
-  <div id="qr-box-right"></div>
-  <button class="btn-dl-qr" id="qr-dl-btn" onclick="downloadQR()">↓ Download PNG</button>
-  <p class="qr-url-display" id="qr-url-text"></p>
-</div>
-
-<!-- Go live form — shown until published -->
-<div id="golive-card">
-  <p class="golive-label">Almost there</p>
-  <h3 class="golive-heading">Happy with your preview?<br>Let's make it live.</h3>
-  <p class="golive-sub">Add your email so guest RSVPs reach you. Optionally add your phone number if you'd like guests to contact you directly.</p>
-
-  <div class="field">
-    <label>Your email <span style="color:var(--gold);">— for RSVPs</span></label>
-    <input type="email" id="host-email" placeholder="e.g. sarah@email.com" autocomplete="email">
-    <p class="hint">Every guest RSVP lands in your inbox the moment it's submitted.</p>
-  </div>
-
-  <div class="field" style="margin-bottom:14px;">
-    <label style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Your phone number <span style="color:var(--soft);font-weight:300;text-transform:none;letter-spacing:0;">— optional</span></label>
-    <input type="tel" id="host-phone" placeholder="e.g. 07700 900123" autocomplete="tel"
-      style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
-      onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
-  </div>
-
-  <label class="consent-wrap" style="margin-bottom:14px;" id="phone-optin-wrap">
-    <input type="checkbox" id="show-phone-check" style="accent-color:var(--gold);width:15px;height:15px;flex-shrink:0;margin-top:2px;cursor:pointer;"
-      onchange="updatePhonePreview()">
-    <span>Show my phone number on the invitation so guests can contact me directly</span>
-  </label>
-
-  <label class="consent-wrap" id="consent-wrap">
-    <input type="checkbox" id="host-consent">
-    <span>I agree to receive guest RSVP responses and occasional party management updates from Tiny Invites by email. My email will only be used to deliver replies and relevant party notifications — never shared or used for marketing.</span>
-  </label>
-
-  <button class="btn-golive-main" id="golive-btn" onclick="goLive()">
-    ✨ Yes — make it live!
-  </button>
-
-  <p style="text-align:center;font-size:0.7rem;color:var(--soft);margin-top:10px;">Free, always. No account required.</p>
-</div>
-
-<!-- Shown after going live -->
-<div id="live-confirm-card">
-  <div class="live-icon">🎉</div>
-  <h4>Your invite is live!</h4>
-  <p>Share the link or QR code with your guests. Your dashboard link has been emailed to you — save it, it's unique to your party.</p>
-  <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
-    <button id="copy-btn-confirm" onclick="copyLink()"
-       style="display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--dark);color:var(--cream);padding:12px 16px;border-radius:8px;font-size:0.78rem;letter-spacing:0.06em;text-transform:uppercase;border:none;cursor:pointer;transition:background 0.2s;font-family:'DM Sans',sans-serif;width:100%;"
-       onmouseover="this.style.background='var(--gold)';this.style.color='var(--dark)'"
-       onmouseout="this.style.background='var(--dark)';this.style.color='var(--cream)'">
-      📋 Copy RSVP link for my guests
-    </button>
-    <div style="display:flex;gap:8px;">
-      <a id="dash-link-confirm" href="#" target="_blank" rel="noopener"
-         style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--mid);padding:10px 16px;border-radius:8px;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;border:1px solid var(--gold-light);transition:all 0.2s;"
-         onmouseover="this.style.background='var(--gold-pale)'"
-         onmouseout="this.style.background='transparent'">
-        📊 Dashboard
-      </a>
-      <a id="preview-link-confirm" href="#" target="_blank" rel="noopener"
-         style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--mid);padding:10px 16px;border-radius:8px;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;border:1px solid var(--gold-light);transition:all 0.2s;"
-         onmouseover="this.style.background='var(--gold-pale)'"
-         onmouseout="this.style.background='transparent'">
-        👁 Guest view
-      </a>
+    <!-- QR code — always visible -->
+    <div class="qr-card">
+      <p class="qr-card-label">Your QR code</p>
+      <div id="qr-box-right"></div>
+      <button class="btn-dl-qr" id="qr-dl-btn" onclick="downloadQR()">↓ Download PNG</button>
+      <p class="qr-url-display" id="qr-url-text"></p>
     </div>
-  </div>
-</div>
-```
+
+    <!-- Go live form — shown until published -->
+    <div id="golive-card">
+      <p class="golive-label">Almost there</p>
+      <h3 class="golive-heading">Happy with your preview?<br>Let's make it live.</h3>
+      <p class="golive-sub">Add your email so guest RSVPs reach you. Optionally add your phone number if you'd like guests to contact you directly.</p>
+
+      <div class="field">
+        <label>Your email <span style="color:var(--gold);">— for RSVPs</span></label>
+        <input type="email" id="host-email" placeholder="e.g. sarah@email.com" autocomplete="email">
+        <p class="hint">Every guest RSVP lands in your inbox the moment it's submitted.</p>
+      </div>
+
+      <div class="field" style="margin-bottom:14px;">
+        <label style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Your phone number <span style="color:var(--soft);font-weight:300;text-transform:none;letter-spacing:0;">— optional</span></label>
+        <input type="tel" id="host-phone" placeholder="e.g. 07700 900123" autocomplete="tel"
+          style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
+      </div>
+
+      <label class="consent-wrap" style="margin-bottom:14px;" id="phone-optin-wrap">
+        <input type="checkbox" id="show-phone-check" style="accent-color:var(--gold);width:15px;height:15px;flex-shrink:0;margin-top:2px;cursor:pointer;"
+          onchange="updatePhonePreview()">
+        <span>Show my phone number on the invitation so guests can contact me directly</span>
+      </label>
+
+      <label class="consent-wrap" id="consent-wrap">
+        <input type="checkbox" id="host-consent">
+        <span>I agree to receive guest RSVP responses and occasional party management updates from Tiny Invites by email. My email will only be used to deliver replies and relevant party notifications — never shared or used for marketing.</span>
+      </label>
+
+      <button class="btn-golive-main" id="golive-btn" onclick="goLive()">
+        ✨ Yes — make it live!
+      </button>
+
+      <p style="text-align:center;font-size:0.7rem;color:var(--soft);margin-top:10px;">Free, always. No account required.</p>
+    </div>
+
+    <!-- Shown after going live -->
+    <div id="live-confirm-card">
+      <div class="live-icon">🎉</div>
+      <h4>Your invite is live!</h4>
+      <p>Share the link or QR code with your guests. Your dashboard link has been emailed to you — save it, it's unique to your party.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+        <button id="copy-btn-confirm" onclick="copyLink()"
+           style="display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--dark);color:var(--cream);padding:12px 16px;border-radius:8px;font-size:0.78rem;letter-spacing:0.06em;text-transform:uppercase;border:none;cursor:pointer;transition:background 0.2s;font-family:'DM Sans',sans-serif;width:100%;"
+           onmouseover="this.style.background='var(--gold)';this.style.color='var(--dark)'"
+           onmouseout="this.style.background='var(--dark)';this.style.color='var(--cream)'">
+          📋 Copy RSVP link for my guests
+        </button>
+        <div style="display:flex;gap:8px;">
+          <a id="dash-link-confirm" href="#" target="_blank" rel="noopener"
+             style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--mid);padding:10px 16px;border-radius:8px;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;border:1px solid var(--gold-light);transition:all 0.2s;"
+             onmouseover="this.style.background='var(--gold-pale)'"
+             onmouseout="this.style.background='transparent'">
+            📊 Dashboard
+          </a>
+          <a id="preview-link-confirm" href="#" target="_blank" rel="noopener"
+             style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--mid);padding:10px 16px;border-radius:8px;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;border:1px solid var(--gold-light);transition:all 0.2s;"
+             onmouseover="this.style.background='var(--gold-pale)'"
+             onmouseout="this.style.background='transparent'">
+            👁 Guest view
+          </a>
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -910,6 +897,5 @@ h1 { font-size: 1.9rem; }
     document.getElementById('live-confirm-card').style.display = 'block';
   }
 </script>
-
 </body>
 </html>

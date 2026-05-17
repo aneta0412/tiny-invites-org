@@ -1167,9 +1167,8 @@
 
     <div class="invite-fields">
       <div class="invite-field">
-        <label>Your email <span style="color:var(--gold);">— for RSVPs &amp; updates</span></label>
+        <label>Your email</label>
         <input type="email" id="ci-email" placeholder="e.g. sarah@email.com" autocomplete="email">
-        <p style="font-size:0.72rem;color:var(--soft);margin-top:5px;line-height:1.55;">Every guest RSVP lands in your inbox the moment it&#x2019;s submitted — name, guest count, and allergies included. Please use a real email address you check regularly.</p>
       </div>
       <div class="invite-field">
         <label>Party photo <span style="color:var(--soft);font-weight:300;">— optional, replaces hero image</span></label>
@@ -1183,11 +1182,6 @@
       <textarea id="ci-note" placeholder="e.g. Please use the rear entrance on Park Lane. Parking is available on the street — the blue gate on the left is ours. No nut products please." autocomplete="off" rows="3" style="width:100%;padding:10px 13px;border:1px solid var(--gold-pale);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--dark);background:var(--cream);outline:none;resize:vertical;line-height:1.6;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)';this.style.boxShadow='0 0 0 3px rgba(201,168,76,0.1)'" onblur="this.style.borderColor='var(--gold-pale)';this.style.boxShadow='none'"></textarea>
       <p style="font-size:0.72rem;color:var(--soft);margin-top:5px;line-height:1.55;">Entrance details, parking, dress code — anything useful. Shows on the invitation page.</p>
     </div>
-
-    <label id="ci-consent-wrap" style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;margin-bottom:22px;padding:16px;background:var(--gold-pale);border-radius:10px;border:1px solid transparent;transition:border-color 0.2s;">
-      <input type="checkbox" id="ci-consent" style="margin-top:3px;accent-color:var(--gold);width:16px;height:16px;flex-shrink:0;cursor:pointer;">
-      <span style="font-size:0.8rem;color:var(--mid);line-height:1.65;">I agree to receive guest RSVP responses and occasional party management updates from Tiny Invites by email. My email will only be used to deliver replies and relevant party notifications — never shared or used for marketing.</span>
-    </label>
 
     <button class="invite-submit" onclick="generateInvite()" id="ci-generate-btn">
       👁 Preview my invitation
@@ -1229,23 +1223,10 @@
     const name     = document.getElementById('ci-name').value.trim();
     const age      = document.getElementById('ci-age').value.trim();
     const location = document.getElementById('ci-location').value.trim();
-    const email    = document.getElementById('ci-email').value.trim();
-    const consent  = document.getElementById('ci-consent').checked;
 
     if (!name)     { alert('Please enter the child\'s name 🎂'); return; }
     if (!age)      { alert('Please enter their turning age 🎈'); return; }
     if (!location) { alert('Please enter the party location 📍'); return; }
-    if (!email)    { alert('Please enter your email so guest RSVPs reach you 📬'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      alert('Please enter a valid email address 📧'); return;
-    }
-    if (!consent) {
-      const wrap = document.getElementById('ci-consent-wrap');
-      wrap.style.borderColor = '#c9a84c';
-      wrap.style.background  = '#f0e6c8';
-      alert('Please tick the box to agree to receive guest RSVPs by email ✉️');
-      return;
-    }
 
     const btn = document.getElementById('ci-generate-btn');
     btn.disabled = true;
@@ -1261,7 +1242,7 @@
           age:          age,
           venue:        location,
           party_date:   null,
-          parent_email: email,
+          parent_email: null,
           theme:        null,
           photo_url:    document.getElementById('ci-photo-url').value.trim() || null,
           special_note: document.getElementById('ci-note').value.trim() || null

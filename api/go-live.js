@@ -92,7 +92,7 @@ export default async function handler(req, res) {
     }
 
     resend.emails.send({
-      from:    'Tiny Invites <onboarding@resend.dev>',
+      from:    'Tiny Invites <hello@tinyinvites.org>',
       to:      parent_email,
       subject: `Your RSVP page for ${child_name}'s party is live!`,
       html:    welcomeEmailHtml({ child_name, age, venue, dashboard_token, party_id, photo_url: photo_url || '' }),

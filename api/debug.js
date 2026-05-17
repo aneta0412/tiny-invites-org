@@ -1,45 +1,53 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from ‘@supabase/supabase-js’;
+
+const supabase = createClient(
+process.env.SUPABASE_URL,
+process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 export default async function handler(req, res) {
+try {
+const testPayload = {
+party_id:        crypto.randomUUID(),
+dashboard_token: crypto.randomUUID(),
+child_name:      ‘Test Child’,
+age:             ‘5’,
+venue:           ‘Test Venue’,
+parent_email:    ‘test@test.com’,
+photo_url:       null,
+special_note:    null,
+phone_number:    null,
+};
 
-  const checks = {
-    SUPABASE_URL:             !!process.env.SUPABASE_URL,
-    SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-    RESEND_API_KEY:           !!process.env.RESEND_API_KEY,
-  };
+```
+console.log('Debug test payload:', JSON.stringify(testPayload));
 
-  try {
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
+const { data, error } = await supabase
+  .from('parties')
+  .insert([testPayload])
+  .select();
 
-    // Try reading from parties table
-    const { data, error } = await supabase
-      .from('parties')
-      .select('party_id, child_name, created_at')
-      .order('created_at', { ascending: false })
-      .limit(3);
+if (error) {
+  console.error('Supabase error:', JSON.stringify(error));
+  return res.status(500).json({
+    success: false,
+    error: error.message,
+    details: error,
+    payload: testPayload,
+  });
+}
 
-    if (error) {
-      return res.status(200).json({
-        env: checks,
-        supabase: 'CONNECTED but query failed',
-        error: error.message,
-      });
-    }
+return res.status(200).json({
+  success: true,
+  inserted: data,
+  payload: testPayload,
+});
+```
 
-    return res.status(200).json({
-      env: checks,
-      supabase: 'OK',
-      recent_parties: data,
-    });
-
-  } catch (err) {
-    return res.status(200).json({
-      env: checks,
-      supabase: 'FAILED',
-      error: err.message,
-    });
-  }
+} catch (err) {
+return res.status(500).json({
+success: false,
+error: err.message,
+});
+}
 }

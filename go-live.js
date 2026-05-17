@@ -1,31 +1,33 @@
 // go-live.js
-// Called when host clicks “Yes — make it live!” on rsvp-host.html.
+// Called when host clicks "Yes — make it live!" on rsvp-host.html.
 // Does the actual Supabase insert and sends the welcome email.
 
-import { createClient } from ‘@supabase/supabase-js’;
-import { Resend } from ‘resend’;
+import { createClient } from '@supabase/supabase-js';
+import { Resend } from 'resend';
 
 const supabase = createClient(
-process.env.SUPABASE_URL,
-process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const ordinal = n => {
-const s = [‘th’,‘st’,‘nd’,‘rd’], v = n % 100;
-return n + (s[(v-20)%10] || s[v] || s[0]);
+  const s = ['th','st','nd','rd'], v = n % 100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
 };
 
 function welcomeEmailHtml({ child_name, age, venue, dashboard_token, party_id, photo_url }) {
-const dashUrl = `https://tinyinvites.org/dashboard_page.html?token=${dashboard_token}`;
-const rsvpUrl = `https://tinyinvites.org/rsvp.html?party=${party_id}`;
-const ageStr  = age ? `${ordinal(age)} birthday` : ‘party’;
+  const dashUrl = `https://tinyinvites.org/dashboard_page.html?token=${dashboard_token}`;
+  const rsvpUrl = `https://tinyinvites.org/rsvp.html?party=${party_id}`;
+  const ageStr  = age ? `${ordinal(age)} birthday` : 'party';
 
-const heroBlock = photo_url ? ` <tr><td style="padding:0;overflow:hidden;"> <img src="${photo_url}" alt="Party" style="width:100%;max-height:200px;object-fit:cover;display:block;border-radius:12px 12px 0 0;"> </td></tr>` : ‘’;
+  const heroBlock = photo_url ? `
+    <tr><td style="padding:0;overflow:hidden;">
+      <img src="${photo_url}" alt="Party" style="width:100%;max-height:200px;object-fit:cover;display:block;border-radius:12px 12px 0 0;">
+    </td></tr>` : '';
 
-return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"></head>
-
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#faf6ef;font-family:Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#faf6ef;padding:40px 0;"><tr><td align="center">
 <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
@@ -56,82 +58,81 @@ return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"></head>
 }
 
 export default async function handler(req, res) {
-if (req.method !== ‘POST’) {
-return res.status(405).json({ error: ‘Method not allowed’ });
-}
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-try {
-const {
-child_name,
-age,
-venue,
-party_date,
-parent_email,
-photo_url,
-special_note,
-phone_number,
-} = req.body;
+  try {
+    const {
+      child_name,
+      age,
+      venue,
+      party_date,
+      parent_email,
+      photo_url,
+      special_note,
+      phone_number,
+    } = req.body;
 
-```
-// Validate required fields
-if (!child_name)   return res.status(400).json({ error: 'Missing child_name' });
-if (!parent_email) return res.status(400).json({ error: 'Missing parent_email' });
+    // Validate required fields
+    if (!child_name)   return res.status(400).json({ error: 'Missing child_name' });
+    if (!parent_email) return res.status(400).json({ error: 'Missing parent_email' });
 
-if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parent_email)) {
-  return res.status(400).json({ error: 'Invalid email address' });
-}
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parent_email)) {
+      return res.status(400).json({ error: 'Invalid email address' });
+    }
 
-// Generate fresh IDs here
-const party_id        = crypto.randomUUID();
-const dashboard_token = crypto.randomUUID();
+    // Generate fresh IDs — use explicit format for compatibility
+    const party_id        = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+    const dashboard_token = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
 
-const insertPayload = {
-  party_id,
-  dashboard_token,
-  child_name,
-  age:          age          || null,
-  venue:        venue        || null,
-  party_date:   party_date   || null,
-  parent_email,
-  photo_url:    photo_url    || null,
-  special_note: special_note || null,
-  phone_number: phone_number || null,
-};
+    const insertPayload = {
+      party_id,
+      dashboard_token,
+      child_name,
+      age:          age          || null,
+      venue:        venue        || null,
+      parent_email,
+      photo_url:    photo_url    || null,
+      special_note: special_note || null,
+      phone_number: phone_number || null,
+    };
 
-console.log('go-live insert payload:', JSON.stringify(insertPayload));
+    console.log('go-live insert payload:', JSON.stringify(insertPayload));
 
-// Insert into Supabase
-const { error } = await supabase
-  .from('parties')
-  .insert([insertPayload]);
+    // Insert into Supabase
+    const { error } = await supabase
+      .from('parties')
+      .insert([insertPayload]);
 
-if (error) {
-  console.error('Supabase insert error:', JSON.stringify(error));
-  throw new Error(error.message || JSON.stringify(error));
-}
+    if (error) {
+      console.error('Supabase insert error:', JSON.stringify(error));
+      throw new Error(error.message || JSON.stringify(error));
+    }
 
-// Send welcome email — fire and forget
-resend.emails.send({
-  from:    'Tiny Invites <onboarding@resend.dev>',
-  to:      parent_email,
-  subject: `Your RSVP page for ${child_name}'s party is live! 🎉`,
-  html:    welcomeEmailHtml({
-    child_name, age, venue, dashboard_token, party_id,
-    photo_url: photo_url || '',
-  }),
-}).catch(err => console.error('Welcome email failed:', err.message));
+    // Send welcome email — fire and forget
+    resend.emails.send({
+      from:    'Tiny Invites <onboarding@resend.dev>',
+      to:      parent_email,
+      subject: `Your RSVP page for ${child_name}'s party is live! 🎉`,
+      html:    welcomeEmailHtml({
+        child_name, age, venue, dashboard_token, party_id,
+        photo_url: photo_url || '',
+      }),
+    }).catch(err => console.error('Welcome email failed:', err.message));
 
-return res.status(200).json({
-  success:        true,
-  party_id,
-  dashboard_token,
-  rsvp_link:      `/rsvp.html?party=${party_id}`,
-  dashboard_link: `/dashboard_page.html?token=${dashboard_token}`,
-});
-```
+    return res.status(200).json({
+      success:        true,
+      party_id,
+      dashboard_token,
+      rsvp_link:      `/rsvp.html?party=${party_id}`,
+      dashboard_link: `/dashboard_page.html?token=${dashboard_token}`,
+    });
 
-} catch (err) {
-console.error(‘go-live error:’, err);
-return res.status(500).json({ error: err.message });
-}
+  } catch (err) {
+    console.error('go-live error:', err);
+    return res.status(500).json({ error: err.message });
+  }
 }

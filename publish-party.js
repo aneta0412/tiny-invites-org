@@ -51,15 +51,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { party_id, dashboard_token, parent_email, phone_number } = req.body;
+    const { party_id, dashboard_token, phone_number } = req.body;
 
     if (!party_id)        return res.status(400).json({ error: 'Missing party_id' });
     if (!dashboard_token) return res.status(400).json({ error: 'Missing dashboard_token' });
-    if (!parent_email)    return res.status(400).json({ error: 'Missing parent_email' });
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parent_email)) {
-      return res.status(400).json({ error: 'Invalid email address' });
-    }
 
     // Verify the token matches this party (security check)
     const { data: party, error: fetchErr } = await supabase
@@ -77,7 +72,6 @@ export default async function handler(req, res) {
     const { error: updateErr } = await supabase
       .from('parties')
       .update({
-        parent_email: parent_email,
         phone_number: phone_number || null,
         published_at: new Date().toISOString(),
       })
@@ -85,10 +79,10 @@ export default async function handler(req, res) {
 
     if (updateErr) throw updateErr;
 
-    // Send welcome email — fire and forget
+    // Send welcome email using the email already stored on the party
     resend.emails.send({
       from:    'Tiny Invites <onboarding@resend.dev>',
-      to:      parent_email,
+      to:      party.parent_email,
       subject: `Your RSVP page for ${party.child_name}'s party is live! 🎉`,
       html:    welcomeEmailHtml({
         child_name:      party.child_name,

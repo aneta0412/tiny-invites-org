@@ -85,24 +85,30 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parent_email)) {
 const party_id        = crypto.randomUUID();
 const dashboard_token = crypto.randomUUID();
 
+const insertPayload = {
+  party_id,
+  dashboard_token,
+  child_name,
+  age:          age          || null,
+  venue:        venue        || null,
+  party_date:   party_date   || null,
+  parent_email,
+  photo_url:    photo_url    || null,
+  special_note: special_note || null,
+  phone_number: phone_number || null,
+};
+
+console.log('go-live insert payload:', JSON.stringify(insertPayload));
+
 // Insert into Supabase
 const { error } = await supabase
   .from('parties')
-  .insert([{
-    party_id,
-    dashboard_token,
-    child_name,
-    age:          age ? parseInt(age, 10) : null,
-    venue:        venue        || null,
-    party_date:   party_date   || null,
-    parent_email,
-    photo_url:    photo_url    || null,
-    special_note: special_note || null,
-    phone_number: phone_number || null,
-    published_at: new Date().toISOString(),
-  }]);
+  .insert([insertPayload]);
 
-if (error) throw error;
+if (error) {
+  console.error('Supabase insert error:', JSON.stringify(error));
+  throw new Error(error.message || JSON.stringify(error));
+}
 
 // Send welcome email — fire and forget
 resend.emails.send({

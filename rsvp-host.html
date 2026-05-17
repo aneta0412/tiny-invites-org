@@ -120,11 +120,13 @@ border: none;
 letter-spacing: 0.02em;
 }
 .btn-copy {
-background: rgba(255,255,255,0.08);
-color: var(–cream);
-border: 1px solid rgba(255,255,255,0.12);
+background: var(–gold);
+color: var(–dark);
+font-weight: 500;
+font-size: 0.82rem;
+padding: 11px 20px;
 }
-.btn-copy:hover { background: rgba(255,255,255,0.15); }
+.btn-copy:hover { background: var(–gold-light); }
 .btn-copy.copied { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.3); color: #4ade80; }
 .btn-dash {
 background: rgba(255,255,255,0.08);
@@ -522,7 +524,7 @@ h1 { font-size: 1.9rem; }
 
 <div class="banner-title">
   <h3 id="banner-heading">This is your invite preview</h3>
-  <p id="banner-sub">Fill in your details on the right, then go live when you're happy.</p>
+  <p id="banner-sub" style="display:none;"></p>
 </div>
 
 <div class="banner-actions" id="live-actions" style="display:none;">
@@ -727,10 +729,17 @@ h1 { font-size: 1.9rem; }
   function copyLink() {
     const url = base + 'rsvp.html?party=' + livePartyId;
     navigator.clipboard.writeText(url).then(() => {
-      const btn = document.getElementById('copy-btn');
-      btn.textContent = '✓ Copied!';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = '📋 Copy link'; btn.classList.remove('copied'); }, 2500);
+      ['copy-btn', 'copy-btn-confirm'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.textContent = '✓ Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = '📋 Copy RSVP link for my guests';
+            btn.classList.remove('copied');
+          }, 2500);
+        }
+      });
     });
   }
 
@@ -886,15 +895,6 @@ h1 { font-size: 1.9rem; }
       });
       document.getElementById('qr-url-text').textContent = realInviteUrl;
 
-      // Update phone on invite preview if provided
-      if (phone) {
-        const phoneEl = document.createElement('div');
-        phoneEl.className = 'info-item';
-        phoneEl.innerHTML = `<span class="icon">📱</span><span>Contact: <a href="tel:${phone}">${phone}</a></span>`;
-        const existing = document.querySelector('#inv-details .host-phone');
-        if (!existing) document.getElementById('inv-details').appendChild(phoneEl);
-      }
-
       switchToLive(email, realDashUrl, realInviteUrl);
 
     } catch (err) {
@@ -905,28 +905,20 @@ h1 { font-size: 1.9rem; }
   }
 
   function switchToLive(email, dashUrl, inviteUrl) {
-    // Banner
     const pill = document.getElementById('status-pill');
     pill.classList.remove('preview');
     pill.classList.add('live');
-    document.getElementById('status-label').textContent   = 'Live';
+    document.getElementById('status-label').textContent = 'Live';
     document.getElementById('banner-heading').textContent = 'Your invite is live 🎉';
-    document.getElementById('banner-sub').textContent     = `Dashboard link emailed to ${email}`;
+    const sub = document.getElementById('banner-sub');
+    sub.textContent   = 'Dashboard link emailed to ' + email;
+    sub.style.display = 'block';
     document.getElementById('live-actions').style.display = 'flex';
-    document.getElementById('copy-btn').style.display     = 'inline-flex';
-    document.getElementById('dash-btn').href              = dashUrl;
-
-    // Confirm card links
     document.getElementById('dash-link-confirm').href    = dashUrl;
     document.getElementById('preview-link-confirm').href = inviteUrl;
-
-    // Hide go live form, show confirmation
     document.getElementById('golive-card').style.display       = 'none';
     document.getElementById('live-confirm-card').style.display = 'block';
   }
-</script>
-
-// ── Build QR immediately ─────────────────────────────────
 </script>
 
 </body>

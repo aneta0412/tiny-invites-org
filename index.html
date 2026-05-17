@@ -1165,7 +1165,7 @@
       </div>
     </div>
 
-    <div class="invite-fields">
+    <div class="invite-field">
       <div class="invite-field">
         <label>Party photo <span style="color:var(--soft);font-weight:300;">— optional, replaces hero image</span></label>
         <input type="url" id="ci-photo-url" placeholder="Paste a public image URL…" autocomplete="off">
@@ -1215,7 +1215,7 @@
     return s[(v-20)%10] || s[v] || s[0];
   }
 
-  async function generateInvite() {
+  function generateInvite() {
     const name     = document.getElementById('ci-name').value.trim();
     const age      = document.getElementById('ci-age').value.trim();
     const location = document.getElementById('ci-location').value.trim();
@@ -1224,51 +1224,22 @@
     if (!age)      { alert('Please enter their turning age 🎈'); return; }
     if (!location) { alert('Please enter the party location 📍'); return; }
 
-    const btn = document.getElementById('ci-generate-btn');
-    btn.disabled = true;
-    btn.innerHTML = '⏳ Creating your invitation…';
-    btn.style.opacity = '0.7';
+    const base     = window.location.origin +
+                     window.location.pathname.replace(/index\.html$/, '');
+    const params   = new URLSearchParams({
+      name,
+      age,
+      location,
+      photo:    document.getElementById('ci-photo-url').value.trim() || '',
+      note:     document.getElementById('ci-note').value.trim() || '',
+    });
 
-    try {
-      const response = await fetch('/api/create-party', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          child_name:   name,
-          age:          age,
-          venue:        location,
-          party_date:   null,
-          parent_email: null,
-          theme:        null,
-          photo_url:    document.getElementById('ci-photo-url').value.trim() || null,
-          special_note: document.getElementById('ci-note').value.trim() || null
-        })
-      });
-
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.error || 'Server error — please try again.');
-      }
-
-      const data = await response.json();
-
-      const base = window.location.origin +
-                   window.location.pathname.replace(/index\.html$/, '');
-      window.location.href =
-        `${base}rsvp-host.html?party=${data.party_id}&token=${data.dashboard_token}`;
-
-    } catch (err) {
-      alert('Something went wrong: ' + (err.message || 'Please try again.'));
-      btn.disabled  = false;
-      btn.innerHTML = '👁 Preview my invitation';
-      btn.style.opacity = '1';
-    }
+    window.location.href = `${base}rsvp-host.html?${params.toString()}`;
   }
 </script>
 
 </section><!-- end step4 -->
 </section><!-- end invite-creator -->
-
   
 <!-- PRINT SERVICES -->
 <section class="print-section" id="print">

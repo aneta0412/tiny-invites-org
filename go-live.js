@@ -92,7 +92,7 @@ const { error } = await supabase
     party_id,
     dashboard_token,
     child_name,
-    age:          age          || null,
+    age:          age ? parseInt(age, 10) : null,
     venue:        venue        || null,
     party_date:   party_date   || null,
     parent_email,

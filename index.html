@@ -1142,7 +1142,7 @@
     <p class="section-label" style="margin:0;">Almost done</p>
   </div>
   <h2 style="margin-bottom:8px;">Create your <em>event RSVP page.</em></h2>
-  <p class="section-sub" style="max-width:none;margin-bottom:36px;">Add your email so guest replies can reach you. We'll generate your personalised invite page, unique link, and QR code instantly.</p>
+  <p class="section-sub" style="max-width:none;margin-bottom:36px;">Add your email so guest replies can reach you. We'll generate your personalised invite page instantly — you'll preview it before it goes live.</p>
 
   <div id="create-step3">
 
@@ -1172,16 +1172,16 @@
         <p style="font-size:0.72rem;color:var(--soft);margin-top:5px;line-height:1.55;">Every guest RSVP lands in your inbox the moment it&#x2019;s submitted — name, guest count, and allergies included. Please use a real email address you check regularly.</p>
       </div>
       <div class="invite-field">
-        <label>Party photo <span style="color:var(--soft);font-weight:300;">— optional, replaces hero (top of the page) image</span></label>
+        <label>Party photo <span style="color:var(--soft);font-weight:300;">— optional, replaces hero image</span></label>
         <input type="url" id="ci-photo-url" placeholder="Paste a public image URL…" autocomplete="off">
-        <p style="font-size:0.72rem;color:var(--soft);margin-top:5px;line-height:1.55;">Use any <strong>publicly accessible</strong> image — a Google Photos shared link, a public Instagram post image URL, or any landscape photo you find online. The URL must end in <code style="background:var(--gold-pale);padding:1px 5px;border-radius:3px;">.jpg</code>, <code style="background:var(--gold-pale);padding:1px 5px;border-radius:3px;">.png</code> or similar. We don&#x2019;t store or upload anything — the image stays where it already lives.</p>
+        <p style="font-size:0.72rem;color:var(--soft);margin-top:5px;line-height:1.55;">Use any <strong>publicly accessible</strong> image URL ending in <code style="background:var(--gold-pale);padding:1px 5px;border-radius:3px;">.jpg</code> or <code style="background:var(--gold-pale);padding:1px 5px;border-radius:3px;">.png</code>. We don&#x2019;t store or upload anything.</p>
       </div>
     </div>
 
     <div class="invite-field" style="margin-bottom:22px;">
       <label>Special note for guests <span style="color:var(--soft);font-weight:300;">— optional</span></label>
       <textarea id="ci-note" placeholder="e.g. Please use the rear entrance on Park Lane. Parking is available on the street — the blue gate on the left is ours. No nut products please." autocomplete="off" rows="3" style="width:100%;padding:10px 13px;border:1px solid var(--gold-pale);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--dark);background:var(--cream);outline:none;resize:vertical;line-height:1.6;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)';this.style.boxShadow='0 0 0 3px rgba(201,168,76,0.1)'" onblur="this.style.borderColor='var(--gold-pale)';this.style.boxShadow='none'"></textarea>
-      <p style="font-size:0.72rem;color:var(--soft);margin-top:5px;line-height:1.55;">Anything useful guests should know — entrance details, parking, allergies, dress code, what to bring. Shows on their invitation page.</p>
+      <p style="font-size:0.72rem;color:var(--soft);margin-top:5px;line-height:1.55;">Entrance details, parking, dress code — anything useful. Shows on the invitation page.</p>
     </div>
 
     <label id="ci-consent-wrap" style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;margin-bottom:22px;padding:16px;background:var(--gold-pale);border-radius:10px;border:1px solid transparent;transition:border-color 0.2s;">
@@ -1190,10 +1190,10 @@
     </label>
 
     <button class="invite-submit" onclick="generateInvite()" id="ci-generate-btn">
-      ✨ Create my free invite
+      👁 Preview my invitation
     </button>
 
-    <p class="invite-note">No sign-up required. Free, always.</p>
+    <p class="invite-note">No sign-up required. Free, always. You'll confirm before it goes live.</p>
 
   </div>
 
@@ -1236,8 +1236,10 @@
     if (!age)      { alert('Please enter their turning age 🎈'); return; }
     if (!location) { alert('Please enter the party location 📍'); return; }
     if (!email)    { alert('Please enter your email so guest RSVPs reach you 📬'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address 📧'); return; }
-    if (!consent)  {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert('Please enter a valid email address 📧'); return;
+    }
+    if (!consent) {
       const wrap = document.getElementById('ci-consent-wrap');
       wrap.style.borderColor = '#c9a84c';
       wrap.style.background  = '#f0e6c8';
@@ -1281,7 +1283,7 @@
     } catch (err) {
       alert('Something went wrong: ' + (err.message || 'Please try again.'));
       btn.disabled  = false;
-      btn.innerHTML = '✨ Create my free invite';
+      btn.innerHTML = '👁 Preview my invitation';
       btn.style.opacity = '1';
     }
   }
@@ -1290,6 +1292,7 @@
 </section><!-- end step4 -->
 </section><!-- end invite-creator -->
 
+  
 <!-- PRINT SERVICES -->
 <section class="print-section" id="print">
   <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;">

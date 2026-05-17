@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Invite Is Live — Tiny Invites</title>
+<title>Your Invite Preview — Tiny Invites</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -17,7 +17,6 @@
     --mid: #6b5c45;
     --soft: #a89880;
   }
-
   * { margin:0; padding:0; box-sizing:border-box; }
   html { scroll-behavior:smooth; }
   body {
@@ -26,83 +25,76 @@
     font-family: "DM Sans", sans-serif;
     font-weight: 300;
     min-height: 100vh;
-    overflow-x: hidden;
   }
 
-  /* ── HOST BANNER ── */
+  /* ── TOP BANNER ── */
   #host-banner {
     position: sticky;
     top: 0;
     z-index: 100;
     background: var(--dark);
-    color: var(--cream);
-    padding: 0;
-    box-shadow: 0 4px 24px rgba(42,34,24,0.18);
-    animation: slideDown 0.45s cubic-bezier(.22,.61,.36,1) both;
-  }
-  @keyframes slideDown {
-    from { transform: translateY(-100%); opacity: 0; }
-    to   { transform: translateY(0);     opacity: 1; }
+    box-shadow: 0 4px 24px rgba(42,34,24,0.2);
   }
 
   .banner-inner {
-    max-width: 960px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 20px 32px;
+    padding: 16px 32px;
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 20px;
     flex-wrap: wrap;
   }
 
-  .banner-status {
+  .status-pill {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    padding: 5px 12px;
+    border-radius: 99px;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
     flex-shrink: 0;
   }
-  .live-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: #4ade80;
-    box-shadow: 0 0 0 3px rgba(74,222,128,0.25);
-    animation: pulse 2s ease infinite;
+  .status-pill.preview {
+    background: rgba(251,191,36,0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(251,191,36,0.3);
   }
-  @keyframes pulse {
-    0%,100% { box-shadow: 0 0 0 3px rgba(74,222,128,0.25); }
-    50%      { box-shadow: 0 0 0 6px rgba(74,222,128,0.1); }
-  }
-  .live-label {
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+  .status-pill.live {
+    background: rgba(74,222,128,0.15);
     color: #4ade80;
-    font-weight: 500;
+    border: 1px solid rgba(74,222,128,0.3);
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+  .status-pill.preview .status-dot { background: #fbbf24; }
+  .status-pill.live    .status-dot { background: #4ade80; animation: pulse 2s infinite; }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.4; }
   }
 
-  .banner-text {
+  .banner-title {
     flex: 1;
-    min-width: 200px;
+    min-width: 160px;
   }
-  .banner-text h3 {
+  .banner-title h3 {
     font-family: "Cormorant Garamond", serif;
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     font-weight: 400;
     color: var(--cream);
-    margin-bottom: 2px;
+    line-height: 1.2;
   }
-  .banner-text p {
-    font-size: 0.75rem;
-    color: rgba(250,246,239,0.55);
-    line-height: 1.5;
+  .banner-title p {
+    font-size: 0.72rem;
+    color: rgba(250,246,239,0.45);
+    margin-top: 2px;
   }
-  .banner-text a {
-    color: var(--gold-light);
-    text-decoration: none;
-    border-bottom: 1px solid rgba(232,213,163,0.35);
-    transition: border-color 0.2s;
-  }
-  .banner-text a:hover { border-color: var(--gold-light); }
 
   .banner-actions {
     display: flex;
@@ -111,7 +103,7 @@
     flex-wrap: wrap;
   }
 
-  .btn-banner {
+  .btn-b {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -119,118 +111,284 @@
     border-radius: 8px;
     font-family: "DM Sans", sans-serif;
     font-size: 0.78rem;
-    font-weight: 400;
-    letter-spacing: 0.04em;
     cursor: pointer;
     transition: all 0.2s;
     text-decoration: none;
     white-space: nowrap;
     border: none;
+    letter-spacing: 0.02em;
   }
   .btn-copy {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.08);
     color: var(--cream);
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.12);
   }
-  .btn-copy:hover { background: rgba(255,255,255,0.18); }
+  .btn-copy:hover { background: rgba(255,255,255,0.15); }
   .btn-copy.copied { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.3); color: #4ade80; }
-
-  .btn-dashboard {
-    background: var(--gold);
-    color: var(--dark);
-  }
-  .btn-dashboard:hover { background: var(--gold-light); }
-
-  /* QR toggle button */
-  .btn-qr {
-    background: rgba(255,255,255,0.07);
+  .btn-dash {
+    background: rgba(255,255,255,0.08);
     color: rgba(250,246,239,0.7);
     border: 1px solid rgba(255,255,255,0.1);
   }
-  .btn-qr:hover { background: rgba(255,255,255,0.13); color: var(--cream); }
+  .btn-dash:hover { background: rgba(255,255,255,0.15); color: var(--cream); }
+  .btn-golive {
+    background: var(--gold);
+    color: var(--dark);
+    font-weight: 500;
+  }
+  .btn-golive:hover { background: var(--gold-light); }
+  .btn-golive:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  /* QR popover */
-  #qr-popover {
-    display: none;
-    position: absolute;
-    top: calc(100% + 12px);
-    right: 32px;
+  /* ── MAIN LAYOUT: invite left, QR + form right ── */
+  #main-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 40px;
+    align-items: start;
+  }
+
+  /* ── RIGHT PANEL ── */
+  #right-panel {
+    position: sticky;
+    top: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* QR card */
+  .qr-card {
     background: var(--warm-white);
     border: 1px solid var(--gold-light);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 12px 40px rgba(42,34,24,0.18);
-    z-index: 200;
-    animation: fadeUp 0.25s cubic-bezier(.22,.61,.36,1) both;
-    min-width: 200px;
-  }
-  #qr-popover.open { display: block; }
-  @keyframes fadeUp {
-    from { opacity:0; transform:translateY(8px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
-  #qr-popover p {
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--soft);
-    margin-bottom: 12px;
     text-align: center;
   }
-  #qr-box { display: flex; justify-content: center; margin-bottom: 12px; }
-  .btn-dl {
+  .qr-card-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--soft);
+    margin-bottom: 14px;
+  }
+  #qr-box-right {
     display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  #qr-box-right canvas, #qr-box-right img { border-radius: 4px; }
+  .btn-dl-qr {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
     width: 100%;
-    padding: 8px 14px;
+    padding: 9px;
     background: var(--dark);
     color: var(--cream);
-    border-radius: 7px;
+    border-radius: 8px;
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     text-decoration: none;
     transition: background 0.2s;
+    cursor: pointer;
+    border: none;
+    font-family: "DM Sans", sans-serif;
+    margin-bottom: 8px;
   }
-  .btn-dl:hover { background: var(--gold); color: var(--dark); }
+  .btn-dl-qr:hover { background: var(--gold); color: var(--dark); }
+  .qr-url-display {
+    font-size: 0.68rem;
+    color: var(--gold);
+    word-break: break-all;
+    line-height: 1.5;
+    margin-top: 8px;
+  }
 
-  /* Email confirmation strip */
-  #email-strip {
-    background: rgba(74,222,128,0.07);
-    border-top: 1px solid rgba(74,222,128,0.15);
-    padding: 10px 32px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  /* Go live form card */
+  #golive-card {
+    background: var(--warm-white);
+    border: 1px solid var(--gold-light);
+    border-radius: 16px;
+    padding: 22px;
   }
-  #email-strip p {
-    font-size: 0.74rem;
-    color: rgba(250,246,239,0.6);
+  #golive-card.hidden { display: none; }
+
+  .golive-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .golive-heading {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--dark);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .golive-sub {
+    font-size: 0.78rem;
+    color: var(--mid);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+  .field label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--soft);
+    margin-bottom: 5px;
+  }
+  .field input {
+    width: 100%;
+    padding: 10px 13px;
+    background: var(--cream);
+    border: 1px solid var(--gold-light);
+    border-radius: 8px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.88rem;
+    color: var(--dark);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input:focus { border-color: var(--gold); }
+  .field .hint {
+    font-size: 0.68rem;
+    color: var(--soft);
+    margin-top: 4px;
     line-height: 1.5;
   }
-  #email-strip strong { color: rgba(250,246,239,0.9); font-weight: 400; }
-  .check-icon {
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    background: rgba(74,222,128,0.15);
-    border: 1px solid rgba(74,222,128,0.3);
-    display: flex; align-items: center; justify-content: center;
+
+  /* Phone opt-in toggle */
+  .phone-toggle {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    cursor: pointer;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: var(--gold-pale);
+    border-radius: 8px;
+  }
+  .phone-toggle input[type="checkbox"] {
+    accent-color: var(--gold);
+    width: 15px; height: 15px;
     flex-shrink: 0;
-    font-size: 0.65rem;
-    color: #4ade80;
+    margin-top: 2px;
+    cursor: pointer;
+  }
+  .phone-toggle span {
+    font-size: 0.78rem;
+    color: var(--mid);
+    line-height: 1.55;
+  }
+  #phone-field-wrap { display: none; margin-bottom: 14px; }
+
+  /* Consent */
+  .consent-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    cursor: pointer;
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    background: var(--gold-pale);
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .consent-wrap input[type="checkbox"] {
+    accent-color: var(--gold);
+    width: 15px; height: 15px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+  }
+  .consent-wrap span {
+    font-size: 0.75rem;
+    color: var(--mid);
+    line-height: 1.6;
   }
 
-  /* ── INVITE PREVIEW BELOW BANNER ── */
+  .btn-golive-main {
+    width: 100%;
+    padding: 13px;
+    background: var(--dark);
+    color: var(--cream);
+    border: none;
+    border-radius: 10px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-golive-main:hover:not(:disabled) { background: var(--gold); }
+  .btn-golive-main:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* Live confirmation card */
+  #live-confirm-card {
+    display: none;
+    background: rgba(74,222,128,0.06);
+    border: 1px solid rgba(74,222,128,0.2);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+  }
+  #live-confirm-card .live-icon { font-size: 2rem; margin-bottom: 10px; }
+  #live-confirm-card h4 {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1.2rem;
+    color: var(--dark);
+    margin-bottom: 6px;
+  }
+  #live-confirm-card p {
+    font-size: 0.78rem;
+    color: var(--mid);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  #live-confirm-card a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--dark);
+    color: var(--cream);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  #live-confirm-card a:hover { background: var(--gold); color: var(--dark); }
+
+  /* ── INVITE PREVIEW LEFT ── */
   #invite-wrap {
-    width: calc(100% - 40px);
-    max-width: 540px;
-    margin: 48px auto 80px;
     border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 8px 40px rgba(42,34,24,0.07);
-    animation: fadeUp 0.55s 0.2s cubic-bezier(.22,.61,.36,1) both;
+    box-shadow: 0 8px 40px rgba(42,34,24,0.08);
+    animation: fadeUp 0.5s 0.1s cubic-bezier(.22,.61,.36,1) both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
   }
 
   #invite-hero {
@@ -240,10 +398,7 @@
     background: var(--gold-pale);
     overflow: hidden;
   }
-  #invite-hero img {
-    width: 100%; height: 100%;
-    object-fit: cover; display: block;
-  }
+  #invite-hero img { width:100%; height:100%; object-fit:cover; display:block; }
   #invite-hero .overlay {
     position: absolute; inset: 0;
     background: linear-gradient(to bottom, rgba(42,34,24,0.08) 0%, rgba(42,34,24,0.45) 100%);
@@ -254,7 +409,7 @@
     border: 1px solid var(--gold-pale);
     border-top: none;
     border-radius: 0 0 24px 24px;
-    padding: 48px 48px 44px;
+    padding: 44px 44px 40px;
     position: relative;
   }
   .invite-card::before {
@@ -275,14 +430,12 @@
     text-transform: uppercase;
     color: var(--soft);
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
-
-  .ornament { text-align:center; font-size:1.5rem; color:var(--gold); margin-bottom:18px; letter-spacing:0.15em; }
 
   h1 {
     font-family: "Cormorant Garamond", serif;
-    font-size: 2.6rem;
+    font-size: 2.4rem;
     font-weight: 400;
     line-height: 1.15;
     text-align: center;
@@ -296,11 +449,11 @@
     color: var(--mid);
     text-align: center;
     line-height: 1.65;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
 
   .divider {
-    display: flex; align-items: center; gap: 12px; margin: 20px 0;
+    display: flex; align-items: center; gap: 12px; margin: 18px 0;
   }
   .divider span { flex:1; height:1px; background: var(--gold-light); }
   .divider i { color: var(--gold); font-size: 0.7rem; }
@@ -308,156 +461,170 @@
   .info-row {
     display: flex; flex-direction: column; gap: 10px;
     background: var(--gold-pale); border-radius: 14px;
-    padding: 18px 22px; margin-bottom: 28px;
+    padding: 16px 20px; margin-bottom: 24px;
   }
   .info-item {
-    display: flex; align-items: center; gap: 12px;
+    display: flex; align-items: flex-start; gap: 12px;
     font-size: 0.88rem; color: var(--mid);
   }
-  .info-item .icon { font-size: 1rem; flex-shrink: 0; }
-  .info-item a { color: var(--gold); text-decoration: none; font-weight: 500; }
-  .info-item a:hover { text-decoration: underline; }
+  .info-item .icon { font-size: 1rem; flex-shrink:0; margin-top:1px; }
+  .info-item a { color: var(--gold); text-decoration: none; }
 
-  /* Guest interaction frozen — preview only */
-  .btn-group {
-    display: flex; gap: 14px; margin-top: 4px;
-  }
+  .btn-group { display:flex; gap:14px; margin-top:4px; }
   .btn {
-    flex: 1; padding: 14px 20px; border-radius: 12px;
-    font-family: "DM Sans", sans-serif; font-size: 0.92rem;
-    font-weight: 400; letter-spacing: 0.03em;
-    cursor: not-allowed; transition: all 0.2s; border: none;
-    opacity: 0.5;
+    flex:1; padding:14px 20px; border-radius:12px;
+    font-family:"DM Sans",sans-serif; font-size:0.92rem;
+    cursor:not-allowed; border:none; opacity:0.5;
   }
-  .btn-yes { background: var(--dark); color: var(--cream); }
-  .btn-no  { background: transparent; color: var(--mid); border: 1px solid var(--gold-light); }
+  .btn-yes { background:var(--dark); color:var(--cream); }
+  .btn-no  { background:transparent; color:var(--mid); border:1px solid var(--gold-light); }
 
-  .preview-overlay-note {
+  .preview-note {
     text-align: center;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--soft);
     margin-top: 14px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
   }
 
-  /* Loading / error states */
+  /* loading */
   #loading-state {
     text-align: center;
     padding: 80px 40px;
     color: var(--soft);
     font-size: 0.88rem;
-    letter-spacing: 0.06em;
-  }
-  #error-state {
-    display: none;
-    text-align: center;
-    padding: 60px 40px;
-    color: var(--mid);
-    font-size: 0.88rem;
   }
 
-  @media(max-width: 600px) {
-    .banner-inner { padding: 16px 20px; gap: 14px; }
-    #email-strip  { padding: 10px 20px; }
-    .invite-card  { padding: 36px 24px; }
-    h1 { font-size: 2rem; }
-    #qr-popover { right: 16px; }
+  @media(max-width: 900px) {
+    #main-layout { grid-template-columns: 1fr; padding: 24px 20px 60px; }
+    #right-panel  { position: static; }
+    .banner-inner { padding: 14px 20px; }
+    .invite-card  { padding: 32px 24px; }
+    h1 { font-size: 1.9rem; }
   }
 </style>
 </head>
 <body>
 
-<!-- HOST BANNER -->
-<div id="host-banner" style="position:relative;">
+<!-- ── TOP BANNER ── -->
+<div id="host-banner">
   <div class="banner-inner">
-    <div class="banner-status">
-      <div class="live-dot"></div>
-      <span class="live-label">Live</span>
+
+    <div class="status-pill preview" id="status-pill">
+      <div class="status-dot"></div>
+      <span id="status-label">Preview</span>
     </div>
 
-    <div class="banner-text">
-      <h3>Your invite is live 🎉</h3>
-      <p>Share the link or QR code with your guests. Your dashboard link was emailed to you — <a id="dash-link-inline" href="#" target="_blank">open it here</a> any time.</p>
+    <div class="banner-title">
+      <h3 id="banner-heading">This is your invite preview</h3>
+      <p id="banner-sub">Fill in your details on the right, then go live when you're happy.</p>
     </div>
 
-    <div class="banner-actions">
-      <button class="btn-banner btn-copy" id="copy-btn" onclick="copyLink()">
-        📋 Copy link
-      </button>
-      <button class="btn-banner btn-qr" id="qr-toggle-btn" onclick="toggleQR()">
-        ◼ QR code
-      </button>
-      <a class="btn-banner btn-dashboard" id="dash-btn" href="#" target="_blank" rel="noopener">
-        📊 Dashboard
-      </a>
+    <div class="banner-actions" id="live-actions" style="display:none;">
+      <button class="btn-b btn-copy" id="copy-btn" onclick="copyLink()">📋 Copy link</button>
+      <a class="btn-b btn-dash" id="dash-btn" href="#" target="_blank" rel="noopener">📊 Dashboard</a>
     </div>
-  </div>
 
-  <div id="email-strip">
-    <div class="check-icon">✓</div>
-    <p>Dashboard link emailed to <strong id="host-email-display">you</strong> — check your inbox. You'll also receive an email every time a guest RSVPs.</p>
-  </div>
-
-  <!-- QR popover -->
-  <div id="qr-popover">
-    <p>Scan to RSVP</p>
-    <div id="qr-box"></div>
-    <a id="qr-dl-btn" href="#" download="invite-qr.png" class="btn-dl">↓ Download PNG</a>
   </div>
 </div>
 
-<!-- INVITE PREVIEW -->
-<div id="loading-state">Loading your invitation…</div>
-<div id="error-state">
-  <p style="font-size:2rem;margin-bottom:12px;">⚠️</p>
-  <p id="error-msg">Could not load party details. Please check your link.</p>
-</div>
+<!-- ── MAIN LAYOUT ── -->
+<div id="main-layout">
 
-<div id="invite-wrap" style="display:none;">
-  <div id="invite-hero">
-    <img id="invite-hero-img"
-      src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80"
-      alt="Party decorations">
-    <div class="overlay"></div>
+  <!-- LEFT: Invite preview -->
+  <div>
+    <div id="loading-state">Loading your invitation preview…</div>
+
+    <div id="invite-wrap" style="display:none;">
+      <div id="invite-hero">
+        <img id="invite-hero-img"
+          src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80"
+          alt="Party decorations">
+        <div class="overlay"></div>
+      </div>
+      <div class="invite-card">
+        <div class="brand">Tiny Invites</div>
+        <h1 id="inv-greeting">Hello!</h1>
+        <p class="subtitle" id="inv-subtitle">You are warmly invited to celebrate a very special day.</p>
+        <div class="divider"><span></span><i>◆</i><span></span></div>
+        <div class="info-row" id="inv-details">
+          <div class="info-item"><span class="icon">🎂</span><span id="inv-age-line">Loading…</span></div>
+          <div class="info-item"><span class="icon">📍</span><span id="inv-location-line">Loading…</span></div>
+        </div>
+        <p id="inv-note-row" style="display:none;font-size:0.9rem;color:var(--mid);text-align:center;margin-bottom:20px;line-height:1.65;"></p>
+        <div style="margin-bottom:18px;">
+          <label style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px;display:block;">Your name</label>
+          <input type="text" placeholder="e.g. Sarah Johnson" disabled style="width:100%;padding:13px 16px;background:var(--cream);border:1px solid var(--gold-light);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:var(--dark);opacity:0.5;cursor:not-allowed;">
+        </div>
+        <p style="font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--soft);text-align:center;margin-bottom:14px;">Will you be joining us?</p>
+        <div class="btn-group">
+          <button class="btn btn-yes" disabled>🎉 Yes, I'll be there!</button>
+          <button class="btn btn-no"  disabled>Can't make it</button>
+        </div>
+        <p class="preview-note">👆 This is exactly what your guests will see</p>
+      </div>
+    </div>
   </div>
 
-  <div class="invite-card">
-    <div class="brand">Tiny Invites</div>
-    <h1 id="inv-greeting">Hello!</h1>
-    <p class="subtitle" id="inv-subtitle">You are warmly invited to celebrate a very special day.</p>
+  <!-- RIGHT: QR + Go Live form -->
+  <div id="right-panel">
 
-    <div class="divider"><span></span><i>◆</i><span></span></div>
-
-    <div class="info-row" id="inv-details">
-      <div class="info-item"><span class="icon">🎂</span> <span id="inv-age-line">Loading…</span></div>
-      <div class="info-item"><span class="icon">📍</span> <span id="inv-location-line">Loading…</span></div>
+    <!-- QR code — always visible -->
+    <div class="qr-card">
+      <p class="qr-card-label">Your QR code</p>
+      <div id="qr-box-right"></div>
+      <button class="btn-dl-qr" id="qr-dl-btn" onclick="downloadQR()">↓ Download PNG</button>
+      <p class="qr-url-display" id="qr-url-text"></p>
     </div>
 
-    <p style="font-size:0.92rem;color:var(--mid);text-align:center;margin-bottom:24px;line-height:1.65;" id="inv-note-row" style="display:none;"></p>
+    <!-- Go live form — shown until published -->
+    <div id="golive-card">
+      <p class="golive-label">Almost there</p>
+      <h3 class="golive-heading">Happy with your preview?<br>Let's make it live.</h3>
+      <p class="golive-sub">Add your email so guest RSVPs reach you, then hit Go Live. You can also add your phone number if you'd like guests to contact you directly.</p>
 
-    <div style="margin-bottom:20px;">
-      <label style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px;display:block;">Your name</label>
-      <input type="text" placeholder="e.g. Sarah Johnson" disabled style="width:100%;padding:13px 16px;background:var(--cream);border:1px solid var(--gold-light);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:var(--dark);opacity:0.6;cursor:not-allowed;">
+      <div class="field">
+        <label>Your email <span style="color:var(--gold);">— for RSVPs</span></label>
+        <input type="email" id="host-email" placeholder="e.g. sarah@email.com" autocomplete="email">
+        <p class="hint">Every guest RSVP lands in your inbox the moment it's submitted.</p>
+      </div>
+
+      <label class="phone-toggle">
+        <input type="checkbox" id="show-phone-toggle" onchange="togglePhone()">
+        <span>Show my phone number on the invitation <span style="color:var(--soft);font-weight:300;">— optional, so guests can contact me directly</span></span>
+      </label>
+
+      <div id="phone-field-wrap" class="field">
+        <label>Your phone number</label>
+        <input type="tel" id="host-phone" placeholder="e.g. 07700 900123" autocomplete="tel">
+        <p class="hint">Shown on the invitation page. Only add if you're happy for guests to have it.</p>
+      </div>
+
+      <label class="consent-wrap" id="consent-wrap">
+        <input type="checkbox" id="host-consent">
+        <span>I agree to receive guest RSVP responses and occasional updates from Tiny Invites. My email will never be shared or used for marketing.</span>
+      </label>
+
+      <button class="btn-golive-main" id="golive-btn" onclick="goLive()">
+        ✨ Yes — make it live!
+      </button>
+
+      <p style="text-align:center;font-size:0.7rem;color:var(--soft);margin-top:10px;">Free, always. No account required.</p>
     </div>
 
-    <p style="font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--soft);text-align:center;margin-bottom:14px;">
-      Will you be joining us?
-    </p>
-
-    <div class="btn-group">
-      <button class="btn btn-yes" disabled>🎉 Yes, I'll be there!</button>
-      <button class="btn btn-no"  disabled>Can't make it</button>
+    <!-- Shown after going live -->
+    <div id="live-confirm-card">
+      <div class="live-icon">🎉</div>
+      <h4>Your invite is live!</h4>
+      <p>Share the link or QR code with your guests. Your dashboard link has been emailed to you.</p>
+      <a id="dash-link-confirm" href="#" target="_blank">📊 View dashboard →</a>
     </div>
 
-    <p class="preview-overlay-note">👆 This is exactly what your guests will see — buttons are active on their link</p>
   </div>
 </div>
 
 <script>
-  // ── HELPERS ──────────────────────────────────────────────
-  function getParam(name) {
-    return new URLSearchParams(window.location.search).get(name) || '';
-  }
+  function getParam(n) { return new URLSearchParams(location.search).get(n) || ''; }
 
   function ordinal(n) {
     const s = ['th','st','nd','rd'], v = parseInt(n) % 100;
@@ -465,182 +632,216 @@
   }
 
   function formatDate(d) {
-    try {
-      return new Date(d).toLocaleDateString('en-GB', {
-        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-      });
-    } catch { return d; }
+    try { return new Date(d).toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }); }
+    catch { return d; }
   }
 
-  // ── URLS ─────────────────────────────────────────────────
   const partyId   = getParam('party');
   const dashToken = getParam('token');
-  const base      = window.location.origin + window.location.pathname.replace(/rsvp-host\.html$/, '');
+  const base      = location.origin + location.pathname.replace(/rsvp-host\.html$/, '');
   const inviteUrl = base + 'rsvp.html?party=' + partyId;
   const dashUrl   = base + 'dashboard_page.html?token=' + dashToken;
 
-  // Populate banner links immediately (before Supabase fetch)
-  document.getElementById('dash-link-inline').href = dashUrl;
-  document.getElementById('dash-btn').href         = dashUrl;
+  // ── Build QR immediately ─────────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    // QR code
+    const box = document.getElementById('qr-box-right');
+    new QRCode(box, {
+      text: inviteUrl,
+      width: 200, height: 200,
+      colorDark: '#2a2218',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+    document.getElementById('qr-url-text').textContent = inviteUrl;
 
-  // ── COPY LINK ─────────────────────────────────────────────
+    // Set dashboard links
+    document.getElementById('dash-btn').href          = dashUrl;
+    document.getElementById('dash-link-confirm').href = dashUrl;
+
+    // Load party details
+    loadParty();
+  });
+
+  function downloadQR() {
+    setTimeout(() => {
+      const canvas = document.querySelector('#qr-box-right canvas');
+      if (!canvas) return;
+      const a = document.createElement('a');
+      a.download = 'invite-qr.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }, 100);
+  }
+
+  // ── Copy link ────────────────────────────────────────────
   function copyLink() {
     navigator.clipboard.writeText(inviteUrl).then(() => {
       const btn = document.getElementById('copy-btn');
       btn.textContent = '✓ Copied!';
       btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = '📋 Copy link';
-        btn.classList.remove('copied');
-      }, 2500);
-    }).catch(() => {
-      // Fallback for older browsers
-      const ta = document.createElement('textarea');
-      ta.value = inviteUrl;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      const btn = document.getElementById('copy-btn');
-      btn.textContent = '✓ Copied!';
-      btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = '📋 Copy link';
-        btn.classList.remove('copied');
-      }, 2500);
+      setTimeout(() => { btn.textContent = '📋 Copy link'; btn.classList.remove('copied'); }, 2500);
     });
   }
 
-  // ── QR POPOVER ────────────────────────────────────────────
-  let qrBuilt = false;
-  function toggleQR() {
-    const pop = document.getElementById('qr-popover');
-    pop.classList.toggle('open');
-
-    if (!qrBuilt && pop.classList.contains('open')) {
-      const box = document.getElementById('qr-box');
-      box.innerHTML = '';
-      new QRCode(box, {
-        text: inviteUrl,
-        width: 160, height: 160,
-        colorDark: '#2a2218',
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.M
-      });
-      setTimeout(() => {
-        const canvas = box.querySelector('canvas');
-        if (canvas) document.getElementById('qr-dl-btn').href = canvas.toDataURL('image/png');
-      }, 300);
-      qrBuilt = true;
+  // ── Phone toggle ─────────────────────────────────────────
+  function togglePhone() {
+    const wrap = document.getElementById('phone-field-wrap');
+    wrap.style.display = document.getElementById('show-phone-toggle').checked ? 'block' : 'none';
+    if (!document.getElementById('show-phone-toggle').checked) {
+      document.getElementById('host-phone').value = '';
     }
   }
 
-  // Close QR popover when clicking outside
-  document.addEventListener('click', (e) => {
-    const pop = document.getElementById('qr-popover');
-    const btn = document.getElementById('qr-toggle-btn');
-    if (pop.classList.contains('open') && !pop.contains(e.target) && e.target !== btn) {
-      pop.classList.remove('open');
-    }
-  });
-
-  // ── LOAD PARTY FROM SUPABASE ──────────────────────────────
+  // ── Load party ───────────────────────────────────────────
   async function loadParty() {
-    if (!partyId) {
-      showError('No party ID in URL. Please check your link.');
-      return;
-    }
-
+    if (!partyId) { showLoading('No party ID found.'); return; }
     try {
-      const res  = await fetch('/api/dashboard?token=' + dashToken);
+      const res  = await fetch('/api/get-party?id=' + partyId);
       const data = await res.json();
-
-      if (!res.ok || !data.party) {
-        throw new Error(data.error || 'Could not load party details.');
-      }
-
-      renderInvite(data.party);
-
+      if (!res.ok) throw new Error(data.error || 'Could not load party.');
+      renderInvite(data);
     } catch (err) {
-      showError(err.message);
+      showLoading('Could not load party: ' + err.message);
     }
   }
 
   function renderInvite(party) {
-    const childName = party.child_name || 'our little one';
-    const age       = party.age        || '';
-    const location  = party.venue      || '';
-    const date      = party.party_date || '';
-    const email     = party.parent_email || '';
-    const note      = party.special_note || '';
-    const photoUrl  = party.photo_url   || '';
+    const name    = party.child_name || 'our little one';
+    const age     = party.age        || '';
+    const venue   = party.venue      || '';
+    const date    = party.party_date || '';
+    const note    = party.special_note || '';
+    const phone   = party.phone_number || '';
+    const photo   = party.photo_url  || '';
 
-    // Update email strip
-    if (email) document.getElementById('host-email-display').textContent = email;
-
-    // Hero image
-    if (photoUrl) {
+    if (photo) {
       const img = document.getElementById('invite-hero-img');
-      img.src = photoUrl;
-      img.onerror = () => {
-        img.src = 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80';
-      };
+      img.src = photo;
+      img.onerror = () => { img.src = 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80'; };
     }
 
-    // Greeting
     document.getElementById('inv-greeting').innerHTML =
-      `You're invited, <em>${childName}'s party</em>!`;
+      `You're invited, <em>${name}'s party</em>!`;
 
-    // Subtitle
     const ageStr = age
-      ? `${childName}'s <strong>${age}${ordinal(age)}</strong> birthday`
-      : `${childName}'s birthday`;
-    document.getElementById('inv-subtitle').innerHTML =
-      `You're invited to celebrate ${ageStr}!`;
+      ? `${name}'s <strong>${age}${ordinal(age)}</strong> birthday`
+      : `${name}'s birthday`;
+    document.getElementById('inv-subtitle').innerHTML = `You're invited to celebrate ${ageStr}!`;
 
-    // Age line
     document.getElementById('inv-age-line').innerHTML = age
-      ? `Celebrating <strong>${childName}</strong> turning <strong>${age}</strong>!`
-      : `Celebrating <strong>${childName}</strong>!`;
+      ? `Celebrating <strong>${name}</strong> turning <strong>${age}</strong>!`
+      : `Celebrating <strong>${name}</strong>!`;
 
-    // Location line
-    if (location) {
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+    if (venue) {
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue)}`;
       document.getElementById('inv-location-line').innerHTML =
-        `<a href="${mapsUrl}" target="_blank" rel="noopener">${location}</a>
-         — <a href="${mapsUrl}" target="_blank" rel="noopener" style="font-size:0.8em;">Open in Maps ↗</a>`;
+        `<a href="${mapsUrl}" target="_blank">${venue}</a>
+         — <a href="${mapsUrl}" target="_blank" style="font-size:0.8em;">Open in Maps ↗</a>`;
     } else {
       document.getElementById('inv-location-line').textContent = 'Location TBC';
     }
 
-    // Date row
     if (date) {
       const dateEl = document.createElement('div');
       dateEl.className = 'info-item';
-      dateEl.innerHTML = `<span class="icon">📅</span> <span>${formatDate(date)}</span>`;
+      dateEl.innerHTML = `<span class="icon">📅</span><span>${formatDate(date)}</span>`;
       document.getElementById('inv-details').prepend(dateEl);
     }
 
-    // Special note
-    const noteRow = document.getElementById('inv-note-row');
+    // Phone number on invite (if already saved)
+    if (phone) {
+      const phoneEl = document.createElement('div');
+      phoneEl.className = 'info-item';
+      phoneEl.innerHTML = `<span class="icon">📱</span><span>Contact: <a href="tel:${phone}">${phone}</a></span>`;
+      document.getElementById('inv-details').appendChild(phoneEl);
+    }
+
     if (note) {
+      const noteRow = document.getElementById('inv-note-row');
       noteRow.textContent = note;
       noteRow.style.display = 'block';
     }
 
-    // Show invite, hide loader
     document.getElementById('loading-state').style.display = 'none';
     document.getElementById('invite-wrap').style.display   = 'block';
   }
 
-  function showError(msg) {
-    document.getElementById('loading-state').style.display = 'none';
-    document.getElementById('error-msg').textContent = msg;
-    document.getElementById('error-state').style.display  = 'block';
+  function showLoading(msg) {
+    document.getElementById('loading-state').textContent = msg;
   }
 
-  // ── INIT ──────────────────────────────────────────────────
-  window.addEventListener('DOMContentLoaded', loadParty);
+  // ── GO LIVE ──────────────────────────────────────────────
+  async function goLive() {
+    const email   = document.getElementById('host-email').value.trim();
+    const consent = document.getElementById('host-consent').checked;
+    const phone   = document.getElementById('show-phone-toggle').checked
+                    ? document.getElementById('host-phone').value.trim()
+                    : null;
+
+    if (!email) {
+      alert('Please enter your email so guest RSVPs can reach you 📬');
+      document.getElementById('host-email').focus();
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert('Please enter a valid email address 📧');
+      return;
+    }
+    if (!consent) {
+      const wrap = document.getElementById('consent-wrap');
+      wrap.style.borderColor = '#c9a84c';
+      alert('Please tick the consent box to continue ✉️');
+      return;
+    }
+    if (document.getElementById('show-phone-toggle').checked && !phone) {
+      alert('Please enter your phone number or uncheck the option 📱');
+      return;
+    }
+
+    const btn = document.getElementById('golive-btn');
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Publishing…';
+
+    try {
+      const res = await fetch('/api/publish-party', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          party_id:     partyId,
+          dashboard_token: dashToken,
+          parent_email: email,
+          phone_number: phone || null,
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not publish.');
+
+      // Switch to live state
+      switchToLive(email);
+
+    } catch (err) {
+      alert('Something went wrong: ' + (err.message || 'Please try again.'));
+      btn.disabled = false;
+      btn.innerHTML = '✨ Yes — make it live!';
+    }
+  }
+
+  function switchToLive(email) {
+    // Banner
+    const pill = document.getElementById('status-pill');
+    pill.classList.remove('preview');
+    pill.classList.add('live');
+    document.getElementById('status-label').textContent   = 'Live';
+    document.getElementById('banner-heading').textContent = 'Your invite is live 🎉';
+    document.getElementById('banner-sub').textContent     = `Dashboard link emailed to ${email}`;
+    document.getElementById('live-actions').style.display = 'flex';
+
+    // Hide go live form, show confirmation
+    document.getElementById('golive-card').style.display        = 'none';
+    document.getElementById('live-confirm-card').style.display  = 'block';
+  }
 </script>
 </body>
 </html>

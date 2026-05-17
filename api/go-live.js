@@ -91,12 +91,19 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: error.message });
     }
 
-    resend.emails.send({
-      from:    'Tiny Invites <hello@tinyinvites.org>',
-      to:      parent_email,
-      subject: `Your RSVP page for ${child_name}'s party is live!`,
-      html:    welcomeEmailHtml({ child_name, age, venue, dashboard_token, party_id, photo_url: photo_url || '' }),
-    }).catch(err => console.error('Welcome email failed:', err.message));
+    let emailId    = null;
+    let emailError = null;
+    try {
+      const emailResult = await resend.emails.send({
+        from:    'Tiny Invites <hello@tinyinvites.org>',
+        to:      parent_email,
+        subject: `Your RSVP page for ${child_name}'s party is live!`,
+        html:    welcomeEmailHtml({ child_name, age, venue, dashboard_token, party_id, photo_url: photo_url || '' }),
+      });
+      emailId = emailResult?.id || null;
+    } catch (err) {
+      emailError = err.message;
+    }
 
     return res.status(200).json({
       success:        true,
@@ -104,6 +111,9 @@ export default async function handler(req, res) {
       dashboard_token,
       rsvp_link:      `/rsvp.html?party=${party_id}`,
       dashboard_link: `/dashboard_page.html?token=${dashboard_token}`,
+      email_sent:     !!emailId,
+      email_id:       emailId,
+      email_error:    emailError,
     });
 
   } catch (err) {

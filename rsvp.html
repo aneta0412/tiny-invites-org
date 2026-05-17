@@ -124,14 +124,32 @@
   }
   .info-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
     font-size: 0.88rem;
     color: var(--mid);
   }
-  .info-item .icon { font-size: 1rem; flex-shrink:0; }
+  .info-item .icon { font-size: 1rem; flex-shrink:0; margin-top: 1px; }
   .info-item a { color: var(--gold); text-decoration: none; font-weight: 500; }
   .info-item a:hover { text-decoration: underline; }
+
+  /* Host note — slightly styled differently to stand out */
+  .info-item.host-note {
+    border-top: 1px solid var(--gold-light);
+    padding-top: 10px;
+    margin-top: 2px;
+  }
+  .info-item.host-note .note-text {
+    font-size: 0.84rem;
+    line-height: 1.6;
+    color: var(--mid);
+  }
+
+  /* Host phone */
+  .info-item.host-phone a {
+    color: var(--dark);
+    font-weight: 400;
+  }
 
   .btn-group {
     display: flex;
@@ -175,7 +193,6 @@
   .btn-primary:hover:not(:disabled) { background: var(--gold); }
   .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  /* Loading spinner */
   .spinner {
     width: 16px; height: 16px;
     border: 2px solid rgba(255,255,255,0.4);
@@ -188,7 +205,6 @@
   .btn-primary.loading .spinner { display: block; }
   .btn-primary.loading .btn-label { opacity: 0.7; }
 
-  /* Error banner */
   .error-banner {
     display: none;
     background: #fff0f0;
@@ -214,6 +230,13 @@
     display: block;
   }
 
+  .field-hint {
+    font-size: 0.72rem;
+    color: var(--soft);
+    margin-top: 5px;
+    line-height: 1.55;
+  }
+
   input[type="text"], input[type="email"], input[type="tel"], textarea, select {
     width: 100%;
     padding: 13px 16px;
@@ -228,6 +251,42 @@
   }
   input:focus, textarea:focus, select:focus { border-color: var(--gold); }
   textarea { resize: vertical; min-height: 76px; }
+
+  /* Email opt-in section */
+  .email-optin {
+    background: var(--gold-pale);
+    border: 1px solid var(--gold-light);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 4px;
+  }
+  .email-optin-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    margin-bottom: 0;
+  }
+  .email-optin-label input[type="checkbox"] {
+    width: 16px; height: 16px;
+    accent-color: var(--gold);
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+  }
+  .email-optin-label span {
+    font-size: 0.82rem;
+    color: var(--mid);
+    line-height: 1.55;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 300;
+  }
+  .email-optin-label strong { color: var(--dark); font-weight: 500; }
+  #guest-email-wrap {
+    display: none;
+    margin-top: 12px;
+  }
 
   .counter-row {
     display: flex;
@@ -268,17 +327,6 @@
     z-index: 999;
   }
 
-  .note-box {
-    background: var(--gold-pale);
-    border-left: 3px solid var(--gold);
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 0.82rem;
-    color: var(--mid);
-    margin-bottom: 16px;
-    line-height: 1.6;
-  }
-
   .tally {
     display: inline-flex;
     align-items: center;
@@ -297,23 +345,6 @@
     .card { padding: 36px 24px; }
     h1 { font-size: 2rem; }
   }
-
-  .invite-hero {
-    width: 100%;
-    position: relative;
-    border-radius: 24px 24px 0 0;
-    overflow: hidden;
-    aspect-ratio: 16/9;
-    background: var(--gold-pale);
-  }
-  .invite-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .invite-hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(42,34,24,0.08) 0%, rgba(42,34,24,0.45) 100%);
-  }
-  .card.has-hero { border-radius: 0 0 24px 24px; border-top: none; margin-top: 0; }
-  .card.has-hero::before { border-radius: 0 0 18px 18px; top: 0; }
 </style>
 </head>
 <body>
@@ -342,6 +373,7 @@
       <div class="info-row" id="inv-details">
         <div class="info-item"><span class="icon">🎂</span> <span id="inv-age-line">Loading…</span></div>
         <div class="info-item"><span class="icon">📍</span> <span id="inv-location-line">Loading…</span></div>
+        <!-- Phone and note injected here by JS if present -->
       </div>
 
       <p style="font-size:0.92rem;color:var(--mid);text-align:center;margin-bottom:24px;line-height:1.65;">
@@ -384,20 +416,31 @@
         <input type="text" id="guest-name" placeholder="e.g. Sarah Johnson" readonly style="background:var(--gold-pale);cursor:default;">
       </div>
       <div>
-        <label>Your email</label>
-        <input type="email" id="guest-email" placeholder="your@email.com">
-      </div>
-      <div>
-        <label>Your phone (optional)</label>
+        <label>Your phone <span style="color:var(--soft);font-weight:300;text-transform:none;letter-spacing:0;">(optional)</span></label>
         <input type="tel" id="guest-phone" placeholder="+44 7700 000000">
       </div>
     </div>
 
     <div class="divider"><span></span><i>◆</i><span></span></div>
 
-    <div>
-      <label>Allergies or dietary requirements</label>
+    <div style="margin-bottom:20px;">
+      <label>Allergies or dietary requirements <span style="color:var(--soft);font-weight:300;text-transform:none;letter-spacing:0;">(optional)</span></label>
       <textarea id="guest-allergies" placeholder="e.g. nut allergy, vegetarian, no dairy…"></textarea>
+    </div>
+
+    <!-- Email opt-in for confirmation -->
+    <div class="email-optin" style="margin-bottom:20px;">
+      <label class="email-optin-label" style="margin-bottom:0;">
+        <input type="checkbox" id="guest-email-optin" onchange="toggleEmailField()">
+        <span>
+          <strong>Send me a confirmation email</strong> — optional.<br>
+          We'll send you a quick confirmation once your RSVP is saved.
+        </span>
+      </label>
+      <div id="guest-email-wrap">
+        <input type="email" id="guest-email" placeholder="your@email.com">
+        <p class="field-hint">We'll only use this to send your RSVP confirmation. Nothing else.</p>
+      </div>
     </div>
 
     <button class="btn-primary" id="submit-btn" onclick="submitRSVP()">
@@ -437,6 +480,21 @@
       <textarea id="no-message" placeholder="e.g. We'll be away that weekend, hope it's a wonderful day!"></textarea>
     </div>
 
+    <!-- Email opt-in for decline confirmation too -->
+    <div class="email-optin" style="margin-bottom:20px;">
+      <label class="email-optin-label" style="margin-bottom:0;">
+        <input type="checkbox" id="no-email-optin" onchange="toggleNoEmailField()">
+        <span>
+          <strong>Send me a confirmation</strong> — optional.<br>
+          We'll drop you a quick email to confirm we've passed on your message.
+        </span>
+      </label>
+      <div id="no-email-wrap" style="display:none;margin-top:12px;">
+        <input type="email" id="no-email" placeholder="your@email.com">
+        <p class="field-hint">Only used for this confirmation. Nothing else.</p>
+      </div>
+    </div>
+
     <button class="btn-primary" id="no-submit-btn" onclick="submitDecline()">
       <div class="spinner"></div>
       <span class="btn-label">Send</span>
@@ -466,6 +524,9 @@
       We look forward to seeing you — it's going to be a wonderful celebration!<br><br>
       Keep an eye on your inbox for any updates. See you there! 🎈
     </p>
+    <p class="success-note" id="success-email-sent" style="display:none;margin-top:12px;font-size:0.82rem;color:var(--soft);">
+      📬 A confirmation has been sent to <span id="success-email-address" style="color:var(--gold);"></span>
+    </p>
     <p class="success-note" id="success-contact" style="display:none;margin-top:14px;font-size:0.82rem;">
       Questions? Reach the host at <a id="success-host-email" href="#" style="color:var(--gold);"></a>
     </p>
@@ -479,15 +540,11 @@
 </div>
 
 <script>
-  // ── CONFIG ──────────────────────────────────────────────
-  // Point this at your API endpoint (Vercel, Next.js, etc.)
-  const RSVP_API_ENDPOINT = '/api/submit-rsvp';
+  const RSVP_API_ENDPOINT               = '/api/submit-rsvp';
+  const GUEST_CONFIRMATION_API_ENDPOINT = '/api/send-guest-confirmation';
 
   // ── DUPLICATE PREVENTION ─────────────────────────────────
-  // One submission per page session — once submitted, block any retry
   let _submitted = false;
-  // Also store a fingerprint: party_id + guest_name, stored in sessionStorage
-  // so even a fast double-click or accidental refresh won't double-save
   function isDuplicate(partyId, guestName) {
     const key = 'rsvp_done_' + partyId;
     const existing = sessionStorage.getItem(key);
@@ -497,6 +554,22 @@
   function markSubmitted(partyId, guestName) {
     sessionStorage.setItem('rsvp_done_' + partyId, guestName.toLowerCase().trim());
     _submitted = true;
+  }
+
+  // ── EMAIL OPT-IN TOGGLES ────────────────────────────────
+  function toggleEmailField() {
+    const wrap = document.getElementById('guest-email-wrap');
+    wrap.style.display = document.getElementById('guest-email-optin').checked ? 'block' : 'none';
+    if (!document.getElementById('guest-email-optin').checked) {
+      document.getElementById('guest-email').value = '';
+    }
+  }
+  function toggleNoEmailField() {
+    const wrap = document.getElementById('no-email-wrap');
+    wrap.style.display = document.getElementById('no-email-optin').checked ? 'block' : 'none';
+    if (!document.getElementById('no-email-optin').checked) {
+      document.getElementById('no-email').value = '';
+    }
   }
 
   // ── LANDING NAME GATE ───────────────────────────────────
@@ -552,31 +625,73 @@
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const childName = getParam('child') || getParam('name') || 'our little one';
-    const age       = getParam('age')      || '';
-    const location  = getParam('location') || '';
-    const date      = getParam('date')     || '';
-    const hostEmail = getParam('host')     || '';
-    const partyId   = getParam('party') || getParam('partyId') || '';
-    const photoUrl  = getParam('photo')    || '';
+  // ── LOAD PARTY FROM SUPABASE ─────────────────────────────
+  // rsvp.html fetches party details from /api/get-party?id=<party_id>
+  // which returns the full party row from Supabase.
+  // special_note and phone_number are rendered if present.
+  window.addEventListener('DOMContentLoaded', async () => {
+    const partyId  = getParam('party') || getParam('partyId') || '';
+    const photoUrl = getParam('photo') || '';
 
-    // Swap hero image if custom URL provided
+    window._partyId = partyId;
+
     if (photoUrl) {
       const heroImg = document.getElementById('invite-hero-img');
       if (heroImg) {
         heroImg.src = photoUrl;
         heroImg.onerror = () => {
-          // silently fall back to default if image fails to load
           heroImg.src = 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80';
         };
       }
     }
 
-    window._hostEmail = hostEmail;
-    window._partyId   = partyId;
+    if (!partyId) {
+      // No party ID — render generic fallback
+      renderInvite({});
+      return;
+    }
 
-    // Greeting — only show child name if we have it
+    try {
+      const res  = await fetch(`/api/get-party?id=${partyId}`);
+      const data = await res.json();
+      if (res.ok && data) {
+        renderInvite(data);
+      } else {
+        renderInvite({});
+      }
+    } catch {
+      renderInvite({});
+    }
+  });
+
+  function renderInvite(party) {
+    const childName  = party.child_name  || getParam('child') || getParam('name') || 'our little one';
+    const age        = party.age         || getParam('age')      || '';
+    const location   = party.venue       || getParam('location') || '';
+    const date       = party.party_date  || getParam('date')     || '';
+    const hostEmail  = party.parent_email|| getParam('host')     || '';
+    const specialNote= party.special_note|| '';
+    const phoneNumber= party.phone_number|| '';
+    const photoUrl   = party.photo_url   || getParam('photo')    || '';
+
+    window._hostEmail = hostEmail;
+    window._partyData = {
+      partyId: party.party_id || window._partyId,
+      childName, age, location, hostEmail
+    };
+
+    // Hero image
+    if (photoUrl) {
+      const heroImg = document.getElementById('invite-hero-img');
+      if (heroImg) {
+        heroImg.src = photoUrl;
+        heroImg.onerror = () => {
+          heroImg.src = 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80';
+        };
+      }
+    }
+
+    // Greeting
     const greetingEl = document.getElementById('inv-greeting');
     if (childName && childName !== 'our little one') {
       greetingEl.innerHTML = `You're invited, <em>${childName}'s party</em>!`;
@@ -584,23 +699,28 @@
       greetingEl.innerHTML = `Hello! <em>You're invited.</em>`;
     }
 
+    // Subtitle
     const ageStr = age
       ? `${childName}'s <strong>${age}${ordinal(age)}</strong> birthday`
       : `${childName}'s birthday`;
     document.getElementById('inv-subtitle').innerHTML = `You're invited to celebrate ${ageStr}!`;
 
+    // Age line
     document.getElementById('inv-age-line').innerHTML = age
       ? `Celebrating <strong>${childName}</strong> turning <strong>${age}</strong>!`
       : `Celebrating <strong>${childName}</strong>!`;
 
+    // Location line
     if (location) {
       const mapsUrl = buildMapsLink(location);
       document.getElementById('inv-location-line').innerHTML =
-        `<a href="${mapsUrl}" target="_blank" rel="noopener">${location}</a> — <a href="${mapsUrl}" target="_blank" rel="noopener" style="font-size:0.8em;">Open in Maps ↗</a>`;
+        `<a href="${mapsUrl}" target="_blank" rel="noopener">${location}</a>
+         — <a href="${mapsUrl}" target="_blank" rel="noopener" style="font-size:0.8em;">Open in Maps ↗</a>`;
     } else {
       document.getElementById('inv-location-line').textContent = 'Location TBC';
     }
 
+    // Date row
     if (date) {
       const dateEl = document.createElement('div');
       dateEl.className = 'info-item';
@@ -608,11 +728,47 @@
       document.getElementById('inv-details').prepend(dateEl);
     }
 
-    window._partyData = { partyId, childName, age, location, hostEmail };
-  });
+    // Phone number from host
+    if (phoneNumber) {
+      const phoneEl = document.createElement('div');
+      phoneEl.className = 'info-item host-phone';
+      phoneEl.innerHTML =
+        `<span class="icon">📱</span>
+         <span>Contact the host: <a href="tel:${phoneNumber}">${phoneNumber}</a></span>`;
+      document.getElementById('inv-details').appendChild(phoneEl);
+    }
+
+    // Special note from host
+    if (specialNote) {
+      const noteEl = document.createElement('div');
+      noteEl.className = 'info-item host-note';
+      noteEl.innerHTML =
+        `<span class="icon">📝</span>
+         <span class="note-text">${escapeHtml(specialNote)}</span>`;
+      document.getElementById('inv-details').appendChild(noteEl);
+    }
+
+    // Host email on success page
+    if (hostEmail) {
+      const contactEl = document.getElementById('success-contact');
+      const emailLink = document.getElementById('success-host-email');
+      emailLink.href        = 'mailto:' + hostEmail;
+      emailLink.textContent = hostEmail;
+      contactEl.style.display = 'block';
+    }
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/\n/g, '<br>');
+  }
 
   function ordinal(n) {
-    const s = ['th','st','nd','rd'], v = n % 100;
+    const s = ['th','st','nd','rd'], v = parseInt(n) % 100;
     return s[(v-20)%10] || s[v] || s[0];
   }
 
@@ -624,26 +780,36 @@
     } catch { return d; }
   }
 
-  // ── SUBMIT RSVP → POST to /api/rsvp ─────────────────────
+  // ── SUBMIT RSVP ──────────────────────────────────────────
   async function submitRSVP() {
     const guestName = document.getElementById('guest-name').value.trim();
     if (!guestName) { alert('Please enter your name 😊'); return; }
 
-    const guestEmail = document.getElementById('guest-email').value.trim();
+    // Email opt-in validation
+    const wantsEmail = document.getElementById('guest-email-optin').checked;
+    const guestEmail = wantsEmail ? document.getElementById('guest-email').value.trim() : '';
+    if (wantsEmail && !guestEmail) {
+      alert('Please enter your email address, or uncheck the confirmation option 📬');
+      document.getElementById('guest-email').focus();
+      return;
+    }
+    if (wantsEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
+      alert('Please enter a valid email address 📧');
+      document.getElementById('guest-email').focus();
+      return;
+    }
+
     const guestPhone = document.getElementById('guest-phone').value.trim();
     const allergies  = document.getElementById('guest-allergies').value.trim();
     const counted    = counts.adults + counts.children;
     const pd         = window._partyData || {};
+    const pid        = pd.partyId || window._partyId || '';
 
-    // ── Duplicate check ──
-    const pd2 = window._partyData || {};
-    const pid  = pd2.partyId || window._partyId || '';
     if (_submitted || isDuplicate(pid, guestName)) {
       showPage('page-success');
       return;
     }
 
-    // UI: loading state
     const btn = document.getElementById('submit-btn');
     const errorBanner = document.getElementById('error-banner');
     btn.disabled = true;
@@ -651,43 +817,48 @@
     btn.querySelector('.btn-label').textContent = 'Submitting…';
     errorBanner.classList.remove('visible');
 
-    // Payload — keys match your API handler exactly
     const payload = {
-      party_id:    pd.partyId || window._partyId || '',
+      party_id:    pid,
       guest_name:  guestName,
       attending:   true,
       guest_count: counted,
-      allergies:   allergies || null,
+      allergies:   allergies  || null,
       guest_email: guestEmail || null,
     };
 
     try {
-      const res = await fetch(RSVP_API_ENDPOINT, {
+      const res  = await fetch(RSVP_API_ENDPOINT, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(payload),
       });
-
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
 
-      if (!res.ok) {
-        throw new Error(data.error || `Server error ${res.status}`);
+      // Fire guest confirmation email if they opted in — fire-and-forget
+      if (guestEmail && data.id) {
+        fetch(GUEST_CONFIRMATION_API_ENDPOINT, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            party_id:    pid,
+            response_id: data.id,
+            guest_email: guestEmail,
+          }),
+        }).catch(err => console.warn('Guest confirmation email failed (non-blocking):', err.message));
       }
 
-      // ── Success ──
+      // Success UI
       document.getElementById('tally-count').textContent = counted;
       document.getElementById('tally-label').textContent = counted === 1 ? 'guest' : 'guests';
-
       document.getElementById('success-message').innerHTML =
         `We look forward to seeing <strong>${guestName}</strong> — it's going to be the most wonderful party for ${pd.childName || 'our little one'}!<br><br>
          Keep an eye on your inbox for any updates. See you there! 🎈`;
 
-      if (window._hostEmail) {
-        const contactEl  = document.getElementById('success-contact');
-        const emailLink  = document.getElementById('success-host-email');
-        emailLink.href        = 'mailto:' + window._hostEmail;
-        emailLink.textContent = window._hostEmail;
-        contactEl.style.display = 'block';
+      // Show email confirmation note if they opted in
+      if (guestEmail) {
+        document.getElementById('success-email-address').textContent = guestEmail;
+        document.getElementById('success-email-sent').style.display = 'block';
       }
 
       markSubmitted(pid, guestName);
@@ -695,11 +866,9 @@
       launchConfetti();
 
     } catch (err) {
-      // ── Error: show banner, re-enable button ──
       document.getElementById('error-text').textContent =
         err.message || 'Something went wrong. Please try again.';
       errorBanner.classList.add('visible');
-
     } finally {
       btn.disabled = false;
       btn.classList.remove('loading');
@@ -713,23 +882,40 @@
 
     const guestName = document.getElementById('no-guest-name').value.trim();
 
+    // Email opt-in for decline
+    const wantsEmail = document.getElementById('no-email-optin').checked;
+    const guestEmail = wantsEmail ? document.getElementById('no-email').value.trim() : '';
+    if (wantsEmail && !guestEmail) {
+      alert('Please enter your email address, or uncheck the confirmation option 📬');
+      document.getElementById('no-email').focus();
+      return;
+    }
+    if (wantsEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
+      alert('Please enter a valid email address 📧');
+      return;
+    }
+
     const btn = document.getElementById('no-submit-btn');
     const errorBanner = document.getElementById('no-error-banner');
     btn.disabled = true;
     btn.classList.add('loading');
     btn.querySelector('.btn-label').textContent = 'Sending…';
     errorBanner.classList.remove('visible');
+
     const pd = window._partyData || {};
+    const pid = pd.partyId || window._partyId || '';
+
     const payload = {
-      party_id:    pd.partyId || window._partyId || '',
+      party_id:    pid,
       guest_name:  guestName,
       attending:   false,
       guest_count: 0,
       allergies:   document.getElementById('no-message').value.trim() || null,
+      guest_email: guestEmail || null,
     };
 
     try {
-      const res = await fetch(RSVP_API_ENDPOINT, {
+      const res  = await fetch(RSVP_API_ENDPOINT, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(payload),
@@ -737,9 +923,21 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
 
+      // Fire decline confirmation email if opted in — fire-and-forget
+      if (guestEmail && data.id) {
+        fetch(GUEST_CONFIRMATION_API_ENDPOINT, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            party_id:    pid,
+            response_id: data.id,
+            guest_email: guestEmail,
+          }),
+        }).catch(err => console.warn('Guest confirmation email failed (non-blocking):', err.message));
+      }
+
       _submitted = true;
 
-      // Show a simple thank-you message in place of the card
       document.querySelector('#page-no .card').innerHTML = `
         <div class="brand">Tiny Invites</div>
         <div class="sorry-emoji">💛</div>
@@ -747,6 +945,7 @@
         <div class="divider"><span></span><i>◆</i><span></span></div>
         <p class="sorry-note">We've let the host know you can't make it.<br><br>
         We'll be thinking of you and hope to celebrate together another time. Sending lots of love 💛</p>
+        ${guestEmail ? `<p style="text-align:center;font-size:0.8rem;color:var(--soft);margin-top:14px;">📬 Confirmation sent to ${guestEmail}</p>` : ''}
       `;
     } catch (err) {
       document.getElementById('no-error-text').textContent = err.message || 'Something went wrong.';
@@ -801,10 +1000,7 @@
         }
       });
       pieces.forEach(p => {
-        if (p.y > canvas.height + 20) {
-          p.y = -20;
-          p.x = Math.random() * canvas.width;
-        }
+        if (p.y > canvas.height + 20) { p.y = -20; p.x = Math.random() * canvas.width; }
       });
       frame = requestAnimationFrame(draw);
     }

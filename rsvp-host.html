@@ -30,18 +30,17 @@
 
 /* ── TOP BANNER ── */
 #host-banner {
-position: sticky;
-top: -1px;
-padding-top: 1px;
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
 z-index: 100;
 background: var(–dark);
 box-shadow: 0 2px 12px rgba(42,34,24,0.25);
-transform: translateZ(0);
--webkit-transform: translateZ(0);
-will-change: transform;
--webkit-backface-visibility: hidden;
-backface-visibility: hidden;
 }
+
+/* Push content down so it doesn’t hide behind fixed banner */
+body { padding-top: 72px; }
 
 .banner-inner {
 max-width: 1200px;
@@ -913,4 +912,4 @@ h1 { font-size: 1.9rem; }
 </script>
 
 </body>
-</html>.
+</html>

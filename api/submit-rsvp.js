@@ -8,6 +8,9 @@ const supabase = createClient(
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// ── After this many RSVPs, switch from individual emails to digest ──
+const INDIVIDUAL_NOTIFICATION_LIMIT = 15;
+
 async function sendEmail({ to, subject, html }) {
   return resend.emails.send({
     from: 'Tiny Invites <hello@tinyinvites.org>',
@@ -68,17 +71,27 @@ function guestConfirmationHtml({ party, response }) {
   `, party.photo_url || '');
 }
 
-function rsvpNotificationHtml({ party, response }) {
+function rsvpNotificationHtml({ party, response, totalCount }) {
   const dashUrl   = `https://tinyinvites.org/dashboard_page.html?token=${party.dashboard_token}`;
   const attending = response.attending === true || response.attending === 'true' || response.attending === 'yes';
   const emoji     = attending ? '🎉' : '🥺';
   const status    = attending ? 'is coming!' : "can't make it";
+
+  // Show a digest hint once they're getting close to the limit
+  const nearLimit  = totalCount >= INDIVIDUAL_NOTIFICATION_LIMIT - 2;
+  const atLimit    = totalCount >= INDIVIDUAL_NOTIFICATION_LIMIT;
+  const digestNote = atLimit
+    ? `<p style="font-size:0.78rem;color:#a89880;margin:12px 0 0;">You've received ${INDIVIDUAL_NOTIFICATION_LIMIT} individual notifications — further replies today will be bundled into a digest summary.</p>`
+    : nearLimit
+    ? `<p style="font-size:0.78rem;color:#a89880;margin:12px 0 0;">You have ${INDIVIDUAL_NOTIFICATION_LIMIT - totalCount} individual notification${INDIVIDUAL_NOTIFICATION_LIMIT - totalCount === 1 ? '' : 's'} remaining — after that, further replies will be bundled into a digest.</p>`
+    : '';
+
   return base(`
     <p style="font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin:0 0 12px;">New RSVP ${emoji}</p>
     <h1 style="font-family:Georgia,serif;font-size:1.8rem;font-weight:400;color:#2a2218;margin:0 0 16px;line-height:1.3;">${response.guest_name} ${status}</h1>
     ${attending && response.guest_count ? `<p style="font-size:0.85rem;color:#6b5c45;margin:0 0 8px;">👥 <strong>${response.guest_count} guest${response.guest_count > 1 ? 's' : ''}</strong> attending</p>` : ''}
     ${response.allergies ? `<p style="font-size:0.85rem;color:#6b5c45;background:#fff3e0;border-left:3px solid #c9a84c;padding:10px 14px;border-radius:0 6px 6px 0;margin:0 0 12px;">⚠️ Dietary note: <strong>${response.allergies}</strong></p>` : ''}
-    <p style="font-size:0.78rem;color:#a89880;margin:12px 0 0;">Any further responses today will be bundled into a daily summary.</p>
+    ${digestNote}
     ${btn(dashUrl, '📊 See full guest list →')}
   `, party.photo_url || '');
 }
@@ -107,7 +120,6 @@ export default async function handler(req, res) {
     const responseId = insertData?.id;
 
     // ── 2. Look up the party ──────────────────────────────
-    // Must be awaited — Vercel kills the process the moment res.json() is called
     const { data: party, error: partyError } = await supabase
       .from('parties')
       .select('*')
@@ -123,32 +135,33 @@ export default async function handler(req, res) {
 
     const response = { guest_name, attending, guest_count, allergies, guest_email };
 
-    // ── 3. Check if first response today (throttle host emails) ──
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-
-    const { data: todayRows } = await supabase
+    // ── 3. Count total all-time RSVPs for this party ──────
+    // This is the running total — first 15 get individual emails, rest go to digest
+    const { count: totalCount } = await supabase
       .from('guest_responses')
-      .select('id')
-      .eq('party_id', party_id)
-      .gte('created_at', todayStart.toISOString());
+      .select('id', { count: 'exact', head: true })
+      .eq('party_id', party_id);
 
-    const isFirstToday = todayRows && todayRows.length === 1;
+    const sendIndividual = totalCount <= INDIVIDUAL_NOTIFICATION_LIMIT;
 
     // ── 4. Send emails in parallel, awaited before responding ──
     const emailPromises = [];
 
-    if (isFirstToday) {
+    if (sendIndividual) {
+      // Individual notification — sent for the first 15 RSVPs
       emailPromises.push(
         sendEmail({
           to:      party.parent_email,
           subject: attending === true || attending === 'true'
             ? `🎉 ${guest_name} is coming to ${party.child_name}'s party!`
             : `${guest_name} can't make it to ${party.child_name}'s party`,
-          html: rsvpNotificationHtml({ party, response }),
+          html: rsvpNotificationHtml({ party, response, totalCount }),
         }).catch(e => console.error('Host notification failed:', e.message))
       );
     }
+    // NOTE: digest summary emails (for RSVPs beyond 15) should be handled
+    // by a scheduled job (e.g. Vercel cron or Supabase pg_cron) that queries
+    // all un-notified RSVPs and sends a single batched summary email per party.
 
     if (guest_email) {
       emailPromises.push(

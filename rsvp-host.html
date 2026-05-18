@@ -330,6 +330,83 @@
     line-height: 1.6;
   }
 
+  /* ── GUEST COUNTING SECTION ── */
+  .counting-section {
+    margin-bottom: 16px;
+  }
+  .counting-section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--soft);
+    margin-bottom: 4px;
+  }
+  .counting-section-note {
+    font-size: 0.7rem;
+    color: var(--mid);
+    line-height: 1.5;
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    background: var(--gold-pale);
+    border-radius: 6px;
+    border-left: 2px solid var(--gold-light);
+  }
+
+  /* Radio-style question block */
+  .count-question {
+    margin-bottom: 10px;
+  }
+  .count-question-label {
+    font-size: 0.72rem;
+    color: var(--dark);
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .count-question-sub {
+    font-size: 0.65rem;
+    color: var(--soft);
+    font-weight: 300;
+    display: block;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .radio-row {
+    display: flex;
+    gap: 8px;
+  }
+  .radio-opt {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--gold-light);
+    background: var(--cream);
+    cursor: pointer;
+    font-size: 0.78rem;
+    color: var(--mid);
+    transition: all 0.18s;
+    user-select: none;
+  }
+  .radio-opt input[type="radio"] {
+    accent-color: var(--gold);
+    width: 13px; height: 13px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .radio-opt:has(input:checked) {
+    background: var(--gold-pale);
+    border-color: var(--gold);
+    color: var(--dark);
+  }
+  .radio-opt:hover {
+    border-color: var(--gold);
+    background: var(--gold-pale);
+  }
+
   .btn-golive-main {
     width: 100%;
     padding: 13px;
@@ -599,36 +676,45 @@
         <span>I agree to receive guest RSVP responses and occasional party management updates from Tiny Invites by email. My email will only be used to deliver replies and relevant party notifications — never shared or used for marketing.</span>
       </label>
 
-      <!-- Guest counting settings -->
-<div style="margin-bottom:16px;">
+      <!-- ── GUEST COUNTING SETTINGS ── -->
+      <div class="counting-section">
+        <p class="counting-section-label">Guest counting</p>
+        <p class="counting-section-note">
+          Children over 1 are always counted. Use the options below to decide whether adults and babies are also included in your guest total.
+        </p>
 
-  <p style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:8px;">
-    Guest counting
-  </p>
+        <!-- Adults -->
+        <div class="count-question">
+          <span class="count-question-label">👨‍👩‍👧 Count adults?</span>
+          <span class="count-question-sub">Should guests be asked how many adults are attending?</span>
+          <div class="radio-row">
+            <label class="radio-opt">
+              <input type="radio" name="count-adults" id="count-adults-yes" value="yes">
+              Yes, count them
+            </label>
+            <label class="radio-opt">
+              <input type="radio" name="count-adults" id="count-adults-no" value="no" checked>
+              No, skip adults
+            </label>
+          </div>
+        </div>
 
-  <label class="consent-wrap" style="margin-bottom:10px;">
-    <input type="checkbox" id="count-adults-check" checked>
-    <span>
-      Count adults in total guest numbers
-      <br>
-      <span style="font-size:0.7rem;color:var(--soft);">
-        Guests will be asked how many adults are attending.
-      </span>
-    </span>
-  </label>
-
-  <label class="consent-wrap">
-    <input type="checkbox" id="count-babies-check">
-    <span>
-      Count babies under 1 year old
-      <br>
-      <span style="font-size:0.7rem;color:var(--soft);">
-        By default, only children over 1 are included in guest totals.
-      </span>
-    </span>
-  </label>
-
-</div>
+        <!-- Babies -->
+        <div class="count-question">
+          <span class="count-question-label">👶 Count babies under 1?</span>
+          <span class="count-question-sub">By default only children over 1 are included. Include babies too?</span>
+          <div class="radio-row">
+            <label class="radio-opt">
+              <input type="radio" name="count-babies" id="count-babies-yes" value="yes">
+              Yes, count them
+            </label>
+            <label class="radio-opt">
+              <input type="radio" name="count-babies" id="count-babies-no" value="no" checked>
+              No, exclude babies
+            </label>
+          </div>
+        </div>
+      </div>
 
       <button class="btn-golive-main" id="golive-btn" onclick="goLive()">
         ✨ Yes — make it live!
@@ -844,6 +930,13 @@
     if (phoneInput) phoneInput.addEventListener('input', updatePhonePreview);
   });
 
+  // ── Read counting preferences ─────────────────────────────
+  function getCountingPrefs() {
+    const countAdults = document.querySelector('input[name="count-adults"]:checked')?.value === 'yes';
+    const countBabies = document.querySelector('input[name="count-babies"]:checked')?.value === 'yes';
+    return { countAdults, countBabies };
+  }
+
   // ── GO LIVE — calls create-party then publish-party ───────
   async function goLive() {
     const email   = document.getElementById('host-email').value.trim();
@@ -865,6 +958,8 @@
       alert('Please tick the consent box to continue ✉️'); return;
     }
 
+    const { countAdults, countBabies } = getCountingPrefs();
+
     const btn = document.getElementById('golive-btn');
     btn.disabled = true;
     btn.innerHTML = '⏳ Creating your party…';
@@ -883,6 +978,8 @@
           photo_url:    previewPhoto || null,
           special_note: previewNote  || null,
           phone_number: phone        || null,
+          count_adults: countAdults,
+          count_babies: countBabies,
         })
       });
 
@@ -892,11 +989,15 @@
       livePartyId   = createData.party_id;
       liveDashToken = createData.dashboard_token;
 
-      // Update QR with real invite URL
-      const askAdults = document.getElementById('ask-adults-check').checked ? '1' : '0';
-      const realInviteUrl = base + 'rsvp.html?party=' + livePartyId + (askAdults === '1' ? '&ask_adults=1' : '');
+      // Build invite URL with counting params
+      const params = new URLSearchParams({ party: livePartyId });
+      if (countAdults) params.set('ask_adults', '1');
+      if (countBabies) params.set('ask_babies', '1');
+      const realInviteUrl = base + 'rsvp.html?' + params.toString();
       liveInviteUrl = realInviteUrl;
-      const realDashUrl   = base + 'dashboard_page.html?token=' + liveDashToken;
+
+      const realDashUrl = base + 'dashboard_page.html?token=' + liveDashToken;
+
       const qrBox = document.getElementById('qr-box-right');
       qrBox.innerHTML = '';
       new QRCode(qrBox, {

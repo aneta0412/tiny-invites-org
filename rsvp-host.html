@@ -599,6 +599,12 @@
         <span>I agree to receive guest RSVP responses and occasional party management updates from Tiny Invites by email. My email will only be used to deliver replies and relevant party notifications — never shared or used for marketing.</span>
       </label>
 
+      <!-- Ask adults toggle -->
+      <label class="consent-wrap" id="ask-adults-wrap" style="margin-bottom:14px;">
+        <input type="checkbox" id="ask-adults-check" style="accent-color:var(--gold);width:15px;height:15px;flex-shrink:0;margin-top:2px;cursor:pointer;">
+        <span>Ask guests how many <strong>adults</strong> are coming<br><span style="font-size:0.7rem;color:var(--soft);">If ticked, guests will see an Adults counter alongside the Children counter when they RSVP.</span></span>
+      </label>
+
       <button class="btn-golive-main" id="golive-btn" onclick="goLive()">
         ✨ Yes — make it live!
       </button>
@@ -702,9 +708,12 @@
     }, 100);
   }
 
+  // Store the live invite URL after going live
+  let liveInviteUrl = '';
+
   // ── Copy link ─────────────────────────────────────────────
   function copyLink() {
-    const url = base + 'rsvp.html?party=' + livePartyId;
+    const url = liveInviteUrl || (base + 'rsvp.html?party=' + livePartyId);
     navigator.clipboard.writeText(url).then(() => {
       ['copy-btn', 'copy-btn-confirm'].forEach(id => {
         const btn = document.getElementById(id);
@@ -857,9 +866,11 @@
 
       livePartyId   = createData.party_id;
       liveDashToken = createData.dashboard_token;
+      liveInviteUrl = realInviteUrl;
 
       // Update QR with real invite URL
-      const realInviteUrl = base + 'rsvp.html?party=' + livePartyId;
+      const askAdults = document.getElementById('ask-adults-check').checked ? '1' : '0';
+      const realInviteUrl = base + 'rsvp.html?party=' + livePartyId + (askAdults === '1' ? '&ask_adults=1' : '');
       const realDashUrl   = base + 'dashboard_page.html?token=' + liveDashToken;
       const qrBox = document.getElementById('qr-box-right');
       qrBox.innerHTML = '';

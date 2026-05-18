@@ -296,17 +296,12 @@
 <div style="background:var(--dark);padding:10px 40px;display:flex;justify-content:center;align-items:center;gap:32px;flex-wrap:wrap;">
   <div style="display:flex;align-items:center;gap:8px;">
     <span style="color:var(--gold);font-size:0.85rem;">🎉</span>
-    <span style="font-size:0.72rem;color:rgba(250,246,239,0.8);letter-spacing:0.04em;">Used for <strong style="color:var(--gold-light);font-weight:500;">1,200+ parties</strong></span>
+    <span style="font-size:0.72rem;color:rgba(250,246,239,0.8);letter-spacing:0.04em;">Used for <strong style="color:var(--gold-light);font-weight:500;">200+ parties</strong></span>
   </div>
   <span style="width:1px;height:14px;background:rgba(201,168,76,0.25);flex-shrink:0;"></span>
   <div style="display:flex;align-items:center;gap:8px;">
     <span style="color:var(--gold);font-size:0.85rem;">📍</span>
-    <span style="font-size:0.72rem;color:rgba(250,246,239,0.8);letter-spacing:0.04em;">Parents in <strong style="color:var(--gold-light);font-weight:500;">London, Manchester &amp; Birmingham</strong></span>
-  </div>
-  <span style="width:1px;height:14px;background:rgba(201,168,76,0.25);flex-shrink:0;"></span>
-  <div style="display:flex;align-items:center;gap:8px;">
-    <span style="color:var(--gold);font-size:0.85rem;">⚡</span>
-    <span style="font-size:0.72rem;color:rgba(250,246,239,0.8);letter-spacing:0.04em;">Average RSVP response in <strong style="color:var(--gold-light);font-weight:500;">under 24 hours</strong></span>
+    <span style="font-size:0.72rem;color:rgba(250,246,239,0.8);letter-spacing:0.04em;">Parents in <strong style="color:var(--gold-light);font-weight:500;">London, Manchester &amp; Warwickshire</strong></span>
   </div>
 </div>
 
@@ -315,51 +310,46 @@
   <div class="hero-bg"></div>
   <div class="hero-inner">
 
+     <!-- LEFT: headline -->
     <div class="hero-content">
       <p class="eyebrow">Free tools for every step of the party</p>
-      <h1>Beautiful Kids' Party<br>Invitations <em>Made Simple</em></h1>
-      <p class="hero-sub">Create personalised invitations with instant QR, track guest replies and organise your party — all in one place. No spreadsheets, no WhatsApp chaos, no chasing replies.</p>
+      <h1>Beautiful Kids' Party<br>Invitations, <em>Made Simple</em></h1>
+      <p class="hero-sub">Create personalised invitations with QR codes, track RSPVs and organise your whole party in one place. No spreadsheets, no WhatsApp chaos or chasing replies.</p>
       <div class="hero-cta-row">
         <a href="#create" class="btn-primary">Create your free invite →</a>
         <a href="/partyfinder.html" class="btn-ghost">Find a venue</a>
       </div>
     </div>
 
+    <!-- RIGHT: See it in action panel with screenshots -->
     <aside class="hero-panel">
       <div class="hero-panel-header">
         <p class="section-label">See it in action</p>
-        <h2>Everything ready <em>for you.</em></h2>
-        <p>QR code, simple links and email notifications. See it yourself in minutes, no commitment.</p>
+        <h2>Your party invite, <em> ready in minutes </em></h2>
+        <p> Send your invite instantly and get RSPV updates straight to your inbox</p>
       </div>
 
       <div class="action-cards">
 
-        <!-- Card 1: Email -->
+        <!-- Card 1: Email notification -->
         <div class="action-card">
           <div class="action-card-text">
             <span class="action-card-num">01</span>
-            <p class="action-card-title">Every RSVP to your inbox</p>
-            <p class="action-card-desc">Name, guest count, and allergies arrive the moment someone responds.</p>
+            <p class="action-card-title">Get every RSVP instantly</p>
+            <p class="action-card-desc">Get names, guest count, and allergies the moment someone replies or a simple daily summary if several guests respond.</p>
           </div>
           <div class="action-card-img">
             <img src="./email-screen.png" alt="RSVP email notification"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <div class="mock-wrap" style="display:none;">
-              <div class="mock-email">
-                <div class="mock-email-header">
-                  <div class="mock-email-dot">✉️</div>
-                  <span class="mock-email-sender">Tiny Invites</span>
-                  <span class="mock-email-time">just now</span>
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div style="display:none;padding:10px;width:100%;align-items:center;justify-content:center;">
+              <div class="mock-email" style="width:100%;">
+                <div class="mock-from">
+                  <div class="mock-dot">✉️</div>
+                  <span style="font-size:0.6rem;color:var(--dark);font-weight:500;">Tiny Invites</span>
                 </div>
-                <div class="mock-email-body">
-                  <div class="mock-email-subject">🎉 Sarah is coming to Olivia's party!</div>
-                  <div class="mock-email-line" style="width:90%;"></div>
-                  <div class="mock-email-line" style="width:72%;"></div>
-                  <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
-                    <span class="mock-email-chip">👥 2 guests</span>
-                    <span class="mock-email-chip">🥜 Nut allergy</span>
-                  </div>
-                </div>
+                <div style="font-size:0.62rem;font-weight:500;color:var(--dark);margin-bottom:6px;">🎉 Sarah is coming!</div>
+                <div class="mock-line" style="width:80%;"></div>
+                <div class="mock-line" style="width:60%;"></div>
               </div>
             </div>
           </div>
@@ -369,53 +359,50 @@
         <div class="action-card">
           <div class="action-card-text">
             <span class="action-card-num">02</span>
-            <p class="action-card-title">Everyone in one clean view</p>
-            <p class="action-card-desc">Who's coming, counts, dietary needs — no spreadsheets. Available with a unique link.</p>
+            <p class="action-card-title">See who's coming at a glance</p>
+            <p class="action-card-desc">Names, counts, and dietary needs — no spreadsheets. Available to you with an unique link.</p>
           </div>
           <div class="action-card-img">
             <img src="./dashboard-screen.png" alt="Guest dashboard"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <div class="mock-wrap" style="display:none;">
-              <div class="mock-dashboard">
-                <div class="mock-dash-header">
-                  <div class="mock-dash-title">Olivia's 5th Birthday 🎂</div>
-                </div>
-                <div class="mock-dash-body">
-                  <div class="mock-dash-stats">
-                    <div class="mock-stat"><span class="mock-stat-num">8</span><span class="mock-stat-label">Coming</span></div>
-                    <div class="mock-stat declined"><span class="mock-stat-num">2</span><span class="mock-stat-label">Declined</span></div>
-                    <div class="mock-stat"><span class="mock-stat-num">14</span><span class="mock-stat-label">Guests</span></div>
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div style="display:none;padding:10px;width:100%;align-items:center;justify-content:center;">
+              <div class="mock-email" style="width:100%;">
+                <div style="display:flex;gap:5px;margin-bottom:8px;">
+                  <div style="flex:1;background:var(--gold-pale);border-radius:3px;padding:5px;text-align:center;">
+                    <div style="font-size:0.95rem;font-weight:500;color:var(--dark);">8</div>
+                    <div style="font-size:0.5rem;color:var(--soft);text-transform:uppercase;">Coming</div>
                   </div>
-                  <div class="mock-dash-row"><span class="mock-dash-name">Sarah J.</span><span class="mock-dash-yes">✓ 2 guests</span></div>
-                  <div class="mock-dash-row"><span class="mock-dash-name">Tom &amp; Anna</span><span class="mock-dash-yes">✓ 3 guests</span></div>
-                  <div class="mock-dash-row"><span class="mock-dash-name">Mike R.</span><span class="mock-dash-no">✗ Can't make it</span></div>
+                  <div style="flex:1;background:#fef2f2;border-radius:3px;padding:5px;text-align:center;">
+                    <div style="font-size:0.95rem;font-weight:500;color:var(--dark);">2</div>
+                    <div style="font-size:0.5rem;color:var(--soft);text-transform:uppercase;">Declined</div>
+                  </div>
                 </div>
+                <div class="mock-line" style="width:100%;"></div>
+                <div class="mock-line" style="width:75%;margin-top:4px;"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Card 3: Guest RSVP -->
+        <!-- Card 3: Guest RSVP page -->
         <div class="action-card">
           <div class="action-card-text">
             <span class="action-card-num">03</span>
             <p class="action-card-title">Guests RSVP in seconds</p>
-            <p class="action-card-desc">A polished mobile invitation with your photo — no app, no account needed.</p>
+            <p class="action-card-desc">A polished mobile invitation with your photo — no app, no account needed. Ready automatically in seconds</p>
           </div>
           <div class="action-card-img">
             <img src="./rsvp-guest-screen.png" alt="Guest RSVP page"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <div class="mock-wrap" style="display:none;">
-              <div class="mock-invite">
-                <div class="mock-invite-hero">🎉</div>
-                <div class="mock-invite-body">
-                  <div class="mock-invite-title">You're invited, <em>Olivia's party!</em></div>
-                  <div class="mock-invite-sub">Celebrating her 5th birthday</div>
-                  <div class="mock-invite-details">🎂 Turning 5 &nbsp;·&nbsp; 📍 Soft Play World, London</div>
-                  <div class="mock-invite-btns">
-                    <div class="mock-invite-btn-yes">🎉 Yes, I'll be there!</div>
-                    <div class="mock-invite-btn-no">Can't make it</div>
-                  </div>
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div style="display:none;padding:10px;width:100%;align-items:center;justify-content:center;">
+              <div class="mock-email" style="width:100%;">
+                <div style="font-family:'Cormorant Garamond',serif;font-size:0.8rem;color:var(--dark);text-align:center;margin-bottom:6px;font-style:italic;">Olivia's party!</div>
+                <div style="background:var(--gold-pale);border-radius:3px;padding:5px 7px;margin-bottom:7px;">
+                  <div class="mock-line" style="width:70%;"></div>
+                </div>
+                <div style="display:flex;gap:5px;">
+                  <div style="flex:1;background:var(--dark);color:var(--cream);border-radius:3px;padding:4px;text-align:center;font-size:0.58rem;">🎉 Yes</div>
+                  <div style="flex:1;border:1px solid var(--gold-light);border-radius:3px;padding:4px;text-align:center;font-size:0.58rem;color:var(--mid);">Can't make it</div>
                 </div>
               </div>
             </div>
@@ -427,7 +414,6 @@
 
   </div>
 </section>
-
 <!-- CREATE INVITE -->
 <section class="create-section" id="create">
   <div style="max-width:1280px;margin:0 auto;">

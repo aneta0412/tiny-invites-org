@@ -87,85 +87,84 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
   try {
     const { party_id, guest_name, attending, guest_count, allergies, guest_email } = req.body;
 
     if (!party_id)   return res.status(400).json({ error: 'Missing party_id' });
     if (!guest_name) return res.status(400).json({ error: 'Missing guest_name' });
 
-    // ── DEBUG: log exactly what party_id arrived ──────────
-    console.log('submit-rsvp received party_id:', JSON.stringify(party_id));
-    console.log('submit-rsvp typeof party_id:', typeof party_id);
-
-    const { data: insertData, error } = await supabase
+    // ── 1. Save the RSVP ─────────────────────────────────
+    const { data: insertData, error: insertError } = await supabase
       .from('guest_responses')
       .insert([{ party_id, guest_name, attending, guest_count, allergies,
                   guest_email: guest_email || null }])
       .select('id')
       .single();
 
-    if (error) throw error;
+    if (insertError) throw insertError;
 
     const responseId = insertData?.id;
 
-    ;(async () => {
-      try {
-        // ── DEBUG: log the lookup before it runs ──────────
-        console.log('LOOKUP PARTY ID:', party_id);
+    // ── 2. Look up the party ──────────────────────────────
+    // Must be awaited — Vercel kills the process the moment res.json() is called
+    const { data: party, error: partyError } = await supabase
+      .from('parties')
+      .select('*')
+      .eq('party_id', party_id)
+      .single();
 
-        const { data: party, error: partyError } = await supabase
-          .from('parties')
-          .select('*')
-          .eq('party_id', party_id)
-          .single();
+    if (partyError) console.error('Party lookup error:', partyError.message);
 
-        // ── DEBUG: log what came back ─────────────────────
-        console.log('PARTY RESULT:', JSON.stringify(party));
-        console.log('PARTY ERROR:', JSON.stringify(partyError));
+    if (!party) {
+      console.error('Party not found for party_id:', party_id);
+      return res.status(200).json({ success: true, id: responseId });
+    }
 
-        if (!party) {
-          console.error('Party not found for party_id:', party_id, '— host email will not be sent.');
-          return;
-        }
+    const response = { guest_name, attending, guest_count, allergies, guest_email };
 
-        const response = { guest_name, attending, guest_count, allergies, guest_email };
+    // ── 3. Check if first response today (throttle host emails) ──
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
 
-        if (guest_email) {
-          sendEmail({
-            to:      guest_email,
-            subject: attending === true || attending === 'true'
-              ? `You're confirmed for ${party.child_name}'s party! 🎉`
-              : `Thanks for letting us know 💛`,
-            html: guestConfirmationHtml({ party, response }),
-          }).catch(e => console.error('Guest email failed:', e.message));
-        }
+    const { data: todayRows } = await supabase
+      .from('guest_responses')
+      .select('id')
+      .eq('party_id', party_id)
+      .gte('created_at', todayStart.toISOString());
 
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
+    const isFirstToday = todayRows && todayRows.length === 1;
 
-        const { data: todayRows } = await supabase
-          .from('guest_responses')
-          .select('id')
-          .eq('party_id', party_id)
-          .gte('created_at', todayStart.toISOString());
+    // ── 4. Send emails in parallel, awaited before responding ──
+    const emailPromises = [];
 
-        console.log('Responses today for this party:', todayRows?.length ?? 0);
+    if (isFirstToday) {
+      emailPromises.push(
+        sendEmail({
+          to:      party.parent_email,
+          subject: attending === true || attending === 'true'
+            ? `🎉 ${guest_name} is coming to ${party.child_name}'s party!`
+            : `${guest_name} can't make it to ${party.child_name}'s party`,
+          html: rsvpNotificationHtml({ party, response }),
+        }).catch(e => console.error('Host notification failed:', e.message))
+      );
+    }
 
-        if (todayRows && todayRows.length === 1) {
-          sendEmail({
-            to:      party.parent_email,
-            subject: attending === true || attending === 'true'
-              ? `🎉 ${guest_name} is coming to ${party.child_name}'s party!`
-              : `${guest_name} can't make it to ${party.child_name}'s party`,
-            html: rsvpNotificationHtml({ party, response }),
-          }).catch(e => console.error('Host notification failed:', e.message));
-        }
+    if (guest_email) {
+      emailPromises.push(
+        sendEmail({
+          to:      guest_email,
+          subject: attending === true || attending === 'true'
+            ? `You're confirmed for ${party.child_name}'s party! 🎉`
+            : `Thanks for letting us know 💛`,
+          html: guestConfirmationHtml({ party, response }),
+        }).catch(e => console.error('Guest email failed:', e.message))
+      );
+    }
 
-      } catch (e) {
-        console.error('Email background error:', e.message);
-      }
-    })();
+    await Promise.all(emailPromises);
 
+    // ── 5. Respond only after everything is done ──────────
     return res.status(200).json({ success: true, id: responseId });
 
   } catch (err) {

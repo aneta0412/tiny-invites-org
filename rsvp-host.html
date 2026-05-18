@@ -866,11 +866,11 @@
 
       livePartyId   = createData.party_id;
       liveDashToken = createData.dashboard_token;
-      liveInviteUrl = realInviteUrl;
 
       // Update QR with real invite URL
       const askAdults = document.getElementById('ask-adults-check').checked ? '1' : '0';
       const realInviteUrl = base + 'rsvp.html?party=' + livePartyId + (askAdults === '1' ? '&ask_adults=1' : '');
+      liveInviteUrl = realInviteUrl;
       const realDashUrl   = base + 'dashboard_page.html?token=' + liveDashToken;
       const qrBox = document.getElementById('qr-box-right');
       qrBox.innerHTML = '';

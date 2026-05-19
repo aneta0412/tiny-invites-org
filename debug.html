@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tiny Invites QA Runner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background: #0a0a0a;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    button {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .stats {
+      margin: 20px 0;
+      display: flex;
+      gap: 20px;
+    }
+
+    .box {
+      padding: 12px;
+      border-radius: 8px;
+      min-width: 80px;
+      text-align: center;
+      background: #111;
+    }
+
+    .pass { color: #22c55e; }
+    .fail { color: #ef4444; }
+    .warn { color: #f59e0b; }
+    .skip { color: #9ca3af; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #111;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #222;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    tr:hover {
+      background: #1a1a1a;
+    }
+
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .PASS { background: #052e16; color: #22c55e; }
+    .FAIL { background: #2d0a0a; color: #ef4444; }
+    .WARN { background: #2d1800; color: #f59e0b; }
+    .SKIP { background: #1a1a1a; color: #9ca3af; }
+  </style>
+</head>
+<body>
+
+  <h1>Tiny Invites QA Runner</h1>
+
+  <button onclick="runAllTests()">Run All Tests</button>
+  <button onclick="clearResults()">Clear</button>
+
+  <div class="stats">
+    <div class="box"><div id="passCount" class="pass">0</div>PASS</div>
+    <div class="box"><div id="failCount" class="fail">0</div>FAIL</div>
+    <div class="box"><div id="warnCount" class="warn">0</div>WARN</div>
+    <div class="box"><div id="skipCount" class="skip">0</div>SKIP</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Test</th>
+        <th>Status</th>
+        <th>Notes</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody id="resultsTable"></tbody>
+  </table>
+
+  <script src="debug.js"></script>
+</body>
+</html>

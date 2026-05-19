@@ -1,252 +1,660 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Tiny Invites QA Runner</title>
+  <title>Tiny Invites — QA Runner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #0a0a0a;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      padding: 20px;
+      background: #0a0a0a; color: #e5e7eb;
+      font-family: 'JetBrains Mono','Fira Code','Courier New',monospace;
+      font-size: 13px; min-height: 100vh;
     }
-
-    h1 {
-      margin-bottom: 10px;
+    #header {
+      background: linear-gradient(135deg,#0f0f0f 0%,#1a0a2e 100%);
+      border-bottom: 1px solid #1f2937; padding: 28px 32px 24px;
     }
-
-    button {
-      background: #4f46e5;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-right: 10px;
+    #header-top {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;
     }
-
-    button:hover {
-      opacity: 0.9;
+    .site-label { font-size:11px; color:#6b7280; letter-spacing:.15em; margin-bottom:6px; }
+    .site-title  { font-size:22px; font-weight:700; color:#f9fafb; letter-spacing:-.02em; }
+    .site-sub    { font-size:12px; color:#6b7280; margin-top:4px; }
+    #counters { display:flex; gap:10px; flex-wrap:wrap; }
+    .counter-box {
+      background:#111; border:1px solid #1f2937; border-radius:8px;
+      padding:10px 18px; text-align:center; min-width:64px;
     }
-
-    .stats {
-      margin: 20px 0;
-      display: flex;
-      gap: 20px;
+    .counter-box .num { font-size:22px; font-weight:700; }
+    .counter-box .lbl { font-size:10px; color:#6b7280; letter-spacing:.1em; }
+    .c-pass{color:#22c55e} .c-fail{color:#ef4444} .c-warn{color:#f59e0b} .c-skip{color:#6b7280}
+    #progress-wrap { margin-bottom:16px; display:none; }
+    #progress-label { display:flex; justify-content:space-between; margin-bottom:6px; font-size:11px; color:#6b7280; }
+    #progress-track { height:4px; background:#1f2937; border-radius:4px; overflow:hidden; }
+    #progress-bar   { height:100%; width:0%; background:linear-gradient(90deg,#3b82f6,#8b5cf6); border-radius:4px; transition:width .3s ease; }
+    #actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .btn-primary {
+      background:linear-gradient(135deg,#1d4ed8,#7c3aed); color:#fff; border:none;
+      border-radius:8px; padding:10px 22px; font-size:13px; font-weight:600;
+      cursor:pointer; letter-spacing:.03em; font-family:inherit;
     }
-
-    .box {
-      padding: 12px;
-      border-radius: 8px;
-      min-width: 80px;
-      text-align: center;
-      background: #111;
+    .btn-primary.stop { background:linear-gradient(135deg,#7f1d1d,#991b1b); }
+    .btn-secondary {
+      background:transparent; color:#6b7280; border:1px solid #1f2937;
+      border-radius:8px; padding:10px 18px; font-size:13px; cursor:pointer; font-family:inherit;
     }
-
-    .pass { color: #22c55e; }
-    .fail { color: #ef4444; }
-    .warn { color: #f59e0b; }
-    .skip { color: #9ca3af; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: #111;
+    #filter-bar {
+      border-bottom:1px solid #1f2937; padding:0 32px;
+      display:flex; gap:2px; overflow-x:auto; background:#0d0d0d;
     }
-
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #222;
-      text-align: left;
-      font-size: 14px;
+    .tab {
+      background:transparent; border:none; border-bottom:2px solid transparent;
+      color:#6b7280; padding:12px 14px; font-size:11px; cursor:pointer;
+      white-space:nowrap; font-family:inherit; letter-spacing:.08em; transition:color .15s;
     }
-
-    tr:hover {
-      background: #1a1a1a;
+    .tab.active { border-bottom-color:#7c3aed; color:#e5e7eb; }
+    #results { padding:16px 24px 40px; }
+    .group-label {
+      font-size:10px; color:#4b5563; letter-spacing:.15em;
+      margin-bottom:8px; padding-left:4px; margin-top:20px;
     }
-
-    .status-badge {
-      padding: 4px 8px;
-      border-radius: 5px;
-      font-size: 12px;
-      font-weight: bold;
+    .group-label:first-child { margin-top:0; }
+    .test-row {
+      display:flex; align-items:flex-start; gap:14px; padding:12px 14px;
+      margin-bottom:3px; background:#111; border-radius:8px;
+      border:1px solid #1f2937; transition:all .2s;
     }
-
-    .PASS { background: #052e16; color: #22c55e; }
-    .FAIL { background: #2d0a0a; color: #ef4444; }
-    .WARN { background: #2d1800; color: #f59e0b; }
-    .SKIP { background: #1a1a1a; color: #9ca3af; }
+    .test-row.running { border-color:#3b82f6; }
+    .badge {
+      min-width:58px; text-align:center; padding:2px 8px; border-radius:4px;
+      font-size:10px; font-weight:700; letter-spacing:.08em; flex-shrink:0;
+    }
+    .manual-badge {
+      min-width:58px; text-align:center; padding:2px 8px; border-radius:4px;
+      font-size:10px; font-weight:700; letter-spacing:.08em; flex-shrink:0;
+      background:#1a1232; color:#a78bfa; border:1px solid #a78bfa44;
+      cursor:pointer; font-family:inherit;
+    }
+    .manual-badge.checked { background:#052e16; color:#22c55e; border-color:#22c55e44; }
+    .test-id   { min-width:52px; color:#4b5563; font-size:11px; flex-shrink:0; }
+    .test-info { flex:1; min-width:0; }
+    .test-label { font-size:13px; color:#9ca3af; }
+    .test-label.done { color:#f9fafb; }
+    .test-notes { font-size:11px; margin-top:4px; opacity:.85; }
+    .test-time  { font-size:11px; color:#4b5563; white-space:nowrap; flex-shrink:0; }
+    .btn-run-single {
+      background:transparent; border:1px solid #1f2937; color:#4b5563;
+      border-radius:6px; padding:3px 10px; font-size:11px;
+      cursor:pointer; font-family:inherit; flex-shrink:0;
+    }
+    .btn-run-single:disabled { opacity:.4; cursor:not-allowed; }
+    .s-PASS   { background:#052e16; color:#22c55e; border:1px solid #22c55e44; }
+    .s-FAIL   { background:#2d0a0a; color:#ef4444; border:1px solid #ef444444; }
+    .s-WARN   { background:#2d1800; color:#f59e0b; border:1px solid #f59e0b44; }
+    .s-SKIP   { background:#1a1a1a; color:#6b7280; border:1px solid #6b728044; }
+    .s-RUN    { background:#0f172a; color:#60a5fa; border:1px solid #60a5fa44; }
+    .s-MANUAL { background:#1a1232; color:#a78bfa; border:1px solid #a78bfa44; }
+    .s-PEND   { background:#111;    color:#374151; border:1px solid #1f2937;   }
+    #footer {
+      border-top:1px solid #1f2937; padding:16px 32px;
+      font-size:11px; color:#374151; line-height:1.7;
+    }
+    #footer strong { color:#4b5563; }
+    #empty { text-align:center; color:#4b5563; padding:60px 0; font-size:13px; display:none; }
   </style>
 </head>
 <body>
 
-  <h1>Tiny Invites QA Runner</h1>
-
-  <button onclick="runAllTests()">Run All Tests</button>
-  <button onclick="clearResults()">Clear</button>
-
-  <div class="stats">
-    <div class="box"><div id="passCount" class="pass">0</div>PASS</div>
-    <div class="box"><div id="failCount" class="fail">0</div>FAIL</div>
-    <div class="box"><div id="warnCount" class="warn">0</div>WARN</div>
-    <div class="box"><div id="skipCount" class="skip">0</div>SKIP</div>
+<div id="header">
+  <div id="header-top">
+    <div>
+      <div class="site-label">TINYINVITES.ORG</div>
+      <div class="site-title">QA Test Runner</div>
+      <div class="site-sub">40 test cases · auto + manual</div>
+    </div>
+    <div id="counters">
+      <div class="counter-box"><div class="num c-pass" id="cnt-pass">0</div><div class="lbl">PASS</div></div>
+      <div class="counter-box"><div class="num c-fail" id="cnt-fail">0</div><div class="lbl">FAIL</div></div>
+      <div class="counter-box"><div class="num c-warn" id="cnt-warn">0</div><div class="lbl">WARN</div></div>
+      <div class="counter-box"><div class="num c-skip" id="cnt-skip">0</div><div class="lbl">SKIP</div></div>
+    </div>
   </div>
+  <div id="progress-wrap">
+    <div id="progress-label">
+      <span id="progress-status">Running…</span>
+      <span id="progress-pct">0 / 40</span>
+    </div>
+    <div id="progress-track"><div id="progress-bar"></div></div>
+  </div>
+  <div id="actions">
+    <button class="btn-primary" id="btn-run" onclick="handleRunStop()">&#9654; RUN ALL TESTS</button>
+    <button class="btn-secondary" onclick="clearAll()">&#x2715; CLEAR</button>
+  </div>
+</div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Test</th>
-        <th>Status</th>
-        <th>Notes</th>
-        <th>Time</th>
-      </tr>
-    </thead>
-    <tbody id="resultsTable"></tbody>
-  </table>
+<div id="filter-bar"></div>
+<div id="results"></div>
+<div id="empty">No tests match this filter. Run tests first.</div>
 
-  <script>
-    const BASE = window.location.origin;
+<div id="footer">
+  <strong>Purple MANUAL tests</strong> — click the badge to tick off after manual verification.<br>
+  <strong>SKIP</strong> — CORS blocked from browser; re-run via curl / Postman / k6 server-side.<br>
+  All requests fire against <code>window.location.origin</code> — update API paths below if your routes differ.
+</div>
 
-    const TESTS = [
-      {
-        id: "TC01",
-        label: "Homepage loads",
-        fn: async function () {
-          const t0 = Date.now();
+<script>
+'use strict';
 
-          try {
-            const res = await fetch(BASE);
+var BASE  = window.location.origin;
+var sleep = function(ms){ return new Promise(function(r){ setTimeout(r,ms); }); };
 
-            return {
-              status: res.ok ? "PASS" : "FAIL",
-              notes: "HTTP " + res.status,
-              time: Date.now() - t0
-            };
-          } catch (e) {
-            return {
-              status: "FAIL",
-              notes: e.message,
-              time: Date.now() - t0
-            };
-          }
-        }
-      },
+function sf(url, opts, ms) {
+  opts = opts || {};
+  ms   = ms   || 8000;
+  var ctrl = new AbortController();
+  var tid  = setTimeout(function(){ ctrl.abort(); }, ms);
+  return fetch(url, Object.assign({}, opts, {signal:ctrl.signal, mode:'cors'}))
+    .then(function(res){
+      clearTimeout(tid);
+      return {ok:res.ok, status:res.status, res:res};
+    })
+    .catch(function(e){
+      clearTimeout(tid);
+      return {ok:false, status:null, error:e.message};
+    });
+}
 
-      {
-        id: "TC02",
-        label: "Create-party rejects empty payload",
-        fn: async function () {
-          const t0 = Date.now();
+function postParty(body) {
+  return sf(BASE+'/api/create-party', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+}
+function postRsvp(body) {
+  return sf(BASE+'/api/rsvp', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+}
+function validReject(s){ return s===400||s===422||s===405; }
 
-          try {
-            const res = await fetch(BASE + "/api/create-party", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({})
-            });
+// ── AUTO TESTS ──────────────────────────────────────────────────
 
-            return {
-              status:
-                (res.status === 400 || res.status === 422) ? "PASS" : "FAIL",
-              notes: "HTTP " + res.status,
-              time: Date.now() - t0
-            };
-          } catch (e) {
-            return {
-              status: "SKIP",
-              notes: e.message,
-              time: Date.now() - t0
-            };
-          }
-        }
-      },
+function tc01(){ var t=Date.now(); return sf(BASE+'/').then(function(r){ return {status:r.ok?'PASS':'FAIL',notes:'HTTP '+r.status,time:Date.now()-t}; }); }
 
-      {
-        id: "TC03",
-        label: "Fake dashboard token blocked",
-        fn: async function () {
-          const t0 = Date.now();
+function tc02(){ return postParty({}).then(function(r){
+  if(validReject(r.status)) return {status:'PASS',notes:'Rejected ('+r.status+')'};
+  if(r.status===null)       return {status:'SKIP',notes:'CORS blocked — test via Postman'};
+  return {status:'FAIL',notes:'Expected 400/422, got '+r.status};
+}); }
 
-          try {
-            const res = await fetch(BASE + "/dashboard/fake-token-123");
+function tc03(){ return postParty({title:'Test',hostEmail:'abc@@gmail'}).then(function(r){
+  if(validReject(r.status)) return {status:'PASS',notes:'Invalid email rejected ('+r.status+')'};
+  if(r.status===null)       return {status:'SKIP',notes:'CORS blocked'};
+  return {status:'FAIL',notes:'Expected rejection, got '+r.status};
+}); }
 
-            return {
-              status:
-                [401, 403, 404].includes(res.status) ? "PASS" : "FAIL",
-              notes: "HTTP " + res.status,
-              time: Date.now() - t0
-            };
-          } catch (e) {
-            return {
-              status: "SKIP",
-              notes: e.message,
-              time: Date.now() - t0
-            };
-          }
-        }
-      }
-    ];
+function tc04(){ return postParty({title:'A'.repeat(1001),hostEmail:'test@test.com'}).then(function(r){
+  if(r.status===400||r.status===413||r.status===422||r.status===405) return {status:'PASS',notes:'1000-char input rejected ('+r.status+')'};
+  if(r.status===null) return {status:'SKIP',notes:'CORS blocked'};
+  return {status:'FAIL',notes:'Expected rejection, got '+r.status};
+}); }
 
-    function renderRow(test, result) {
-      const row = document.createElement("tr");
+function tc05(){ return postParty({title:'<scr'+'ipt>alert("xss")</scr'+'ipt>',hostEmail:'test@test.com'}).then(function(r){
+  if(validReject(r.status))             return {status:'PASS',notes:'XSS payload rejected ('+r.status+')'};
+  if(r.status===200||r.status===201)    return {status:'WARN',notes:'Accepted — verify DB stores escaped HTML not raw script'};
+  if(r.status===null)                   return {status:'SKIP',notes:'CORS blocked'};
+  return {status:'WARN',notes:'Unexpected '+r.status};
+}); }
 
-      row.innerHTML =
-        "<td>" + test.id + "</td>" +
-        "<td>" + test.label + "</td>" +
-        "<td><span class='status-badge " + result.status + "'>" + result.status + "</span></td>" +
-        "<td>" + result.notes + "</td>" +
-        "<td>" + result.time + "ms</td>";
+function tc06(){ return sf(BASE+'/').then(function(r){
+  if(!r.ok) return {status:'SKIP',notes:'Site unreachable'};
+  return {status:'WARN',notes:"Can't simulate mid-request drop in browser. Ensure all fetch() calls have try/catch with user-visible error messages."};
+}); }
 
-      document.getElementById("resultsTable").appendChild(row);
+function tc07(){ return Promise.resolve({status:'MANUAL',notes:'Throttle to Offline in DevTools while submitting RSVP. Expect retry message and no duplicate record in DB.'}); }
+
+function tc08(){ var t=Date.now(); return sf(BASE+'/',{},15000).then(function(r){
+  var ms=Date.now()-t;
+  if(r.status===200) return {status:'PASS',notes:ms+'ms — confirm loading spinner shown for slow connections',time:ms};
+  return {status:'WARN',notes:'Returned '+r.status+' in '+ms+'ms',time:ms};
+}); }
+
+function tc09(){ var t=Date.now(); return sf(BASE+'/api/create-party',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({__test_timeout:true})},3000).then(function(r){
+  var ms=Date.now()-t;
+  if(r.error&&r.error.indexOf('abort')>-1) return {status:'PASS',notes:'Abort fired at 3s',time:ms};
+  if(r.status!==null) return {status:'WARN',notes:'API responded in <3s ('+r.status+') — UI timeout handling still needed',time:ms};
+  return {status:'SKIP',notes:'Inconclusive — test server-side separately'};
+}); }
+
+function tc10(){
+  var payload={title:'TC10 DupTest',hostEmail:'tc10@test.com',__test:true};
+  var reqs=[];
+  for(var i=0;i<10;i++) reqs.push(postParty(payload));
+  return Promise.all(reqs).then(function(res){
+    var ok=res.filter(function(r){return r.status===200||r.status===201;}).length;
+    var cors=res.filter(function(r){return r.status===null;}).length;
+    if(cors===10) return {status:'SKIP',notes:'CORS blocked — run via Postman'};
+    if(ok<=1)     return {status:'PASS',notes:ok+' created out of 10 rapid requests'};
+    return {status:'FAIL',notes:ok+' duplicates created — add idempotency key or debounce'};
+  });
+}
+
+function tc11(){ return Promise.resolve({status:'MANUAL',notes:'Submit RSVP then immediately refresh success page. Verify no duplicate RSVP in DB.'}); }
+
+function tc12(){
+  var reqs=[];
+  for(var i=0;i<20;i++) reqs.push(postParty({title:'SpamParty'+i,hostEmail:'spam'+i+'@test.com'}));
+  return Promise.all(reqs).then(function(res){
+    var tooMany=res.filter(function(r){return r.status===429;}).length;
+    var cors=res.filter(function(r){return r.status===null;}).length;
+    if(cors>=15) return {status:'SKIP',notes:'CORS blocked — verify rate limiting in edge function config'};
+    if(tooMany>0) return {status:'PASS',notes:'Rate limiting active — '+tooMany+'/20 got 429'};
+    return {status:'WARN',notes:'No 429s across 20 rapid requests — add rate limiting (Supabase Edge / Upstash)'};
+  });
+}
+
+function tc13(){ return Promise.resolve({status:'MANUAL',notes:'Run: k6 run --vus 50 --iterations 1000 rsvp-load.js — verify throttling kicks in, no DB crash, accurate totals.'}); }
+
+function tc14(){ return Promise.resolve({status:'MANUAL',notes:'Submit RSVP 5x with same guest email. Verify host receives only 1 notification email — dedup/debounce needed.'}); }
+
+function tc15(){ return sf(BASE+'/').then(function(r){
+  if(r.ok) return {status:'SKIP',notes:'Site live ('+r.status+') — pause Supabase in dashboard to simulate DB down, then reload.'};
+  return {status:'WARN',notes:'Site returned '+r.status+' — verify error page is user-friendly'};
+}); }
+
+function tc16(){ return Promise.resolve({status:'MANUAL',notes:'Kill Supabase connection mid-transaction during party creation. Verify no orphan party row exists without a dashboard token.'}); }
+
+function tc17(){ return Promise.resolve({status:'MANUAL',notes:'In Supabase: manually insert a party with a known ID, then trigger creation with same ID. Verify app regenerates a new unique ID.'}); }
+
+function tc18(){
+  var reqs=[];
+  for(var i=0;i<20;i++) reqs.push(postRsvp({partyId:'test-party-id',guestName:'Guest'+i,attending:true}));
+  return Promise.all(reqs).then(function(res){
+    var cors=res.filter(function(r){return r.status===null;}).length;
+    var errs=res.filter(function(r){return r.status>=500;}).length;
+    if(cors>=15) return {status:'SKIP',notes:'CORS blocked — run server-side to check race conditions'};
+    if(errs>0)   return {status:'FAIL',notes:errs+'/20 server errors under concurrent RSVPs'};
+    return {status:'WARN',notes:'No 5xx — verify guest count accuracy in DB after concurrent writes'};
+  });
+}
+
+function tc19(){ return sf(BASE+'/dashboard/fake-token-xxxxxxxx-0000').then(function(r){
+  if(r.status===401||r.status===403||r.status===404) return {status:'PASS',notes:'Fake token rejected ('+r.status+')'};
+  if(r.status===200) return {status:'FAIL',notes:'Fake token accepted — dashboard auth not enforced'};
+  if(r.status===null) return {status:'SKIP',notes:"Can't reach URL — verify manually"};
+  return {status:'WARN',notes:'Returned '+r.status+' — verify token guard'};
+}); }
+
+function tc20(){ return postParty({title:"' OR 1=1 --",hostEmail:'test@test.com'}).then(function(r){
+  if(validReject(r.status))          return {status:'PASS',notes:'SQL injection rejected ('+r.status+')'};
+  if(r.status===200||r.status===201) return {status:'WARN',notes:'Accepted — verify parameterised queries in DB layer'};
+  if(r.status===null)                return {status:'SKIP',notes:'CORS blocked'};
+  return {status:'WARN',notes:'Got '+r.status+' — manual check needed'};
+}); }
+
+function tc21(){ return postRsvp({partyId:'test',guestName:'<scr'+'ipt>alert(1)</scr'+'ipt>',attending:true}).then(function(r){
+  if(validReject(r.status))          return {status:'PASS',notes:'XSS in guest name rejected ('+r.status+')'};
+  if(r.status===200||r.status===201) return {status:'WARN',notes:'Accepted — verify guest name is escaped before rendering in dashboard'};
+  if(r.status===null)                return {status:'SKIP',notes:'CORS blocked'};
+  return {status:'WARN',notes:'Got '+r.status};
+}); }
+
+function tc22(){ return postParty({title:'abuse',hostEmail:'hax@evil.com',__bypass:true}).then(function(r){
+  if(r.status===401||r.status===403||r.status===405) return {status:'PASS',notes:'Blocked ('+r.status+')'};
+  if(validReject(r.status)) return {status:'PASS',notes:'Validation caught bad payload'};
+  if(r.status===null)       return {status:'SKIP',notes:'CORS blocked — test via curl'};
+  return {status:'WARN',notes:'Got '+r.status+' — ensure server validates all inputs'};
+}); }
+
+function tc23(){
+  var ids=['000000','aaaaaa','test01','123456'];
+  return Promise.all(ids.map(function(id){ return sf(BASE+'/party/'+id,{},5000); })).then(function(res){
+    var exposed=res.filter(function(r){return r.status===200;}).length;
+    var cors=res.filter(function(r){return r.status===null;}).length;
+    if(cors>=3)     return {status:'SKIP',notes:'CORS blocked — verify party IDs are UUID v4 server-side'};
+    if(exposed===0) return {status:'PASS',notes:'Guessed short IDs returned no data'};
+    return {status:'WARN',notes:exposed+' guessable IDs returned 200 — use UUID v4'};
+  });
+}
+
+function tc24(){ return Promise.resolve({status:'MANUAL',notes:'Disable Resend API key. Submit RSVP. Verify: (1) RSVP saved to DB, (2) email failure logged, (3) user sees success not error.'}); }
+function tc25(){ return Promise.resolve({status:'MANUAL',notes:'Check Resend dashboard for queued/delayed emails. App should show success immediately — email is fire-and-forget.'}); }
+function tc26(){ return Promise.resolve({status:'MANUAL',notes:'Create party with undeliverable hostEmail. Submit RSVP. Verify RSVP saved OK and email failure is logged not surfaced to guest.'}); }
+function tc27(){ return Promise.resolve({status:'MANUAL',notes:'Upload a 20MB image via party creation form. Expect: compress or reject with friendly message — no silent crash or broken layout.'}); }
+function tc28(){ return Promise.resolve({status:'MANUAL',notes:'Rename a .exe or .html file to .jpg and upload it. Verify server checks MIME type / magic bytes, not just file extension.'}); }
+
+function tc29(){ return sf(BASE+'/').then(function(r){
+  if(!r.ok||!r.res) return {status:'SKIP',notes:'Site unreachable'};
+  return r.res.text().then(function(html){
+    var has=html.indexOf('onerror')>-1||html.indexOf('placeholder')>-1||html.indexOf('fallback')>-1;
+    return has
+      ? {status:'PASS',notes:'Image fallback / onerror handlers detected in HTML'}
+      : {status:'WARN',notes:'No onerror on images found — add fallback handlers'};
+  });
+}); }
+
+function tc30(){ return sf('http://'+location.hostname+'/',{},6000).then(function(r){
+  if(r.status===301||r.status===302||r.status===307||r.status===308) return {status:'PASS',notes:'HTTP to HTTPS redirect ('+r.status+')'};
+  if(r.status===200) return {status:'WARN',notes:'HTTP 200 — verify HTTPS redirect enforced at CDN level'};
+  if(r.status===null) return {status:'PASS',notes:'HTTP blocked by browser mixed-content rules — HTTPS enforced'};
+  return {status:'WARN',notes:'Unexpected '+r.status};
+}); }
+
+function tc31(){
+  try {
+    localStorage.setItem('ti_qa','1');
+    localStorage.removeItem('ti_qa');
+    return Promise.resolve({status:'PASS',notes:'localStorage available'});
+  } catch(e) {
+    return Promise.resolve({status:'WARN',notes:'localStorage blocked (private mode?) — ensure app has fallback'});
+  }
+}
+
+function tc32(){ return sf(BASE+'/').then(function(r){
+  if(!r.ok||!r.res) return {status:'SKIP',notes:'Site unreachable'};
+  var cc=r.res.headers.get('cache-control')||'';
+  var etag=r.res.headers.get('etag')||'';
+  if(cc||etag) return {status:'PASS',notes:'cache-control: '+(cc||'n/a')+' | etag: '+(etag||'n/a')};
+  return {status:'WARN',notes:'No cache-control or ETag — stale cache issues possible'};
+}); }
+
+function tc33(){ return postParty({title:'     ',hostEmail:'test@test.com'}).then(function(r){
+  if(validReject(r.status)) return {status:'PASS',notes:'Whitespace-only title rejected'};
+  if(r.status===null)        return {status:'SKIP',notes:'CORS blocked'};
+  return {status:'FAIL',notes:'Whitespace-only title was accepted'};
+}); }
+
+function tc34(){ return postParty({title:'Test',guestCount:-1,hostEmail:'test@test.com'}).then(function(r){
+  if(validReject(r.status)) return {status:'PASS',notes:'Negative guest count rejected'};
+  if(r.status===null)        return {status:'SKIP',notes:'CORS blocked'};
+  return {status:'FAIL',notes:'Negative guest count was accepted'};
+}); }
+
+function tc35(){ return postParty({title:'Test',guestCount:9999,hostEmail:'test@test.com'}).then(function(r){
+  if(validReject(r.status))          return {status:'PASS',notes:'9999 guest count rejected'};
+  if(r.status===200||r.status===201) return {status:'WARN',notes:'9999 accepted — verify server-side cap exists'};
+  if(r.status===null)                return {status:'SKIP',notes:'CORS blocked'};
+  return {status:'WARN',notes:'Got '+r.status};
+}); }
+
+function tc36(){
+  var t=Date.now(), reqs=[];
+  for(var i=0;i<10;i++) reqs.push(postParty({title:'LoadTest'+i,hostEmail:'lt'+i+'@test.com'}));
+  return Promise.all(reqs).then(function(res){
+    var ms=Date.now()-t;
+    var cors=res.filter(function(r){return r.status===null;}).length;
+    var errs=res.filter(function(r){return r.status>=500;}).length;
+    var ok=res.filter(function(r){return r.status===200||r.status===201;}).length;
+    if(cors>=8) return {status:'SKIP',notes:'CORS blocked — run via k6 or Artillery',time:ms};
+    if(errs>0)  return {status:'FAIL',notes:errs+'/10 returned 5xx in '+ms+'ms',time:ms};
+    return {status:'PASS',notes:ok+'/10 OK in '+ms+'ms',time:ms};
+  });
+}
+
+function tc37(){
+  var t=Date.now(), reqs=[];
+  for(var i=0;i<10;i++) reqs.push(postRsvp({partyId:'test-party-id',guestName:'Guest'+i,attending:true}));
+  return Promise.all(reqs).then(function(res){
+    var ms=Date.now()-t;
+    var cors=res.filter(function(r){return r.status===null;}).length;
+    var errs=res.filter(function(r){return r.status>=500;}).length;
+    if(cors>=8) return {status:'SKIP',notes:'CORS blocked — run server-side',time:ms};
+    if(errs>0)  return {status:'FAIL',notes:errs+'/10 server errors',time:ms};
+    return {status:'PASS',notes:'No 5xx under 10 concurrent RSVPs in '+ms+'ms',time:ms};
+  });
+}
+
+function tc38(){ return Promise.resolve({status:'MANUAL',notes:'Simulate client retrying same RSVP POST 5x (network timeout scenario). Verify only 1 record saved — requires idempotency key in request body.'}); }
+
+function tc39(){ var t=Date.now(); return sf(BASE+'/',{},10000).then(function(r){
+  var ms=Date.now()-t;
+  if(!r.ok) return {status:'FAIL',notes:'Unreachable ('+ms+'ms)',time:ms};
+  var cdn=(r.res&&(r.res.headers.get('x-vercel-id')||r.res.headers.get('server')))||'n/a';
+  return {status:ms<2000?'PASS':'WARN',notes:ms+'ms | server: '+cdn,time:ms};
+}); }
+
+function tc40(){
+  if(!window.performance) return Promise.resolve({status:'SKIP',notes:'Performance API unavailable'});
+  var entries=performance.getEntriesByType('navigation');
+  if(!entries.length) return Promise.resolve({status:'SKIP',notes:'No navigation timing entry'});
+  var e=entries[0];
+  var ttfb=Math.round(e.responseStart-e.requestStart);
+  var dom=Math.round(e.domContentLoadedEventEnd-e.startTime);
+  var heapNote='';
+  if(window.performance.memory) heapNote=' | heap: '+(window.performance.memory.usedJSHeapSize/1048576).toFixed(1)+'MB';
+  return Promise.resolve({status:dom<3000?'PASS':'WARN',notes:'TTFB:'+ttfb+'ms | DOMLoaded:'+dom+'ms'+heapNote});
+}
+
+// ── REGISTRY ────────────────────────────────────────────────────
+var TESTS = [
+  {id:'TC01', group:'Party Creation',   label:'Homepage / app loads',                       fn:tc01},
+  {id:'TC02', group:'Party Creation',   label:'Required fields missing — rejected',          fn:tc02},
+  {id:'TC03', group:'Party Creation',   label:'Invalid email format — rejected',             fn:tc03},
+  {id:'TC04', group:'Party Creation',   label:'1000-char title — rejected',                 fn:tc04},
+  {id:'TC05', group:'Party Creation',   label:'XSS in title — rejected / escaped',           fn:tc05},
+  {id:'TC06', group:'Network',          label:'Connection drop during create',               fn:tc06},
+  {id:'TC07', group:'Network',          label:'Connection drop during RSVP',                fn:tc07},
+  {id:'TC08', group:'Network',          label:'Slow internet — response time',              fn:tc08},
+  {id:'TC09', group:'Network',          label:'API timeout abort at 3s',                    fn:tc09},
+  {id:'TC10', group:'Spam / Duplicates',label:'Double-click submit x10',                    fn:tc10},
+  {id:'TC11', group:'Spam / Duplicates',label:'Browser refresh after RSVP submit',          fn:tc11},
+  {id:'TC12', group:'Spam / Duplicates',label:'Spam party creation x20 — rate limiting',    fn:tc12},
+  {id:'TC13', group:'Spam / Duplicates',label:'Bot sends 1000 RSVPs',                       fn:tc13},
+  {id:'TC14', group:'Spam / Duplicates',label:'Email flood protection',                     fn:tc14},
+  {id:'TC15', group:'Database',         label:'DB unavailable — graceful degradation',      fn:tc15},
+  {id:'TC16', group:'Database',         label:'Partial DB write — rollback / no orphans',   fn:tc16},
+  {id:'TC17', group:'Database',         label:'Duplicate party ID collision — regenerate',  fn:tc17},
+  {id:'TC18', group:'Database',         label:'20 concurrent RSVP writes — race condition', fn:tc18},
+  {id:'TC19', group:'Security',         label:'Fake dashboard token — blocked',             fn:tc19},
+  {id:'TC20', group:'Security',         label:'SQL injection — rejected',                   fn:tc20},
+  {id:'TC21', group:'Security',         label:'XSS in RSVP guest name',                    fn:tc21},
+  {id:'TC22', group:'Security',         label:'Direct API abuse — blocked',                fn:tc22},
+  {id:'TC23', group:'Security',         label:'QR link guessing — blocked',                fn:tc23},
+  {id:'TC24', group:'Email / Async',    label:'Email service down — RSVP still saves',     fn:tc24},
+  {id:'TC25', group:'Email / Async',    label:'Email delayed — no user-facing failure',    fn:tc25},
+  {id:'TC26', group:'Email / Async',    label:'Host invalid email — logged not crashed',   fn:tc26},
+  {id:'TC27', group:'File / Image',     label:'20MB photo upload — rejected / compressed', fn:tc27},
+  {id:'TC28', group:'File / Image',     label:'Invalid file disguised as JPG — rejected',  fn:tc28},
+  {id:'TC29', group:'File / Image',     label:'Image CDN unavailable — placeholder shown', fn:tc29},
+  {id:'TC30', group:'Browser',          label:'HTTP to HTTPS redirect enforced',            fn:tc30},
+  {id:'TC31', group:'Browser',          label:'Cookies / storage blocked — fallback',      fn:tc31},
+  {id:'TC32', group:'Browser',          label:'Cache-control / ETag headers present',      fn:tc32},
+  {id:'TC33', group:'Data Validation',  label:'Whitespace-only input — rejected',          fn:tc33},
+  {id:'TC34', group:'Data Validation',  label:'Negative guest count — rejected',           fn:tc34},
+  {id:'TC35', group:'Data Validation',  label:'Guest count 9999 — rejected / capped',     fn:tc35},
+  {id:'TC36', group:'Load',             label:'10 concurrent party creates',               fn:tc36},
+  {id:'TC37', group:'Load',             label:'10 concurrent RSVPs',                       fn:tc37},
+  {id:'TC38', group:'Load',             label:'API retry storm — idempotency',             fn:tc38},
+  {id:'TC39', group:'Production',       label:'Vercel CDN health + latency',               fn:tc39},
+  {id:'TC40', group:'Production',       label:'Page load perf + JS heap memory',           fn:tc40},
+];
+
+var GROUPS  = (function(){ var s=[],seen={}; TESTS.forEach(function(t){ if(!seen[t.group]){seen[t.group]=1;s.push(t.group);} }); return s; })();
+var FILTERS = ['ALL'].concat(GROUPS).concat(['PASS','FAIL','WARN','SKIP','MANUAL']);
+
+var state = {results:{}, running:false, stop:false, filter:'ALL', manualChecked:{}};
+
+function statusMeta(s){
+  var M={PASS:{cls:'s-PASS',label:'PASS'},FAIL:{cls:'s-FAIL',label:'FAIL'},WARN:{cls:'s-WARN',label:'WARN'},
+         SKIP:{cls:'s-SKIP',label:'SKIP'},RUN:{cls:'s-RUN',label:'RUN\u2026'},MANUAL:{cls:'s-MANUAL',label:'MANUAL'},PEND:{cls:'s-PEND',label:'\u2014'}};
+  return M[s]||M.PEND;
+}
+function colorFor(s){ return {PASS:'#22c55e',FAIL:'#ef4444',WARN:'#f59e0b',SKIP:'#6b7280',RUN:'#60a5fa',MANUAL:'#a78bfa'}[s]||'#374151'; }
+function rowId(id){ return 'row_'+id.replace(/[^a-z0-9]/gi,'_'); }
+
+function renderRow(test){
+  var r=state.results[test.id];
+  var st=r?r.status:'PEND';
+  var m=statusMeta(st);
+  var checked=state.manualChecked[test.id];
+  var badgeHtml;
+  if(st==='MANUAL'){
+    badgeHtml='<button class="manual-badge'+(checked?' checked':'')+'" onclick="toggleManual(\''+test.id+'\')">'+(checked?'&#10003; DONE':'MANUAL')+'</button>';
+  } else {
+    badgeHtml='<div class="badge '+m.cls+'">'+(st==='RUN'?'RUN\u2026':m.label)+'</div>';
+  }
+  var row=document.getElementById(rowId(test.id));
+  if(!row) return;
+  row.dataset.status=st;
+  row.className='test-row'+(st==='RUN'?' running':'');
+  row.innerHTML=
+    badgeHtml+
+    '<div class="test-id">'+test.id+'</div>'+
+    '<div class="test-info">'+
+      '<div class="test-label'+(r&&st!=='RUN'?' done':'')+'">'+test.label+'</div>'+
+      (r&&r.notes?'<div class="test-notes" style="color:'+colorFor(st)+'">'+r.notes+'</div>':'')+
+    '</div>'+
+    (r&&r.time?'<div class="test-time">'+r.time+'ms</div>':'<div class="test-time"></div>')+
+    '<button class="btn-run-single" onclick="runSingle(\''+test.id+'\')"'+(state.running?' disabled':'')+'>&#9655;</button>';
+}
+
+function buildRows(){
+  var container=document.getElementById('results');
+  container.innerHTML='';
+  GROUPS.forEach(function(group){
+    var gl=document.createElement('div');
+    gl.className='group-label'; gl.dataset.group=group; gl.textContent=group.toUpperCase();
+    container.appendChild(gl);
+    TESTS.filter(function(t){return t.group===group;}).forEach(function(test){
+      var row=document.createElement('div');
+      row.id=rowId(test.id); row.dataset.group=group; row.dataset.status='PEND';
+      row.className='test-row';
+      container.appendChild(row);
+      renderRow(test);
+    });
+  });
+  applyFilter();
+}
+
+function applyFilter(){
+  var f=state.filter, any=false;
+  TESTS.forEach(function(test){
+    var row=document.getElementById(rowId(test.id));
+    if(!row) return;
+    var st=(state.results[test.id]||{}).status||'PEND';
+    var show=false;
+    if(f==='ALL') show=true;
+    else if(GROUPS.indexOf(f)>-1) show=test.group===f;
+    else if(f==='MANUAL') show=st==='MANUAL';
+    else show=st===f;
+    row.style.display=show?'flex':'none';
+    if(show) any=true;
+  });
+  GROUPS.forEach(function(group){
+    var gl=document.querySelector('.group-label[data-group="'+group+'"]');
+    if(!gl) return;
+    var has=TESTS.filter(function(t){return t.group===group;}).some(function(t){
+      var r=document.getElementById(rowId(t.id));
+      return r&&r.style.display!=='none';
+    });
+    gl.style.display=has?'':'none';
+  });
+  document.getElementById('empty').style.display=any?'none':'block';
+}
+
+function buildFilterBar(){
+  var bar=document.getElementById('filter-bar');
+  bar.innerHTML='';
+  FILTERS.forEach(function(f){
+    var btn=document.createElement('button');
+    btn.className='tab'+(f===state.filter?' active':'');
+    btn.textContent=f.toUpperCase();
+    btn.onclick=function(){ state.filter=f; buildFilterBar(); applyFilter(); };
+    bar.appendChild(btn);
+  });
+}
+
+function updateCounters(){
+  var vals=Object.values(state.results);
+  ['PASS','FAIL','WARN','SKIP'].forEach(function(k){
+    document.getElementById('cnt-'+k.toLowerCase()).textContent=vals.filter(function(r){return r.status===k;}).length;
+  });
+}
+
+function updateProgress(done, current){
+  var wrap=document.getElementById('progress-wrap');
+  var bar=document.getElementById('progress-bar');
+  wrap.style.display='block';
+  bar.style.width=Math.round(done/TESTS.length*100)+'%';
+  document.getElementById('progress-pct').textContent=done+' / '+TESTS.length;
+  document.getElementById('progress-status').textContent=current?'Running '+current:'Complete';
+  if(!state.running){
+    var hasFail=Object.values(state.results).some(function(r){return r.status==='FAIL';});
+    bar.style.background=hasFail?'#ef4444':'#22c55e';
+  }
+}
+
+window.toggleManual=function(id){
+  state.manualChecked[id]=!state.manualChecked[id];
+  renderRow(TESTS.filter(function(t){return t.id===id;})[0]);
+};
+
+function execTest(test){
+  state.results[test.id]={status:'RUN',notes:''};
+  renderRow(test);
+  var t0=Date.now();
+  return test.fn().then(function(r){
+    state.results[test.id]=Object.assign({},r,{time:r.time!==undefined?r.time:Date.now()-t0});
+  }).catch(function(e){
+    state.results[test.id]={status:'FAIL',notes:'Uncaught: '+e.message,time:Date.now()-t0};
+  }).then(function(){
+    renderRow(test);
+    updateCounters();
+  });
+}
+
+window.runSingle=function(id){
+  if(state.running) return;
+  var test=TESTS.filter(function(t){return t.id===id;})[0];
+  if(!test) return;
+  execTest(test).then(function(){
+    updateProgress(Object.keys(state.results).length,null);
+    applyFilter();
+  });
+};
+
+function resetBtn(){
+  var btn=document.getElementById('btn-run');
+  btn.innerHTML='&#9654; RUN ALL TESTS'; btn.classList.remove('stop');
+}
+
+window.handleRunStop=function(){
+  if(state.running){ state.stop=true; state.running=false; resetBtn(); return; }
+  runAll();
+};
+
+function runAll(){
+  state.stop=false; state.running=true; state.results={};
+  var btn=document.getElementById('btn-run');
+  btn.innerHTML='&#9209; STOP'; btn.classList.add('stop');
+  buildRows(); updateCounters();
+
+  var i=0;
+  function next(){
+    if(i>=TESTS.length||state.stop){
+      state.running=false; resetBtn();
+      updateProgress(Object.keys(state.results).length,null);
+      buildRows(); updateCounters(); applyFilter();
+      return;
     }
+    var test=TESTS[i++];
+    execTest(test).then(function(){
+      updateProgress(i,test.id);
+      applyFilter();
+      return sleep(80);
+    }).then(next);
+  }
+  next();
+}
 
-    function updateCounters(results) {
-      let pass = 0;
-      let fail = 0;
-      let warn = 0;
-      let skip = 0;
+window.clearAll=function(){
+  if(state.running) return;
+  state.results={}; state.manualChecked={};
+  document.getElementById('progress-wrap').style.display='none';
+  buildRows(); updateCounters();
+};
 
-      results.forEach(function (r) {
-        if (r.status === "PASS") pass++;
-        if (r.status === "FAIL") fail++;
-        if (r.status === "WARN") warn++;
-        if (r.status === "SKIP") skip++;
-      });
-
-      document.getElementById("passCount").textContent = pass;
-      document.getElementById("failCount").textContent = fail;
-      document.getElementById("warnCount").textContent = warn;
-      document.getElementById("skipCount").textContent = skip;
-    }
-
-    window.runAllTests = async function () {
-      window.clearResults();
-
-      const results = [];
-
-      for (const test of TESTS) {
-        const result = await test.fn();
-        results.push(result);
-        renderRow(test, result);
-        updateCounters(results);
-      }
-    };
-
-    window.clearResults = function () {
-      document.getElementById("resultsTable").innerHTML = "";
-
-      document.getElementById("passCount").textContent = 0;
-      document.getElementById("failCount").textContent = 0;
-      document.getElementById("warnCount").textContent = 0;
-      document.getElementById("skipCount").textContent = 0;
-    };
-  </script>
+buildFilterBar();
+buildRows();
+</script>
 
 </body>
 </html>

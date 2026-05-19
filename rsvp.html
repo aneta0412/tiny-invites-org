@@ -156,12 +156,25 @@
       <div class="counter-row">
         <div class="counter-label">
           <strong>Children</strong>
-          <small>Age 1 and over (babies don't need a place)</small>
+          <small id="children-small">Age 1 and over</small>
         </div>
         <div class="counter-btns">
           <button class="counter-btn" onclick="change('children',-1)" aria-label="fewer children">−</button>
           <span class="counter-val" id="children-val">0</span>
           <button class="counter-btn" onclick="change('children',1)" aria-label="more children">+</button>
+        </div>
+      </div>
+
+      <!-- Babies — only shown when host enabled ask_babies=1 -->
+      <div class="counter-row" id="babies-row" style="display:none;">
+        <div class="counter-label">
+          <strong>Babies</strong>
+          <small>Under 1 year old</small>
+        </div>
+        <div class="counter-btns">
+          <button class="counter-btn" onclick="change('babies',-1)" aria-label="fewer babies">−</button>
+          <span class="counter-val" id="babies-val">0</span>
+          <button class="counter-btn" onclick="change('babies',1)" aria-label="more babies">+</button>
         </div>
       </div>
 
@@ -263,11 +276,12 @@
 
   function getParam(n) { return new URLSearchParams(window.location.search).get(n) || ''; }
 
-  // Does host want to know adult count?
+  // Read host counting preferences from URL params
   const ASK_ADULTS = getParam('ask_adults') === '1';
+  const ASK_BABIES = getParam('ask_babies') === '1';
 
   // ── Counters ─────────────────────────────────────────────
-  const counts = { children: 0, adults: 1 };
+  const counts = { children: 0, babies: 0, adults: 1 };
   function change(key, delta) {
     counts[key] = Math.max(0, counts[key] + delta);
     if (key === 'adults' && counts[key] < 1) counts[key] = 1; // adults min 1
@@ -276,7 +290,13 @@
 
   // ── Init ─────────────────────────────────────────────────
   window.addEventListener('DOMContentLoaded', () => {
+    // Show/hide counter rows based on host preferences
     if (ASK_ADULTS) document.getElementById('adults-row').style.display = 'flex';
+    if (ASK_BABIES) {
+      document.getElementById('babies-row').style.display = 'flex';
+      // Update children label to clarify age range
+      document.getElementById('children-small').textContent = 'Age 1 and over';
+    }
 
     const partyId  = getParam('party') || getParam('partyId') || '';
     const photoUrl = getParam('photo') || '';
@@ -394,8 +414,11 @@
     if (wantsEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) { alert('Please enter a valid email address 📧'); return; }
 
     const childrenCount = counts.children;
+    const babiesCount   = ASK_BABIES ? counts.babies : null;
     const adultsCount   = ASK_ADULTS ? counts.adults : null;
-    const totalGuests   = childrenCount + (ASK_ADULTS ? counts.adults : 0);
+    const totalGuests   = childrenCount
+      + (ASK_BABIES ? counts.babies : 0)
+      + (ASK_ADULTS ? counts.adults : 0);
 
     const pd  = window._partyData || {};
     const pid = pd.partyId || window._partyId || '';
@@ -412,6 +435,7 @@
       attending:            true,
       guest_count:          totalGuests,
       guest_count_children: childrenCount,
+      guest_count_babies:   babiesCount,
       guest_count_adults:   adultsCount,
       allergies:            document.getElementById('guest-allergies').value.trim() || null,
       guest_email:          guestEmail || null,
@@ -429,6 +453,7 @@
       // Build friendly summary
       const parts = [];
       if (childrenCount > 0) parts.push(`${childrenCount} ${childrenCount===1?'child':'children'}`);
+      if (ASK_BABIES && babiesCount > 0) parts.push(`${babiesCount} ${babiesCount===1?'baby':'babies'}`);
       if (ASK_ADULTS && adultsCount > 0) parts.push(`${adultsCount} ${adultsCount===1?'adult':'adults'}`);
       const tally = parts.length ? parts.join(' + ') : '1 guest';
 

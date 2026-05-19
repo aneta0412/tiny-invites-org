@@ -21,7 +21,6 @@ nav { display:flex; justify-content:space-between; align-items:center; padding:2
 .nav-back { font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--soft); text-decoration:none; transition:color 0.2s; }
 .nav-back:hover { color:var(--gold); }
 
-/* Hero image */
 .dash-hero { display:none; width:100%; overflow:hidden; position:relative; }
 .dash-hero img { width:100%; height:320px; object-fit:cover; display:block; }
 .dash-hero-overlay { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(42,34,24,0.05) 0%,rgba(42,34,24,0.65) 100%); }
@@ -33,7 +32,6 @@ nav { display:flex; justify-content:space-between; align-items:center; padding:2
 
 .page { max-width:600px; margin:0 auto; padding:48px 20px 80px; }
 
-/* Text header (no photo) */
 .dash-header { text-align:center; margin-bottom:40px; animation:fadeUp 0.55s ease both; }
 .dash-eyebrow { font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:10px; }
 .dash-eyebrow::before,.dash-eyebrow::after { content:""; display:block; width:28px; height:1px; background:var(--gold); }
@@ -64,8 +62,8 @@ nav { display:flex; justify-content:space-between; align-items:center; padding:2
 .section-label { font-size:0.62rem; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
 
 .progress-track { height:8px; background:var(--gold-pale); border-radius:99px; overflow:hidden; display:flex; }
-.progress-yes { background:var(--yes); border-radius:99px 0 0 99px; transition:width .8s ease; }
-.progress-no  { background:var(--soft); transition:width .8s ease; }
+.progress-yes  { background:var(--yes);  border-radius:99px 0 0 99px; transition:width .8s ease; }
+.progress-no   { background:var(--soft); transition:width .8s ease; }
 .progress-rest { background:var(--gold-light); border-radius:0 99px 99px 0; transition:width .8s ease; }
 .progress-legend { display:flex; gap:16px; margin-top:10px; }
 .legend-item { display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--mid); }
@@ -83,11 +81,11 @@ nav { display:flex; justify-content:space-between; align-items:center; padding:2
 .table-card { background:var(--warm-white); border:1px solid var(--gold-pale); border-radius:18px; overflow:hidden; box-shadow:0 4px 24px rgba(42,34,24,0.06); animation:fadeUp 0.5s ease both; }
 .table-header { background:var(--gold-pale); padding:13px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--gold-light); }
 .table-wrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; min-width:480px; }
+table { width:100%; border-collapse:collapse; min-width:360px; }
 thead tr { background:var(--gold-pale); }
 th { padding:10px 16px; text-align:left; font-size:0.6rem; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; color:var(--soft); border-bottom:1px solid var(--gold-light); white-space:nowrap; }
 tbody tr { transition:background 0.15s; }
-tbody tr:hover { background:var(--gold-pale); }
+tbody tr:hover { background:rgba(245,237,218,0.4); }
 tbody tr:not(:last-child) td { border-bottom:1px solid var(--gold-pale); }
 td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:middle; }
 .badge { display:inline-flex; align-items:center; gap:4px; border-radius:99px; padding:3px 10px; font-size:0.7rem; font-weight:500; }
@@ -96,6 +94,44 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
 .empty-state { text-align:center; padding:40px 20px; color:var(--soft); }
 .empty-icon { font-size:2rem; margin-bottom:10px; }
 .empty-state p { font-family:"Cormorant Garamond",serif; font-size:1.1rem; color:var(--mid); }
+
+/* ── Guest edit / delete controls ── */
+.row-actions { display:flex; gap:6px; align-items:center; }
+.btn-icon {
+  background:transparent; border:1px solid var(--gold-pale);
+  border-radius:6px; width:28px; height:28px;
+  display:inline-flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:0.75rem; color:var(--soft);
+  transition:all 0.15s; flex-shrink:0; line-height:1;
+}
+.btn-icon:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-pale); }
+.btn-icon.delete:hover { border-color:#c0392b; color:#c0392b; background:#fdf0ee; }
+
+.edit-row td { background:var(--gold-pale); padding:14px 16px; }
+.edit-fields { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+.edit-fields select,
+.edit-fields input {
+  background:var(--warm-white); border:1px solid var(--gold-light);
+  border-radius:6px; padding:6px 10px; font-size:0.82rem;
+  font-family:"DM Sans",sans-serif; color:var(--dark); outline:none;
+}
+.edit-fields select:focus,
+.edit-fields input:focus { border-color:var(--gold); }
+.btn-save {
+  background:var(--dark); color:var(--cream); border:none;
+  border-radius:6px; padding:6px 16px; font-size:0.75rem;
+  letter-spacing:0.08em; text-transform:uppercase;
+  font-family:"DM Sans",sans-serif; cursor:pointer; transition:background 0.15s;
+}
+.btn-save:hover { background:var(--gold); }
+.btn-cancel {
+  background:transparent; color:var(--soft);
+  border:1px solid var(--gold-pale); border-radius:6px;
+  padding:6px 12px; font-size:0.75rem;
+  font-family:"DM Sans",sans-serif; cursor:pointer; transition:all 0.15s;
+}
+.btn-cancel:hover { border-color:var(--soft); color:var(--dark); }
+
 .footer { text-align:center; padding:24px; font-size:0.72rem; color:var(--soft); letter-spacing:0.04em; }
 .footer em { color:var(--gold); font-style:normal; }
 .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--dark); color:var(--cream); border-radius:10px; padding:11px 20px; font-size:0.82rem; box-shadow:0 8px 32px rgba(42,34,24,0.18); transition:transform 0.3s cubic-bezier(.34,1.56,.64,1); z-index:999; white-space:nowrap; }
@@ -107,6 +143,8 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
   .stat-number { font-size:2rem; }
   .dash-hero img { height:240px; }
   .dash-hero-text { padding:24px 20px; }
+  .edit-fields { gap:8px; }
+  .edit-fields input[type="text"] { min-width:100px; }
 }
 </style>
 </head>
@@ -120,7 +158,6 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
   <a href="/" class="nav-back">← Back to home</a>
 </nav>
 
-<!-- HERO IMAGE (shown when photo_url exists) -->
 <div class="dash-hero" id="dashHero">
   <img id="dashHeroImg" src="" alt="Party photo">
   <div class="dash-hero-overlay"></div>
@@ -133,22 +170,18 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
 
 <div class="page">
 
-  <!-- TEXT HEADER (shown when no photo) -->
   <div class="dash-header" id="dashHeaderText">
     <div class="dash-eyebrow">Party Dashboard</div>
     <h1 class="dash-title"><em id="textTitle">Your Party</em></h1>
     <p class="dash-sub" id="textMeta">—</p>
   </div>
 
-  <!-- PARTY STRIP -->
   <div class="card" style="animation-delay:0.05s">
     <div class="party-strip">
       <div class="party-detail">📍 <strong id="partyLocation">—</strong></div>
-      <div class="party-detail">✉️ <strong id="hostEmail">—</strong></div>
     </div>
   </div>
 
-  <!-- STATS -->
   <div class="stats">
     <div class="stat-card confirmed" style="animation-delay:0.1s">
       <div class="stat-number" id="statYes">0</div>
@@ -167,12 +200,11 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     </div>
   </div>
 
-  <!-- PROGRESS -->
   <div class="card" style="animation-delay:0.25s">
     <div class="section-label">Response breakdown</div>
     <div class="progress-track">
-      <div class="progress-yes"  id="barYes" style="width:0%"></div>
-      <div class="progress-no"   id="barNo"  style="width:0%"></div>
+      <div class="progress-yes"  id="barYes"  style="width:0%"></div>
+      <div class="progress-no"   id="barNo"   style="width:0%"></div>
       <div class="progress-rest" id="barRest" style="width:100%"></div>
     </div>
     <div class="progress-legend">
@@ -181,7 +213,6 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     </div>
   </div>
 
-  <!-- DIETARY FLAGS -->
   <div class="card" style="animation-delay:0.3s">
     <div class="section-label">⚠️ Dietary &amp; allergy flags</div>
     <div class="flags" id="dietaryFlags">
@@ -189,12 +220,10 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     </div>
   </div>
 
-  <!-- RESEND -->
   <button class="resend-btn" id="resendBtn" onclick="resendEmail()">
     ✉️ Email me the full guest list
   </button>
 
-  <!-- TABLE -->
   <div class="table-card" style="animation-delay:0.35s">
     <div class="table-header">
       <span class="section-label" style="margin:0;">Guest responses</span>
@@ -204,7 +233,7 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
       <table>
         <thead>
           <tr>
-            <th>Name</th><th>Attending</th><th>Guests</th><th>Dietary / Notes</th><th>Contact</th>
+            <th>Name</th><th>Attending</th><th>Guests</th><th>Dietary / Notes</th><th></th>
           </tr>
         </thead>
         <tbody id="tableBody">
@@ -251,7 +280,7 @@ function populateHeader(party) {
   let meta = party.venue || '';
   if (party.party_date) {
     try {
-      const d = new Date(party.party_date);
+      const d  = new Date(party.party_date);
       const ds = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
       meta = ds + (party.venue ? ' · ' + party.venue : '');
     } catch {}
@@ -262,7 +291,6 @@ function populateHeader(party) {
   document.getElementById('textTitle').textContent = title;
   document.getElementById('textMeta').textContent  = meta || '—';
   document.getElementById('partyLocation').textContent = party.venue || '—';
-  document.getElementById('hostEmail').textContent     = party.parent_email || '—';
 
   const photoUrl = party.photo_url || '';
   if (photoUrl) {
@@ -286,14 +314,13 @@ function renderDashboard(responses, stats) {
   const pctYes = total ? Math.round(yes.length / total * 100) : 0;
   const pctNo  = total ? Math.round(no.length  / total * 100) : 0;
 
-  document.getElementById('statYes').textContent   = yes.length;
-  document.getElementById('statNo').textContent    = no.length;
-  document.getElementById('statTotal').textContent = total;
-  document.getElementById('pctYes').textContent    = total ? `${pctYes}% of responses` : '—';
-  document.getElementById('pctNo').textContent     = total ? `${pctNo}% of responses`  : '—';
+  document.getElementById('statYes').textContent    = yes.length;
+  document.getElementById('statNo').textContent     = no.length;
+  document.getElementById('statTotal').textContent  = total;
+  document.getElementById('pctYes').textContent     = total ? `${pctYes}% of responses` : '—';
+  document.getElementById('pctNo').textContent      = total ? `${pctNo}% of responses`  : '—';
   document.getElementById('statGuests').textContent = guests > 0 ? `${guests} guest${guests !== 1 ? 's' : ''} total` : '—';
 
-  // Progress bars (% of total responses only)
   setTimeout(() => {
     document.getElementById('barYes').style.width  = total ? (yes.length / total * 100).toFixed(1) + '%' : '0%';
     document.getElementById('barNo').style.width   = total ? (no.length  / total * 100).toFixed(1) + '%' : '0%';
@@ -313,21 +340,192 @@ function renderDashboard(responses, stats) {
     ? Object.entries(dietCount).map(([k,v]) => `<div class="flag">⚠️ ${k}<span class="flag-count">${v}</span></div>`).join('')
     : '<div style="color:var(--soft);font-size:0.84rem;">No dietary requirements yet</div>';
 
-  // Table
+  // Table — no email/contact column
   const tbody = document.getElementById('tableBody');
   if (!responses.length) {
     tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your QR code!</p></div></td></tr>`;
     return;
   }
+
   tbody.innerHTML = responses.map(r => {
-    const att     = r.attending === 'yes' ? '<span class="badge yes">✓ Coming</span>' : '<span class="badge no">✗ Declined</span>';
-    const gsts    = r.guest_count ? `<span style="font-size:0.78rem;color:var(--mid)">${r.guest_count} guest${r.guest_count > 1 ? 's' : ''}</span>` : '<span style="color:var(--soft)">—</span>';
-    const allerg  = r.allergies && r.allergies.toLowerCase() !== 'none' ? `<span style="color:var(--mid);font-weight:500">⚠️ ${r.allergies}</span>` : '<span style="color:var(--soft)">—</span>';
-    const contact = r.contact_email ? `<a href="mailto:${r.contact_email}" style="color:var(--gold);font-size:0.78rem;text-decoration:none">${r.contact_email}</a>` : '<span style="color:var(--soft);font-size:0.78rem">—</span>';
-    return `<tr><td><strong>${r.guest_name || '—'}</strong></td><td>${att}</td><td>${gsts}</td><td>${allerg}</td><td>${contact}</td></tr>`;
+    const att    = r.attending === 'yes'
+      ? '<span class="badge yes">✓ Coming</span>'
+      : '<span class="badge no">✗ Declined</span>';
+    const gsts   = r.guest_count
+      ? `<span style="font-size:0.78rem;color:var(--mid)">${r.guest_count} guest${r.guest_count > 1 ? 's' : ''}</span>`
+      : '<span style="color:var(--soft)">—</span>';
+    const allerg = r.allergies && r.allergies.toLowerCase() !== 'none'
+      ? `<span style="color:var(--mid);font-weight:500">⚠️ ${r.allergies}</span>`
+      : '<span style="color:var(--soft)">—</span>';
+    const safeAllergy = (r.allergies || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const safeName    = (r.guest_name || 'Guest').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return `
+      <tr id="guest-row-${r.id}">
+        <td><strong>${r.guest_name || '—'}</strong></td>
+        <td>${att}</td>
+        <td>${gsts}</td>
+        <td>${allerg}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn-icon" title="Edit" onclick="openEdit('${r.id}','${r.attending}',${r.guest_count||1},'${safeAllergy}')">✏️</button>
+            <button class="btn-icon delete" title="Remove" onclick="deleteGuest('${r.id}','${safeName}')">🗑</button>
+          </div>
+        </td>
+      </tr>`;
   }).join('');
 
   document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+}
+
+// ── Edit / Delete ──────────────────────────────────────────────
+
+function openEdit(id, attending, guestCount, allergies) {
+  // Close any open edit rows first
+  document.querySelectorAll('.edit-row').forEach(r => r.remove());
+
+  const mainRow = document.getElementById('guest-row-' + id);
+  if (!mainRow) return;
+
+  const editRow = document.createElement('tr');
+  editRow.className = 'edit-row';
+  editRow.id = 'edit-row-' + id;
+  editRow.innerHTML = `
+    <td colspan="5">
+      <div class="edit-fields">
+        <select id="edit-att-${id}">
+          <option value="yes" ${attending === 'yes' ? 'selected' : ''}>✓ Coming</option>
+          <option value="no"  ${attending === 'no'  ? 'selected' : ''}>✗ Declined</option>
+        </select>
+        <input type="number" id="edit-count-${id}" min="1" max="20"
+          value="${guestCount}" style="width:72px" placeholder="Guests" />
+        <input type="text" id="edit-allergy-${id}"
+          value="${allergies}" placeholder="Dietary notes" style="flex:1;min-width:120px" />
+        <button class="btn-save"   onclick="saveEdit('${id}')">Save</button>
+        <button class="btn-cancel" onclick="cancelEdit('${id}')">Cancel</button>
+      </div>
+    </td>`;
+
+  mainRow.insertAdjacentElement('afterend', editRow);
+}
+
+function cancelEdit(id) {
+  const row = document.getElementById('edit-row-' + id);
+  if (row) row.remove();
+}
+
+async function saveEdit(id) {
+  const attending   = document.getElementById('edit-att-'     + id)?.value;
+  const guest_count = parseInt(document.getElementById('edit-count-'   + id)?.value);
+  const allergies   = document.getElementById('edit-allergy-' + id)?.value || '';
+
+  const saveBtn = document.querySelector(`#edit-row-${id} .btn-save`);
+  if (saveBtn) { saveBtn.textContent = 'Saving…'; saveBtn.disabled = true; }
+
+  try {
+    const res  = await fetch('/api/update-guest', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ token:_token, guest_id:id, action:'edit', attending, guest_count, allergies }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update');
+
+    // Update the row cells in place — no page reload
+    const mainRow = document.getElementById('guest-row-' + id);
+    if (mainRow) {
+      const cells = mainRow.querySelectorAll('td');
+      cells[1].innerHTML = attending === 'yes'
+        ? '<span class="badge yes">✓ Coming</span>'
+        : '<span class="badge no">✗ Declined</span>';
+      cells[2].innerHTML = guest_count
+        ? `<span style="font-size:0.78rem;color:var(--mid)">${guest_count} guest${guest_count > 1 ? 's' : ''}</span>`
+        : '<span style="color:var(--soft)">—</span>';
+      const cleanAllergy = allergies.trim();
+      cells[3].innerHTML = cleanAllergy && cleanAllergy.toLowerCase() !== 'none'
+        ? `<span style="color:var(--mid);font-weight:500">⚠️ ${cleanAllergy}</span>`
+        : '<span style="color:var(--soft)">—</span>';
+    }
+
+    cancelEdit(id);
+    await refreshStats();
+    showToast('✓ Guest updated');
+
+  } catch (err) {
+    showToast('⚠️ ' + err.message);
+    if (saveBtn) { saveBtn.textContent = 'Save'; saveBtn.disabled = false; }
+  }
+}
+
+async function deleteGuest(id, name) {
+  if (!confirm(`Remove ${name} from the guest list?`)) return;
+
+  try {
+    const res  = await fetch('/api/update-guest', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ token:_token, guest_id:id, action:'delete' }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to delete');
+
+    // Remove row from DOM immediately
+    cancelEdit(id);
+    document.getElementById('guest-row-' + id)?.remove();
+
+    // Show empty state if no guests left
+    const tbody = document.getElementById('tableBody');
+    if (!tbody.querySelector('tr[id^="guest-row-"]')) {
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your QR code!</p></div></td></tr>`;
+    }
+
+    await refreshStats();
+    showToast(`🗑 ${name} removed`);
+
+  } catch (err) {
+    showToast('⚠️ ' + err.message);
+  }
+}
+
+// Refresh only stats + dietary flags — table stays untouched
+async function refreshStats() {
+  try {
+    const res  = await fetch(`/api/dashboard?token=${encodeURIComponent(_token)}`);
+    const data = await res.json();
+    if (!res.ok) return;
+
+    const responses = data.responses;
+    const yes    = responses.filter(r => r.attending === 'yes');
+    const no     = responses.filter(r => r.attending === 'no');
+    const total  = responses.length;
+    const guests = yes.reduce((s, r) => s + (parseInt(r.guest_count) || 0), 0);
+    const pctYes = total ? Math.round(yes.length / total * 100) : 0;
+    const pctNo  = total ? Math.round(no.length  / total * 100) : 0;
+
+    document.getElementById('statYes').textContent    = yes.length;
+    document.getElementById('statNo').textContent     = no.length;
+    document.getElementById('statTotal').textContent  = total;
+    document.getElementById('pctYes').textContent     = total ? `${pctYes}% of responses` : '—';
+    document.getElementById('pctNo').textContent      = total ? `${pctNo}% of responses`  : '—';
+    document.getElementById('statGuests').textContent = guests > 0 ? `${guests} guest${guests !== 1 ? 's' : ''} total` : '—';
+
+    document.getElementById('barYes').style.width  = total ? (yes.length / total * 100).toFixed(1) + '%' : '0%';
+    document.getElementById('barNo').style.width   = total ? (no.length  / total * 100).toFixed(1) + '%' : '0%';
+
+    const dietCount = {};
+    yes.forEach(r => {
+      if (r.allergies && r.allergies.trim() && r.allergies.toLowerCase() !== 'none') {
+        const k = r.allergies.trim();
+        dietCount[k] = (dietCount[k] || 0) + 1;
+      }
+    });
+    const flagsEl = document.getElementById('dietaryFlags');
+    flagsEl.innerHTML = Object.keys(dietCount).length
+      ? Object.entries(dietCount).map(([k,v]) => `<div class="flag">⚠️ ${k}<span class="flag-count">${v}</span></div>`).join('')
+      : '<div style="color:var(--soft);font-size:0.84rem;">No dietary requirements yet</div>';
+
+  } catch (err) {
+    console.error('refreshStats error:', err.message);
+  }
 }
 
 async function resendEmail() {
@@ -336,12 +534,12 @@ async function resendEmail() {
   btn.textContent = '⏳ Sending…';
   btn.disabled = true;
   try {
-    const res  = await fetch('/api/send-email', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ token: _token }) });
+    const res  = await fetch('/api/send-email', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ token:_token }) });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to send');
     btn.classList.add('sent');
     btn.textContent = '✓ Sent to your inbox!';
-    showToast(`✉️ Guest list sent to ${_partyData.parent_email}`);
+    showToast(`✉️ Guest list sent to your email`);
   } catch (err) {
     btn.textContent = '✉️ Email me the full guest list';
     showToast('⚠️ ' + err.message);

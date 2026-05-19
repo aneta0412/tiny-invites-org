@@ -649,7 +649,7 @@
     <!-- Go live form — shown until published -->
     <div id="golive-card">
       <p class="golive-label">Almost there</p>
-      <h3 class="golive-heading">Your invitation preview is ready.<br>Let's bring your party page to live. </h3>
+      <h3 class="golive-heading">Happy with your preview?<br>Let's make it live.</h3>
       <p class="golive-sub">Add your email so guest RSVPs reach you. Optionally add your phone number if you'd like guests to contact you directly.</p>
 
       <div class="field">
@@ -717,7 +717,7 @@
       </div>
 
       <button class="btn-golive-main" id="golive-btn" onclick="goLive()">
-        ✨ Yes — bring it to live!
+        ✨ Yes — make it live!
       </button>
 
       <p style="text-align:center;font-size:0.7rem;color:var(--soft);margin-top:10px;">Free, always. No account required.</p>
@@ -725,31 +725,54 @@
 
     <!-- Shown after going live -->
     <div id="live-confirm-card">
-      <div class="live-icon">🎉</div>
-      <h4>Your invite is live!</h4>
-      <p>Share the link or QR code with your guests. Your dashboard link has been emailed to you — save it, it's unique to your party.</p>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+
+      <!-- Confetti canvas — sits behind card content -->
+      <canvas id="confetti-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:999;"></canvas>
+
+      <div class="live-icon" style="font-size:2.4rem;margin-bottom:6px;">🎉</div>
+
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:400;color:var(--dark);margin-bottom:6px;line-height:1.2;">
+        Your party is live!
+      </h4>
+
+      <p style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-style:italic;color:var(--gold);margin-bottom:6px;line-height:1.4;">
+        Now sit back, relax &amp; have a coffee ☕
+      </p>
+
+      <p style="font-size:0.82rem;color:var(--mid);line-height:1.7;margin-bottom:18px;">
+        Everything is taken care of. Just share the link or QR code with your guests — replies will land straight in your inbox. Your private dashboard link has been emailed to you.
+      </p>
+
+      <!-- Share row — prominent -->
+      <div style="background:var(--gold-pale);border:1px solid var(--gold-light);border-radius:12px;padding:14px;margin-bottom:14px;">
+        <p style="font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--soft);margin-bottom:10px;">Share with your guests</p>
         <button id="copy-btn-confirm" onclick="copyLink()"
-           style="display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--dark);color:var(--cream);padding:12px 16px;border-radius:8px;font-size:0.78rem;letter-spacing:0.06em;text-transform:uppercase;border:none;cursor:pointer;transition:background 0.2s;font-family:'DM Sans',sans-serif;width:100%;"
-           onmouseover="this.style.background='var(--gold)';this.style.color='var(--dark)'"
-           onmouseout="this.style.background='var(--dark)';this.style.color='var(--cream)'">
-          📋 Copy RSVP link for my guests
+          style="display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--dark);color:var(--cream);padding:13px 16px;border-radius:8px;font-size:0.82rem;letter-spacing:0.04em;border:none;cursor:pointer;transition:background 0.2s;font-family:'DM Sans',sans-serif;width:100%;margin-bottom:8px;"
+          onmouseover="this.style.background='var(--gold)';this.style.color='var(--dark)'"
+          onmouseout="this.style.background='var(--dark)';this.style.color='var(--cream)'">
+          📋 Copy invite link
         </button>
-        <div style="display:flex;gap:8px;">
-          <a id="dash-link-confirm" href="#" target="_blank" rel="noopener"
-             style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--mid);padding:10px 16px;border-radius:8px;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;border:1px solid var(--gold-light);transition:all 0.2s;"
-             onmouseover="this.style.background='var(--gold-pale)'"
-             onmouseout="this.style.background='transparent'">
-            📊 Dashboard
-          </a>
-          <a id="preview-link-confirm" href="#" target="_blank" rel="noopener"
-             style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--mid);padding:10px 16px;border-radius:8px;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;border:1px solid var(--gold-light);transition:all 0.2s;"
-             onmouseover="this.style.background='var(--gold-pale)'"
-             onmouseout="this.style.background='transparent'">
-            👁 Guest view
-          </a>
-        </div>
+        <p style="font-size:0.68rem;color:var(--soft);text-align:center;line-height:1.5;">
+          Or download the QR code above and drop it in your WhatsApp group 👆
+        </p>
       </div>
+
+      <!-- Dashboard + guest view -->
+      <div style="display:flex;gap:8px;">
+        <a id="dash-link-confirm" href="#" target="_blank" rel="noopener"
+           style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--mid);padding:10px 16px;border-radius:8px;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;border:1px solid var(--gold-light);transition:all 0.2s;"
+           onmouseover="this.style.background='var(--gold-pale)'"
+           onmouseout="this.style.background='transparent'">
+          📊 Dashboard
+        </a>
+        <a id="preview-link-confirm" href="#" target="_blank" rel="noopener"
+           style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--mid);padding:10px 16px;border-radius:8px;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;border:1px solid var(--gold-light);transition:all 0.2s;"
+           onmouseover="this.style.background='var(--gold-pale)'"
+           onmouseout="this.style.background='transparent'">
+          👁 Guest view
+        </a>
+      </div>
+
     </div>
 
   </div>
@@ -1032,6 +1055,76 @@
     document.getElementById('preview-link-confirm').href = inviteUrl;
     document.getElementById('golive-card').style.display       = 'none';
     document.getElementById('live-confirm-card').style.display = 'block';
+
+    // 🎉 Confetti burst!
+    launchConfetti();
+  }
+
+  // ── Confetti engine (no external lib needed) ──────────────
+  function launchConfetti() {
+    const canvas  = document.getElementById('confetti-canvas');
+    const ctx     = canvas.getContext('2d');
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const COLOURS = ['#c9a84c','#e8d5a3','#f5edda','#2a2218','#4ade80','#fbbf24','#f87171','#a78bfa'];
+    const TOTAL   = 160;
+    const pieces  = [];
+
+    for (let i = 0; i < TOTAL; i++) {
+      pieces.push({
+        x:      Math.random() * canvas.width,
+        y:      Math.random() * canvas.height - canvas.height,
+        w:      6 + Math.random() * 8,
+        h:      3 + Math.random() * 5,
+        color:  COLOURS[Math.floor(Math.random() * COLOURS.length)],
+        rot:    Math.random() * Math.PI * 2,
+        rotV:   (Math.random() - 0.5) * 0.18,
+        vx:     (Math.random() - 0.5) * 3,
+        vy:     2.5 + Math.random() * 3.5,
+        alpha:  1,
+      });
+    }
+
+    let frame;
+    let elapsed = 0;
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      elapsed++;
+
+      pieces.forEach(p => {
+        p.x   += p.vx;
+        p.y   += p.vy;
+        p.rot += p.rotV;
+        // Fade out after ~180 frames
+        if (elapsed > 180) p.alpha = Math.max(0, p.alpha - 0.012);
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      });
+
+      const allDone = pieces.every(p => p.alpha <= 0 || p.y > canvas.height);
+      if (allDone) {
+        cancelAnimationFrame(frame);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+      frame = requestAnimationFrame(draw);
+    }
+
+    frame = requestAnimationFrame(draw);
+
+    // Stop after 5s regardless
+    setTimeout(() => {
+      cancelAnimationFrame(frame);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }, 5000);
   }
 </script>
 </body>

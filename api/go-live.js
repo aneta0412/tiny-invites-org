@@ -1,3 +1,4 @@
+// go-live.js
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { randomUUID } from 'crypto';
@@ -14,10 +15,34 @@ const ordinal = n => {
   return n + (s[(v-20)%10] || s[v] || s[0]);
 };
 
+// ── Validation helpers ─────────────────────────────────────────
+function isValidEmail(str) {
+  return typeof str === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str.trim());
+}
+
+function sanitiseString(val, maxLen = 200) {
+  if (typeof val !== 'string') return null;
+  const trimmed = val.trim();
+  if (!trimmed) return null;
+  return trimmed.slice(0, maxLen);
+}
+
+function isValidAge(val) {
+  if (val === null || val === undefined) return true; // optional
+  const n = Number(val);
+  return Number.isInteger(n) && n >= 1 && n <= 18;
+}
+
+function isValidUrl(val) {
+  if (!val) return true; // optional
+  try { new URL(val); return true; } catch { return false; }
+}
+
+// ── Email template ─────────────────────────────────────────────
 function welcomeEmailHtml({ child_name, age, venue, dashboard_token, party_id, photo_url }) {
-  const dashUrl = `https://tinyinvites.org/dashboard_page.html?token=${dashboard_token}`;
-  const rsvpUrl = `https://tinyinvites.org/rsvp.html?party=${party_id}`;
-  const ageStr  = age ? `${ordinal(age)} birthday` : 'party';
+  const dashUrl  = `https://tinyinvites.org/dashboard_page.html?token=${dashboard_token}`;
+  const rsvpUrl  = `https://tinyinvites.org/rsvp.html?party=${party_id}`;
+  const ageStr   = age ? `${ordinal(age)} birthday` : 'party';
   const heroBlock = photo_url
     ? `<tr><td style="padding:0;overflow:hidden;"><img src="${photo_url}" alt="Party" style="width:100%;max-height:200px;object-fit:cover;display:block;border-radius:12px 12px 0 0;"></td></tr>`
     : '';
@@ -41,7 +66,7 @@ function welcomeEmailHtml({ child_name, age, venue, dashboard_token, party_id, p
         </td></tr></table>
         <p style="font-size:0.75rem;color:#a89880;margin:18px 0 0;text-align:center;">
           <a href="${rsvpUrl}" style="color:#a89880;text-decoration:underline;">Preview RSVP page</a>
-          - Save this email, your dashboard link is unique to you.
+          &nbsp;·&nbsp; Save this email — your dashboard link is unique to you.
         </p>
       </td></tr>
     </table>
@@ -53,44 +78,70 @@ function welcomeEmailHtml({ child_name, age, venue, dashboard_token, party_id, p
 </td></tr></table></body></html>`;
 }
 
+// ── Handler ────────────────────────────────────────────────────
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { child_name, age, venue, parent_email, photo_url, special_note, phone_number } = req.body;
+    const body = req.body || {};
 
-    if (!child_name)   return res.status(400).json({ error: 'Missing child_name' });
-    if (!parent_email) return res.status(400).json({ error: 'Missing parent_email' });
+    // ── Required fields ──────────────────────────────────────
+    const child_name   = sanitiseString(body.child_name, 100);
+    const parent_email = typeof body.parent_email === 'string'
+      ? body.parent_email.trim().toLowerCase()
+      : null;
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parent_email)) {
+    if (!child_name) {
+      return res.status(400).json({ error: 'Missing or empty child_name' });
+    }
+    if (!parent_email) {
+      return res.status(400).json({ error: 'Missing parent_email' });
+    }
+    if (!isValidEmail(parent_email)) {
       return res.status(400).json({ error: 'Invalid email address' });
     }
 
+    // ── Optional fields ──────────────────────────────────────
+    const age          = body.age !== undefined ? Number(body.age) : null;
+    const venue        = sanitiseString(body.venue, 200);
+    const special_note = sanitiseString(body.special_note, 500);
+    const phone_number = sanitiseString(body.phone_number, 30);
+    const photo_url    = sanitiseString(body.photo_url, 500);
+
+    if (age !== null && !isValidAge(age)) {
+      return res.status(400).json({ error: 'Invalid age — must be between 1 and 18' });
+    }
+    if (!isValidUrl(photo_url)) {
+      return res.status(400).json({ error: 'Invalid photo_url' });
+    }
+
+    // ── Generate IDs ─────────────────────────────────────────
     const party_id        = randomUUID();
     const dashboard_token = randomUUID();
 
-    const insertPayload = {
-      party_id,
-      dashboard_token,
-      child_name,
-      age:          age          || null,
-      venue:        venue        || null,
-      parent_email,
-      photo_url:    photo_url    || null,
-      special_note: special_note || null,
-      phone_number: phone_number || null,
-    };
-
-    const { error } = await supabase
+    // ── DB insert ────────────────────────────────────────────
+    const { error: dbError } = await supabase
       .from('parties')
-      .insert([insertPayload]);
+      .insert([{
+        party_id,
+        dashboard_token,
+        child_name,
+        age,
+        venue,
+        parent_email,
+        photo_url,
+        special_note,
+        phone_number,
+      }]);
 
-    if (error) {
-      return res.status(500).json({ error: error.message });
+    if (dbError) {
+      console.error('DB insert error:', dbError.message);
+      return res.status(500).json({ error: 'Failed to save party' }); // don't leak db message
     }
 
+    // ── Send email (non-fatal) ───────────────────────────────
     let emailId    = null;
     let emailError = null;
     try {
@@ -102,7 +153,8 @@ export default async function handler(req, res) {
       });
       emailId = emailResult?.id || null;
     } catch (err) {
-      emailError = err.message;
+      console.error('Email send error:', err.message);
+      emailError = 'Email could not be sent'; // don't leak resend internals
     }
 
     return res.status(200).json({
@@ -117,6 +169,7 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('go-live error:', err.message);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }

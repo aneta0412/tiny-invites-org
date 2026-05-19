@@ -165,17 +165,34 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid guest email address' });
     }
 
-    // ── 1. Verify party exists before saving RSVP ────────────
-    const { data: party, error: partyError } = await supabase
-      .from('parties')
-      .select('*')
-      .eq('party_id', party_id)
-      .single();
+// ── 1. Verify party exists ───────────────────────────────────
+const { data: party, error: partyError } = await supabase
+  .from('parties')
+  .select('*')
+  .eq('party_id', party_id)
+  .single();
 
-    if (partyError || !party) {
-      return res.status(404).json({ error: 'Party not found' });
-    }
+if (partyError || !party) {
+  return res.status(404).json({ error: 'Party not found' });
+}
 
+// ── 2. Duplicate check ───────────────────────────────────────
+const { data: existing } = await supabase
+  .from('guest_responses')
+  .select('id')
+  .eq('party_id', party_id)
+  .ilike('guest_name', guest_name)
+  .maybeSingle();
+
+if (existing) {
+  return res.status(200).json({
+    success:   true,
+    duplicate: true,
+    id:        existing.id,
+  });
+}
+
+// ── 3. Save the RSVP ─────────────────────────────────────────
     // ── 2. Save the RSVP ─────────────────────────────────────
     const { data: insertData, error: insertError } = await supabase
       .from('guest_responses')

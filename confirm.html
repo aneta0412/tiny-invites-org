@@ -14,14 +14,40 @@
       --mid:#6b5c45; --soft:#a89880;
     }
     body {
-      background:var(--cream); font-family:"DM Sans",sans-serif; font-weight:300;
-      min-height:100vh; display:flex; align-items:center;
-      justify-content:center; padding:24px;
+      background:var(--cream); font-family:"DM Sans",sans-serif;
+      font-weight:300; min-height:100vh;
+    }
+
+    /* ── HERO ── */
+    #hero-wrap {
+      display:none; width:100%; position:relative;
+      height:260px; overflow:hidden;
+    }
+    #hero-img {
+      width:100%; height:100%; object-fit:cover; display:block;
+    }
+    #hero-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to bottom, rgba(42,34,24,0.08) 0%, rgba(42,34,24,0.6) 100%);
+    }
+    #hero-title {
+      position:absolute; bottom:0; left:0; right:0;
+      padding:24px 32px;
+      font-family:"Cormorant Garamond",serif; font-size:2rem;
+      font-weight:400; color:#fff; line-height:1.15;
+    }
+    #hero-title em { font-style:italic; color:var(--gold-light); }
+
+    /* ── PAGE ── */
+    .page {
+      max-width:500px; margin:0 auto;
+      padding:40px 20px 80px;
+      display:flex; align-items:flex-start; justify-content:center;
     }
     .card {
       background:var(--warm-white); border:1px solid var(--gold-pale);
-      border-radius:18px; padding:44px 36px;
-      max-width:500px; width:100%; text-align:center;
+      border-radius:18px; padding:36px 32px;
+      width:100%; text-align:center;
       box-shadow:0 8px 40px rgba(42,34,24,0.08); position:relative;
     }
     .card::before {
@@ -31,18 +57,16 @@
     }
     .brand {
       font-family:"Cormorant Garamond",serif; font-style:italic;
-      color:var(--gold); font-size:1.1rem; margin-bottom:28px; display:block;
+      color:var(--gold); font-size:1.1rem; margin-bottom:24px; display:block;
     }
-    .icon { font-size:2.8rem; margin-bottom:14px; display:block; }
+    .icon { font-size:2.8rem; margin-bottom:12px; display:block; }
     h1 {
       font-family:"Cormorant Garamond",serif; font-size:1.9rem;
       font-weight:400; color:var(--dark); margin-bottom:10px; line-height:1.2;
     }
-    .sub {
-      font-size:0.86rem; color:var(--mid); line-height:1.7; margin-bottom:24px;
-    }
+    .sub { font-size:0.86rem; color:var(--mid); line-height:1.7; margin-bottom:24px; }
 
-    /* QR */
+    /* ── QR ── */
     .qr-section {
       background:var(--gold-pale); border:1px solid var(--gold-light);
       border-radius:14px; padding:20px; margin-bottom:20px;
@@ -51,14 +75,21 @@
       font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase;
       color:var(--soft); margin-bottom:14px;
     }
-    #qr-box {
-      display:flex; justify-content:center; margin-bottom:12px;
-    }
+    #qr-box { display:flex; justify-content:center; margin-bottom:12px; }
     #qr-box canvas, #qr-box img { border-radius:4px; display:block; }
-    .qr-url {
-      font-size:0.68rem; color:var(--gold); word-break:break-all;
-      line-height:1.5; margin-bottom:12px;
+
+    /* RSVP link pill */
+    .rsvp-link-pill {
+      background:var(--warm-white); border:1px solid var(--gold-light);
+      border-radius:8px; padding:10px 14px; margin-bottom:12px;
+      font-size:0.72rem; color:var(--gold); word-break:break-all;
+      line-height:1.5; text-align:left;
     }
+    .rsvp-link-label {
+      font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase;
+      color:var(--soft); margin-bottom:4px;
+    }
+
     .btn-dl-qr {
       display:inline-flex; align-items:center; justify-content:center; gap:6px;
       width:100%; padding:9px; background:var(--dark); color:var(--cream);
@@ -79,28 +110,27 @@
     .btn-copy:hover { background:var(--gold); color:var(--dark); }
     .btn-copy.copied { background:#5a8a6a; }
 
-    .btn-row { display:flex; gap:10px; margin-bottom:20px; }
-    .btn-secondary {
-      flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px;
-      padding:10px 14px; background:transparent; color:var(--mid);
+    .btn-dash {
+      display:flex; align-items:center; justify-content:center; gap:6px;
+      width:100%; padding:11px 14px; background:transparent; color:var(--mid);
       border:1px solid var(--gold-light); border-radius:8px;
-      font-family:"DM Sans",sans-serif; font-size:0.75rem;
+      font-family:"DM Sans",sans-serif; font-size:0.78rem;
       letter-spacing:0.06em; text-transform:uppercase;
       text-decoration:none; cursor:pointer; transition:all 0.2s;
+      margin-bottom:16px;
     }
-    .btn-secondary:hover { background:var(--gold-pale); border-color:var(--gold); color:var(--dark); }
+    .btn-dash:hover { background:var(--gold-pale); border-color:var(--gold); color:var(--dark); }
 
     .save-note {
       font-size:0.72rem; color:var(--soft); line-height:1.6;
       padding:10px 14px; background:var(--gold-pale);
-      border-radius:8px; margin-bottom:0;
+      border-radius:8px;
     }
 
     /* States */
     .state { display:none; }
     .state.active { display:block; }
 
-    /* Spinner */
     .spinner {
       width:36px; height:36px; border:3px solid var(--gold-pale);
       border-top-color:var(--gold); border-radius:50%;
@@ -108,7 +138,6 @@
     }
     @keyframes spin { to{transform:rotate(360deg)} }
 
-    /* Error */
     .error-msg { font-size:0.88rem; color:var(--mid); line-height:1.7; margin-bottom:24px; }
     .btn-home {
       display:inline-block; background:var(--dark); color:var(--cream);
@@ -118,10 +147,14 @@
     }
     .btn-home:hover { background:var(--gold); color:var(--dark); }
 
-    /* Confetti */
     #confetti-canvas {
       position:fixed; inset:0; width:100%; height:100%;
       pointer-events:none; z-index:999;
+    }
+
+    @media(max-width:520px) {
+      #hero-title { font-size:1.5rem; padding:20px; }
+      .card { padding:28px 20px; }
     }
   </style>
 </head>
@@ -129,69 +162,75 @@
 
 <canvas id="confetti-canvas"></canvas>
 
-<div class="card">
-  <span class="brand">Tiny Invites</span>
+<!-- Hero image — shown when party has a photo -->
+<div id="hero-wrap">
+  <img id="hero-img" src="" alt="Party photo">
+  <div id="hero-overlay"></div>
+  <div id="hero-title"></div>
+</div>
 
-  <!-- Loading -->
-  <div class="state active" id="state-loading">
-    <div class="spinner"></div>
-    <h1>Confirming your party…</h1>
-    <p class="sub">Just a moment.</p>
-  </div>
+<div class="page">
+  <div class="card">
+    <span class="brand">Tiny Invites</span>
 
-  <!-- Success -->
-  <div class="state" id="state-success">
-    <span class="icon">🎉</span>
-    <h1>Your party is live!</h1>
-    <p class="sub">
-      Your RSVP page is published and ready to share.<br>
-      Your private dashboard link has been emailed to you.
-    </p>
-
-    <!-- QR code -->
-    <div class="qr-section">
-      <p class="qr-label">Share this QR code with your guests</p>
-      <div id="qr-box"></div>
-      <p class="qr-url" id="qr-url-text"></p>
-      <button class="btn-dl-qr" onclick="downloadQR()">↓ Download QR as PNG</button>
+    <!-- Loading -->
+    <div class="state active" id="state-loading">
+      <div class="spinner"></div>
+      <h1>Confirming your party…</h1>
+      <p class="sub">Just a moment.</p>
     </div>
 
-    <!-- Copy link -->
-    <button class="btn-copy" id="copy-btn" onclick="copyLink()">
-      📋 Copy invite link
-    </button>
+    <!-- Success -->
+    <div class="state" id="state-success">
+      <span class="icon">🎉</span>
+      <h1>Your party is live!</h1>
+      <p class="sub">
+        Your RSVP page is published and ready to share.<br>
+        Your dashboard link has been emailed to you.
+      </p>
 
-    <!-- Dashboard + guest view -->
-    <div class="btn-row">
-      <a id="dash-link" href="#" target="_blank" rel="noopener" class="btn-secondary">
-        📊 Dashboard
+      <!-- QR + link -->
+      <div class="qr-section">
+        <p class="qr-label">Share with your guests</p>
+        <div id="qr-box"></div>
+        <div class="rsvp-link-pill">
+          <div class="rsvp-link-label">Your RSVP link</div>
+          <span id="qr-url-text"></span>
+        </div>
+        <button class="btn-dl-qr" onclick="downloadQR()">↓ Download QR as PNG</button>
+      </div>
+
+      <!-- Copy link -->
+      <button class="btn-copy" id="copy-btn" onclick="copyLink()">
+        📋 Copy invite link
+      </button>
+
+      <!-- Dashboard only -->
+      <a id="dash-link" href="#" target="_blank" rel="noopener" class="btn-dash">
+        📊 Go to your dashboard
       </a>
-      <a id="guest-link" href="#" target="_blank" rel="noopener" class="btn-secondary">
-        👁 Guest view
-      </a>
+
+      <p class="save-note">
+        💌 We've emailed you the dashboard link, RSVP link and QR code — check your inbox so you always have it handy.
+      </p>
     </div>
 
-    <p class="save-note">
-      💌 Save the email we just sent you — it contains your unique dashboard link. You'll need it to manage RSVPs.
-    </p>
-  </div>
-
-  <!-- Already confirmed -->
-  <div class="state" id="state-already">
-    <span class="icon">✅</span>
-    <h1>Already confirmed</h1>
-    <p class="sub">This party is already live. Head to your dashboard to manage RSVPs and share your link.</p>
-    <div class="btn-row" style="justify-content:center;">
-      <a id="dash-link-already" href="#" class="btn-secondary">📊 Go to dashboard</a>
+    <!-- Already confirmed -->
+    <div class="state" id="state-already">
+      <span class="icon">✅</span>
+      <h1>Already confirmed</h1>
+      <p class="sub">This party is already live. Head to your dashboard to manage RSVPs and share your link.</p>
+      <a id="dash-link-already" href="#" class="btn-dash" style="margin-top:8px;">📊 Go to dashboard</a>
     </div>
-  </div>
 
-  <!-- Error -->
-  <div class="state" id="state-error">
-    <span class="icon">😕</span>
-    <h1>Something went wrong</h1>
-    <p class="error-msg" id="error-message">This confirmation link may be invalid or expired. Please try creating your party again.</p>
-    <a href="/" class="btn-home">← Back to home</a>
+    <!-- Error -->
+    <div class="state" id="state-error">
+      <span class="icon">😕</span>
+      <h1>Something went wrong</h1>
+      <p class="error-msg" id="error-message">This confirmation link may be invalid or expired. Please try creating your party again.</p>
+      <a href="/" class="btn-home">← Back to home</a>
+    </div>
+
   </div>
 </div>
 
@@ -201,6 +240,18 @@
   function show(id) {
     document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+  }
+
+  function showHero(photoUrl, childName) {
+    if (!photoUrl) return;
+    const wrap = document.getElementById('hero-wrap');
+    const img  = document.getElementById('hero-img');
+    img.src = photoUrl;
+    img.onerror = () => { wrap.style.display = 'none'; };
+    document.getElementById('hero-title').innerHTML = childName
+      ? `<em>${childName}'s Party</em> is live 🎉`
+      : 'Your party is live 🎉';
+    wrap.style.display = 'block';
   }
 
   async function confirmParty() {
@@ -226,27 +277,25 @@
       const dashUrl = data.dashboard || ('/dashboard_page.html?token=' + token);
       const rsvpUrl = data.rsvp_url  || ('/rsvp.html?party=' + data.party_id);
 
+      // Show hero image if party has a photo
+      if (data.photo_url) showHero(data.photo_url, data.child_name);
+
       if (data.already) {
         document.getElementById('dash-link-already').href = dashUrl;
         show('state-already');
         return;
       }
 
-      // ── Success ───────────────────────────────────────────
+      // ── Success ───────────────────────────────────────
       _rsvpUrl = rsvpUrl;
-
-      document.getElementById('dash-link').href  = dashUrl;
-      document.getElementById('guest-link').href = rsvpUrl;
+      document.getElementById('dash-link').href = dashUrl;
 
       // Build QR
       const qrBox = document.getElementById('qr-box');
       qrBox.innerHTML = '';
       new QRCode(qrBox, {
-        text:         rsvpUrl,
-        width:        200,
-        height:       200,
-        colorDark:    '#2a2218',
-        colorLight:   '#ffffff',
+        text: rsvpUrl, width:200, height:200,
+        colorDark:'#2a2218', colorLight:'#ffffff',
         correctLevel: QRCode.CorrectLevel.M
       });
       document.getElementById('qr-url-text').textContent = rsvpUrl;
@@ -266,10 +315,7 @@
       const btn = document.getElementById('copy-btn');
       btn.textContent = '✓ Copied!';
       btn.classList.add('copied');
-      setTimeout(() => {
-        btn.innerHTML = '📋 Copy invite link';
-        btn.classList.remove('copied');
-      }, 2500);
+      setTimeout(() => { btn.innerHTML = '📋 Copy invite link'; btn.classList.remove('copied'); }, 2500);
     });
   }
 
@@ -285,50 +331,36 @@
   }
 
   function launchConfetti() {
-    const canvas  = document.getElementById('confetti-canvas');
-    const ctx     = canvas.getContext('2d');
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx    = canvas.getContext('2d');
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
-
     const COLOURS = ['#c9a84c','#e8d5a3','#f5edda','#2a2218','#4ade80','#fbbf24','#f87171','#a78bfa'];
-    const pieces  = Array.from({ length:160 }, () => ({
-      x:    Math.random() * canvas.width,
-      y:    Math.random() * canvas.height - canvas.height,
-      w:    6 + Math.random() * 8,
-      h:    3 + Math.random() * 5,
-      color: COLOURS[Math.floor(Math.random() * COLOURS.length)],
-      rot:  Math.random() * Math.PI * 2,
-      rotV: (Math.random() - 0.5) * 0.18,
-      vx:   (Math.random() - 0.5) * 3,
-      vy:   2.5 + Math.random() * 3.5,
-      alpha:1,
+    const pieces  = Array.from({length:160}, () => ({
+      x:Math.random()*canvas.width, y:Math.random()*canvas.height-canvas.height,
+      w:6+Math.random()*8, h:3+Math.random()*5,
+      color:COLOURS[Math.floor(Math.random()*COLOURS.length)],
+      rot:Math.random()*Math.PI*2, rotV:(Math.random()-0.5)*0.18,
+      vx:(Math.random()-0.5)*3, vy:2.5+Math.random()*3.5, alpha:1,
     }));
-
-    let frame, elapsed = 0;
-
+    let frame, elapsed=0;
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      elapsed++;
+      ctx.clearRect(0,0,canvas.width,canvas.height); elapsed++;
       pieces.forEach(p => {
-        p.x += p.vx; p.y += p.vy; p.rot += p.rotV;
-        if (elapsed > 180) p.alpha = Math.max(0, p.alpha - 0.012);
-        ctx.save();
-        ctx.globalAlpha = p.alpha;
-        ctx.translate(p.x + p.w/2, p.y + p.h/2);
-        ctx.rotate(p.rot);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        p.x+=p.vx; p.y+=p.vy; p.rot+=p.rotV;
+        if(elapsed>180) p.alpha=Math.max(0,p.alpha-0.012);
+        ctx.save(); ctx.globalAlpha=p.alpha;
+        ctx.translate(p.x+p.w/2,p.y+p.h/2); ctx.rotate(p.rot);
+        ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
         ctx.restore();
       });
-      if (pieces.every(p => p.alpha <= 0 || p.y > canvas.height)) {
-        cancelAnimationFrame(frame);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        return;
+      if(pieces.every(p=>p.alpha<=0||p.y>canvas.height)){
+        cancelAnimationFrame(frame); ctx.clearRect(0,0,canvas.width,canvas.height); return;
       }
-      frame = requestAnimationFrame(draw);
+      frame=requestAnimationFrame(draw);
     }
-    frame = requestAnimationFrame(draw);
-    setTimeout(() => { cancelAnimationFrame(frame); ctx.clearRect(0,0,canvas.width,canvas.height); }, 5000);
+    frame=requestAnimationFrame(draw);
+    setTimeout(()=>{ cancelAnimationFrame(frame); ctx.clearRect(0,0,canvas.width,canvas.height); },5000);
   }
 
   confirmParty();

@@ -30,10 +30,10 @@ function normaliseAttending(val) {
   return val === true || val === 'true' || val === 'yes';
 }
 
-function isValidGuestCount(val) {
-  if (val === null || val === undefined) return true; // optional
+function isValidCount(val, required = false) {
+  if (val === null || val === undefined) return !required;
   const n = Number(val);
-  return Number.isInteger(n) && n >= 1 && n <= 20;
+  return Number.isInteger(n) && n >= 0 && n <= 30;
 }
 
 // ── Email helpers ──────────────────────────────────────────────
@@ -72,14 +72,26 @@ const base = (inner, photoUrl = '') => {
 </td></tr></table></body></html>`;
 };
 
-const btn = (href, text) =>
+const btnHtml = (href, text) =>
   `<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;"><tr><td align="center">
     <a href="${href}" style="display:inline-block;background:#2a2218;color:#faf6ef;padding:13px 28px;border-radius:8px;font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;">${text}</a>
   </td></tr></table>`;
 
+function buildGuestBreakdown(response) {
+  const parts = [];
+  if (response.guest_count_children > 0)
+    parts.push(`${response.guest_count_children} ${response.guest_count_children === 1 ? 'child' : 'children'}`);
+  if (response.guest_count_babies > 0)
+    parts.push(`${response.guest_count_babies} ${response.guest_count_babies === 1 ? 'baby' : 'babies'}`);
+  if (response.guest_count_adults > 0)
+    parts.push(`${response.guest_count_adults} ${response.guest_count_adults === 1 ? 'adult' : 'adults'}`);
+  return parts.length ? parts.join(' · ') : null;
+}
+
 function guestConfirmationHtml({ party, response }) {
   const attending = normaliseAttending(response.attending);
   const ageStr    = party.age ? `${ordinal(party.age)} birthday` : 'party';
+  const breakdown = buildGuestBreakdown(response);
   if (!attending) {
     return base(`
       <p style="font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin:0 0 12px;">We'll miss you 🥺</p>
@@ -95,30 +107,31 @@ function guestConfirmationHtml({ party, response }) {
     <p style="font-size:0.87rem;color:#6b5c45;line-height:1.7;margin:0 0 16px;">
       Your RSVP for <strong>${party.child_name}'s ${ageStr}</strong> is confirmed.${party.venue ? ` We'll see you at <strong>${party.venue}</strong>.` : ''} 🎈
     </p>
-    ${response.guest_count > 1 ? `<p style="font-size:0.82rem;color:#6b5c45;margin:0 0 10px;">👥 <strong>${response.guest_count} guests</strong> confirmed under your name</p>` : ''}
+    ${breakdown ? `<p style="font-size:0.82rem;color:#6b5c45;margin:0 0 10px;">👥 <strong>${breakdown}</strong> confirmed under your name</p>` : ''}
     ${response.allergies ? `<p style="font-size:0.82rem;color:#6b5c45;background:#fff3e0;border-left:3px solid #c9a84c;padding:10px 14px;border-radius:0 6px 6px 0;margin:0;">⚠️ Dietary note recorded: <strong>${response.allergies}</strong></p>` : ''}
   `, party.photo_url || '');
 }
 
 function rsvpNotificationHtml({ party, response, totalCount }) {
-  const dashUrl  = `https://tinyinvites.org/dashboard_page.html?token=${party.dashboard_token}`;
+  const dashUrl   = `https://tinyinvites.org/dashboard_page.html?token=${party.dashboard_token}`;
   const attending = normaliseAttending(response.attending);
-  const emoji    = attending ? '🎉' : '🥺';
-  const status   = attending ? 'is coming!' : "can't make it";
+  const emoji     = attending ? '🎉' : '🥺';
+  const status    = attending ? 'is coming!' : "can't make it";
+  const breakdown = buildGuestBreakdown(response);
   const nearLimit = totalCount >= INDIVIDUAL_NOTIFICATION_LIMIT - 2;
   const atLimit   = totalCount >= INDIVIDUAL_NOTIFICATION_LIMIT;
   const digestNote = atLimit
-    ? `<p style="font-size:0.78rem;color:#a89880;margin:12px 0 0;">You've received ${INDIVIDUAL_NOTIFICATION_LIMIT} individual notifications — further replies today will be bundled into a digest.</p>`
+    ? `<p style="font-size:0.78rem;color:#a89880;margin:12px 0 0;">You've received ${INDIVIDUAL_NOTIFICATION_LIMIT} individual notifications — further replies will be bundled into a digest.</p>`
     : nearLimit
     ? `<p style="font-size:0.78rem;color:#a89880;margin:12px 0 0;">${INDIVIDUAL_NOTIFICATION_LIMIT - totalCount} individual notification${INDIVIDUAL_NOTIFICATION_LIMIT - totalCount === 1 ? '' : 's'} remaining — after that, replies will be bundled.</p>`
     : '';
   return base(`
     <p style="font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin:0 0 12px;">New RSVP ${emoji}</p>
     <h1 style="font-family:Georgia,serif;font-size:1.8rem;font-weight:400;color:#2a2218;margin:0 0 16px;line-height:1.3;">${response.guest_name} ${status}</h1>
-    ${attending && response.guest_count ? `<p style="font-size:0.85rem;color:#6b5c45;margin:0 0 8px;">👥 <strong>${response.guest_count} guest${response.guest_count > 1 ? 's' : ''}</strong> attending</p>` : ''}
+    ${attending && breakdown ? `<p style="font-size:0.85rem;color:#6b5c45;margin:0 0 8px;">👥 ${breakdown}</p>` : ''}
     ${response.allergies ? `<p style="font-size:0.85rem;color:#6b5c45;background:#fff3e0;border-left:3px solid #c9a84c;padding:10px 14px;border-radius:0 6px 6px 0;margin:0 0 12px;">⚠️ Dietary note: <strong>${response.allergies}</strong></p>` : ''}
     ${digestNote}
-    ${btn(dashUrl, '📊 See full guest list →')}
+    ${btnHtml(dashUrl, '📊 See full guest list →')}
   `, party.photo_url || '');
 }
 
@@ -135,65 +148,55 @@ export default async function handler(req, res) {
     const party_id   = sanitiseString(body.party_id, 36);
     const guest_name = sanitiseString(body.guest_name, 100);
 
-    if (!party_id) {
-      return res.status(400).json({ error: 'Missing party_id' });
-    }
-    if (!guest_name) {
-      return res.status(400).json({ error: 'Missing or empty guest_name' });
-    }
-
-    // party_id must look like a UUID
-    if (!/^[0-9a-f-]{36}$/.test(party_id)) {
-      return res.status(400).json({ error: 'Invalid party_id format' });
-    }
+    if (!party_id)   return res.status(400).json({ error: 'Missing party_id' });
+    if (!guest_name) return res.status(400).json({ error: 'Missing or empty guest_name' });
+    if (!/^[0-9a-f-]{36}$/.test(party_id)) return res.status(400).json({ error: 'Invalid party_id format' });
 
     // ── Optional fields ──────────────────────────────────────
-    const attending    = body.attending !== undefined ? body.attending : null;
-    const guest_count  = body.guest_count !== undefined ? Number(body.guest_count) : 1;
-    const allergies    = sanitiseString(body.allergies, 300);
-    const guest_email  = body.guest_email
-      ? body.guest_email.toString().trim().toLowerCase()
-      : null;
+    const attending             = body.attending !== undefined ? body.attending : null;
+    const guest_count           = body.guest_count          !== undefined ? Number(body.guest_count)          : 1;
+    const guest_count_children  = body.guest_count_children !== undefined ? Number(body.guest_count_children) : 0;
+    const guest_count_babies    = body.guest_count_babies   !== undefined ? Number(body.guest_count_babies)   : null;
+    const guest_count_adults    = body.guest_count_adults   !== undefined ? Number(body.guest_count_adults)   : null;
+    const allergies             = sanitiseString(body.allergies, 300);
+    const guest_email           = body.guest_email ? body.guest_email.toString().trim().toLowerCase() : null;
 
-    if (attending !== null && !isValidAttending(attending)) {
+    if (attending !== null && !isValidAttending(attending))
       return res.status(400).json({ error: 'Invalid attending value' });
-    }
-    if (!isValidGuestCount(guest_count)) {
-      return res.status(400).json({ error: 'Invalid guest_count — must be between 1 and 20' });
-    }
-    if (guest_email && !isValidEmail(guest_email)) {
+    if (!isValidCount(guest_count, true))
+      return res.status(400).json({ error: 'Invalid guest_count' });
+    if (!isValidCount(guest_count_children))
+      return res.status(400).json({ error: 'Invalid guest_count_children' });
+    if (!isValidCount(guest_count_babies))
+      return res.status(400).json({ error: 'Invalid guest_count_babies' });
+    if (!isValidCount(guest_count_adults))
+      return res.status(400).json({ error: 'Invalid guest_count_adults' });
+    if (guest_email && !isValidEmail(guest_email))
       return res.status(400).json({ error: 'Invalid guest email address' });
+
+    // ── 1. Verify party exists and is confirmed ───────────────
+    const { data: party, error: partyError } = await supabase
+      .from('parties')
+      .select('*')
+      .eq('party_id', party_id)
+      .single();
+
+    if (partyError || !party) return res.status(404).json({ error: 'Party not found' });
+    if (!party.confirmed)     return res.status(403).json({ error: 'This party is not yet live' });
+
+    // ── 2. Duplicate check ────────────────────────────────────
+    const { data: existing } = await supabase
+      .from('guest_responses')
+      .select('id')
+      .eq('party_id', party_id)
+      .ilike('guest_name', guest_name)
+      .maybeSingle();
+
+    if (existing) {
+      return res.status(200).json({ success: true, duplicate: true, id: existing.id });
     }
 
-// ── 1. Verify party exists ───────────────────────────────────
-const { data: party, error: partyError } = await supabase
-  .from('parties')
-  .select('*')
-  .eq('party_id', party_id)
-  .single();
-
-if (partyError || !party) {
-  return res.status(404).json({ error: 'Party not found' });
-}
-
-// ── 2. Duplicate check ───────────────────────────────────────
-const { data: existing } = await supabase
-  .from('guest_responses')
-  .select('id')
-  .eq('party_id', party_id)
-  .ilike('guest_name', guest_name)
-  .maybeSingle();
-
-if (existing) {
-  return res.status(200).json({
-    success:   true,
-    duplicate: true,
-    id:        existing.id,
-  });
-}
-
-// ── 3. Save the RSVP ─────────────────────────────────────────
-    // ── 2. Save the RSVP ─────────────────────────────────────
+    // ── 3. Save the RSVP ─────────────────────────────────────
     const { data: insertData, error: insertError } = await supabase
       .from('guest_responses')
       .insert([{
@@ -201,6 +204,9 @@ if (existing) {
         guest_name,
         attending,
         guest_count,
+        guest_count_children,
+        guest_count_babies,
+        guest_count_adults,
         allergies,
         guest_email,
       }])
@@ -213,9 +219,13 @@ if (existing) {
     }
 
     const responseId = insertData?.id;
-    const response   = { guest_name, attending, guest_count, allergies, guest_email };
+    const response   = {
+      guest_name, attending, guest_count,
+      guest_count_children, guest_count_babies, guest_count_adults,
+      allergies, guest_email,
+    };
 
-    // ── 3. Count total RSVPs for rate-limiting emails ─────────
+    // ── 4. Count total RSVPs ──────────────────────────────────
     const { count: totalCount } = await supabase
       .from('guest_responses')
       .select('id', { count: 'exact', head: true })
@@ -223,7 +233,7 @@ if (existing) {
 
     const sendIndividual = totalCount <= INDIVIDUAL_NOTIFICATION_LIMIT;
 
-    // ── 4. Send emails (both non-fatal) ──────────────────────
+    // ── 5. Send emails ────────────────────────────────────────
     const emailPromises = [];
 
     if (sendIndividual) {
@@ -252,7 +262,6 @@ if (existing) {
 
     await Promise.all(emailPromises);
 
-    // ── 5. Respond ───────────────────────────────────────────
     return res.status(200).json({ success: true, id: responseId });
 
   } catch (err) {

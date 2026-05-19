@@ -1,4 +1,3 @@
-// go-live.js
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { randomUUID } from 'crypto';
@@ -15,11 +14,6 @@ const ordinal = n => {
   return n + (s[(v-20)%10] || s[v] || s[0]);
 };
 
-// ── Validation helpers ─────────────────────────────────────────
-function isValidEmail(str) {
-  return typeof str === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str.trim());
-}
-
 function sanitiseString(val, maxLen = 200) {
   if (typeof val !== 'string') return null;
   const trimmed = val.trim();
@@ -27,46 +21,46 @@ function sanitiseString(val, maxLen = 200) {
   return trimmed.slice(0, maxLen);
 }
 
+function isValidEmail(str) {
+  return typeof str === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str.trim());
+}
+
 function isValidAge(val) {
-  if (val === null || val === undefined) return true; // optional
+  if (val === null || val === undefined) return true;
   const n = Number(val);
   return Number.isInteger(n) && n >= 1 && n <= 18;
 }
 
 function isValidUrl(val) {
-  if (!val) return true; // optional
+  if (!val) return true;
   try { new URL(val); return true; } catch { return false; }
 }
 
-// ── Email template ─────────────────────────────────────────────
-function welcomeEmailHtml({ child_name, age, venue, dashboard_token, party_id, photo_url }) {
-  const dashUrl  = `https://tinyinvites.org/dashboard_page.html?token=${dashboard_token}`;
-  const rsvpUrl  = `https://tinyinvites.org/rsvp.html?party=${party_id}`;
-  const ageStr   = age ? `${ordinal(age)} birthday` : 'party';
-  const heroBlock = photo_url
-    ? `<tr><td style="padding:0;overflow:hidden;"><img src="${photo_url}" alt="Party" style="width:100%;max-height:200px;object-fit:cover;display:block;border-radius:12px 12px 0 0;"></td></tr>`
-    : '';
+function confirmationEmailHtml({ child_name, confirm_url }) {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#faf6ef;font-family:Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#faf6ef;padding:40px 0;"><tr><td align="center">
 <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
-  <tr><td style="text-align:center;padding-bottom:16px;"><span style="font-family:Georgia,serif;font-size:1.2rem;font-style:italic;color:#c9a84c;">Tiny Invites</span></td></tr>
+  <tr><td style="text-align:center;padding-bottom:16px;">
+    <span style="font-family:Georgia,serif;font-size:1.2rem;font-style:italic;color:#c9a84c;">Tiny Invites</span>
+  </td></tr>
   <tr><td style="background:#fff9f2;border:1px solid #f5edda;border-radius:14px;overflow:hidden;">
     <table width="100%" cellpadding="0" cellspacing="0">
-      ${heroBlock}
       <tr><td style="padding:32px 40px 36px;">
-        <p style="font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin:0 0 12px;">Your party is live ✦</p>
-        <h1 style="font-family:Georgia,serif;font-size:1.8rem;font-weight:400;color:#2a2218;margin:0 0 14px;line-height:1.3;">${child_name}'s ${ageStr} is all set! 🎉</h1>
-        <p style="font-size:0.87rem;color:#6b5c45;line-height:1.7;margin:0 0 18px;">
-          Your RSVP page is live. Share the link or QR code and you will get an email each time a guest responds.
-          ${venue ? `<br><br>📍 <strong style="color:#2a2218;">${venue}</strong>` : ''}
+        <p style="font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin:0 0 12px;">Almost there ✦</p>
+        <h1 style="font-family:Georgia,serif;font-size:1.8rem;font-weight:400;color:#2a2218;margin:0 0 14px;line-height:1.3;">Confirm your email to go live</h1>
+        <p style="font-size:0.87rem;color:#6b5c45;line-height:1.7;margin:0 0 24px;">
+          You're one step away from publishing <strong>${child_name}'s</strong> party page.
+          Click the button below to confirm your email address and make your RSVP page live.
         </p>
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;"><tr><td align="center">
-          <a href="${dashUrl}" style="display:inline-block;background:#2a2218;color:#faf6ef;padding:13px 28px;border-radius:8px;font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;">View your dashboard</a>
+        <p style="font-size:0.82rem;color:#a89880;margin:0 0 24px;">
+          This link expires in <strong>24 hours</strong>. If you didn't create this party, you can safely ignore this email.
+        </p>
+        <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+          <a href="${confirm_url}" style="display:inline-block;background:#2a2218;color:#faf6ef;padding:13px 28px;border-radius:8px;font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;">Yes, make my party live</a>
         </td></tr></table>
         <p style="font-size:0.75rem;color:#a89880;margin:18px 0 0;text-align:center;">
-          <a href="${rsvpUrl}" style="color:#a89880;text-decoration:underline;">Preview RSVP page</a>
-          &nbsp;·&nbsp; Save this email — your dashboard link is unique to you.
+          Or copy this link: <a href="${confirm_url}" style="color:#a89880;">${confirm_url}</a>
         </p>
       </td></tr>
     </table>
@@ -78,7 +72,6 @@ function welcomeEmailHtml({ child_name, age, venue, dashboard_token, party_id, p
 </td></tr></table></body></html>`;
 }
 
-// ── Handler ────────────────────────────────────────────────────
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -87,7 +80,7 @@ export default async function handler(req, res) {
   try {
     const body = req.body || {};
 
-    // ── Required fields ──────────────────────────────────────
+    // ── Validation ────────────────────────────────────────
     const child_name   = sanitiseString(body.child_name, 100);
     const parent_email = typeof body.parent_email === 'string'
       ? body.parent_email.trim().toLowerCase()
@@ -103,7 +96,6 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid email address' });
     }
 
-    // ── Optional fields ──────────────────────────────────────
     const age          = body.age !== undefined ? Number(body.age) : null;
     const venue        = sanitiseString(body.venue, 200);
     const special_note = sanitiseString(body.special_note, 500);
@@ -117,11 +109,11 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid photo_url' });
     }
 
-    // ── Generate IDs ─────────────────────────────────────────
+    // ── Generate IDs ──────────────────────────────────────
     const party_id        = randomUUID();
     const dashboard_token = randomUUID();
 
-    // ── DB insert ────────────────────────────────────────────
+    // ── Insert party as unconfirmed ───────────────────────
     const { error: dbError } = await supabase
       .from('parties')
       .insert([{
@@ -134,38 +126,34 @@ export default async function handler(req, res) {
         photo_url,
         special_note,
         phone_number,
+        confirmed: false,
       }]);
 
     if (dbError) {
       console.error('DB insert error:', dbError.message);
-      return res.status(500).json({ error: 'Failed to save party' }); // don't leak db message
+      return res.status(500).json({ error: 'Failed to save party' });
     }
 
-    // ── Send email (non-fatal) ───────────────────────────────
-    let emailId    = null;
-    let emailError = null;
+    // ── Send confirmation email ───────────────────────────
+    const confirm_url = `https://tinyinvites.org/confirm.html?token=${dashboard_token}`;
+
     try {
-      const emailResult = await resend.emails.send({
+      await resend.emails.send({
         from:    'Tiny Invites <hello@tinyinvites.org>',
         to:      parent_email,
-        subject: `Your RSVP page for ${child_name}'s party is live!`,
-        html:    welcomeEmailHtml({ child_name, age, venue, dashboard_token, party_id, photo_url: photo_url || '' }),
+        subject: `Confirm your email to publish ${child_name}'s party`,
+        html:    confirmationEmailHtml({ child_name, confirm_url }),
       });
-      emailId = emailResult?.id || null;
-    } catch (err) {
-      console.error('Email send error:', err.message);
-      emailError = 'Email could not be sent'; // don't leak resend internals
+    } catch (emailErr) {
+      console.error('Confirmation email failed:', emailErr.message);
+      // Don't block — party is saved, they can request resend later
     }
 
     return res.status(200).json({
-      success:        true,
+      success: true,
       party_id,
-      dashboard_token,
-      rsvp_link:      `/rsvp.html?party=${party_id}`,
-      dashboard_link: `/dashboard_page.html?token=${dashboard_token}`,
-      email_sent:     !!emailId,
-      email_id:       emailId,
-      email_error:    emailError,
+      // No dashboard_token in response yet — sent only after confirmation
+      message: 'Check your email to confirm and go live',
     });
 
   } catch (err) {

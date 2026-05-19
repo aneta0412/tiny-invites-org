@@ -8,9 +8,35 @@ const supabase = createClient(
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// ── After this many RSVPs, switch from individual emails to digest ──
 const INDIVIDUAL_NOTIFICATION_LIMIT = 15;
 
+// ── Validation helpers ─────────────────────────────────────────
+function sanitiseString(val, maxLen = 200) {
+  if (typeof val !== 'string') return null;
+  const trimmed = val.trim();
+  if (!trimmed) return null;
+  return trimmed.slice(0, maxLen);
+}
+
+function isValidEmail(str) {
+  return typeof str === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str.trim());
+}
+
+function isValidAttending(val) {
+  return [true, false, 'true', 'false', 'yes', 'no'].includes(val);
+}
+
+function normaliseAttending(val) {
+  return val === true || val === 'true' || val === 'yes';
+}
+
+function isValidGuestCount(val) {
+  if (val === null || val === undefined) return true; // optional
+  const n = Number(val);
+  return Number.isInteger(n) && n >= 1 && n <= 20;
+}
+
+// ── Email helpers ──────────────────────────────────────────────
 async function sendEmail({ to, subject, html }) {
   return resend.emails.send({
     from: 'Tiny Invites <hello@tinyinvites.org>',
@@ -20,7 +46,10 @@ async function sendEmail({ to, subject, html }) {
   });
 }
 
-const ordinal = n => { const s=['th','st','nd','rd'],v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
+const ordinal = n => {
+  const s = ['th','st','nd','rd'], v = n % 100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
+};
 
 const base = (inner, photoUrl = '') => {
   const heroBlock = photoUrl ? `
@@ -49,7 +78,7 @@ const btn = (href, text) =>
   </td></tr></table>`;
 
 function guestConfirmationHtml({ party, response }) {
-  const attending = response.attending === true || response.attending === 'true' || response.attending === 'yes';
+  const attending = normaliseAttending(response.attending);
   const ageStr    = party.age ? `${ordinal(party.age)} birthday` : 'party';
   if (!attending) {
     return base(`
@@ -72,20 +101,17 @@ function guestConfirmationHtml({ party, response }) {
 }
 
 function rsvpNotificationHtml({ party, response, totalCount }) {
-  const dashUrl   = `https://tinyinvites.org/dashboard_page.html?token=${party.dashboard_token}`;
-  const attending = response.attending === true || response.attending === 'true' || response.attending === 'yes';
-  const emoji     = attending ? '🎉' : '🥺';
-  const status    = attending ? 'is coming!' : "can't make it";
-
-  // Show a digest hint once they're getting close to the limit
-  const nearLimit  = totalCount >= INDIVIDUAL_NOTIFICATION_LIMIT - 2;
-  const atLimit    = totalCount >= INDIVIDUAL_NOTIFICATION_LIMIT;
+  const dashUrl  = `https://tinyinvites.org/dashboard_page.html?token=${party.dashboard_token}`;
+  const attending = normaliseAttending(response.attending);
+  const emoji    = attending ? '🎉' : '🥺';
+  const status   = attending ? 'is coming!' : "can't make it";
+  const nearLimit = totalCount >= INDIVIDUAL_NOTIFICATION_LIMIT - 2;
+  const atLimit   = totalCount >= INDIVIDUAL_NOTIFICATION_LIMIT;
   const digestNote = atLimit
-    ? `<p style="font-size:0.78rem;color:#a89880;margin:12px 0 0;">You've received ${INDIVIDUAL_NOTIFICATION_LIMIT} individual notifications — further replies today will be bundled into a digest summary.</p>`
+    ? `<p style="font-size:0.78rem;color:#a89880;margin:12px 0 0;">You've received ${INDIVIDUAL_NOTIFICATION_LIMIT} individual notifications — further replies today will be bundled into a digest.</p>`
     : nearLimit
-    ? `<p style="font-size:0.78rem;color:#a89880;margin:12px 0 0;">You have ${INDIVIDUAL_NOTIFICATION_LIMIT - totalCount} individual notification${INDIVIDUAL_NOTIFICATION_LIMIT - totalCount === 1 ? '' : 's'} remaining — after that, further replies will be bundled into a digest.</p>`
+    ? `<p style="font-size:0.78rem;color:#a89880;margin:12px 0 0;">${INDIVIDUAL_NOTIFICATION_LIMIT - totalCount} individual notification${INDIVIDUAL_NOTIFICATION_LIMIT - totalCount === 1 ? '' : 's'} remaining — after that, replies will be bundled.</p>`
     : '';
-
   return base(`
     <p style="font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin:0 0 12px;">New RSVP ${emoji}</p>
     <h1 style="font-family:Georgia,serif;font-size:1.8rem;font-weight:400;color:#2a2218;margin:0 0 16px;line-height:1.3;">${response.guest_name} ${status}</h1>
@@ -96,47 +122,83 @@ function rsvpNotificationHtml({ party, response, totalCount }) {
   `, party.photo_url || '');
 }
 
+// ── Handler ────────────────────────────────────────────────────
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { party_id, guest_name, attending, guest_count, allergies, guest_email } = req.body;
+    const body = req.body || {};
 
-    if (!party_id)   return res.status(400).json({ error: 'Missing party_id' });
-    if (!guest_name) return res.status(400).json({ error: 'Missing guest_name' });
+    // ── Required fields ──────────────────────────────────────
+    const party_id   = sanitiseString(body.party_id, 36);
+    const guest_name = sanitiseString(body.guest_name, 100);
 
-    // ── 1. Save the RSVP ─────────────────────────────────
-    const { data: insertData, error: insertError } = await supabase
-      .from('guest_responses')
-      .insert([{ party_id, guest_name, attending, guest_count, allergies,
-                  guest_email: guest_email || null }])
-      .select('id')
-      .single();
+    if (!party_id) {
+      return res.status(400).json({ error: 'Missing party_id' });
+    }
+    if (!guest_name) {
+      return res.status(400).json({ error: 'Missing or empty guest_name' });
+    }
 
-    if (insertError) throw insertError;
+    // party_id must look like a UUID
+    if (!/^[0-9a-f-]{36}$/.test(party_id)) {
+      return res.status(400).json({ error: 'Invalid party_id format' });
+    }
 
-    const responseId = insertData?.id;
+    // ── Optional fields ──────────────────────────────────────
+    const attending    = body.attending !== undefined ? body.attending : null;
+    const guest_count  = body.guest_count !== undefined ? Number(body.guest_count) : 1;
+    const allergies    = sanitiseString(body.allergies, 300);
+    const guest_email  = body.guest_email
+      ? body.guest_email.toString().trim().toLowerCase()
+      : null;
 
-    // ── 2. Look up the party ──────────────────────────────
+    if (attending !== null && !isValidAttending(attending)) {
+      return res.status(400).json({ error: 'Invalid attending value' });
+    }
+    if (!isValidGuestCount(guest_count)) {
+      return res.status(400).json({ error: 'Invalid guest_count — must be between 1 and 20' });
+    }
+    if (guest_email && !isValidEmail(guest_email)) {
+      return res.status(400).json({ error: 'Invalid guest email address' });
+    }
+
+    // ── 1. Verify party exists before saving RSVP ────────────
     const { data: party, error: partyError } = await supabase
       .from('parties')
       .select('*')
       .eq('party_id', party_id)
       .single();
 
-    if (partyError) console.error('Party lookup error:', partyError.message);
-
-    if (!party) {
-      console.error('Party not found for party_id:', party_id);
-      return res.status(200).json({ success: true, id: responseId });
+    if (partyError || !party) {
+      return res.status(404).json({ error: 'Party not found' });
     }
 
-    const response = { guest_name, attending, guest_count, allergies, guest_email };
+    // ── 2. Save the RSVP ─────────────────────────────────────
+    const { data: insertData, error: insertError } = await supabase
+      .from('guest_responses')
+      .insert([{
+        party_id,
+        guest_name,
+        attending,
+        guest_count,
+        allergies,
+        guest_email,
+      }])
+      .select('id')
+      .single();
 
-    // ── 3. Count total all-time RSVPs for this party ──────
-    // This is the running total — first 15 get individual emails, rest go to digest
+    if (insertError) {
+      console.error('RSVP insert error:', insertError.message);
+      return res.status(500).json({ error: 'Failed to save RSVP' });
+    }
+
+    const responseId = insertData?.id;
+    const response   = { guest_name, attending, guest_count, allergies, guest_email };
+
+    // ── 3. Count total RSVPs for rate-limiting emails ─────────
     const { count: totalCount } = await supabase
       .from('guest_responses')
       .select('id', { count: 'exact', head: true })
@@ -144,30 +206,26 @@ export default async function handler(req, res) {
 
     const sendIndividual = totalCount <= INDIVIDUAL_NOTIFICATION_LIMIT;
 
-    // ── 4. Send emails in parallel, awaited before responding ──
+    // ── 4. Send emails (both non-fatal) ──────────────────────
     const emailPromises = [];
 
     if (sendIndividual) {
-      // Individual notification — sent for the first 15 RSVPs
       emailPromises.push(
         sendEmail({
           to:      party.parent_email,
-          subject: attending === true || attending === 'true'
+          subject: normaliseAttending(attending)
             ? `🎉 ${guest_name} is coming to ${party.child_name}'s party!`
             : `${guest_name} can't make it to ${party.child_name}'s party`,
           html: rsvpNotificationHtml({ party, response, totalCount }),
         }).catch(e => console.error('Host notification failed:', e.message))
       );
     }
-    // NOTE: digest summary emails (for RSVPs beyond 15) should be handled
-    // by a scheduled job (e.g. Vercel cron or Supabase pg_cron) that queries
-    // all un-notified RSVPs and sends a single batched summary email per party.
 
     if (guest_email) {
       emailPromises.push(
         sendEmail({
           to:      guest_email,
-          subject: attending === true || attending === 'true'
+          subject: normaliseAttending(attending)
             ? `You're confirmed for ${party.child_name}'s party! 🎉`
             : `Thanks for letting us know 💛`,
           html: guestConfirmationHtml({ party, response }),
@@ -177,11 +235,11 @@ export default async function handler(req, res) {
 
     await Promise.all(emailPromises);
 
-    // ── 5. Respond only after everything is done ──────────
+    // ── 5. Respond ───────────────────────────────────────────
     return res.status(200).json({ success: true, id: responseId });
 
   } catch (err) {
-    console.error('submit-rsvp error:', err);
-    return res.status(500).json({ error: err.message });
+    console.error('submit-rsvp error:', err.message);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }

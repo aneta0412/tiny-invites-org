@@ -70,7 +70,7 @@ export default async function handler(req, res) {
 
     const cleanToken = token.trim();
 
-    // ── Look up party by dashboard_token ──────────────────
+    // ── Look up party ─────────────────────────────────────
     const { data: party, error: lookupError } = await supabase
       .from('parties')
       .select('*')
@@ -81,14 +81,18 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Invalid or expired confirmation link' });
     }
 
+    const rsvpUrl = `https://tinyinvites.org/rsvp.html?party=${party.party_id}`;
+    const dashUrl = `/dashboard_page.html?token=${cleanToken}`;
+
     // ── Already confirmed ─────────────────────────────────
     if (party.confirmed) {
       return res.status(200).json({
-        success:   true,
-        already:   true,
-        party_id:  party.party_id,
-        dashboard: `/dashboard_page.html?token=${cleanToken}`,
-        message:   'Party already confirmed and live',
+        success:  true,
+        already:  true,
+        party_id: party.party_id,
+        rsvp_url: rsvpUrl,
+        dashboard: dashUrl,
+        message:  'Party already confirmed and live',
       });
     }
 
@@ -126,7 +130,8 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success:   true,
       party_id:  party.party_id,
-      dashboard: `/dashboard_page.html?token=${cleanToken}`,
+      rsvp_url:  rsvpUrl,   // ← confirm.html uses this to build the QR
+      dashboard: dashUrl,
       message:   'Party confirmed and live',
     });
 

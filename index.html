@@ -59,7 +59,7 @@
   /* HERO */
   .hero { min-height:88vh; display:flex; align-items:center; padding:64px 40px; position:relative; overflow:hidden; }
   .hero-bg { position:absolute; inset:0; background: linear-gradient(to right, rgba(250,246,239,0.97) 45%, rgba(250,246,239,0.8) 65%, rgba(250,246,239,0.4) 100%), url('hero-bg.jpg') center / cover no-repeat; z-index:0; }
-  .hero-inner { position:relative; z-index:1; display:grid; grid-template-columns:1fr 540px; gap:48px; align-items:center; max-width:1320px; margin:0 auto; width:100%; }
+  .hero-inner { position:relative; z-index:1; display:grid; grid-template-columns:1fr 640px; gap:48px; align-items:center; max-width:1400px; margin:0 auto; width:100%; }
   .hero-content { max-width:560px; }
   .eyebrow { font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:20px; display:flex; align-items:center; gap:10px; opacity:0; animation:fadeUp 0.8s 0.2s forwards; }
   .eyebrow::before { content:""; display:block; width:28px; height:1px; background:var(--gold); }
@@ -81,15 +81,15 @@
 
   /* ACTION CARDS */
   .action-cards { display:flex; flex-direction:column; }
-  .action-card { display:grid; grid-template-columns:minmax(0,1fr) minmax(150px,0.72fr); min-height:150px; border-bottom:1px solid var(--gold-pale); }
+  .action-card { display:grid; grid-template-columns:minmax(0,1fr) minmax(220px,1.1fr); min-height:210px; border-bottom:1px solid var(--gold-pale); }
   .action-card:last-child { border-bottom:none; }
   .action-card-text { display:flex; flex-direction:column; justify-content:center; padding:20px 18px 20px 24px; }
   .action-card-num { font-family:"Cormorant Garamond",serif; font-size:0.78rem; color:var(--gold); display:block; margin-bottom:5px; letter-spacing:0.12em; }
   .action-card-title { font-family:"Cormorant Garamond",serif; font-size:1.08rem; font-weight:400; color:var(--dark); line-height:1.2; margin-bottom:7px; }
   .action-card-desc { font-size:0.74rem; color:var(--mid); line-height:1.55; }
   .action-card-img { background:linear-gradient(135deg,var(--gold-pale),rgba(250,246,239,0.7)); overflow:hidden; display:flex; align-items:center; justify-content:center; padding:18px; border-left:1px solid var(--gold-pale); }
-  .action-card-img img { width:min(100%,190px); max-height:112px; object-fit:contain; display:block; border-radius:8px; box-shadow:0 8px 24px rgba(42,34,24,0.11); }
-  .action-card-img > div { max-width:190px; }
+  .action-card-img img { width:100%; max-height:180px; object-fit:contain; display:block; border-radius:8px; box-shadow:0 8px 24px rgba(42,34,24,0.11); }
+  .action-card-img > div { max-width:100%; width:100%; }
   .mock-wrap { width:100%; }
   .mock-email { background:white; border-radius:10px; box-shadow:0 2px 12px rgba(42,34,24,0.1); overflow:hidden; }
   .mock-email-header { background:#f8f8f8; border-bottom:1px solid #eee; padding:10px 14px; display:flex; align-items:center; gap:8px; }
@@ -441,10 +441,10 @@
   /* RESPONSIVE */
   @media(max-width:1100px) {
     .hero-inner { grid-template-columns:1fr 460px; gap:36px; }
-    .action-card { grid-template-columns:minmax(0,1fr) minmax(130px,0.65fr); min-height:140px; }
+    .action-card { grid-template-columns:minmax(0,1fr) minmax(190px,1fr); min-height:190px; }
     .action-card-text { padding:18px 16px 18px 20px; }
     .action-card-img { padding:16px 14px; }
-    .action-card-img img { max-height:104px; }
+    .action-card-img img { max-height:155px; }
     .other-grid { grid-template-columns:1fr 1fr; }
   }
   @media(max-width:860px) {
@@ -466,8 +466,8 @@
     .create-bottom-grid { flex-direction:column; }
     .action-card { grid-template-columns:1fr; min-height:0; }
     .action-card-text { padding:18px 20px 14px; }
-    .action-card-img { min-height:116px; padding:16px 20px 18px; border-left:0; border-top:1px solid var(--gold-pale); }
-    .action-card-img img { max-height:100px; }
+    .action-card-img { min-height:170px; padding:16px 20px 18px; border-left:0; border-top:1px solid var(--gold-pale); }
+    .action-card-img img { max-height:150px; }
   }
 
   /* PHOTO UPLOAD WIDGET */
@@ -497,7 +497,7 @@
 <!-- NAV -->
 <nav>
   <a href="/" class="logo">
-    <img src="logo.png" alt="Tiny Invites">
+    <img src="logo.png" alt="Tiny Invites" onerror="this.style.display='none'">
     Tiny Invites
   </a>
   <div class="nav-links">
@@ -883,7 +883,7 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">
-    <img src="logo.png" alt="Tiny Invites">
+    <img src="logo.png" alt="Tiny Invites" onerror="this.style.display='none'">
     Tiny Invites
   </div>
   <div class="footer-links">

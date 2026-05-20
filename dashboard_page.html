@@ -258,7 +258,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (!_token) { showError('No dashboard token found. Please use the link from your invitation email.'); return; }
   showLoading(true);
   try {
-    const res  = await fetch(`/api/dashboard?token=${encodeURIComponent(_token)}`);
+    const res  = await fetch(`/api/dashboard-api?action=load&token=${encodeURIComponent(_token)}`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to load dashboard');
     _partyData = data.party;
@@ -422,7 +422,7 @@ async function saveEdit(id) {
   if (saveBtn) { saveBtn.textContent = 'Saving…'; saveBtn.disabled = true; }
 
   try {
-    const res  = await fetch('/api/update-guest', {
+    const res  = await fetch('/api/dashboard-api?action=update-guest', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ token:_token, guest_id:id, action:'edit', attending, guest_count, allergies }),
@@ -460,7 +460,7 @@ async function deleteGuest(id, name) {
   if (!confirm(`Remove ${name} from the guest list?`)) return;
 
   try {
-    const res  = await fetch('/api/update-guest', {
+    const res  = await fetch('/api/dashboard-api?action=update-guest', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ token:_token, guest_id:id, action:'delete' }),
@@ -489,7 +489,7 @@ async function deleteGuest(id, name) {
 // Refresh only stats + dietary flags — table stays untouched
 async function refreshStats() {
   try {
-    const res  = await fetch(`/api/dashboard?token=${encodeURIComponent(_token)}`);
+    const res  = await fetch(`/api/dashboard-api?action=load&token=${encodeURIComponent(_token)}`);
     const data = await res.json();
     if (!res.ok) return;
 
@@ -534,7 +534,7 @@ async function resendEmail() {
   btn.textContent = '⏳ Sending…';
   btn.disabled = true;
   try {
-    const res  = await fetch('/api/send-email', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ token:_token }) });
+    const res  = await fetch('/api/dashboard-api?action=send-email', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ token:_token }) });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to send');
     btn.classList.add('sent');

@@ -265,7 +265,7 @@
     }
 
     try {
-      const res  = await fetch('/api/confirm-party?token=' + encodeURIComponent(token));
+      const res  = await fetch('/api/party?action=confirm-party&token=' + encodeURIComponent(token));
       const data = await res.json();
 
       if (!res.ok) {

@@ -414,7 +414,7 @@
     btn.disabled=true; btn.innerHTML='⏳ Sending…';
 
     try {
-      const res = await fetch('/api/go-live', {
+      const res = await fetch('/api/party?action=go-live', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           child_name:   previewName,

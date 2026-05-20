@@ -115,7 +115,7 @@
     btn.style.opacity = '0.7';
 
     try {
-      const response = await fetch('/api/create-party', {
+      const response = await fetch('/api/party?action=create-party', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

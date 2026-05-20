@@ -271,8 +271,7 @@
 </div>
 
 <script>
-  const RSVP_API_ENDPOINT               = '/api/submit-rsvp';
-  const GUEST_CONFIRMATION_API_ENDPOINT = '/api/send-guest-confirmation';
+  const RSVP_API_ENDPOINT = '/api/rsvp?action=submit-rsvp';
 
   function getParam(n) { return new URLSearchParams(window.location.search).get(n) || ''; }
 
@@ -308,7 +307,7 @@
     }
 
     if (!partyId) { renderInvite({}); return; }
-    fetch('/api/get-party?id=' + partyId).then(r => r.json()).then(d => renderInvite(d || {})).catch(() => renderInvite({}));
+    fetch('/api/rsvp?action=get-party&id=' + partyId).then(r => r.json()).then(d => renderInvite(d || {})).catch(() => renderInvite({}));
   });
 
   // ── Duplicate prevention ─────────────────────────────────
@@ -446,10 +445,6 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
 
-      if (guestEmail && data.id) {
-        fetch(GUEST_CONFIRMATION_API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ party_id:pid, response_id:data.id, guest_email:guestEmail }) }).catch(() => {});
-      }
-
       // Build friendly summary
       const parts = [];
       if (childrenCount > 0) parts.push(`${childrenCount} ${childrenCount===1?'child':'children'}`);
@@ -503,7 +498,6 @@
       const res  = await fetch(RSVP_API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
-      if (guestEmail && data.id) { fetch(GUEST_CONFIRMATION_API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ party_id:pid, response_id:data.id, guest_email:guestEmail }) }).catch(() => {}); }
       _submitted = true;
       document.querySelector('#page-no .card').innerHTML = `
         <div class="brand">Tiny Invites</div>

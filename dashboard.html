@@ -296,6 +296,7 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
 
 <script>
 let _partyData = null;
+let _responses = [];
 let _token     = null;
 
 // ── FIX 3: XSS escaping ──────────────────────────────────────────────────────
@@ -368,13 +369,34 @@ function sumCol(arr, key) {
 }
 
 // Which guest-count categories did the host enable on this party?
-// Defaults to all true if the flags are not present on the party object.
+// First respect explicit flags on the party object (under any of several common
+// naming conventions). If none are set, fall back to a data-driven heuristic:
+// if the category sums to 0 across every "yes" RSVP, the host clearly isn't
+// tracking it — hide the tile so it doesn't sit at 0 forever.
 function getShowOptions() {
   const p = _partyData || {};
+
+  const flagFor = (...names) => {
+    for (const n of names) {
+      if (p[n] !== undefined && p[n] !== null) return p[n];
+    }
+    return undefined;
+  };
+  const fAdults   = flagFor('show_adults',   'count_adults',   'track_adults',   'ask_adults',   'include_adults',   'has_adults');
+  const fChildren = flagFor('show_children', 'count_children', 'track_children', 'ask_children', 'include_children', 'has_children');
+  const fBabies   = flagFor('show_babies',   'count_babies',   'track_babies',   'ask_babies',   'include_babies',   'has_babies');
+
+  const yesResponses = (_responses || []).filter(r => r.attending === 'yes');
+  const hasYesData = yesResponses.length > 0;
+  const sumOf = (key) => yesResponses.reduce((s, r) => s + (parseInt(r[key]) || 0), 0);
+
+  // If we have RSVP data and a category sums to 0, hide it.
+  // If we have no "yes" responses yet, default to showing all so the host
+  // can confirm what they enabled.
   return {
-    adults:   p.show_adults   !== false,
-    children: p.show_children !== false,
-    babies:   p.show_babies   !== false,
+    adults:   fAdults   !== undefined ? !!fAdults   : (!hasYesData || sumOf('guest_count_adults')   > 0),
+    children: fChildren !== undefined ? !!fChildren : (!hasYesData || sumOf('guest_count_children') > 0),
+    babies:   fBabies   !== undefined ? !!fBabies   : (!hasYesData || sumOf('guest_count_babies')   > 0),
   };
 }
 
@@ -476,6 +498,7 @@ function prettyDiet(str) {
 }
 
 function renderDashboard(responses, stats) {
+  _responses = responses;
   const yes    = responses.filter(r => r.attending === 'yes');
   const no     = responses.filter(r => r.attending === 'no');
   const total  = responses.length;
@@ -770,6 +793,7 @@ async function refreshStats() {
     if (!res.ok) return;
 
     const responses = data.responses;
+    _responses = responses;
     const yes    = responses.filter(r => r.attending === 'yes');
     const no     = responses.filter(r => r.attending === 'no');
     const total  = responses.length;

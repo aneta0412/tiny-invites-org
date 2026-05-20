@@ -69,6 +69,14 @@ nav { display:flex; justify-content:space-between; align-items:center; padding:2
 .legend-item { display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--mid); }
 .legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
 
+.catering-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px; }
+.catering-tile { background:var(--gold-pale); border-radius:12px; padding:14px 8px; text-align:center; border:1px solid var(--gold-light); }
+.catering-num { font-family:"Cormorant Garamond",serif; font-size:1.9rem; line-height:1; color:var(--gold); margin-bottom:6px; }
+.catering-label { font-size:0.65rem; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; color:var(--mid); }
+.catering-sub { font-size:0.62rem; color:var(--soft); margin-top:2px; font-style:italic; }
+.catering-total { text-align:center; font-size:0.78rem; color:var(--mid); padding-top:6px; border-top:1px dashed var(--gold-pale); }
+.catering-total strong { color:var(--dark); font-weight:500; }
+.breakdown-mini { display:block; font-size:0.7rem; color:var(--soft); margin-top:2px; }
 .flags { display:flex; flex-wrap:wrap; gap:8px; }
 .flag { background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:99px; padding:5px 12px; font-size:0.75rem; color:var(--mid); display:flex; align-items:center; gap:6px; }
 .flag-count { background:var(--gold); color:#fff; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center; font-size:0.62rem; font-weight:600; }
@@ -213,6 +221,27 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     </div>
   </div>
 
+  <div class="card" style="animation-delay:0.28s">
+    <div class="section-label">🍽️ Catering breakdown</div>
+    <div class="catering-stats">
+      <div class="catering-tile">
+        <div class="catering-num" id="cateringAdults">0</div>
+        <div class="catering-label">Adults</div>
+      </div>
+      <div class="catering-tile">
+        <div class="catering-num" id="cateringChildren">0</div>
+        <div class="catering-label">Children</div>
+        <div class="catering-sub">age 1+</div>
+      </div>
+      <div class="catering-tile">
+        <div class="catering-num" id="cateringBabies">0</div>
+        <div class="catering-label">Babies</div>
+        <div class="catering-sub">under 1</div>
+      </div>
+    </div>
+    <div class="catering-total" id="cateringTotal">—</div>
+  </div>
+
   <div class="card" style="animation-delay:0.3s">
     <div class="section-label">⚠️ Dietary &amp; allergy flags</div>
     <div class="flags" id="dietaryFlags">
@@ -306,6 +335,46 @@ function populateHeader(party) {
   }
 }
 
+// Sum a numeric column across responses (treats null/undefined/NaN as 0)
+function sumCol(arr, key) {
+  return arr.reduce((s, r) => s + (parseInt(r[key]) || 0), 0);
+}
+
+// Render the catering tiles (Adults / Children / Babies) and footer total
+function renderCatering(yes) {
+  const adults   = sumCol(yes, 'guest_count_adults');
+  const children = sumCol(yes, 'guest_count_children');
+  const babies   = sumCol(yes, 'guest_count_babies');
+  const total    = adults + children + babies;
+
+  document.getElementById('cateringAdults').textContent   = adults;
+  document.getElementById('cateringChildren').textContent = children;
+  document.getElementById('cateringBabies').textContent   = babies;
+
+  const totalEl = document.getElementById('cateringTotal');
+  if (total > 0) {
+    const parts = [];
+    if (adults)   parts.push(`${adults} adult${adults!==1?'s':''}`);
+    if (children) parts.push(`${children} ${children===1?'child':'children'}`);
+    if (babies)   parts.push(`${babies} ${babies===1?'baby':'babies'}`);
+    totalEl.innerHTML = `<strong>${total}</strong> people for catering &nbsp;·&nbsp; ${parts.join(' + ')}`;
+  } else {
+    totalEl.innerHTML = '<span style="color:var(--soft)">Catering counts will appear here once guests RSVP</span>';
+  }
+}
+
+// Build the breakdown chip shown in the Guests column (e.g. "2 adults · 1 child")
+function breakdownText(r) {
+  const a = parseInt(r.guest_count_adults)   || 0;
+  const c = parseInt(r.guest_count_children) || 0;
+  const b = parseInt(r.guest_count_babies)   || 0;
+  const parts = [];
+  if (a) parts.push(`${a} adult${a!==1?'s':''}`);
+  if (c) parts.push(`${c} ${c===1?'child':'children'}`);
+  if (b) parts.push(`${b} ${b===1?'baby':'babies'}`);
+  return parts.join(' · ');
+}
+
 function renderDashboard(responses, stats) {
   const yes    = responses.filter(r => r.attending === 'yes');
   const no     = responses.filter(r => r.attending === 'no');
@@ -320,6 +389,9 @@ function renderDashboard(responses, stats) {
   document.getElementById('pctYes').textContent     = total ? `${pctYes}% of responses` : '—';
   document.getElementById('pctNo').textContent      = total ? `${pctNo}% of responses`  : '—';
   document.getElementById('statGuests').textContent = guests > 0 ? `${guests} guest${guests !== 1 ? 's' : ''} total` : '—';
+
+  // Catering totals (Adults / Children / Babies)
+  renderCatering(yes);
 
   setTimeout(() => {
     document.getElementById('barYes').style.width  = total ? (yes.length / total * 100).toFixed(1) + '%' : '0%';
@@ -351,14 +423,18 @@ function renderDashboard(responses, stats) {
     const att    = r.attending === 'yes'
       ? '<span class="badge yes">✓ Coming</span>'
       : '<span class="badge no">✗ Declined</span>';
+    const bdown  = breakdownText(r);
     const gsts   = r.guest_count
-      ? `<span style="font-size:0.78rem;color:var(--mid)">${r.guest_count} guest${r.guest_count > 1 ? 's' : ''}</span>`
+      ? `<span style="font-size:0.78rem;color:var(--mid)">${r.guest_count} guest${r.guest_count > 1 ? 's' : ''}</span>${bdown ? `<span class="breakdown-mini">${bdown}</span>` : ''}`
       : '<span style="color:var(--soft)">—</span>';
     const allerg = r.allergies && r.allergies.toLowerCase() !== 'none'
       ? `<span style="color:var(--mid);font-weight:500">⚠️ ${r.allergies}</span>`
       : '<span style="color:var(--soft)">—</span>';
     const safeAllergy = (r.allergies || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     const safeName    = (r.guest_name || 'Guest').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const adults   = parseInt(r.guest_count_adults)   || 0;
+    const children = parseInt(r.guest_count_children) || 0;
+    const babies   = parseInt(r.guest_count_babies)   || 0;
     return `
       <tr id="guest-row-${r.id}">
         <td><strong>${r.guest_name || '—'}</strong></td>
@@ -367,7 +443,7 @@ function renderDashboard(responses, stats) {
         <td>${allerg}</td>
         <td>
           <div class="row-actions">
-            <button class="btn-icon" title="Edit" onclick="openEdit('${r.id}','${r.attending}',${r.guest_count||1},'${safeAllergy}')">✏️</button>
+            <button class="btn-icon" title="Edit" onclick="openEdit('${r.id}','${r.attending}',${adults},${children},${babies},'${safeAllergy}')">✏️</button>
             <button class="btn-icon delete" title="Remove" onclick="deleteGuest('${r.id}','${safeName}')">🗑</button>
           </div>
         </td>
@@ -379,7 +455,7 @@ function renderDashboard(responses, stats) {
 
 // ── Edit / Delete ──────────────────────────────────────────────
 
-function openEdit(id, attending, guestCount, allergies) {
+function openEdit(id, attending, adults, children, babies, allergies) {
   // Close any open edit rows first
   document.querySelectorAll('.edit-row').forEach(r => r.remove());
 
@@ -396,8 +472,15 @@ function openEdit(id, attending, guestCount, allergies) {
           <option value="yes" ${attending === 'yes' ? 'selected' : ''}>✓ Coming</option>
           <option value="no"  ${attending === 'no'  ? 'selected' : ''}>✗ Declined</option>
         </select>
-        <input type="number" id="edit-count-${id}" min="1" max="20"
-          value="${guestCount}" style="width:72px" placeholder="Guests" />
+        <label style="font-size:0.72rem;color:var(--soft);display:flex;align-items:center;gap:4px;">Adults
+          <input type="number" id="edit-adults-${id}" min="0" max="30" value="${adults}" style="width:60px" />
+        </label>
+        <label style="font-size:0.72rem;color:var(--soft);display:flex;align-items:center;gap:4px;">Children
+          <input type="number" id="edit-children-${id}" min="0" max="30" value="${children}" style="width:60px" />
+        </label>
+        <label style="font-size:0.72rem;color:var(--soft);display:flex;align-items:center;gap:4px;">Babies
+          <input type="number" id="edit-babies-${id}" min="0" max="30" value="${babies}" style="width:60px" />
+        </label>
         <input type="text" id="edit-allergy-${id}"
           value="${allergies}" placeholder="Dietary notes" style="flex:1;min-width:120px" />
         <button class="btn-save"   onclick="saveEdit('${id}')">Save</button>
@@ -414,8 +497,11 @@ function cancelEdit(id) {
 }
 
 async function saveEdit(id) {
-  const attending   = document.getElementById('edit-att-'     + id)?.value;
-  const guest_count = parseInt(document.getElementById('edit-count-'   + id)?.value);
+  const attending = document.getElementById('edit-att-' + id)?.value;
+  const adults    = parseInt(document.getElementById('edit-adults-'   + id)?.value) || 0;
+  const children  = parseInt(document.getElementById('edit-children-' + id)?.value) || 0;
+  const babies    = parseInt(document.getElementById('edit-babies-'   + id)?.value) || 0;
+  const guest_count = adults + children + babies;
   const allergies   = document.getElementById('edit-allergy-' + id)?.value || '';
 
   const saveBtn = document.querySelector(`#edit-row-${id} .btn-save`);
@@ -425,7 +511,14 @@ async function saveEdit(id) {
     const res  = await fetch('/api/dashboard-api?action=update-guest', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ token:_token, guest_id:id, action:'edit', attending, guest_count, allergies }),
+      body:    JSON.stringify({
+        token:_token, guest_id:id, action:'edit',
+        attending, guest_count,
+        guest_count_adults:   adults,
+        guest_count_children: children,
+        guest_count_babies:   babies,
+        allergies,
+      }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to update');
@@ -437,13 +530,25 @@ async function saveEdit(id) {
       cells[1].innerHTML = attending === 'yes'
         ? '<span class="badge yes">✓ Coming</span>'
         : '<span class="badge no">✗ Declined</span>';
+      const partsMini = [];
+      if (adults)   partsMini.push(`${adults} adult${adults!==1?'s':''}`);
+      if (children) partsMini.push(`${children} ${children===1?'child':'children'}`);
+      if (babies)   partsMini.push(`${babies} ${babies===1?'baby':'babies'}`);
+      const bdownMini = partsMini.join(' · ');
       cells[2].innerHTML = guest_count
-        ? `<span style="font-size:0.78rem;color:var(--mid)">${guest_count} guest${guest_count > 1 ? 's' : ''}</span>`
+        ? `<span style="font-size:0.78rem;color:var(--mid)">${guest_count} guest${guest_count > 1 ? 's' : ''}</span>${bdownMini ? `<span class="breakdown-mini">${bdownMini}</span>` : ''}`
         : '<span style="color:var(--soft)">—</span>';
       const cleanAllergy = allergies.trim();
       cells[3].innerHTML = cleanAllergy && cleanAllergy.toLowerCase() !== 'none'
         ? `<span style="color:var(--mid);font-weight:500">⚠️ ${cleanAllergy}</span>`
         : '<span style="color:var(--soft)">—</span>';
+      // Refresh the edit button so subsequent edits carry the new values
+      const editBtn = mainRow.querySelector('.btn-icon[title="Edit"]');
+      if (editBtn) {
+        const safeAllergy = cleanAllergy.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        editBtn.setAttribute('onclick',
+          `openEdit('${id}','${attending}',${adults},${children},${babies},'${safeAllergy}')`);
+      }
     }
 
     cancelEdit(id);
@@ -507,6 +612,9 @@ async function refreshStats() {
     document.getElementById('pctYes').textContent     = total ? `${pctYes}% of responses` : '—';
     document.getElementById('pctNo').textContent      = total ? `${pctNo}% of responses`  : '—';
     document.getElementById('statGuests').textContent = guests > 0 ? `${guests} guest${guests !== 1 ? 's' : ''} total` : '—';
+
+    // Catering totals (Adults / Children / Babies)
+    renderCatering(yes);
 
     document.getElementById('barYes').style.width  = total ? (yes.length / total * 100).toFixed(1) + '%' : '0%';
     document.getElementById('barNo').style.width   = total ? (no.length  / total * 100).toFixed(1) + '%' : '0%';

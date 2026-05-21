@@ -237,7 +237,7 @@
           <button class="btn btn-yes" disabled>🎉 Yes, I'll be there!</button>
           <button class="btn btn-no"  disabled>Can't make it</button>
         </div>
-        <p class="preview-note">👆 This is exactly what your guests will see</p>
+        <p class="preview-note">👆 This is how your invite will look to guests</p>
       </div>
     </div>
   </div>
@@ -353,9 +353,9 @@
       img.onerror = () => { img.src='https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80'; };
     }
 
-    document.getElementById('inv-greeting').innerHTML = `You're invited, <em>${name}'s party</em>!`;
+    document.getElementById('inv-greeting').innerHTML = `You're invited to <em>${name}'s party</em>!`;
     const ageStr = age ? `${name}'s <strong>${age}${ordinal(age)}</strong> birthday` : `${name}'s birthday`;
-    document.getElementById('inv-subtitle').innerHTML = `You're invited to celebrate ${ageStr}!`;
+    document.getElementById('inv-subtitle').innerHTML = `We'd love to celebrate with you`;
     document.getElementById('inv-age-line').innerHTML = age
       ? `Celebrating <strong>${name}</strong> turning <strong>${age}</strong>!`
       : `Celebrating <strong>${name}</strong>!`;

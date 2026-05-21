@@ -264,6 +264,14 @@
           onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'" oninput="updatePhonePreview()">
       </div>
 
+      <div class="field" style="margin-bottom:14px;">
+        <label style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Party date <span style="color:var(--soft);font-weight:300;text-transform:none;letter-spacing:0;">— optional but recommended</span></label>
+        <input type="date" id="host-party-date"
+          style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
+        <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">Shown to guests on the invite. We also use it so your party isn't auto-archived 60 days after the date.</p>
+      </div>
+
       <label class="consent-wrap" style="margin-bottom:14px;">
         <input type="checkbox" id="show-phone-check" style="accent-color:var(--gold);width:15px;height:15px;flex-shrink:0;margin-top:2px;cursor:pointer;" onchange="updatePhonePreview()">
         <span>Show my phone number on the invitation so guests can contact me directly - optional</span>
@@ -367,6 +375,24 @@
       document.getElementById('inv-location-line').textContent = 'Location TBC';
     }
 
+    // Date preview line — appears after location if a date is picked
+    const dateInput = document.getElementById('host-party-date');
+    if (dateInput) {
+      const renderDate = () => {
+        let line = document.getElementById('inv-date-line');
+        if (!dateInput.value) { if (line) line.remove(); return; }
+        if (!line) {
+          line = document.createElement('div');
+          line.className = 'info-item';
+          line.id = 'inv-date-line';
+          document.getElementById('inv-details').appendChild(line);
+        }
+        line.innerHTML = `<span class="icon">📅</span><span>${formatDate(dateInput.value)}</span>`;
+      };
+      dateInput.addEventListener('change', renderDate);
+      renderDate();
+    }
+
     if (phone) {
       const phoneEl = document.createElement('div');
       phoneEl.className='info-item'; phoneEl.id='inv-phone-line';
@@ -404,10 +430,19 @@
     const phone   = document.getElementById('show-phone-check').checked
                     ? document.getElementById('host-phone').value.trim() || null
                     : null;
+    const partyDate = document.getElementById('host-party-date').value || null;
 
     if (!email) { alert('Please enter your email so guest RSVPs can reach you 📬'); document.getElementById('host-email').focus(); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address 📧'); return; }
     if (!consent) { document.getElementById('consent-wrap').style.borderColor='#c9a84c'; alert('Please tick the consent box to continue ✉️'); return; }
+
+    // Soft-warn (don't block) if the date is in the past
+    if (partyDate) {
+      const today = new Date(); today.setHours(0,0,0,0);
+      if (new Date(partyDate) < today) {
+        if (!confirm('That party date is in the past — continue anyway?')) return;
+      }
+    }
 
     const { countAdults, countBabies } = getCountingPrefs();
     const btn = document.getElementById('golive-btn');
@@ -420,7 +455,7 @@
           child_name:   previewName,
           age:          previewAge,
           venue:        previewLocation,
-          party_date:   null,
+          party_date:   partyDate,
           parent_email: email,
           photo_url:    previewPhoto  || null,
           special_note: previewNote   || null,

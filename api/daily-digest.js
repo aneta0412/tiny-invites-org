@@ -1,5 +1,10 @@
-// Updated: 2026-05-20
-// Cron endpoint â€” wired in vercel.json to run daily at 20:00 UTC.
+// Updated: 2026-05-21
+// api/cron/daily-digest.js — wired in vercel.json to run daily at 20:00 UTC (8pm).
+//
+// Sends an end-of-day digest of today's RSVPs to each host, but only when
+// MORE THAN 15 responses came in for a single party that day. Parties with
+// 15 or fewer responses today are skipped — those were already covered by
+// the instant per-RSVP notifications in submit-rsvp.js.
 import { createClient } from '@supabase/supabase-js';
 import { sendEmail, digestEmailHtml } from '../lib/send-email.js';
 
@@ -8,9 +13,12 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+// Threshold: fire the digest only when today's response count exceeds this.
+const DIGEST_THRESHOLD = 15;
+
 export default async function handler(req, res) {
 
-  // Protect the cron endpoint â€” Vercel sets this header automatically
+  // Protect the cron endpoint — Vercel sets this header automatically.
   if (req.headers['authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
@@ -41,9 +49,14 @@ export default async function handler(req, res) {
     const results = [];
 
     for (const [party_id, { party, responses: partyResponses }] of Object.entries(byParty)) {
-      // Only send digest if there are 2+ responses today (first was already sent instantly)
-      if (partyResponses.length < 2) {
-        results.push({ party_id, skipped: true, reason: 'Only 1 response today, already sent.' });
+      // Only send digest if MORE THAN 15 responses came in today.
+      // 1-15: individual notifications already went out → no digest needed.
+      if (partyResponses.length <= DIGEST_THRESHOLD) {
+        results.push({
+          party_id,
+          skipped: true,
+          reason:  `Only ${partyResponses.length} response${partyResponses.length === 1 ? '' : 's'} today (threshold: >${DIGEST_THRESHOLD}).`,
+        });
         continue;
       }
 
@@ -55,7 +68,7 @@ export default async function handler(req, res) {
 
       await sendEmail({
         to:      party.parent_email,
-        subject: `ðŸ“‹ ${partyResponses.length} RSVPs today for ${party.child_name}'s party`,
+        subject: `📋 ${partyResponses.length} RSVPs today for ${party.child_name}'s party`,
         html:    digestEmailHtml({ party, responses: normalised }),
       });
 
@@ -65,6 +78,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ results });
 
   } catch (err) {
+    console.error('daily-digest error:', err);
     return res.status(500).json({ error: err.message });
   }
 }

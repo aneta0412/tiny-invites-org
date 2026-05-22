@@ -275,9 +275,22 @@
 
   function getParam(n) { return new URLSearchParams(window.location.search).get(n) || ''; }
 
-  // Read host counting preferences from URL params
-  const ASK_ADULTS = getParam('ask_adults') === '1';
-  const ASK_BABIES = getParam('ask_babies') === '1';
+  // Host counting preferences. Default to false; populated from the party
+  // record once it loads. ?ask_adults=1 / ?ask_babies=1 stay as a fallback
+  // for any cached email links that pre-date the column.
+  let ASK_ADULTS = getParam('ask_adults') === '1';
+  let ASK_BABIES = getParam('ask_babies') === '1';
+
+  // Re-apply visibility based on current ASK_* flags. Called once during init
+  // (children-only state) and again from renderInvite() after party data lands.
+  function applyCountingPrefs() {
+    document.getElementById('adults-row').style.display = ASK_ADULTS ? 'flex' : 'none';
+    document.getElementById('babies-row').style.display = ASK_BABIES ? 'flex' : 'none';
+    var childSmall = document.getElementById('children-small');
+    if (childSmall) {
+      childSmall.textContent = ASK_BABIES ? 'Age 1 and over' : 'Total children';
+    }
+  }
 
   // ── Counters ─────────────────────────────────────────────
   const counts = { children: 0, babies: 0, adults: 1 };
@@ -289,13 +302,9 @@
 
   // ── Init ─────────────────────────────────────────────────
   window.addEventListener('DOMContentLoaded', () => {
-    // Show/hide counter rows based on host preferences
-    if (ASK_ADULTS) document.getElementById('adults-row').style.display = 'flex';
-    if (ASK_BABIES) {
-      document.getElementById('babies-row').style.display = 'flex';
-      // Update children label to clarify age range
-      document.getElementById('children-small').textContent = 'Age 1 and over';
-    }
+    // Initial state: children only. renderInvite() will re-apply once the
+    // party record is fetched (in case the host enabled adults/babies).
+    applyCountingPrefs();
 
     const partyId  = getParam('party') || getParam('partyId') || '';
     const photoUrl = getParam('photo') || '';
@@ -357,6 +366,12 @@
     const specialNote = party.special_note || '';
     const phoneNumber = party.phone_number || '';
     const photoUrl    = party.photo_url    || getParam('photo')     || '';
+
+    // Host counting preferences from the party record override any URL fallback.
+    // The party object is the source of truth — guests can't tamper with it.
+    if (party.count_adults !== undefined) ASK_ADULTS = party.count_adults === true || party.count_adults === 'true';
+    if (party.count_babies !== undefined) ASK_BABIES = party.count_babies === true || party.count_babies === 'true';
+    applyCountingPrefs();
 
     window._partyData = { partyId: party.party_id || window._partyId, childName, age, location, hostEmail };
 

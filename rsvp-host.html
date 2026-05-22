@@ -88,22 +88,51 @@
   .consent-wrap input[type="checkbox"] { accent-color:var(--gold); width:15px; height:15px; flex-shrink:0; margin-top:2px; cursor:pointer; }
   .consent-wrap span { font-size:0.75rem; color:var(--mid); line-height:1.6; }
 
-  .counting-section { margin-bottom:16px; }
-  .counting-section-label { font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--soft); margin-bottom:4px; }
-  .counting-section-note { font-size:0.7rem; color:var(--mid); line-height:1.5; margin-bottom:10px; padding:8px 10px; background:var(--gold-pale); border-radius:6px; border-left:2px solid var(--gold-light); }
-  .count-question { margin-bottom:10px; }
-  .count-question-label { font-size:0.72rem; color:var(--dark); font-weight:500; margin-bottom:6px; display:block; }
-  .count-question-sub { font-size:0.65rem; color:var(--soft); font-weight:300; display:block; margin-bottom:6px; line-height:1.4; }
-  .radio-row { display:flex; gap:8px; }
-  .radio-opt {
-    flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
-    padding:8px 10px; border-radius:8px; border:1px solid var(--gold-light);
-    background:var(--cream); cursor:pointer; font-size:0.78rem; color:var(--mid);
+  /* Required vs optional field treatment ------------------------------ */
+  /* The required field sits in its own warm-tinted card so it visually  */
+  /* stands apart from the optional ones underneath.                    */
+  .field-required {
+    background: var(--warm-white);
+    border: 1.5px solid var(--gold);
+    border-radius: 12px;
+    padding: 14px 16px 12px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 0 var(--gold-pale);
+  }
+  .field-required label { color: var(--dark); }
+  .field-required input {
+    width: 100%; padding: 10px 13px; background: #fff;
+    border: 1px solid var(--gold-light); border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+    color: var(--dark); outline: none; transition: border-color 0.2s;
+  }
+  .field-required input:focus { border-color: var(--gold); }
+
+  .pill-required, .pill-required-soft, .pill-optional {
+    display: inline-block; font-size: 0.55rem; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 2px 8px; border-radius: 99px;
+    margin-left: 6px; vertical-align: middle; font-weight: 600;
+  }
+  /* Filled gold — for the most important required field (email).         */
+  .pill-required { background: var(--gold); color: #fff; }
+  /* Tinted gold — required but secondary (party date).                   */
+  .pill-required-soft { background: var(--gold-pale); color: var(--gold); font-weight: 500; }
+  /* Outlined neutral — optional (phone, etc.).                           */
+  .pill-optional { background: transparent; color: var(--soft);
+    border: 1px solid var(--gold-light); font-weight: 500; }
+
+  /* Compact "also count" chips — replaces the old radio-question block */
+  .count-chip-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px; }
+  .count-chip {
+    flex:1; min-width:0; display:flex; align-items:center; justify-content:center; gap:6px;
+    padding:9px 12px; border-radius:8px; border:1px solid var(--gold-light);
+    background:var(--cream); cursor:pointer; font-size:0.8rem; color:var(--mid);
     transition:all 0.18s; user-select:none;
   }
-  .radio-opt input[type="radio"] { accent-color:var(--gold); width:13px; height:13px; cursor:pointer; flex-shrink:0; }
-  .radio-opt:has(input:checked) { background:var(--gold-pale); border-color:var(--gold); color:var(--dark); }
-  .radio-opt:hover { border-color:var(--gold); background:var(--gold-pale); }
+  .count-chip input[type="checkbox"] { accent-color:var(--gold); width:14px; height:14px; cursor:pointer; flex-shrink:0; }
+  .count-chip:has(input:checked) { background:var(--gold-pale); border-color:var(--gold); color:var(--dark); font-weight:500; }
+  .count-chip:hover { border-color:var(--gold); }
+  .count-chip-hint { font-size:0.7rem; color:var(--soft); margin:0 0 14px; line-height:1.5; }
 
   .btn-golive-main {
     width:100%; padding:13px; background:var(--dark); color:var(--cream);
@@ -251,57 +280,52 @@
       <h3 class="golive-heading">Happy with your preview?<br>Let's make it live.</h3>
       <p class="golive-sub">Enter your email — we'll send you a quick confirmation link, then your party goes live. Guests can't RSVP until you confirm.</p>
 
-      <div class="field">
-        <label>Your email <span style="color:var(--gold);">— for RSVPs</span></label>
-        <input type="email" id="host-email" placeholder="e.g. sarah@email.com" autocomplete="email">
-        <p class="hint">Every guest RSVP lands in your inbox. We'll also send a confirmation link to verify this is you.</p>
+      <!-- Email — required, soft treatment matches Party date below. -->
+      <div class="field" style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Your email <span class="pill-required-soft">Required</span></label>
+        <input type="email" id="host-email" placeholder="e.g. sarah@email.com" autocomplete="email"
+          style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
+        <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">Every guest RSVP lands here. We'll send a confirmation link to verify it's you.</p>
       </div>
 
-      <div class="field" style="margin-bottom:14px;">
-        <label style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Phone number <span style="color:var(--soft);font-weight:300;text-transform:none;letter-spacing:0;">— optional</span></label>
+      <div class="field" style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Phone number <span class="pill-optional">Optional</span></label>
         <input type="tel" id="host-phone" placeholder="e.g. 07700 900123" autocomplete="tel"
           style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
           onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'" oninput="updatePhonePreview()">
       </div>
 
       <div class="field" style="margin-bottom:14px;">
-        <label style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Party date <span style="color:var(--soft);font-weight:300;text-transform:none;letter-spacing:0;">— optional but recommended</span></label>
+        <label style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Party date <span class="pill-required-soft">Required</span></label>
         <input type="date" id="host-party-date"
           style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
           onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
-        <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">Shown to guests on the invite. We also use it so your party isn't auto-archived 60 days after the date.</p>
+        <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">Shown to guests, and keeps your party out of the 60-day auto-archive.</p>
       </div>
 
-      <label class="consent-wrap" style="margin-bottom:14px;">
-        <input type="checkbox" id="show-phone-check" style="accent-color:var(--gold);width:15px;height:15px;flex-shrink:0;margin-top:2px;cursor:pointer;" onchange="updatePhonePreview()">
-        <span>Show my phone number on the invitation so guests can contact me directly - optional</span>
+      <label class="consent-wrap" style="margin-bottom:10px;">
+        <input type="checkbox" id="show-phone-check" onchange="updatePhonePreview()">
+        <span>Show my phone on the invite</span>
       </label>
+
+      <!-- Compact guest-counting chips: children always counted; tap to add. -->
+      <div class="count-chip-row">
+        <label class="count-chip">
+          <input type="checkbox" id="count-adults-chk">
+          <span>👨 Adults</span>
+        </label>
+        <label class="count-chip">
+          <input type="checkbox" id="count-babies-chk">
+          <span>👶 Babies (under 1)</span>
+        </label>
+      </div>
+      <p class="count-chip-hint">Children (age 1+) are always counted.</p>
 
       <label class="consent-wrap" id="consent-wrap">
         <input type="checkbox" id="host-consent">
-        <span>I agree to receive guest RSVP responses and occasional party management updates from Tiny Invites by email. My email will only be used to deliver replies and relevant party notifications — never shared or used for marketing-necessary</span>
+        <span>I agree to receive guest RSVPs by email. No marketing, never shared.</span>
       </label>
-
-      <div class="counting-section">
-        <p class="counting-section-label">Guest counting</p>
-        <p class="counting-section-note">Children over 1 are always counted. Use the options below to decide whether adults and babies are also included in your guest total.</p>
-        <div class="count-question">
-          <span class="count-question-label">👨‍👩‍👧 Count adults?</span>
-          <span class="count-question-sub">Should guests be asked how many adults are attending?</span>
-          <div class="radio-row">
-            <label class="radio-opt"><input type="radio" name="count-adults" value="yes"> Yes, count them</label>
-            <label class="radio-opt"><input type="radio" name="count-adults" value="no" checked> No, skip adults</label>
-          </div>
-        </div>
-        <div class="count-question">
-          <span class="count-question-label">👶 Count babies under 1?</span>
-          <span class="count-question-sub">Include babies under 1 in the guest total?</span>
-          <div class="radio-row">
-            <label class="radio-opt"><input type="radio" name="count-babies" value="yes"> Yes, count them</label>
-            <label class="radio-opt"><input type="radio" name="count-babies" value="no" checked> No, exclude babies</label>
-          </div>
-        </div>
-      </div>
 
       <button class="btn-golive-main" id="golive-btn" onclick="goLive()">
         ✨ Send confirmation email
@@ -419,8 +443,8 @@
 
   function getCountingPrefs() {
     return {
-      countAdults: document.querySelector('input[name="count-adults"]:checked')?.value==='yes',
-      countBabies: document.querySelector('input[name="count-babies"]:checked')?.value==='yes',
+      countAdults: document.getElementById('count-adults-chk')?.checked === true,
+      countBabies: document.getElementById('count-babies-chk')?.checked === true,
     };
   }
 
@@ -434,10 +458,11 @@
 
     if (!email) { alert('Please enter your email so guest RSVPs can reach you 📬'); document.getElementById('host-email').focus(); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address 📧'); return; }
+    if (!partyDate) { alert('Please pick the party date so guests know when to come 📅'); document.getElementById('host-party-date').focus(); return; }
     if (!consent) { document.getElementById('consent-wrap').style.borderColor='#c9a84c'; alert('Please tick the consent box to continue ✉️'); return; }
 
-    // Soft-warn (don't block) if the date is in the past
-    if (partyDate) {
+    // Soft-warn (don't block) if the date is in the past — still required, just unusual
+    {
       const today = new Date(); today.setHours(0,0,0,0);
       if (new Date(partyDate) < today) {
         if (!confirm('That party date is in the past — continue anyway?')) return;

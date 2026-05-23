@@ -62,6 +62,29 @@
   </div>
 
 <script>
+  // ── FETCH HELPERS (TC06 / TC09) ───────────────────────────
+  // step4-complete.html is included as a fragment into a parent page that
+  // may already define these helpers — guard with a typeof check so we
+  // never redeclare and throw.
+  if (typeof fetchWithTimeout !== 'function') {
+    window.fetchWithTimeout = async function (url, options, timeoutMs) {
+      options   = options   || {};
+      timeoutMs = timeoutMs || 10000;
+      const ctrl  = new AbortController();
+      const timer = setTimeout(function () { ctrl.abort(); }, timeoutMs);
+      try {
+        return await fetch(url, Object.assign({}, options, { signal: ctrl.signal }));
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+    window.describeFetchError = function (err) {
+      if (err && err.name === 'AbortError') return 'Request timed out — please check your connection and try again.';
+      if (err && /Failed to fetch|NetworkError/i.test(err.message || '')) return 'Network error — please check your connection and try again.';
+      return (err && err.message) || 'Something went wrong. Please try again.';
+    };
+  }
+
   function updatePreview() {
     const name     = document.getElementById('ci-name').value.trim();
     const age      = document.getElementById('ci-age').value.trim();
@@ -115,7 +138,9 @@
     btn.style.opacity = '0.7';
 
     try {
-      const response = await fetch('/api/party?action=create-party', {
+      // 12 s — create-party also enqueues a confirmation email server-side,
+      // so give it a bit of headroom over a bare DB write.
+      const response = await fetchWithTimeout('/api/party?action=create-party', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -128,7 +153,14 @@
           photo_url:    document.getElementById('ci-photo-url').value.trim() || null,
           special_note: document.getElementById('ci-note').value.trim() || null
         })
-      });
+      }, 12000);
+
+      // TC12: surface the rate limiter's friendly server message instead of
+      // burying a "Server error 429" alert.
+      if (response.status === 429) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || 'Too many requests — please wait a moment and try again.');
+      }
 
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
@@ -143,7 +175,7 @@
         `${base}rsvp-host.html?party=${data.party_id}&token=${data.dashboard_token}`;
 
     } catch (err) {
-      alert('Something went wrong: ' + err.message);
+      alert('Something went wrong: ' + describeFetchError(err));
       btn.disabled  = false;
       btn.innerHTML = '✨ Create my free invite';
       btn.style.opacity = '1';

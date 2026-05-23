@@ -305,6 +305,26 @@
 <script>
   const RSVP_API_ENDPOINT = '/api/rsvp?action=submit-rsvp';
 
+  // ── FETCH HELPERS (TC06 / TC09) ───────────────────────────
+  // The RSVP page runs on guest devices (often patchy mobile data). Without
+  // a timeout, a stalled request silently leaves the Submit button stuck on
+  // "Submitting…". With it, we surface a clear error and let the guest retry.
+  const DEFAULT_FETCH_TIMEOUT_MS = 12000;
+  async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_FETCH_TIMEOUT_MS) {
+    const ctrl  = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      return await fetch(url, { ...options, signal: ctrl.signal });
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  function describeFetchError(err) {
+    if (err && err.name === 'AbortError') return 'Request timed out — please check your connection and try again.';
+    if (err && /Failed to fetch|NetworkError/i.test(err.message || '')) return 'Network error — please check your connection and try again.';
+    return (err && err.message) || 'Something went wrong. Please try again.';
+  }
+
   function getParam(n) { return new URLSearchParams(window.location.search).get(n) || ''; }
 
   let ASK_ADULTS = getParam('ask_adults') === '1';
@@ -339,7 +359,18 @@
     }
 
     if (!partyId) { renderInvite({}); return; }
-    fetch('/api/rsvp?action=get-party&id=' + partyId).then(r => r.json()).then(d => renderInvite(d || {})).catch(() => renderInvite({}));
+    // 6 s read timeout — invite hydration is non-blocking (we render the
+    // bare invite from URL params if it fails), but a 30 s hang would still
+    // delay the "we'll see you there" details unnecessarily.
+    fetchWithTimeout('/api/rsvp?action=get-party&id=' + partyId, {}, 6000)
+      .then(r => r.json())
+      .then(d => renderInvite(d || {}))
+      .catch(err => {
+        // Non-fatal — fall back to URL-param invite. Log so we can see
+        // whether this is firing on real guest devices.
+        console.warn('get-party fetch failed:', describeFetchError(err));
+        renderInvite({});
+      });
   });
 
   let _submitted = false;
@@ -471,7 +502,16 @@
     };
 
     try {
-      const res  = await fetch(RSVP_API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+      // 12 s — submit-rsvp can send up to 2 emails synchronously (host + guest),
+      // so we give it more than a bare DB write but still bail before the
+      // user gives up and refreshes (which on TC11 would create a duplicate).
+      const res  = await fetchWithTimeout(RSVP_API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }, 12000);
+      // TC12: server now returns 429 when rate-limited — show the friendly
+      // server message rather than burying it under a generic alert.
+      if (res.status === 429) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Too many requests — please wait a moment and try again.');
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
 
@@ -498,7 +538,7 @@
       launchConfetti();
 
     } catch (err) {
-      document.getElementById('error-text').textContent = err.message || 'Something went wrong. Please try again.';
+      document.getElementById('error-text').textContent = describeFetchError(err);
       errorBanner.classList.add('visible');
     } finally {
       btn.disabled = false; btn.classList.remove('loading'); btn.querySelector('.btn-label').textContent = '✓ Confirm my RSVP';
@@ -523,7 +563,11 @@
     const payload = { party_id:pid, guest_name:guestName, attending:false, guest_count:0, allergies:document.getElementById('no-message').value.trim()||null, guest_email:guestEmail||null };
 
     try {
-      const res  = await fetch(RSVP_API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+      const res  = await fetchWithTimeout(RSVP_API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }, 12000);
+      if (res.status === 429) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Too many requests — please wait a moment and try again.');
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
       _submitted = true;
@@ -537,7 +581,7 @@
         <p class="powered-by" style="margin-top:28px;">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">Tiny Invites</a> ✨</p>
       `;
     } catch (err) {
-      document.getElementById('no-error-text').textContent = err.message || 'Something went wrong.';
+      document.getElementById('no-error-text').textContent = describeFetchError(err);
       errorBanner.classList.add('visible');
     } finally {
       btn.disabled = false; btn.classList.remove('loading'); btn.querySelector('.btn-label').textContent = 'Send';

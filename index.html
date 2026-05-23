@@ -898,6 +898,25 @@
 </footer>
 
 <script>
+  // ── FETCH HELPERS (TC06 / TC09) ───────────────────────────
+  // Wraps fetch() with an AbortController-backed timeout so a slow API can't
+  // leave the UI hanging forever. Pass a longer timeout for uploads.
+  const DEFAULT_FETCH_TIMEOUT_MS = 10000;
+  async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_FETCH_TIMEOUT_MS) {
+    const ctrl  = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      return await fetch(url, { ...options, signal: ctrl.signal });
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  function describeFetchError(err) {
+    if (err && err.name === 'AbortError') return 'Request timed out — please check your connection and try again.';
+    if (err && /Failed to fetch|NetworkError/i.test(err.message || '')) return 'Network error — please check your connection and try again.';
+    return (err && err.message) || 'Something went wrong. Please try again.';
+  }
+
   // ── CLOUDINARY CONFIG ─────────────────────────────────────
   const CLOUDINARY_CLOUD = 'dlkwbg59c';
   const CLOUDINARY_PRESET = 'gamvkohk';
@@ -947,7 +966,14 @@
       formData.append('file', file);
       formData.append('upload_preset', CLOUDINARY_PRESET);
 
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: formData });
+      // Photo uploads are large + on mobile networks, so allow 30 s before
+      // we give up. Anything more and the user has effectively lost the
+      // connection — show them a clear error instead of spinning forever.
+      const res = await fetchWithTimeout(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`,
+        { method: 'POST', body: formData },
+        30000
+      );
       clearInterval(iv);
       document.getElementById('photo-progress-bar').style.width = '100%';
       const data = await res.json();
@@ -963,7 +989,8 @@
       setTimeout(() => showPhotoState('preview'), 300);
     } catch(err) {
       clearInterval(iv);
-      showPhotoError(err.message || 'Upload failed — please try again.');
+      // describeFetchError distinguishes timeout vs network drop vs other
+      showPhotoError(describeFetchError(err));
     }
   }
 
@@ -1111,8 +1138,28 @@
   function handleContact(e) {
     e.preventDefault();
     var form = document.getElementById('contact-form');
-    fetch(form.action, { method:'POST', body:new FormData(form), headers:{ 'Accept':'application/json' } })
-      .then(r => { if (r.ok) { form.style.display='none'; document.getElementById('contact-success').style.display='flex'; } });
+    // TC06: previously had no .catch() — a network drop silently failed
+    // with no feedback. Inline an error banner so the user knows to retry.
+    fetchWithTimeout(form.action, {
+      method:  'POST',
+      body:    new FormData(form),
+      headers: { 'Accept': 'application/json' },
+    }, 8000)
+      .then(function(r) {
+        if (!r.ok) throw new Error('Submission failed (' + r.status + ')');
+        form.style.display = 'none';
+        document.getElementById('contact-success').style.display = 'flex';
+      })
+      .catch(function(err) {
+        var errEl = document.getElementById('contact-error');
+        if (!errEl) {
+          errEl = document.createElement('p');
+          errEl.id = 'contact-error';
+          errEl.style.cssText = 'margin-top:12px;padding:10px 14px;background:rgba(239,68,68,0.12);border-radius:6px;color:#fca5a5;font-size:0.82rem;line-height:1.5;';
+          form.appendChild(errEl);
+        }
+        errEl.textContent = describeFetchError(err);
+      });
   }
 </script>
 </body>

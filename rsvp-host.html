@@ -355,6 +355,26 @@
 </div>
 
 <script>
+  // ── FETCH HELPERS (TC06 / TC09) ───────────────────────────
+  // Host confirmation hits /api/party?action=go-live, which writes to
+  // Supabase AND sends an email. Without a timeout, a stalled send could
+  // leave the host wondering if their invite went live.
+  const DEFAULT_FETCH_TIMEOUT_MS = 12000;
+  async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_FETCH_TIMEOUT_MS) {
+    const ctrl  = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      return await fetch(url, { ...options, signal: ctrl.signal });
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  function describeFetchError(err) {
+    if (err && err.name === 'AbortError') return 'Request timed out — please check your connection and try again.';
+    if (err && /Failed to fetch|NetworkError/i.test(err.message || '')) return 'Network error — please check your connection and try again.';
+    return (err && err.message) || 'Something went wrong. Please try again.';
+  }
+
   function getParam(n) { return new URLSearchParams(location.search).get(n) || ''; }
   function ordinal(n) { const s=['th','st','nd','rd'],v=parseInt(n)%100; return s[(v-20)%10]||s[v]||s[0]; }
   function formatDate(d) { try{ return new Date(d).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); } catch{ return d; } }
@@ -474,7 +494,10 @@
     btn.disabled=true; btn.innerHTML='⏳ Sending…';
 
     try {
-      const res = await fetch('/api/party?action=go-live', {
+      // 12 s — go-live writes to the DB then sends a confirmation email via
+      // Resend. Long enough to absorb a slow email send, short enough that
+      // the host doesn't sit on a spinner indefinitely.
+      const res = await fetchWithTimeout('/api/party?action=go-live', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           child_name:   previewName,
@@ -488,7 +511,11 @@
           count_adults: countAdults,
           count_babies: countBabies,
         })
-      });
+      }, 12000);
+      if (res.status === 429) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Too many requests — please wait a moment and try again.');
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Could not submit.');
 
@@ -496,7 +523,7 @@
       showCheckEmail(email);
 
     } catch (err) {
-      alert('Something went wrong: ' + (err.message || 'Please try again.'));
+      alert('Something went wrong: ' + describeFetchError(err));
       btn.disabled=false; btn.innerHTML='✨ Send confirmation email';
     }
   }

@@ -299,6 +299,26 @@ let _partyData = null;
 let _responses = [];
 let _token     = null;
 
+// ── FETCH HELPERS (TC06 / TC09) ──────────────────────────────────────────────
+// AbortController-backed timeout + uniform error description for every
+// dashboard fetch. Without this, a hung API leaves the page faded (loading
+// state) with no recovery path.
+const DEFAULT_FETCH_TIMEOUT_MS = 10000;
+async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_FETCH_TIMEOUT_MS) {
+  const ctrl  = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: ctrl.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+function describeFetchError(err) {
+  if (err && err.name === 'AbortError') return 'Request timed out — please check your connection and try again.';
+  if (err && /Failed to fetch|NetworkError/i.test(err.message || '')) return 'Network error — please check your connection and try again.';
+  return (err && err.message) || 'Something went wrong. Please try again.';
+}
+
 // ── FIX 3: XSS escaping ──────────────────────────────────────────────────────
 function escapeHtml(str) {
   return String(str || '')
@@ -315,14 +335,16 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (!_token) { showError('No dashboard token found. Please use the link from your invitation email.'); return; }
   showLoading(true);
   try {
-    const res  = await fetch(`/api/dashboard-api?action=load&token=${encodeURIComponent(_token)}`);
+    // 8 s — host dashboard is the front door; if it hasn't responded by
+    // then something's wrong and the user needs to know.
+    const res  = await fetchWithTimeout(`/api/dashboard-api?action=load&token=${encodeURIComponent(_token)}`, {}, 8000);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to load dashboard');
     _partyData = data.party;
     populateHeader(data.party);
     renderDashboard(data.responses, data.stats);
   } catch (err) {
-    showError(err.message);
+    showError(describeFetchError(err));
   } finally {
     showLoading(false);
   }
@@ -695,7 +717,8 @@ async function saveEdit(id) {
   if (saveBtn) { saveBtn.textContent = 'Saving…'; saveBtn.disabled = true; }
 
   try {
-    const res  = await fetch('/api/dashboard-api?action=update-guest', {
+    // 10 s — single-row DB update, should be quick.
+    const res  = await fetchWithTimeout('/api/dashboard-api?action=update-guest', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({
@@ -706,7 +729,7 @@ async function saveEdit(id) {
         guest_count_babies:   babies,
         allergies,
       }),
-    });
+    }, 10000);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to update');
 
@@ -751,7 +774,7 @@ async function saveEdit(id) {
     showToast('✓ Guest updated');
 
   } catch (err) {
-    showToast('⚠️ ' + err.message);
+    showToast('⚠️ ' + describeFetchError(err));
     if (saveBtn) { saveBtn.textContent = 'Save'; saveBtn.disabled = false; }
   }
 }
@@ -760,11 +783,11 @@ async function deleteGuest(id, name) {
   if (!confirm(`Remove ${name} from the guest list?`)) return;
 
   try {
-    const res  = await fetch('/api/dashboard-api?action=update-guest', {
+    const res  = await fetchWithTimeout('/api/dashboard-api?action=update-guest', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ token:_token, guest_id:id, action:'delete' }),
-    });
+    }, 10000);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to delete');
 
@@ -781,14 +804,14 @@ async function deleteGuest(id, name) {
     showToast(`🗑 ${name} removed`);
 
   } catch (err) {
-    showToast('⚠️ ' + err.message);
+    showToast('⚠️ ' + describeFetchError(err));
   }
 }
 
 // Refresh only stats + dietary flags — table stays untouched
 async function refreshStats() {
   try {
-    const res  = await fetch(`/api/dashboard-api?action=load&token=${encodeURIComponent(_token)}`);
+    const res  = await fetchWithTimeout(`/api/dashboard-api?action=load&token=${encodeURIComponent(_token)}`, {}, 8000);
     const data = await res.json();
     if (!res.ok) return;
 
@@ -852,7 +875,8 @@ async function resendEmail() {
   btn.textContent = '⏳ Sending…';
   btn.disabled = true;
   try {
-    const res  = await fetch('/api/dashboard-api?action=send-email', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ token:_token }) });
+    // 15 s — email send touches Resend which can be slower than a simple DB read.
+    const res  = await fetchWithTimeout('/api/dashboard-api?action=send-email', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ token:_token }) }, 15000);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to send');
     btn.classList.add('sent');
@@ -860,7 +884,7 @@ async function resendEmail() {
     showToast(`✉️ Guest list sent to your email`);
   } catch (err) {
     btn.textContent = '✉️ Email me the full guest list';
-    showToast('⚠️ ' + err.message);
+    showToast('⚠️ ' + describeFetchError(err));
   } finally {
     btn.disabled = false;
     setTimeout(() => { btn.classList.remove('sent'); btn.textContent = '✉️ Email me the full guest list'; }, 4000);

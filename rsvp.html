@@ -87,7 +87,21 @@
   #confetti-canvas { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999; }
   .tally { display:inline-flex; align-items:center; gap:6px; background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:20px; padding:5px 14px; font-size:0.8rem; color:var(--mid); margin-top:16px; }
   .tally strong { color:var(--gold); }
-  @media(max-width:520px) { .card { padding:36px 24px; } h1 { font-size:2rem; } }
+
+  /* ── RESPONSE CARD (yes/no confirmation pages) ── */
+  .response-card { background:var(--warm-white); border:1px solid var(--gold-pale); border-radius:24px; max-width:540px; width:calc(100% - 40px); box-shadow:0 8px 40px rgba(42,34,24,0.07); overflow:hidden; animation:fadeUp 0.55s cubic-bezier(.22,.61,.36,1) both; }
+  .response-card-hero { width:100%; aspect-ratio:16/9; overflow:hidden; }
+  .response-card-hero img { width:100%; height:100%; object-fit:cover; display:block; }
+  .response-card-body { padding:40px 48px 44px; position:relative; }
+  .response-card-body::before { content:''; position:absolute; inset:0 10px 10px; border:1px solid var(--gold-pale); border-top:none; border-radius:0 0 18px 18px; pointer-events:none; opacity:0.6; }
+  .powered-by { text-align:center; margin-top:28px; font-size:0.75rem; color:var(--soft); letter-spacing:0.04em; }
+  .powered-by a { color:var(--gold); text-decoration:none; }
+
+  @media(max-width:520px) {
+    .card { padding:36px 24px; }
+    h1 { font-size:2rem; }
+    .response-card-body { padding:28px 24px 36px; }
+  }
 </style>
 </head>
 <body>
@@ -151,8 +165,6 @@
     <!-- GUEST COUNTERS -->
     <div class="counter-section">
       <span class="counter-section-title">How many guests are coming with you?</span>
-
-      <!-- Children — always shown -->
       <div class="counter-row">
         <div class="counter-label">
           <strong>Children</strong>
@@ -164,8 +176,6 @@
           <button class="counter-btn" onclick="change('children',1)" aria-label="more children">+</button>
         </div>
       </div>
-
-      <!-- Babies — only shown when host enabled ask_babies=1 -->
       <div class="counter-row" id="babies-row" style="display:none;">
         <div class="counter-label">
           <strong>Babies</strong>
@@ -177,8 +187,6 @@
           <button class="counter-btn" onclick="change('babies',1)" aria-label="more babies">+</button>
         </div>
       </div>
-
-      <!-- Adults — only shown when host enabled ask_adults=1 -->
       <div class="counter-row" id="adults-row" style="display:none;">
         <div class="counter-label">
           <strong>Adults</strong>
@@ -223,49 +231,73 @@
 
 <!-- PAGE 3: NO / SORRY -->
 <div class="page" id="page-no">
-  <div class="card">
-    <div class="brand">Tiny Invites</div>
-    <div class="sorry-emoji">🥺</div>
-    <h2>Oh, we'll miss you!</h2>
-    <div class="divider"><span></span><i>◆</i><span></span></div>
-    <p class="sorry-note" style="margin-bottom:22px;">That's a shame — but we completely understand.<br>We'll let the host know you can't make it.</p>
-    <input type="hidden" id="no-guest-name">
-    <div style="margin-bottom:20px;">
-      <label>Anything you'd like the host to know? <span style="color:var(--soft);font-weight:300;">(optional)</span></label>
-      <textarea id="no-message" placeholder="e.g. We'll be away that weekend, hope it's a wonderful day!"></textarea>
+  <div class="response-card">
+    <div class="response-card-hero">
+      <img src="picture.png" alt="Party celebration" onerror="this.style.display='none'">
     </div>
-    <div class="email-optin" style="margin-bottom:20px;">
-      <label class="email-optin-label">
-        <input type="checkbox" id="no-email-optin" onchange="toggleNoEmailField()">
-        <span><strong>Send me a confirmation</strong> — optional.<br>We'll confirm we've passed on your message.</span>
-      </label>
-      <div id="no-email-wrap" style="display:none;margin-top:12px;">
-        <input type="email" id="no-email" placeholder="your@email.com">
-        <p class="field-hint">Only used for this confirmation. Nothing else.</p>
+    <div class="response-card-body" id="page-no-inner">
+      <div class="brand">Tiny Invites</div>
+      <div class="sorry-emoji">🥺</div>
+      <h2>Oh, we'll miss you!</h2>
+      <div class="divider"><span></span><i>◆</i><span></span></div>
+      <p class="sorry-note" style="margin-bottom:22px;">That's a shame — but we completely understand.<br>We'll let the host know you can't make it.</p>
+      <input type="hidden" id="no-guest-name">
+      <div style="margin-bottom:20px;">
+        <label>Anything you'd like the host to know? <span style="color:var(--soft);font-weight:300;">(optional)</span></label>
+        <textarea id="no-message" placeholder="e.g. We'll be away that weekend, hope it's a wonderful day!"></textarea>
       </div>
-    </div>
-    <button class="btn-primary" id="no-submit-btn" onclick="submitDecline()">
-      <div class="spinner"></div><span class="btn-label">Send</span>
-    </button>
-    <div class="error-banner" id="no-error-banner">⚠️ <span id="no-error-text">Something went wrong. Please try again.</span></div>
-    <div style="margin-top:16px;text-align:center;">
-      <button onclick="showPage('page-invite')" style="background:none;border:none;color:var(--soft);font-size:0.8rem;cursor:pointer;text-decoration:underline;">← Actually, let me re-check my diary</button>
+      <div class="email-optin" style="margin-bottom:20px;">
+        <label class="email-optin-label">
+          <input type="checkbox" id="no-email-optin" onchange="toggleNoEmailField()">
+          <span><strong>Send me a confirmation</strong> — optional.<br>We'll confirm we've passed on your message.</span>
+        </label>
+        <div id="no-email-wrap" style="display:none;margin-top:12px;">
+          <input type="email" id="no-email" placeholder="your@email.com">
+          <p class="field-hint">Only used for this confirmation. Nothing else.</p>
+        </div>
+      </div>
+      <button class="btn-primary" id="no-submit-btn" onclick="submitDecline()">
+        <div class="spinner"></div><span class="btn-label">Send</span>
+      </button>
+      <div class="error-banner" id="no-error-banner">⚠️ <span id="no-error-text">Something went wrong. Please try again.</span></div>
+      <div style="margin-top:16px;text-align:center;">
+        <button onclick="showPage('page-invite')" style="background:none;border:none;color:var(--soft);font-size:0.8rem;cursor:pointer;text-decoration:underline;">← Actually, let me re-check my diary</button>
+      </div>
+      <p class="powered-by">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener">Tiny Invites</a> ✨</p>
     </div>
   </div>
 </div>
 
 <!-- PAGE 4: SUCCESS -->
 <div class="page" id="page-success">
-  <div class="card">
-    <div class="brand">Tiny Invites</div>
-    <div class="success-emoji">🎉</div>
-    <h2>You're on the list!</h2>
-    <div class="divider"><span></span><i>◆</i><span></span></div>
-    <p class="success-note" id="success-message">We look forward to seeing you — it's going to be a wonderful celebration!<br><br>Keep an eye on your inbox for any updates. See you there! 🎈</p>
-    <p class="success-note" id="success-email-sent" style="display:none;margin-top:12px;font-size:0.82rem;color:var(--soft);">📬 Confirmation sent to <span id="success-email-address" style="color:var(--gold);"></span></p>
-    <p class="success-note" id="success-contact" style="display:none;margin-top:14px;font-size:0.82rem;">Questions? Reach the host at <a id="success-host-email" href="#" style="color:var(--gold);"></a></p>
-    <div style="text-align:center;">
-      <div class="tally" id="tally-badge">👥 <strong id="tally-count">1</strong> <span id="tally-label">guest</span> confirmed</div>
+  <div class="response-card">
+    <div class="response-card-hero">
+      <img src="picture.png" alt="Party celebration" onerror="this.style.display='none'">
+    </div>
+    <div class="response-card-body" id="page-success-inner">
+      <div class="brand">Tiny Invites</div>
+      <div class="success-emoji">🎉</div>
+      <h2>You're on the list!</h2>
+      <div class="divider"><span></span><i>◆</i><span></span></div>
+      <p class="success-note" id="success-message">We look forward to seeing you — it's going to be a wonderful celebration!<br><br>Keep an eye on your inbox for any updates. See you there! 🎈</p>
+      <p class="success-note" id="success-email-sent" style="display:none;margin-top:12px;font-size:0.82rem;color:var(--soft);">📬 Confirmation sent to <span id="success-email-address" style="color:var(--gold);"></span></p>
+      <p class="success-note" id="success-contact" style="display:none;margin-top:14px;font-size:0.82rem;">Questions? Reach the host at <a id="success-host-email" href="#" style="color:var(--gold);"></a></p>
+      <div style="text-align:center;">
+        <div class="tally" id="tally-badge">👥 <strong id="tally-count">1</strong> <span id="tally-label">guest</span> confirmed</div>
+      </div>
+
+      <!-- Gift nudge -->
+      <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--gold-light);">
+        <p style="font-size:0.88rem;color:var(--mid);text-align:center;margin-bottom:12px;">🎁 Not sure what to bring?</p>
+        <a href="https://www.amazon.co.uk/s?k=children%27s+birthday+gifts&tag=tinyinvites-21"
+           target="_blank" rel="noopener sponsored"
+           style="display:block;text-align:center;background:var(--gold-pale);border:1px solid var(--gold-light);border-radius:12px;padding:13px 20px;font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--dark);text-decoration:none;transition:background 0.2s;"
+           onmouseover="this.style.background='var(--gold-light)'" onmouseout="this.style.background='var(--gold-pale)'">
+          Browse present ideas ↗
+        </a>
+      </div>
+
+      <p class="powered-by">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener">Tiny Invites</a> ✨</p>
     </div>
   </div>
 </div>
@@ -275,14 +307,9 @@
 
   function getParam(n) { return new URLSearchParams(window.location.search).get(n) || ''; }
 
-  // Host counting preferences. Default to false; populated from the party
-  // record once it loads. ?ask_adults=1 / ?ask_babies=1 stay as a fallback
-  // for any cached email links that pre-date the column.
   let ASK_ADULTS = getParam('ask_adults') === '1';
   let ASK_BABIES = getParam('ask_babies') === '1';
 
-  // Re-apply visibility based on current ASK_* flags. Called once during init
-  // (children-only state) and again from renderInvite() after party data lands.
   function applyCountingPrefs() {
     document.getElementById('adults-row').style.display = ASK_ADULTS ? 'flex' : 'none';
     document.getElementById('babies-row').style.display = ASK_BABIES ? 'flex' : 'none';
@@ -292,18 +319,14 @@
     }
   }
 
-  // ── Counters ─────────────────────────────────────────────
   const counts = { children: 0, babies: 0, adults: 1 };
   function change(key, delta) {
     counts[key] = Math.max(0, counts[key] + delta);
-    if (key === 'adults' && counts[key] < 1) counts[key] = 1; // adults min 1
+    if (key === 'adults' && counts[key] < 1) counts[key] = 1;
     document.getElementById(key + '-val').textContent = counts[key];
   }
 
-  // ── Init ─────────────────────────────────────────────────
   window.addEventListener('DOMContentLoaded', () => {
-    // Initial state: children only. renderInvite() will re-apply once the
-    // party record is fetched (in case the host enabled adults/babies).
     applyCountingPrefs();
 
     const partyId  = getParam('party') || getParam('partyId') || '';
@@ -319,12 +342,10 @@
     fetch('/api/rsvp?action=get-party&id=' + partyId).then(r => r.json()).then(d => renderInvite(d || {})).catch(() => renderInvite({}));
   });
 
-  // ── Duplicate prevention ─────────────────────────────────
   let _submitted = false;
   function isDuplicate(pid, name) { return sessionStorage.getItem('rsvp_done_'+pid) === name.toLowerCase().trim(); }
   function markSubmitted(pid, name) { sessionStorage.setItem('rsvp_done_'+pid, name.toLowerCase().trim()); _submitted = true; }
 
-  // ── Email toggles ─────────────────────────────────────────
   function toggleEmailField() {
     document.getElementById('guest-email-wrap').style.display = document.getElementById('guest-email-optin').checked ? 'block' : 'none';
     if (!document.getElementById('guest-email-optin').checked) document.getElementById('guest-email').value = '';
@@ -334,7 +355,6 @@
     if (!document.getElementById('no-email-optin').checked) document.getElementById('no-email').value = '';
   }
 
-  // ── Name gate ─────────────────────────────────────────────
   function proceedYes() {
     const name = document.getElementById('landing-guest-name').value.trim();
     if (!name) { document.getElementById('landing-name-error').style.display = 'block'; document.getElementById('landing-guest-name').focus(); return; }
@@ -356,7 +376,6 @@
     window.scrollTo(0, 0);
   }
 
-  // ── Render invite ─────────────────────────────────────────
   function renderInvite(party) {
     const childName   = party.child_name   || getParam('name')     || 'our little one';
     const age         = party.age          || getParam('age')       || '';
@@ -367,8 +386,6 @@
     const phoneNumber = party.phone_number || '';
     const photoUrl    = party.photo_url    || getParam('photo')     || '';
 
-    // Host counting preferences from the party record override any URL fallback.
-    // The party object is the source of truth — guests can't tamper with it.
     if (party.count_adults !== undefined) ASK_ADULTS = party.count_adults === true || party.count_adults === 'true';
     if (party.count_babies !== undefined) ASK_BABIES = party.count_babies === true || party.count_babies === 'true';
     applyCountingPrefs();
@@ -414,10 +431,8 @@
   }
 
   function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>'); }
-  function ordinal(n) { const s=['th','st','nd','rd'],v=parseInt(n)%100; return s[(v-20)%10]||s[v]||s[0]; }
   function formatDate(d) { try { return new Date(d).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); } catch { return d; } }
 
-  // ── Submit YES ────────────────────────────────────────────
   async function submitRSVP() {
     const guestName = document.getElementById('guest-name').value.trim();
     if (!guestName) { alert('Please enter your name 😊'); return; }
@@ -460,7 +475,6 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
 
-      // Build friendly summary
       const parts = [];
       if (childrenCount > 0) parts.push(`${childrenCount} ${childrenCount===1?'child':'children'}`);
       if (ASK_BABIES && babiesCount > 0) parts.push(`${babiesCount} ${babiesCount===1?'baby':'babies'}`);
@@ -491,7 +505,6 @@
     }
   }
 
-  // ── Submit NO ─────────────────────────────────────────────
   async function submitDecline() {
     if (_submitted) return;
     const guestName  = document.getElementById('no-guest-name').value.trim();
@@ -514,13 +527,14 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
       _submitted = true;
-      document.querySelector('#page-no .card').innerHTML = `
+      document.getElementById('page-no-inner').innerHTML = `
         <div class="brand">Tiny Invites</div>
         <div class="sorry-emoji">💛</div>
         <h2>Thank you, ${guestName}!</h2>
         <div class="divider"><span></span><i>◆</i><span></span></div>
         <p class="sorry-note">We've let the host know you can't make it.<br><br>Sending lots of love 💛</p>
         ${guestEmail ? `<p style="text-align:center;font-size:0.8rem;color:var(--soft);margin-top:14px;">📬 Confirmation sent to ${guestEmail}</p>` : ''}
+        <p class="powered-by" style="margin-top:28px;">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">Tiny Invites</a> ✨</p>
       `;
     } catch (err) {
       document.getElementById('no-error-text').textContent = err.message || 'Something went wrong.';
@@ -530,7 +544,6 @@
     }
   }
 
-  // ── Confetti ──────────────────────────────────────────────
   function launchConfetti() {
     const canvas = document.getElementById('confetti-canvas');
     const ctx = canvas.getContext('2d');

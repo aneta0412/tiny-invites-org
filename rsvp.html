@@ -210,11 +210,16 @@
     <div class="email-optin" style="margin-bottom:20px;">
       <label class="email-optin-label">
         <input type="checkbox" id="guest-email-optin" onchange="toggleEmailField()">
-        <span><strong>Send me a confirmation email</strong> — optional.<br>We'll confirm your RSVP by email once it's saved.</span>
+        <span><strong>Send me a confirmation email</strong> <span style="font-weight:300;color:var(--soft);">— optional</span><br>We'll confirm your RSVP by email once it's saved.</span>
       </label>
-      <div id="guest-email-wrap">
+      <div style="height:1px;background:var(--gold-light);margin:12px 0;"></div>
+      <label class="email-optin-label">
+        <input type="checkbox" id="guest-reminder-optin" onchange="toggleEmailField()">
+        <span><strong>Send me a party reminder</strong> <span style="font-weight:300;color:var(--soft);">— optional</span><br>One email, 3 days before the big day. 🎈</span>
+      </label>
+      <div id="guest-email-wrap" style="display:none;margin-top:12px;">
         <input type="email" id="guest-email" placeholder="your@email.com">
-        <p class="field-hint">Only used to send your confirmation. Nothing else.</p>
+        <p class="field-hint">Only used for the options you ticked above. Nothing else.</p>
       </div>
     </div>
 
@@ -233,7 +238,7 @@
 <div class="page" id="page-no">
   <div class="response-card">
     <div class="response-card-hero">
-      <img src="photo.png" alt="Party celebration" onerror="this.style.display='none'">
+      <img src="photo.png" alt="Party celebration" onerror="this.src='https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80'">
     </div>
     <div class="response-card-body" id="page-no-inner">
       <div class="brand">Tiny Invites</div>
@@ -272,7 +277,7 @@
 <div class="page" id="page-success">
   <div class="response-card">
     <div class="response-card-hero">
-      <img src="photo.png" alt="Party celebration" onerror="this.style.display='none'">
+      <img src="photo.png" alt="Party celebration" onerror="this.src='https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80'">
     </div>
     <div class="response-card-body" id="page-success-inner">
       <div class="brand">Tiny Invites</div>
@@ -378,8 +383,11 @@
   function markSubmitted(pid, name) { sessionStorage.setItem('rsvp_done_'+pid, name.toLowerCase().trim()); _submitted = true; }
 
   function toggleEmailField() {
-    document.getElementById('guest-email-wrap').style.display = document.getElementById('guest-email-optin').checked ? 'block' : 'none';
-    if (!document.getElementById('guest-email-optin').checked) document.getElementById('guest-email').value = '';
+    const wantsConfirm  = document.getElementById('guest-email-optin').checked;
+    const wantsReminder = document.getElementById('guest-reminder-optin').checked;
+    const needsEmail    = wantsConfirm || wantsReminder;
+    document.getElementById('guest-email-wrap').style.display = needsEmail ? 'block' : 'none';
+    if (!needsEmail) document.getElementById('guest-email').value = '';
   }
   function toggleNoEmailField() {
     document.getElementById('no-email-wrap').style.display = document.getElementById('no-email-optin').checked ? 'block' : 'none';
@@ -468,10 +476,12 @@
     const guestName = document.getElementById('guest-name').value.trim();
     if (!guestName) { alert('Please enter your name 😊'); return; }
 
-    const wantsEmail = document.getElementById('guest-email-optin').checked;
-    const guestEmail = wantsEmail ? document.getElementById('guest-email').value.trim() : '';
-    if (wantsEmail && !guestEmail) { alert('Please enter your email, or uncheck the confirmation option 📬'); document.getElementById('guest-email').focus(); return; }
-    if (wantsEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) { alert('Please enter a valid email address 📧'); return; }
+    const wantsEmail    = document.getElementById('guest-email-optin').checked;
+    const wantsReminder = document.getElementById('guest-reminder-optin').checked;
+    const needsEmail    = wantsEmail || wantsReminder;
+    const guestEmail    = needsEmail ? document.getElementById('guest-email').value.trim() : '';
+    if (needsEmail && !guestEmail) { alert('Please enter your email for the options you selected 📬'); document.getElementById('guest-email').focus(); return; }
+    if (needsEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) { alert('Please enter a valid email address 📧'); return; }
 
     const childrenCount = counts.children;
     const babiesCount   = ASK_BABIES ? counts.babies : null;
@@ -499,6 +509,7 @@
       guest_count_adults:   adultsCount,
       allergies:            document.getElementById('guest-allergies').value.trim() || null,
       guest_email:          guestEmail || null,
+      reminder_optin:       wantsReminder,
     };
 
     try {

@@ -313,14 +313,13 @@
   let ASK_BABIES = getParam('ask_babies') === '1';
 
   function applyCountingPrefs() {
-    document.getElementById('adults-row').style.display = ASK_ADULTS ? 'flex' : 'none';
-    document.getElementById('babies-row').style.display = ASK_BABIES ? 'flex' : 'none';
-    var childSmall = document.getElementById('children-small');
-    if (childSmall) {
-      childSmall.textContent = ASK_BABIES ? 'Age 1 and over' : 'Total children';
+      document.getElementById('adults-row').style.display = ASK_ADULTS ? 'flex' : 'none';
+      document.getElementById('babies-row').style.display = ASK_BABIES ? 'flex' : 'none';
+      var childSmall = document.getElementById('children-small');
+      if (childSmall) {
+        childSmall.textContent = ASK_BABIES ? 'Age 1 and over' : 'Including all ages';
+      }
     }
-  }
-
   const counts = { children: 0, babies: 0, adults: 1 };
   function change(key, delta) {
     counts[key] = Math.max(0, counts[key] + delta);

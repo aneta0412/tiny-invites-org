@@ -241,34 +241,15 @@
       <img src="photo.png" alt="Party celebration" onerror="this.src='https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80'">
     </div>
     <div class="response-card-body" id="page-no-inner">
-      <div class="brand">Tiny Invites</div>
-      <div class="sorry-emoji">🥺</div>
-      <h2>Oh, we'll miss you!</h2>
-      <div class="divider"><span></span><i>◆</i><span></span></div>
-      <p class="sorry-note" style="margin-bottom:22px;">That's a shame — but we completely understand.<br>We'll let the host know you can't make it.</p>
       <input type="hidden" id="no-guest-name">
-      <div style="margin-bottom:20px;">
-        <label>Anything you'd like the host to know? <span style="color:var(--soft);font-weight:300;">(optional)</span></label>
-        <textarea id="no-message" placeholder="e.g. We'll be away that weekend, hope it's a wonderful day!"></textarea>
+      <div class="brand">Tiny Invites</div>
+      <div class="sorry-emoji">💛</div>
+      <h2>Just a moment…</h2>
+      <div class="divider"><span></span><i>◆</i><span></span></div>
+      <p class="sorry-note">Letting the host know you can't make it.</p>
+      <div style="display:flex;justify-content:center;margin-top:20px;">
+        <div style="width:24px;height:24px;border:2px solid var(--gold-light);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;"></div>
       </div>
-      <div class="email-optin" style="margin-bottom:20px;">
-        <label class="email-optin-label">
-          <input type="checkbox" id="no-email-optin" onchange="toggleNoEmailField()">
-          <span><strong>Send me a confirmation</strong> — optional.<br>We'll confirm we've passed on your message.</span>
-        </label>
-        <div id="no-email-wrap" style="display:none;margin-top:12px;">
-          <input type="email" id="no-email" placeholder="your@email.com">
-          <p class="field-hint">Only used for this confirmation. Nothing else.</p>
-        </div>
-      </div>
-      <button class="btn-primary" id="no-submit-btn" onclick="submitDecline()">
-        <div class="spinner"></div><span class="btn-label">Send</span>
-      </button>
-      <div class="error-banner" id="no-error-banner">⚠️ <span id="no-error-text">Something went wrong. Please try again.</span></div>
-      <div style="margin-top:16px;text-align:center;">
-        <button onclick="showPage('page-invite')" style="background:none;border:none;color:var(--soft);font-size:0.8rem;cursor:pointer;text-decoration:underline;">← Actually, let me re-check my diary</button>
-      </div>
-      <p class="powered-by">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener">Tiny Invites</a> ✨</p>
     </div>
   </div>
 </div>
@@ -310,10 +291,6 @@
 <script>
   const RSVP_API_ENDPOINT = '/api/rsvp?action=submit-rsvp';
 
-  // ── FETCH HELPERS (TC06 / TC09) ───────────────────────────
-  // The RSVP page runs on guest devices (often patchy mobile data). Without
-  // a timeout, a stalled request silently leaves the Submit button stuck on
-  // "Submitting…". With it, we surface a clear error and let the guest retry.
   const DEFAULT_FETCH_TIMEOUT_MS = 12000;
   async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_FETCH_TIMEOUT_MS) {
     const ctrl  = new AbortController();
@@ -364,15 +341,10 @@
     }
 
     if (!partyId) { renderInvite({}); return; }
-    // 6 s read timeout — invite hydration is non-blocking (we render the
-    // bare invite from URL params if it fails), but a 30 s hang would still
-    // delay the "we'll see you there" details unnecessarily.
     fetchWithTimeout('/api/rsvp?action=get-party&id=' + partyId, {}, 6000)
       .then(r => r.json())
       .then(d => renderInvite(d || {}))
       .catch(err => {
-        // Non-fatal — fall back to URL-param invite. Log so we can see
-        // whether this is firing on real guest devices.
         console.warn('get-party fetch failed:', describeFetchError(err));
         renderInvite({});
       });
@@ -389,10 +361,6 @@
     document.getElementById('guest-email-wrap').style.display = needsEmail ? 'block' : 'none';
     if (!needsEmail) document.getElementById('guest-email').value = '';
   }
-  function toggleNoEmailField() {
-    document.getElementById('no-email-wrap').style.display = document.getElementById('no-email-optin').checked ? 'block' : 'none';
-    if (!document.getElementById('no-email-optin').checked) document.getElementById('no-email').value = '';
-  }
 
   function proceedYes() {
     const name = document.getElementById('landing-guest-name').value.trim();
@@ -401,12 +369,15 @@
     document.getElementById('guest-name').value = name;
     showPage('page-yes');
   }
+
   function proceedNo() {
     const name = document.getElementById('landing-guest-name').value.trim();
     if (!name) { document.getElementById('landing-name-error').style.display = 'block'; document.getElementById('landing-guest-name').focus(); return; }
     document.getElementById('landing-name-error').style.display = 'none';
     document.getElementById('no-guest-name').value = name;
     showPage('page-no');
+    // Auto-submit immediately — no action needed from the guest
+    submitDecline(true);
   }
 
   function showPage(id) {
@@ -513,12 +484,7 @@
     };
 
     try {
-      // 12 s — submit-rsvp can send up to 2 emails synchronously (host + guest),
-      // so we give it more than a bare DB write but still bail before the
-      // user gives up and refreshes (which on TC11 would create a duplicate).
       const res  = await fetchWithTimeout(RSVP_API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }, 12000);
-      // TC12: server now returns 429 when rate-limited — show the friendly
-      // server message rather than burying it under a generic alert.
       if (res.status === 429) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || 'Too many requests — please wait a moment and try again.');
@@ -530,13 +496,12 @@
       if (childrenCount > 0) parts.push(`${childrenCount} ${childrenCount===1?'child':'children'}`);
       if (ASK_BABIES && babiesCount > 0) parts.push(`${babiesCount} ${babiesCount===1?'baby':'babies'}`);
       if (ASK_ADULTS && adultsCount > 0) parts.push(`${adultsCount} ${adultsCount===1?'adult':'adults'}`);
-      const tally = parts.length ? parts.join(' + ') : '1 guest';
 
       document.getElementById('tally-count').textContent = totalGuests || 1;
       document.getElementById('tally-label').textContent = (totalGuests === 1) ? 'guest' : 'guests';
       document.getElementById('success-message').innerHTML =
         `We look forward to seeing <strong>${guestName}</strong> — it's going to be the most wonderful party for ${pd.childName || 'our little one'}!<br><br>
-         <span style="font-size:0.84rem;color:var(--soft);">Confirmed: ${tally}</span><br><br>
+         <span style="font-size:0.84rem;color:var(--soft);">Confirmed: ${parts.length ? parts.join(' + ') : '1 guest'}</span><br><br>
          See you there! 🎈`;
 
       if (guestEmail) {
@@ -556,46 +521,60 @@
     }
   }
 
-  async function submitDecline() {
+  // autoSubmit=true when called from proceedNo() — fires immediately with no
+  // note or email. The sorry page replaces itself with the thank you message
+  // on success. On failure, a retry link is shown inline.
+  async function submitDecline(autoSubmit = false) {
     if (_submitted) return;
+
     const guestName  = document.getElementById('no-guest-name').value.trim();
-    const wantsEmail = document.getElementById('no-email-optin').checked;
-    const guestEmail = wantsEmail ? document.getElementById('no-email').value.trim() : '';
-    if (wantsEmail && !guestEmail) { alert('Please enter your email, or uncheck the confirmation option 📬'); return; }
-    if (wantsEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) { alert('Please enter a valid email address 📧'); return; }
+    const pd         = window._partyData || {};
+    const pid        = pd.partyId || window._partyId || '';
 
-    const btn = document.getElementById('no-submit-btn');
-    const errorBanner = document.getElementById('no-error-banner');
-    btn.disabled = true; btn.classList.add('loading'); btn.querySelector('.btn-label').textContent = 'Sending…';
-    errorBanner.classList.remove('visible');
-
-    const pd  = window._partyData || {};
-    const pid = pd.partyId || window._partyId || '';
-    const payload = { party_id:pid, guest_name:guestName, attending:false, guest_count:0, allergies:document.getElementById('no-message').value.trim()||null, guest_email:guestEmail||null };
+    const payload = {
+      party_id:    pid,
+      guest_name:  guestName,
+      attending:   false,
+      guest_count: 0,
+      allergies:   null,
+      guest_email: null,
+    };
 
     try {
-      const res  = await fetchWithTimeout(RSVP_API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }, 12000);
+      const res = await fetchWithTimeout(RSVP_API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }, 12000);
       if (res.status === 429) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || 'Too many requests — please wait a moment and try again.');
       }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
+
       _submitted = true;
+
       document.getElementById('page-no-inner').innerHTML = `
         <div class="brand">Tiny Invites</div>
         <div class="sorry-emoji">💛</div>
-        <h2>Thank you, ${guestName}!</h2>
+        <h2>Thank you, ${escapeHtml(guestName)}!</h2>
         <div class="divider"><span></span><i>◆</i><span></span></div>
         <p class="sorry-note">We've let the host know you can't make it.<br><br>Sending lots of love 💛</p>
-        ${guestEmail ? `<p style="text-align:center;font-size:0.8rem;color:var(--soft);margin-top:14px;">📬 Confirmation sent to ${guestEmail}</p>` : ''}
         <p class="powered-by" style="margin-top:28px;">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">Tiny Invites</a> ✨</p>
       `;
+
     } catch (err) {
-      document.getElementById('no-error-text').textContent = describeFetchError(err);
-      errorBanner.classList.add('visible');
-    } finally {
-      btn.disabled = false; btn.classList.remove('loading'); btn.querySelector('.btn-label').textContent = 'Send';
+      console.error('Decline submit failed:', err.message);
+      document.getElementById('page-no-inner').innerHTML = `
+        <div class="brand">Tiny Invites</div>
+        <div class="sorry-emoji">🥺</div>
+        <h2>Oh, we'll miss you!</h2>
+        <div class="divider"><span></span><i>◆</i><span></span></div>
+        <p class="sorry-note" style="margin-bottom:20px;">That's a shame — but we completely understand.</p>
+        <p style="text-align:center;font-size:0.82rem;color:#e05555;margin-bottom:16px;">⚠️ Could not save your response — please try again.</p>
+        <button onclick="submitDecline(true)" style="width:100%;padding:14px;background:var(--dark);color:var(--cream);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.92rem;cursor:pointer;">Try again</button>
+        <div style="margin-top:16px;text-align:center;">
+          <button onclick="showPage('page-invite')" style="background:none;border:none;color:var(--soft);font-size:0.8rem;cursor:pointer;text-decoration:underline;">← Go back</button>
+        </div>
+        <p class="powered-by" style="margin-top:28px;">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">Tiny Invites</a> ✨</p>
+      `;
     }
   }
 

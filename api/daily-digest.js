@@ -75,8 +75,27 @@ export default async function handler(req, res) {
       results.push({ party_id, sent: true, count: partyResponses.length });
     }
 
-    return res.status(200).json({ results });
+    // ── Admin summary ─────────────────────────────────────
+    const sentCount    = results.filter(r => r.sent).length;
+    const skippedCount = results.filter(r => r.skipped).length;
 
+    try {
+      await resend.emails.send({
+        from:    'Tiny Invites <hello@tinyinvites.org>',
+        to:      'hello@tinyinvites.org',
+        subject: `📋 daily-digest ran — ${sentCount} sent, ${skippedCount} skipped`,
+        html:    `<p style="font-family:Arial,sans-serif;font-size:14px;color:#2a2218;">
+          <strong>Daily digest cron completed</strong><br/><br/>
+          ✅ <strong>Digests sent:</strong> ${sentCount}<br/>
+          ⏭️ <strong>Parties skipped</strong> (≤15 responses): ${skippedCount}<br/>
+          🕓 <strong>Ran at:</strong> ${new Date().toUTCString()}
+        </p>`,
+      });
+    } catch (adminErr) {
+      console.error('Admin summary email failed:', adminErr.message);
+    }
+
+    return res.status(200).json({ results });
   } catch (err) {
     console.error('daily-digest error:', err);
     return res.status(500).json({ error: err.message });

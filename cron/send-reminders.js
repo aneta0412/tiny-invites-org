@@ -4,6 +4,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { sendEmail } from '../lib/send-email.js';
+import { Resend } from 'resend';
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -159,6 +161,24 @@ export default async function handler(req, res) {
           skipped++;
         }
       }
+    }
+
+    // ── Admin summary ─────────────────────────────────────
+    try {
+      await resend.emails.send({
+        from:    'Tiny Invites <hello@tinyinvites.org>',
+        to:      'hello@tinyinvites.org',
+        subject: `⏰ send-reminders ran — ${sent} sent, ${skipped} failed`,
+        html:    `<p style="font-family:Arial,sans-serif;font-size:14px;color:#2a2218;">
+          <strong>Daily reminder cron completed</strong><br/><br/>
+          ✅ <strong>Sent:</strong> ${sent}<br/>
+          ❌ <strong>Failed/skipped:</strong> ${skipped}<br/>
+          📅 <strong>Target party date:</strong> ${targetDate}<br/>
+          🕓 <strong>Ran at:</strong> ${new Date().toUTCString()}
+        </p>`,
+      });
+    } catch (adminErr) {
+      console.error('Admin summary email failed:', adminErr.message);
     }
 
     return res.status(200).json({ sent, skipped });

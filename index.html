@@ -254,7 +254,11 @@
       <h1>Beautiful Kids' Party&nbsp;<br>Invitations, <em>Made Simple</em></h1>
       <p class="hero-sub">Create personalised invitations with QR codes, track RSVPs and organise your whole party in one place. No spreadsheets, no WhatsApp chaos or chasing replies.</p>
       <div class="hero-cta-row"><a href="#create" class="btn-primary">Create your free invite →</a></div>
-    </div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;opacity:0;animation:fadeUp 0.9s 0.8s forwards;">
+        <span style="font-size:0.72rem;color:var(--mid);display:flex;align-items:center;gap:6px;">✓ Free forever</span>
+        <span style="font-size:0.72rem;color:var(--mid);display:flex;align-items:center;gap:6px;">✓ Guests reminded 3 days before</span>
+        <span style="font-size:0.72rem;color:var(--mid);display:flex;align-items:center;gap:6px;">✓ No app needed</span>
+      </div>    </div>
     <aside class="hero-panel" aria-label="How Tiny Invites works">
       <div class="hero-panel-header">
         <p class="section-label">See it in action</p>
@@ -302,8 +306,8 @@
         </div>
         <div class="invite-field"><label for="ci-note">Special note for guests <span style="color:var(--soft);font-weight:300;">optional</span></label><textarea id="ci-note" placeholder="e.g. Parking on the left, no nut products please." rows="4"></textarea></div>
       </div>
-      <button class="invite-submit" type="button" onclick="generateInvite()" id="ci-generate-btn">See my unique invite</button>
-      <p class="invite-note">No sign-up required. Free, always. You'll confirm before it goes live.</p>
+      <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" id="ci-honeypot">
+      <button class="invite-submit" type="button" onclick="generateInvite()" id="ci-generate-btn">See my unique invite</button>      <p class="invite-note">No sign-up required. Free, always. You'll confirm before it goes live.</p>
     </div>
   </div>
 </section>
@@ -530,22 +534,25 @@
     return s[(v - 20) % 10] || s[v] || s[0];
   }
   function generateInvite() {
-    const name = document.getElementById('ci-name').value.trim();
-    const age = document.getElementById('ci-age').value.trim();
-    const loc = document.getElementById('ci-location').value.trim();
-    if (!name) return alert("Please enter the child's name.");
-    if (!age) return alert('Please enter their turning age.');
-    if (!loc) return alert('Please enter the party location.');
-    const btn = document.getElementById('ci-generate-btn');
-    btn.disabled = true; btn.textContent = 'Creating...'; btn.style.opacity = '0.7';
-    const base = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
-    const params = new URLSearchParams({
-      name, age, location:loc,
-      photo:document.getElementById('ci-photo-url').value.trim() || '',
-      note:document.getElementById('ci-note').value.trim() || ''
-    });
-    window.location.href = `${base}rsvp-host.html?${params.toString()}`;
-  }
+      const name = document.getElementById('ci-name').value.trim();
+      const age = document.getElementById('ci-age').value.trim();
+      const loc = document.getElementById('ci-location').value.trim();
+      if (!name) return alert("Please enter the child's name.");
+      if (!age) return alert('Please enter their turning age.');
+      if (!loc) return alert('Please enter the party location.');
+      // Honeypot — if filled, silently do nothing (bot)
+      if (document.getElementById('ci-honeypot')?.value) return;
+      const btn = document.getElementById('ci-generate-btn');
+      btn.disabled = true; btn.textContent = 'Creating...'; btn.style.opacity = '0.7';
+      const base = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+      const params = new URLSearchParams({
+        name, age, location:loc,
+        photo:document.getElementById('ci-photo-url').value.trim() || '',
+        note:document.getElementById('ci-note').value.trim() || '',
+        website:document.getElementById('ci-honeypot')?.value || ''
+      });
+      window.location.href = `${base}rsvp-host.html?${params.toString()}`;
+    }
 
   let designsMoreOpen = false;
   function toggleDesignsMore() {

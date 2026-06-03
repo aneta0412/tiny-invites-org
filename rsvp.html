@@ -520,23 +520,26 @@
     }
   }
 
-  // autoSubmit=true when called from proceedNo() — fires immediately with no
-  // note or email. The sorry page replaces itself with the thank you message
-  // on success. On failure, a retry link is shown inline.
-  async function submitDecline(autoSubmit = false) {
+// Step 1: auto-called from proceedNo(). Saves decline to DB with
+  // hold_host_email=true — host email is deferred until sendDeclineNote()
+  // fires (either on guest Send or after 30s timer).
+  let _declineResponseId = null;
+
+  async function submitDecline() {
     if (_submitted) return;
 
-    const guestName  = document.getElementById('no-guest-name').value.trim();
-    const pd         = window._partyData || {};
-    const pid        = pd.partyId || window._partyId || '';
+    const guestName = document.getElementById('no-guest-name').value.trim();
+    const pd        = window._partyData || {};
+    const pid       = pd.partyId || window._partyId || '';
 
     const payload = {
-      party_id:    pid,
-      guest_name:  guestName,
-      attending:   false,
-      guest_count: 0,
-      allergies:   null,
-      guest_email: null,
+      party_id:         pid,
+      guest_name:       guestName,
+      attending:        false,
+      guest_count:      0,
+      allergies:        null,
+      guest_email:      null,
+      hold_host_email:  true,
     };
 
     try {
@@ -549,15 +552,38 @@
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
 
       _submitted = true;
+      _declineResponseId = data.response_id || data.id || null;
 
+      // Show thank you + optional note box
       document.getElementById('page-no-inner').innerHTML = `
         <div class="brand">Tiny Invites</div>
         <div class="sorry-emoji">💛</div>
         <h2>Thank you, ${escapeHtml(guestName)}!</h2>
         <div class="divider"><span></span><i>◆</i><span></span></div>
-        <p class="sorry-note">We've let the host know you can't make it.<br><br>Sending lots of love 💛</p>
+        <p class="sorry-note">We've let the host know you can't make it.<br>Sending lots of love 💛</p>
+        <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--gold-light);">
+          <label style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:8px;display:block;">
+            Want to leave a note for the host? <span style="color:var(--soft);font-weight:300;text-transform:none;letter-spacing:0;">optional</span>
+          </label>
+          <textarea id="decline-note-text" placeholder="e.g. We'll be away that weekend — hope it's a wonderful day!" rows="3"
+            style="width:100%;padding:13px 16px;background:var(--cream);border:1px solid var(--gold-light);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:var(--dark);outline:none;resize:vertical;min-height:76px;transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'"></textarea>
+          <button id="decline-note-btn" onclick="sendDeclineNote(false)"
+            style="width:100%;margin-top:10px;padding:14px;background:var(--dark);color:var(--cream);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.92rem;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;"
+            onmouseover="this.style.background='var(--gold)'" onmouseout="this.style.background='var(--dark)'">
+            <div class="spinner" id="decline-note-spinner"></div>
+            <span id="decline-note-label">Send note to host</span>
+          </button>
+          <p id="decline-note-sent" style="display:none;text-align:center;font-size:0.82rem;color:var(--soft);margin-top:10px;">✓ Note sent to the host 💛</p>
+          <p style="text-align:center;margin-top:10px;font-size:0.75rem;color:var(--soft);">
+            Or skip — the host has already been notified you can't attend.
+          </p>
+        </div>
         <p class="powered-by" style="margin-top:28px;">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">Tiny Invites</a> ✨</p>
       `;
+
+      // 30s timer — if guest doesn't send a note, fire host email without one
+      window._noNoteTimer = setTimeout(() => sendDeclineNote(true), 30000);
 
     } catch (err) {
       console.error('Decline submit failed:', err.message);
@@ -568,12 +594,70 @@
         <div class="divider"><span></span><i>◆</i><span></span></div>
         <p class="sorry-note" style="margin-bottom:20px;">That's a shame — but we completely understand.</p>
         <p style="text-align:center;font-size:0.82rem;color:#e05555;margin-bottom:16px;">⚠️ Could not save your response — please try again.</p>
-        <button onclick="submitDecline(true)" style="width:100%;padding:14px;background:var(--dark);color:var(--cream);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.92rem;cursor:pointer;">Try again</button>
+        <button onclick="_submitted=false;submitDecline()" style="width:100%;padding:14px;background:var(--dark);color:var(--cream);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.92rem;cursor:pointer;">Try again</button>
         <div style="margin-top:16px;text-align:center;">
           <button onclick="showPage('page-invite')" style="background:none;border:none;color:var(--soft);font-size:0.8rem;cursor:pointer;text-decoration:underline;">← Go back</button>
         </div>
         <p class="powered-by" style="margin-top:28px;">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">Tiny Invites</a> ✨</p>
       `;
+    }
+  }
+
+  // Step 2: fires when guest hits Send OR after 30s timer.
+  // Updates DB with note if present, sends host email.
+  async function sendDeclineNote(fromTimer = false) {
+    if (!fromTimer && window._noNoteTimer) {
+      clearTimeout(window._noNoteTimer);
+      window._noNoteTimer = null;
+    }
+
+    const noteEl = document.getElementById('decline-note-text');
+    const note   = noteEl ? noteEl.value.trim() : '';
+
+    // If timer fired but guest is actively typing, wait another 15s
+    if (fromTimer && note.length > 0) {
+      window._noNoteTimer = setTimeout(() => sendDeclineNote(true), 15000);
+      return;
+    }
+
+    const pd  = window._partyData || {};
+    const pid = pd.partyId || window._partyId || '';
+
+    const btn      = document.getElementById('decline-note-btn');
+    const spinner  = document.getElementById('decline-note-spinner');
+    const label    = document.getElementById('decline-note-label');
+    const sentEl   = document.getElementById('decline-note-sent');
+
+    if (!fromTimer && btn) {
+      btn.disabled = true;
+      if (spinner) spinner.style.display = 'block';
+      if (label)   label.textContent = 'Sending…';
+    }
+
+    try {
+      await fetchWithTimeout('/api/rsvp?action=send-decline-note', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          party_id:    pid,
+          response_id: _declineResponseId,
+          note:        note || null,
+        }),
+      }, 10000);
+
+      if (!fromTimer) {
+        if (sentEl) sentEl.style.display = 'block';
+        if (btn)    btn.style.display = 'none';
+        if (noteEl) noteEl.disabled = true;
+      }
+
+    } catch (err) {
+      console.error('sendDeclineNote failed:', err.message);
+      if (!fromTimer && btn) {
+        btn.disabled = false;
+        if (spinner) spinner.style.display = 'none';
+        if (label)   label.textContent = 'Try again';
+      }
     }
   }
 

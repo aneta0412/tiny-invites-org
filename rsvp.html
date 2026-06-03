@@ -375,6 +375,7 @@
     document.getElementById('landing-name-error').style.display = 'none';
     document.getElementById('no-guest-name').value = name;
     showPage('page-no');
+    submitDecline();
     // Auto-submit immediately — no action needed from the guest
     submitDecline(true);
   }

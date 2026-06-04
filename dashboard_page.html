@@ -89,7 +89,7 @@ nav { display:flex; justify-content:space-between; align-items:center; padding:2
 .table-card { background:var(--warm-white); border:1px solid var(--gold-pale); border-radius:18px; overflow:hidden; box-shadow:0 4px 24px rgba(42,34,24,0.06); animation:fadeUp 0.5s ease both; }
 .table-header { background:var(--gold-pale); padding:13px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--gold-light); }
 .table-wrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; min-width:360px; }
+table { width:100%; border-collapse:collapse; min-width:420px; }
 thead tr { background:var(--gold-pale); }
 th { padding:10px 16px; text-align:left; font-size:0.6rem; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; color:var(--soft); border-bottom:1px solid var(--gold-light); white-space:nowrap; }
 tbody tr { transition:background 0.15s; }
@@ -335,8 +335,16 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     </div>
   </div>
 
+  <div class="digest-note" style="margin-bottom:8px;border-left-color:var(--gold);">
+    <div class="digest-note-icon">💬</div>
+    <div>
+      <strong>Need to contact your guests?</strong> Use the <em>Message Guests</em> panel below — it sends directly to everyone who confirmed. Guest emails are kept private by default and handled by Tiny Invites on your behalf.<br>
+      <span style="color:var(--soft);font-size:0.74rem;">In an emergency — if you need to reach guests outside this platform — you can request the full guest list including email addresses using the button below.</span>
+    </div>
+  </div>
+
   <button class="resend-btn" id="resendBtn" onclick="resendEmail()">
-    ✉️ Email me the full guest list
+    📋 Email me full guest list with contacts
   </button>
 
 
@@ -355,7 +363,7 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     <div class="msg-panel active" id="panelNote">
       <div class="msg-hint">
         <strong>Add a note to the 3-day reminder email.</strong>
-        Only sent to guests who ticked <em>"remind me before the party"</em> when they RSVPd.
+        Sent to all confirmed guests as a reminder before the party.
         It appears in a highlighted block in their reminder. Leave it blank and it won't show.
         Changes take effect on the next cron run (daily at 4pm UTC).
       </div>
@@ -380,7 +388,7 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
       <div class="msg-hint">
         <strong>Send a message to all confirmed guests right now.</strong>
         This is a service message (like a booking confirmation) so it goes to <em>all</em> guests
-        who RSVPd yes — no opt-in required. Use it for important updates only: venue changes,
+        who RSVPd yes. Use it for important updates only: venue changes,
         time changes, what to bring. Not for general announcements.
       </div>
       <div class="msg-field-wrap">
@@ -425,11 +433,11 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
       <table>
         <thead>
           <tr>
-            <th>Name</th><th>Attending</th><th>Guests</th><th>Dietary / Notes</th><th></th>
+            <th>Name</th><th>Attending</th><th>Guests</th><th>Dietary / Notes</th><th>Email</th><th></th>
           </tr>
         </thead>
         <tbody id="tableBody">
-          <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link or QR code!</p></div></td></tr>
+          <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link or QR code!</p></div></td></tr>
         </tbody>
       </table>
     </div>
@@ -691,7 +699,7 @@ function renderDashboard(responses, stats) {
 
   const tbody = document.getElementById('tableBody');
   if (!responses.length) {
-    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link or QR code!</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link or QR code!</p></div></td></tr>`;
     return;
   }
 
@@ -708,6 +716,9 @@ function renderDashboard(responses, stats) {
     const safeAllergyDisplay = r.allergies && r.allergies.toLowerCase() !== 'none'
       ? `<span style="color:var(--mid);font-weight:500">⚠️ ${escapeHtml(r.allergies)}</span>`
       : '<span style="color:var(--soft)">—</span>';
+    const safeEmailDisplay   = r.guest_email
+      ? `<a href="mailto:${escapeHtml(r.guest_email)}" style="color:var(--gold);text-decoration:none;font-size:0.78rem;">${escapeHtml(r.guest_email)}</a>`
+      : '<span style="color:var(--soft)">—</span>';
 
     const adults   = parseInt(r.guest_count_adults)   || 0;
     const children = parseInt(r.guest_count_children) || 0;
@@ -719,6 +730,7 @@ function renderDashboard(responses, stats) {
         <td>${att}</td>
         <td>${gsts}</td>
         <td>${safeAllergyDisplay}</td>
+        <td>${safeEmailDisplay}</td>
         <td>
           <div class="row-actions">
             <button class="btn-icon" title="Edit"
@@ -776,7 +788,7 @@ function openEdit(id, attending, adults, children, babies, allergies) {
           <input type="number" id="edit-babies-${id}" min="0" max="30" value="${babies}" style="width:60px" ${isNo ? 'disabled' : ''} />
         </label>` : '';
   editRow.innerHTML = `
-    <td colspan="5">
+    <td colspan="6">
       <div class="edit-fields">
         <select id="edit-att-${id}" onchange="toggleCountInputs('${id}', this.value)">
           <option value="yes" ${!isNo ? 'selected' : ''}>✓ Coming</option>
@@ -858,6 +870,7 @@ async function saveEdit(id) {
       cells[3].innerHTML = cleanAllergy && cleanAllergy.toLowerCase() !== 'none'
         ? `<span style="color:var(--mid);font-weight:500">⚠️ ${escapeHtml(cleanAllergy)}</span>`
         : '<span style="color:var(--soft)">—</span>';
+      // cells[4] = email — not editable, leave as-is
       const editBtn = mainRow.querySelector('.btn-icon[title="Edit"]');
       if (editBtn) {
         editBtn.dataset.att      = attending;
@@ -895,7 +908,7 @@ async function deleteGuest(id, name) {
 
     const tbody = document.getElementById('tableBody');
     if (!tbody.querySelector('tr[id^="guest-row-"]')) {
-      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link or QR code!</p></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link or QR code!</p></div></td></tr>`;
     }
 
     await refreshStats();
@@ -968,18 +981,22 @@ async function resendEmail() {
   btn.textContent = '⏳ Sending…';
   btn.disabled = true;
   try {
-    const res  = await fetchWithTimeout('/api/dashboard-api?action=send-email', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ token:_token }) }, 15000);
+    const res  = await fetchWithTimeout('/api/dashboard-api?action=send-email', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ token:_token, include_emails: true })
+    }, 15000);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to send');
     btn.classList.add('sent');
     btn.textContent = '✓ Sent to your inbox!';
-    showToast(`✉️ Guest list sent to your email`);
+    showToast(`✉️ Guest list with contacts sent to your email`);
   } catch (err) {
-    btn.textContent = '✉️ Email me the full guest list';
+    btn.textContent = '📋 Email me full guest list with contacts';
     showToast('⚠️ ' + describeFetchError(err));
   } finally {
     btn.disabled = false;
-    setTimeout(() => { btn.classList.remove('sent'); btn.textContent = '✉️ Email me the full guest list'; }, 4000);
+    setTimeout(() => { btn.classList.remove('sent'); btn.textContent = '📋 Email me full guest list with contacts'; }, 4000);
   }
 }
 

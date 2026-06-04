@@ -74,19 +74,60 @@
   .counter-btn:hover { background:var(--gold-pale); }
   .counter-val { min-width:34px; text-align:center; font-size:1.1rem; color:var(--dark); }
 
-  /* Email opt-in */
-  .email-optin { background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:12px; padding:16px 18px; margin-bottom:4px; }
-  .email-optin-label { display:flex; align-items:flex-start; gap:10px; cursor:pointer; margin-bottom:0; }
-  .email-optin-label input[type="checkbox"] { width:16px; height:16px; accent-color:var(--gold); flex-shrink:0; margin-top:2px; cursor:pointer; }
-  .email-optin-label span { font-size:0.82rem; color:var(--mid); line-height:1.55; text-transform:none; letter-spacing:0; font-weight:300; }
-  .email-optin-label strong { color:var(--dark); font-weight:500; }
-  #guest-email-wrap { display:none; margin-top:12px; }
+  /* Email — required, in its own warm card so the consent reads clearly */
+  .email-block { background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:12px; padding:16px 18px; margin-bottom:20px; }
+  .email-block label { color:var(--dark); }
+  .email-block .consent-text { font-size:0.78rem; color:var(--mid); line-height:1.6; margin-top:10px; }
+  .email-block .consent-text strong { color:var(--dark); font-weight:500; }
 
   .sorry-emoji, .success-emoji { font-size:3rem; text-align:center; margin-bottom:16px; }
   .sorry-note, .success-note { font-size:0.9rem; color:var(--mid); text-align:center; line-height:1.7; }
   #confetti-canvas { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999; }
   .tally { display:inline-flex; align-items:center; gap:6px; background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:20px; padding:5px 14px; font-size:0.8rem; color:var(--mid); margin-top:16px; }
   .tally strong { color:var(--gold); }
+
+  /* ── "Didn't get confirmation?" guest flow ── */
+  #guest-didnt-receive-btn {
+    display:none; margin-top:14px; background:none; border:none;
+    font-family:"DM Sans",sans-serif; font-size:0.74rem;
+    color:var(--soft); cursor:pointer; text-decoration:underline;
+    text-underline-offset:3px; padding:0; width:100%; text-align:center;
+  }
+  #guest-didnt-receive-btn:hover { color:var(--mid); }
+  #guest-didnt-receive-panel {
+    display:none; margin-top:14px; padding:16px;
+    background:var(--cream); border:1px solid var(--gold-light);
+    border-radius:10px; text-align:left;
+  }
+  #guest-didnt-receive-panel p {
+    font-size:0.78rem; color:var(--mid); margin-bottom:10px; line-height:1.55;
+  }
+  .guest-fix-email-row {
+    display:flex; gap:8px; margin-bottom:8px;
+  }
+  .guest-fix-email-row input {
+    flex:1; padding:9px 12px; background:var(--warm-white);
+    border:1px solid var(--gold-light); border-radius:8px;
+    font-family:"DM Sans",sans-serif; font-size:0.84rem;
+    color:var(--dark); outline:none; transition:border-color 0.2s;
+  }
+  .guest-fix-email-row input:focus { border-color:var(--gold); }
+  .btn-guest-fix-resend {
+    background:var(--dark); color:var(--cream); border:none;
+    border-radius:8px; padding:9px 14px;
+    font-family:"DM Sans",sans-serif; font-size:0.74rem;
+    letter-spacing:0.06em; text-transform:uppercase;
+    cursor:pointer; transition:background 0.2s; white-space:nowrap;
+  }
+  .btn-guest-fix-resend:hover:not(:disabled) { background:var(--gold); }
+  .btn-guest-fix-resend:disabled { opacity:0.6; cursor:not-allowed; }
+  .guest-or-divider {
+    display:flex; align-items:center; gap:10px;
+    font-size:0.68rem; color:var(--soft); margin:10px 0;
+  }
+  .guest-or-divider::before,.guest-or-divider::after {
+    content:""; flex:1; height:1px; background:var(--gold-light);
+  }
 
   /* RESPONSE CARD */
   .response-card { background:var(--warm-white); border:1px solid var(--gold-pale); border-radius:24px; max-width:540px; width:calc(100% - 40px); box-shadow:0 8px 40px rgba(42,34,24,0.07); overflow:hidden; animation:fadeUp 0.55s cubic-bezier(.22,.61,.36,1) both; }
@@ -153,10 +194,16 @@
         <label>Your name</label>
         <input type="text" id="guest-name" readonly style="background:var(--gold-pale);cursor:default;">
       </div>
-      <div>
-        <label>Your phone <span style="color:var(--soft);font-weight:300;text-transform:none;letter-spacing:0;">(optional)</span></label>
-        <input type="tel" id="guest-phone" placeholder="+44 7700 000000">
-      </div>
+    </div>
+    <!-- EMAIL — required, with consent baked into the wording -->
+    <div class="email-block">
+      <label for="guest-email">Your email <span style="color:var(--gold);">*</span></label>
+      <input type="email" id="guest-email" placeholder="your@email.com" autocomplete="email">
+      <p class="consent-text">
+        <strong>We don't collect phone numbers.</strong> Your email is how the host reaches you —
+        by RSVPing you'll get a reminder before the party and any important updates from the host.
+        Only used for this party. Never shared, no marketing.
+      </p>
     </div>
     <div class="divider"><span></span><i>◆</i><span></span></div>
     <!-- GUEST COUNTERS -->
@@ -200,21 +247,6 @@
     <div style="margin-bottom:20px;">
       <label>Allergies or dietary requirements <span style="color:var(--soft);font-weight:300;text-transform:none;letter-spacing:0;">(optional)</span></label>
       <textarea id="guest-allergies" placeholder="e.g. nut allergy, vegetarian, no dairy…"></textarea>
-    </div>
-    <div class="email-optin" style="margin-bottom:20px;">
-      <label class="email-optin-label">
-        <input type="checkbox" id="guest-email-optin" onchange="toggleEmailField()">
-        <span><strong>Send me a confirmation email</strong> <span style="font-weight:300;color:var(--soft);">— optional</span><br>We'll confirm your RSVP by email once it's saved.</span>
-      </label>
-      <div style="height:1px;background:var(--gold-light);margin:12px 0;"></div>
-      <label class="email-optin-label">
-        <input type="checkbox" id="guest-reminder-optin" onchange="toggleEmailField()">
-        <span><strong>Send me a party reminder</strong> <span style="font-weight:300;color:var(--soft);">— optional</span><br>One email, 3 days before the big day. 🎈</span>
-      </label>
-      <div id="guest-email-wrap" style="display:none;margin-top:12px;">
-        <input type="email" id="guest-email" placeholder="your@email.com">
-        <p class="field-hint">Only used for the options you ticked above. Nothing else.</p>
-      </div>
     </div>
     <button class="btn-primary" id="submit-btn" onclick="submitRSVP()">
       <div class="spinner"></div>
@@ -260,6 +292,27 @@
       <div class="divider"><span></span><i>◆</i><span></span></div>
       <p class="success-note" id="success-message">We look forward to seeing you — it's going to be a wonderful celebration!<br><br>Keep an eye on your inbox for any updates. See you there! 🎈</p>
       <p class="success-note" id="success-email-sent" style="display:none;margin-top:12px;font-size:0.82rem;color:var(--soft);">📬 Confirmation sent to <span id="success-email-address" style="color:var(--gold);"></span></p>
+
+      <!-- Delayed nudge — appears after 20 s if email not found -->
+      <button id="guest-didnt-receive-btn" onclick="showGuestDidntReceive()">
+        Didn't get the confirmation email?
+      </button>
+
+      <!-- Fix panel -->
+      <div id="guest-didnt-receive-panel">
+        <p><strong style="color:var(--dark);">No problem — let's fix it.</strong> Check the address below is right and hit resend, or drop us a message and we'll make sure you're kept in the loop.</p>
+        <div class="guest-fix-email-row">
+          <input type="email" id="guest-fix-email-input" placeholder="your@email.com" autocomplete="email">
+          <button class="btn-guest-fix-resend" id="guest-fix-resend-btn" onclick="guestFixAndResend()">Resend</button>
+        </div>
+        <p id="guest-fix-resend-feedback" style="display:none;font-size:0.75rem;color:#5a8a6a;margin-bottom:8px;">✓ Sent! Check your inbox (and spam folder).</p>
+        <div class="guest-or-divider">or</div>
+        <a id="guest-contact-host-link" href="#" style="display:block;text-align:center;padding:10px;border:1px solid var(--gold-light);border-radius:8px;font-size:0.78rem;color:var(--mid);text-decoration:none;transition:all 0.2s;"
+           onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--dark)';this.style.background='var(--gold-pale)'"
+           onmouseout="this.style.borderColor='';this.style.color='';this.style.background=''">
+          ✉️ Message the host directly
+        </a>
+      </div>
       <p class="success-note" id="success-contact" style="display:none;margin-top:14px;font-size:0.82rem;">Questions? Reach the host at <a id="success-host-email" href="#" style="color:var(--gold);"></a></p>
       <div style="text-align:center;">
         <div class="tally" id="tally-badge">👥 <strong id="tally-count">1</strong> <span id="tally-label">guest</span> confirmed</div>
@@ -331,17 +384,14 @@
 
   let _submitted = false;
   let _declineResponseId = null;
+  // Stored on RSVP success so the resend flow can use them
+  let _confirmedEmail    = '';
+  let _confirmedPartyId  = '';
+  let _confirmedGuestName = '';
+  let _guestDidntReceiveTimer = null;
 
   function isDuplicate(pid, name) { return sessionStorage.getItem('rsvp_done_'+pid) === name.toLowerCase().trim(); }
   function markSubmitted(pid, name) { sessionStorage.setItem('rsvp_done_'+pid, name.toLowerCase().trim()); _submitted = true; }
-
-  function toggleEmailField() {
-    const wantsConfirm  = document.getElementById('guest-email-optin').checked;
-    const wantsReminder = document.getElementById('guest-reminder-optin').checked;
-    const needsEmail    = wantsConfirm || wantsReminder;
-    document.getElementById('guest-email-wrap').style.display = needsEmail ? 'block' : 'none';
-    if (!needsEmail) document.getElementById('guest-email').value = '';
-  }
 
   function proceedYes() {
     const name = document.getElementById('landing-guest-name').value.trim();
@@ -427,12 +477,10 @@
     const guestName = document.getElementById('guest-name').value.trim();
     if (!guestName) { alert('Please enter your name 😊'); return; }
 
-    const wantsEmail    = document.getElementById('guest-email-optin').checked;
-    const wantsReminder = document.getElementById('guest-reminder-optin').checked;
-    const needsEmail    = wantsEmail || wantsReminder;
-    const guestEmail    = needsEmail ? document.getElementById('guest-email').value.trim() : '';
-    if (needsEmail && !guestEmail) { alert('Please enter your email for the options you selected 📬'); document.getElementById('guest-email').focus(); return; }
-    if (needsEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) { alert('Please enter a valid email address 📧'); return; }
+    // Email is now required for everyone — it's how the host reaches guests.
+    const guestEmail = document.getElementById('guest-email').value.trim();
+    if (!guestEmail) { alert('Please enter your email so the host can send reminders and updates 📬'); document.getElementById('guest-email').focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) { alert('Please enter a valid email address 📧'); document.getElementById('guest-email').focus(); return; }
 
     const childrenCount = counts.children;
     const babiesCount   = ASK_BABIES ? counts.babies : null;
@@ -448,12 +496,14 @@
     btn.disabled = true; btn.classList.add('loading'); btn.querySelector('.btn-label').textContent = 'Submitting…';
     errorBanner.classList.remove('visible');
 
+    // Email is required and consent is given by submitting, so both
+    // confirmation + reminder are implied true.
     const payload = {
       party_id: pid, guest_name: guestName, attending: true,
       guest_count: totalGuests, guest_count_children: childrenCount,
       guest_count_babies: babiesCount, guest_count_adults: adultsCount,
       allergies: document.getElementById('guest-allergies').value.trim() || null,
-      guest_email: guestEmail || null, reminder_optin: wantsReminder,
+      guest_email: guestEmail, reminder_optin: true,
     };
 
     try {
@@ -474,14 +524,38 @@
          <span style="font-size:0.84rem;color:var(--soft);">Confirmed: ${parts.length ? parts.join(' + ') : '1 guest'}</span><br><br>
          See you there! 🎈`;
 
-      if (guestEmail) {
-        document.getElementById('success-email-address').textContent = guestEmail;
-        document.getElementById('success-email-sent').style.display = 'block';
-      }
+      document.getElementById('success-email-address').textContent = guestEmail;
+      document.getElementById('success-email-sent').style.display = 'block';
 
       markSubmitted(pid, guestName);
+
+      // Store for the didn't-receive resend flow
+      _confirmedEmail     = guestEmail;
+      _confirmedPartyId   = pid;
+      _confirmedGuestName = guestName;
+
+      // Pre-fill the fix input and set the host contact link
+      const fixInput = document.getElementById('guest-fix-email-input');
+      if (fixInput) fixInput.value = guestEmail;
+      const hostLink = document.getElementById('guest-contact-host-link');
+      if (hostLink && pd.hostEmail) {
+        const subj = encodeURIComponent('Party RSVP — update my email');
+        const body = encodeURIComponent(
+          `Hi,\n\nI RSVPd for ${pd.childName || 'the party'} but my confirmation email hasn't arrived.\n\nMy name: ${guestName}\nEmail I used: ${guestEmail}\n\nCould you check I'm on the list? Thanks!`
+        );
+        hostLink.href = `mailto:${pd.hostEmail}?subject=${subj}&body=${body}`;
+      } else if (hostLink) {
+        hostLink.style.display = 'none';
+      }
+
       showPage('page-success');
       launchConfetti();
+
+      // Show "didn't get it?" nudge after 20 s
+      _guestDidntReceiveTimer = setTimeout(() => {
+        const nudge = document.getElementById('guest-didnt-receive-btn');
+        if (nudge) nudge.style.display = 'block';
+      }, 20000);
 
     } catch (err) {
       document.getElementById('error-text').textContent = describeFetchError(err);
@@ -602,6 +676,74 @@
         if (spinner) spinner.style.display = 'none';
         if (label)   label.textContent = 'Try again';
       }
+    }
+  }
+
+  function showGuestDidntReceive() {
+    const btn   = document.getElementById('guest-didnt-receive-btn');
+    const panel = document.getElementById('guest-didnt-receive-panel');
+    if (btn)   btn.style.display   = 'none';
+    if (panel) panel.style.display = 'block';
+    const input = document.getElementById('guest-fix-email-input');
+    if (input) input.focus();
+  }
+
+  async function guestFixAndResend() {
+    const input    = document.getElementById('guest-fix-email-input');
+    const newEmail = input ? input.value.trim() : '';
+    if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+      if (input) { input.focus(); input.style.borderColor = '#c0392b'; setTimeout(() => { input.style.borderColor = ''; }, 2000); }
+      return;
+    }
+
+    const btn      = document.getElementById('guest-fix-resend-btn');
+    const feedback = document.getElementById('guest-fix-resend-feedback');
+    btn.disabled = true; btn.textContent = '…';
+
+    try {
+      // Re-submit the RSVP with the corrected email — server handles upsert/resend
+      const res = await fetchWithTimeout(RSVP_API_ENDPOINT, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          party_id:    _confirmedPartyId,
+          guest_name:  _confirmedGuestName,
+          attending:   true,
+          guest_count: parseInt(document.getElementById('tally-count')?.textContent) || 1,
+          guest_email: newEmail,
+          reminder_optin: true,
+          _resend_only: true,   // hint to backend — don't re-notify host
+        }),
+      }, 12000);
+      const data = await res.json().catch(() => ({}));
+      // Accept 200 or duplicate (200 + duplicate:true) — both mean the record exists
+      if (!res.ok && res.status !== 200) throw new Error(data.error || 'Could not resend');
+
+      // Update displayed email and stored value
+      _confirmedEmail = newEmail;
+      const addrEl = document.getElementById('success-email-address');
+      if (addrEl) addrEl.textContent = newEmail;
+      if (input)  input.value = newEmail;
+
+      // Update host contact link with new email
+      const hostLink = document.getElementById('guest-contact-host-link');
+      if (hostLink && hostLink.href.startsWith('mailto:')) {
+        const pd = window._partyData || {};
+        if (pd.hostEmail) {
+          const subj = encodeURIComponent('Party RSVP — update my email');
+          const body = encodeURIComponent(
+            `Hi,\n\nI RSVPd for ${pd.childName || 'the party'} but my confirmation email hasn't arrived.\n\nMy name: ${_confirmedGuestName}\nEmail I used: ${newEmail}\n\nCould you check I'm on the list? Thanks!`
+          );
+          hostLink.href = `mailto:${pd.hostEmail}?subject=${subj}&body=${body}`;
+        }
+      }
+
+      if (feedback) feedback.style.display = 'block';
+      btn.textContent = '✓ Sent';
+
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Resend';
+      if (input) { input.style.borderColor = '#c0392b'; setTimeout(() => { input.style.borderColor = ''; }, 2000); }
+      console.error('guestFixAndResend:', err.message);
     }
   }
 

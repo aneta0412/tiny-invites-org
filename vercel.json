@@ -2,11 +2,11 @@
   "crons": [
     {
       "path": "/cron/daily-digest",
-      "schedule": "0 15 * * *"
+      "schedule": "0 20 * * *"
     },
     {
       "path": "/cron/send-reminders",
-      "schedule": "0 15 * * *"
+      "schedule": "0 20 * * *"
     }
   ]
 }

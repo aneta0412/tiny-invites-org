@@ -160,6 +160,78 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
   .edit-fields { gap:8px; }
   .edit-fields input[type="text"] { min-width:100px; }
 }
+
+/* ── Message Guests card ───────────────────────────────────── */
+.msg-card {
+  background:var(--warm-white); border:1px solid var(--gold-pale);
+  border-radius:18px; overflow:hidden;
+  box-shadow:0 4px 24px rgba(42,34,24,0.06);
+  margin-bottom:14px; animation:fadeUp 0.5s ease both;
+}
+.msg-tabs { display:flex; border-bottom:1px solid var(--gold-pale); }
+.msg-tab {
+  flex:1; padding:13px 16px;
+  font-size:0.68rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--soft); background:transparent; border:none; cursor:pointer;
+  font-family:"DM Sans",sans-serif; transition:all 0.18s; position:relative;
+}
+.msg-tab:first-child { border-right:1px solid var(--gold-pale); }
+.msg-tab.active { color:var(--dark); background:var(--warm-white); }
+.msg-tab.active::after {
+  content:''; position:absolute; bottom:-1px; left:0; right:0;
+  height:2px; background:var(--gold);
+}
+.msg-tab:hover:not(.active) { color:var(--gold); background:rgba(245,237,218,0.35); }
+.msg-panel { display:none; padding:22px 24px 24px; }
+.msg-panel.active { display:block; }
+.msg-hint {
+  font-size:0.78rem; color:var(--soft); line-height:1.6; margin-bottom:18px;
+  padding:12px 14px; background:var(--cream); border-radius:10px;
+  border-left:3px solid var(--gold-light);
+}
+.msg-hint strong { color:var(--mid); }
+.msg-hint em { font-style:italic; color:var(--mid); }
+.msg-label {
+  font-size:0.62rem; font-weight:500; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--gold); margin-bottom:8px; display:block;
+}
+.msg-field-wrap { margin-bottom:14px; }
+.msg-textarea {
+  width:100%; min-height:90px; background:var(--cream);
+  border:1px solid var(--gold-light); border-radius:10px;
+  padding:12px 14px; font-size:0.84rem; font-family:"DM Sans",sans-serif;
+  color:var(--dark); resize:vertical; outline:none; line-height:1.65;
+  transition:border-color 0.15s;
+}
+.msg-textarea:focus { border-color:var(--gold); }
+.msg-textarea::placeholder { color:var(--soft); font-style:italic; }
+.msg-input {
+  width:100%; background:var(--cream); border:1px solid var(--gold-light);
+  border-radius:10px; padding:10px 14px; font-size:0.84rem;
+  font-family:"DM Sans",sans-serif; color:var(--dark); outline:none;
+  transition:border-color 0.15s;
+}
+.msg-input:focus { border-color:var(--gold); }
+.msg-input::placeholder { color:var(--soft); font-style:italic; }
+.msg-charcount { font-size:0.68rem; color:var(--soft); text-align:right; margin-top:5px; }
+.msg-charcount.warn { color:#c0392b; }
+.msg-actions { display:flex; align-items:center; gap:12px; margin-top:18px; }
+.msg-btn {
+  flex:1; background:var(--dark); color:var(--cream); border:none; border-radius:2px;
+  padding:13px; font-size:0.75rem; font-weight:400; font-family:"DM Sans",sans-serif;
+  letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:background 0.2s;
+}
+.msg-btn:hover:not(:disabled) { background:var(--gold); }
+.msg-btn:disabled { opacity:0.6; cursor:default; }
+.msg-btn.success { background:var(--yes); }
+.msg-saved-pill {
+  display:none; align-items:center; gap:6px; background:var(--yes-lt);
+  color:var(--yes); border-radius:99px; padding:5px 12px;
+  font-size:0.7rem; font-weight:500; letter-spacing:0.06em;
+  border:1px solid rgba(90,138,106,0.25);
+}
+.msg-saved-pill.show { display:flex; }
+/* ──────────────────────────────────────────────────────────── */
 </style>
 </head>
 <body>
@@ -267,6 +339,80 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     ✉️ Email me the full guest list
   </button>
 
+
+  <!-- ── Message Guests card ─────────────────────────────────── -->
+  <div class="msg-card" style="animation-delay:0.38s">
+    <div class="msg-tabs">
+      <button class="msg-tab active" id="tabNote" onclick="switchMsgTab('note')">
+        📝 Reminder note
+      </button>
+      <button class="msg-tab" id="tabSend" onclick="switchMsgTab('send')">
+        📢 Send update now
+      </button>
+    </div>
+
+    <!-- Panel: Reminder note -->
+    <div class="msg-panel active" id="panelNote">
+      <div class="msg-hint">
+        <strong>Add a note to the 3-day reminder email.</strong>
+        Only sent to guests who ticked <em>"remind me before the party"</em> when they RSVPd.
+        It appears in a highlighted block in their reminder. Leave it blank and it won't show.
+        Changes take effect on the next cron run (daily at 4pm UTC).
+      </div>
+      <div class="msg-field-wrap">
+        <label class="msg-label" for="reminderNoteText">Note from you</label>
+        <textarea class="msg-textarea" id="reminderNoteText" maxlength="500"
+          placeholder="e.g. Parking is on the left — please bring a cake box 🎂"
+          oninput="updateCharCount('reminderNoteText','noteCharCount',500)"
+          rows="4"></textarea>
+        <div class="msg-charcount" id="noteCharCount">0 / 500</div>
+      </div>
+      <div class="msg-actions">
+        <button class="msg-btn" id="btnSaveNote" onclick="saveReminderNote()">
+          💾 Save note
+        </button>
+        <span class="msg-saved-pill" id="noteSavedPill">✓ Saved</span>
+      </div>
+    </div>
+
+    <!-- Panel: Send update now -->
+    <div class="msg-panel" id="panelSend">
+      <div class="msg-hint">
+        <strong>Send a message to all confirmed guests right now.</strong>
+        This is a service message (like a booking confirmation) so it goes to <em>all</em> guests
+        who RSVPd yes — no opt-in required. Use it for important updates only: venue changes,
+        time changes, what to bring. Not for general announcements.
+      </div>
+      <div class="msg-field-wrap">
+        <label class="msg-label" for="updateSubject">Subject <span style="color:var(--soft);font-style:italic;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <input class="msg-input" type="text" id="updateSubject" maxlength="100"
+          placeholder="e.g. Quick update about the party 🎉"/>
+      </div>
+      <div class="msg-field-wrap">
+        <label class="msg-label" for="updateMessage">Your message <span style="color:#c0392b">*</span></label>
+        <textarea class="msg-textarea" id="updateMessage" maxlength="2000"
+          placeholder="e.g. Just a heads up — we've moved the party to the garden. Same start time, just come round the back gate!"
+          oninput="updateCharCount('updateMessage','msgCharCount',2000)"
+          rows="5"></textarea>
+        <div class="msg-charcount" id="msgCharCount">0 / 2000</div>
+      </div>
+      <div class="msg-field-wrap">
+        <label class="msg-label" for="updateNote">Extra note <span style="color:var(--soft);font-style:italic;text-transform:none;letter-spacing:0">(optional — shown highlighted)</span></label>
+        <textarea class="msg-textarea" id="updateNote" maxlength="500"
+          placeholder="e.g. Parking is on the left 🚗"
+          oninput="updateCharCount('updateNote','updateNoteCharCount',500)"
+          rows="2"></textarea>
+        <div class="msg-charcount" id="updateNoteCharCount">0 / 500</div>
+      </div>
+      <div class="msg-actions">
+        <button class="msg-btn" id="btnSendUpdate" onclick="sendPartyUpdate()">
+          📢 Send to all guests
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- ── end Message Guests card ─────────────────────────────── -->
+
   <div class="table-card" style="animation-delay:0.35s">
     <div class="table-header">
       <span class="section-label" style="margin:0;">Guest responses</span>
@@ -299,10 +445,6 @@ let _partyData = null;
 let _responses = [];
 let _token     = null;
 
-// ── FETCH HELPERS (TC06 / TC09) ──────────────────────────────────────────────
-// AbortController-backed timeout + uniform error description for every
-// dashboard fetch. Without this, a hung API leaves the page faded (loading
-// state) with no recovery path.
 const DEFAULT_FETCH_TIMEOUT_MS = 10000;
 async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_FETCH_TIMEOUT_MS) {
   const ctrl  = new AbortController();
@@ -319,7 +461,6 @@ function describeFetchError(err) {
   return (err && err.message) || 'Something went wrong. Please try again.';
 }
 
-// ── FIX 3: XSS escaping ──────────────────────────────────────────────────────
 function escapeHtml(str) {
   return String(str || '')
     .replace(/&/g, '&amp;')
@@ -335,14 +476,17 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (!_token) { showError('No dashboard token found. Please use the link from your invitation email.'); return; }
   showLoading(true);
   try {
-    // 8 s — host dashboard is the front door; if it hasn't responded by
-    // then something's wrong and the user needs to know.
     const res  = await fetchWithTimeout(`/api/dashboard-api?action=load&token=${encodeURIComponent(_token)}`, {}, 8000);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to load dashboard');
     _partyData = data.party;
     populateHeader(data.party);
     renderDashboard(data.responses, data.stats);
+    // Pre-fill reminder note if already saved
+    if (data.party && data.party.reminder_note) {
+      const ta = document.getElementById('reminderNoteText');
+      if (ta) { ta.value = data.party.reminder_note; updateCharCount('reminderNoteText','noteCharCount',500); }
+    }
   } catch (err) {
     showError(describeFetchError(err));
   } finally {
@@ -375,7 +519,6 @@ function populateHeader(party) {
   if (photoUrl) {
     const hero = document.getElementById('dashHero');
     const img  = document.getElementById('dashHeroImg');
-    // FIX 8: only show hero once image actually loads — no broken flash
     img.onload  = () => { hero.style.display = 'block'; document.getElementById('dashHeaderText').style.display = 'none'; };
     img.onerror = () => { hero.style.display = 'none';  document.getElementById('dashHeaderText').style.display = ''; };
     img.src = photoUrl;
@@ -385,19 +528,12 @@ function populateHeader(party) {
   }
 }
 
-// Sum a numeric column across responses (treats null/undefined/NaN as 0)
 function sumCol(arr, key) {
   return arr.reduce((s, r) => s + (parseInt(r[key]) || 0), 0);
 }
 
-// Which guest-count categories did the host enable on this party?
-// First respect explicit flags on the party object (under any of several common
-// naming conventions). If none are set, fall back to a data-driven heuristic:
-// if the category sums to 0 across every "yes" RSVP, the host clearly isn't
-// tracking it — hide the tile so it doesn't sit at 0 forever.
 function getShowOptions() {
   const p = _partyData || {};
-
   const flagFor = (...names) => {
     for (const n of names) {
       if (p[n] !== undefined && p[n] !== null) return p[n];
@@ -412,9 +548,6 @@ function getShowOptions() {
   const hasYesData = yesResponses.length > 0;
   const sumOf = (key) => yesResponses.reduce((s, r) => s + (parseInt(r[key]) || 0), 0);
 
-  // If we have RSVP data and a category sums to 0, hide it.
-  // If we have no "yes" responses yet, default to showing all so the host
-  // can confirm what they enabled.
   return {
     adults:   fAdults   !== undefined ? !!fAdults   : (!hasYesData || sumOf('guest_count_adults')   > 0),
     children: fChildren !== undefined ? !!fChildren : (!hasYesData || sumOf('guest_count_children') > 0),
@@ -422,21 +555,17 @@ function getShowOptions() {
   };
 }
 
-// Render the catering tiles (Adults / Children / Babies) and footer total
 function renderCatering(yes) {
   const show = getShowOptions();
-
   const adults   = sumCol(yes, 'guest_count_adults');
   const children = sumCol(yes, 'guest_count_children');
   const babies   = sumCol(yes, 'guest_count_babies');
-  // Only count categories the host actually enabled
   const total = (show.adults ? adults : 0) + (show.children ? children : 0) + (show.babies ? babies : 0);
 
   document.getElementById('cateringAdults').textContent   = adults;
   document.getElementById('cateringChildren').textContent = children;
   document.getElementById('cateringBabies').textContent   = babies;
 
-  // Hide tiles for categories the host didn't enable
   const tileAdults   = document.getElementById('cateringAdults').closest('.catering-tile');
   const tileChildren = document.getElementById('cateringChildren').closest('.catering-tile');
   const tileBabies   = document.getElementById('cateringBabies').closest('.catering-tile');
@@ -444,7 +573,6 @@ function renderCatering(yes) {
   if (tileChildren) tileChildren.style.display = show.children ? '' : 'none';
   if (tileBabies)   tileBabies.style.display   = show.babies   ? '' : 'none';
 
-  // Adjust grid columns based on how many tiles are visible
   const visibleCount = (show.adults ? 1 : 0) + (show.children ? 1 : 0) + (show.babies ? 1 : 0);
   const grid = document.querySelector('.catering-stats');
   if (grid && visibleCount > 0) {
@@ -463,7 +591,6 @@ function renderCatering(yes) {
   }
 }
 
-// How many of these responses came in today (caller's local time)
 function countResponsesToday(responses) {
   const now = new Date();
   const y = now.getFullYear(), m = now.getMonth(), d = now.getDate();
@@ -476,7 +603,6 @@ function countResponsesToday(responses) {
   }, 0);
 }
 
-// Update the "X today" badge and the digest note line
 function renderTodayCount(responses) {
   const n = countResponsesToday(responses);
   const badge   = document.getElementById('todayBadge');
@@ -497,7 +623,6 @@ function renderTodayCount(responses) {
   }
 }
 
-// Build the breakdown chip shown in the Guests column (e.g. "2 adults · 1 child")
 function breakdownText(r) {
   const show = getShowOptions();
   const a = parseInt(r.guest_count_adults)   || 0;
@@ -510,11 +635,9 @@ function breakdownText(r) {
   return parts.join(' · ');
 }
 
-// FIX 6: Normalize dietary keys so "Gluten Free" / "gluten-free" / "gluten free" merge
 function normalizeDiet(str) {
   return str.trim().toLowerCase().replace(/[-_]/g, ' ');
 }
-// Pretty-print: capitalise first letter of each word
 function prettyDiet(str) {
   return str.replace(/\b\w/g, c => c.toUpperCase());
 }
@@ -525,7 +648,6 @@ function renderDashboard(responses, stats) {
   const no     = responses.filter(r => r.attending === 'no');
   const total  = responses.length;
 
-  // FIX 1: use catering sub-counts as single source of truth for guest total
   const guests = yes.reduce((s, r) =>
     s + (parseInt(r.guest_count_adults)   || 0)
       + (parseInt(r.guest_count_children) || 0)
@@ -541,13 +663,9 @@ function renderDashboard(responses, stats) {
   document.getElementById('pctNo').textContent      = total ? `${pctNo}% of responses`  : '—';
   document.getElementById('statGuests').textContent = guests > 0 ? `${guests} guest${guests !== 1 ? 's' : ''} total` : '—';
 
-  // Catering totals (Adults / Children / Babies)
   renderCatering(yes);
-
-  // Today's response count + digest note
   renderTodayCount(responses);
 
-  // FIX 2: progress bar — derive restPct mathematically so it always sums to 100%
   setTimeout(() => {
     const yesPct  = total ? (yes.length / total * 100) : 0;
     const noPct   = total ? (no.length  / total * 100) : 0;
@@ -557,7 +675,6 @@ function renderDashboard(responses, stats) {
     document.getElementById('barRest').style.width = restPct.toFixed(1) + '%';
   }, 200);
 
-  // FIX 6: normalise dietary keys before grouping
   const dietCount = {};
   yes.forEach(r => {
     if (r.allergies && r.allergies.trim() && r.allergies.toLowerCase() !== 'none') {
@@ -566,17 +683,14 @@ function renderDashboard(responses, stats) {
     }
   });
   const flagsEl = document.getElementById('dietaryFlags');
-  // FIX 3: escape dietary text in flags
   flagsEl.innerHTML = Object.keys(dietCount).length
     ? Object.entries(dietCount).map(([k,v]) =>
         `<div class="flag">⚠️ ${escapeHtml(prettyDiet(k))}<span class="flag-count">${v}</span></div>`
       ).join('')
     : '<div style="color:var(--soft);font-size:0.84rem;">No dietary requirements yet</div>';
 
-  // Table
   const tbody = document.getElementById('tableBody');
   if (!responses.length) {
-    // FIX 7: mention link as well as QR
     tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link or QR code!</p></div></td></tr>`;
     return;
   }
@@ -590,7 +704,6 @@ function renderDashboard(responses, stats) {
     const gsts  = gc
       ? `<span style="font-size:0.78rem;color:var(--mid)">${gc} guest${gc > 1 ? 's' : ''}</span>${bdown ? `<span class="breakdown-mini">${escapeHtml(bdown)}</span>` : ''}`
       : '<span style="color:var(--soft)">—</span>';
-    // FIX 3: escape name and allergies before injection
     const safeNameDisplay    = escapeHtml(r.guest_name || '—');
     const safeAllergyDisplay = r.allergies && r.allergies.toLowerCase() !== 'none'
       ? `<span style="color:var(--mid);font-weight:500">⚠️ ${escapeHtml(r.allergies)}</span>`
@@ -599,7 +712,6 @@ function renderDashboard(responses, stats) {
     const adults   = parseInt(r.guest_count_adults)   || 0;
     const children = parseInt(r.guest_count_children) || 0;
     const babies   = parseInt(r.guest_count_babies)   || 0;
-    // Store data on the button via data-attributes to avoid inline JS quoting issues (FIX 4 partial)
     const allergyEncoded = escapeHtml(r.allergies || '');
     return `
       <tr id="guest-row-${r.id}">
@@ -625,9 +737,6 @@ function renderDashboard(responses, stats) {
   document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
 }
 
-// ── Edit / Delete ──────────────────────────────────────────────
-
-// FIX 4: read values from data-attributes instead of inline JS strings
 function openEditFromBtn(btn) {
   openEdit(
     btn.dataset.id,
@@ -643,7 +752,6 @@ function deleteGuestFromBtn(btn) {
 }
 
 function openEdit(id, attending, adults, children, babies, allergies) {
-  // Close any open edit rows first
   document.querySelectorAll('.edit-row').forEach(r => r.remove());
 
   const mainRow = document.getElementById('guest-row-' + id);
@@ -653,9 +761,7 @@ function openEdit(id, attending, adults, children, babies, allergies) {
   editRow.className = 'edit-row';
   editRow.id = 'edit-row-' + id;
 
-  // FIX 5: disable guest count inputs when Declined is selected
   const isNo = attending === 'no';
-  // Only render guest-count inputs for categories the host enabled
   const show = getShowOptions();
   const adultsField = show.adults ? `
         <label style="font-size:0.72rem;color:var(--soft);display:flex;align-items:center;gap:4px;">Adults
@@ -689,7 +795,6 @@ function openEdit(id, attending, adults, children, babies, allergies) {
   mainRow.insertAdjacentElement('afterend', editRow);
 }
 
-// FIX 5: toggle count inputs disabled state when Attending select changes
 function toggleCountInputs(id, value) {
   const disabled = value === 'no';
   ['adults','children','babies'].forEach(f => {
@@ -706,7 +811,6 @@ function cancelEdit(id) {
 async function saveEdit(id) {
   const attending = document.getElementById('edit-att-' + id)?.value;
 
-  // FIX 5: if declined, zero the counts rather than saving whatever was in the inputs
   let adults   = attending === 'no' ? 0 : (parseInt(document.getElementById('edit-adults-'   + id)?.value) || 0);
   let children = attending === 'no' ? 0 : (parseInt(document.getElementById('edit-children-' + id)?.value) || 0);
   let babies   = attending === 'no' ? 0 : (parseInt(document.getElementById('edit-babies-'   + id)?.value) || 0);
@@ -717,7 +821,6 @@ async function saveEdit(id) {
   if (saveBtn) { saveBtn.textContent = 'Saving…'; saveBtn.disabled = true; }
 
   try {
-    // 10 s — single-row DB update, should be quick.
     const res  = await fetchWithTimeout('/api/dashboard-api?action=update-guest', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -733,7 +836,6 @@ async function saveEdit(id) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to update');
 
-    // Update the row cells in place — no page reload
     const mainRow = document.getElementById('guest-row-' + id);
     if (mainRow) {
       const cells = mainRow.querySelectorAll('td');
@@ -745,7 +847,6 @@ async function saveEdit(id) {
       if (children) partsMini.push(`${children} ${children===1?'child':'children'}`);
       if (babies)   partsMini.push(`${babies} ${babies===1?'baby':'babies'}`);
       const bdownMini = partsMini.join(' · ');
-      // FIX 5: declined row shows "—" not stale guest count
       if (attending === 'no') {
         cells[2].innerHTML = '<span style="color:var(--soft)">—</span>';
       } else {
@@ -753,12 +854,10 @@ async function saveEdit(id) {
           ? `<span style="font-size:0.78rem;color:var(--mid)">${guest_count} guest${guest_count > 1 ? 's' : ''}</span>${bdownMini ? `<span class="breakdown-mini">${escapeHtml(bdownMini)}</span>` : ''}`
           : '<span style="color:var(--soft)">—</span>';
       }
-      // FIX 3: escape allergies when putting back into DOM
       const cleanAllergy = allergies.trim();
       cells[3].innerHTML = cleanAllergy && cleanAllergy.toLowerCase() !== 'none'
         ? `<span style="color:var(--mid);font-weight:500">⚠️ ${escapeHtml(cleanAllergy)}</span>`
         : '<span style="color:var(--soft)">—</span>';
-      // FIX 4: refresh data-attributes on edit button so next open carries new values
       const editBtn = mainRow.querySelector('.btn-icon[title="Edit"]');
       if (editBtn) {
         editBtn.dataset.att      = attending;
@@ -796,7 +895,6 @@ async function deleteGuest(id, name) {
 
     const tbody = document.getElementById('tableBody');
     if (!tbody.querySelector('tr[id^="guest-row-"]')) {
-      // FIX 7: consistent copy mentioning link
       tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link or QR code!</p></div></td></tr>`;
     }
 
@@ -808,7 +906,6 @@ async function deleteGuest(id, name) {
   }
 }
 
-// Refresh only stats + dietary flags — table stays untouched
 async function refreshStats() {
   try {
     const res  = await fetchWithTimeout(`/api/dashboard-api?action=load&token=${encodeURIComponent(_token)}`, {}, 8000);
@@ -821,7 +918,6 @@ async function refreshStats() {
     const no     = responses.filter(r => r.attending === 'no');
     const total  = responses.length;
 
-    // FIX 1: use catering sub-counts as single source of truth
     const guests = yes.reduce((s, r) =>
       s + (parseInt(r.guest_count_adults)   || 0)
         + (parseInt(r.guest_count_children) || 0)
@@ -840,7 +936,6 @@ async function refreshStats() {
     renderCatering(yes);
     renderTodayCount(responses);
 
-    // FIX 2: progress bar — mathematically correct rest segment
     const yesPct  = total ? (yes.length / total * 100) : 0;
     const noPct   = total ? (no.length  / total * 100) : 0;
     const restPct = Math.max(0, 100 - yesPct - noPct);
@@ -848,7 +943,6 @@ async function refreshStats() {
     document.getElementById('barNo').style.width   = noPct.toFixed(1)   + '%';
     document.getElementById('barRest').style.width = restPct.toFixed(1) + '%';
 
-    // FIX 6: normalise dietary keys before grouping
     const dietCount = {};
     yes.forEach(r => {
       if (r.allergies && r.allergies.trim() && r.allergies.toLowerCase() !== 'none') {
@@ -857,7 +951,6 @@ async function refreshStats() {
       }
     });
     const flagsEl = document.getElementById('dietaryFlags');
-    // FIX 3: escape in dietary flags
     flagsEl.innerHTML = Object.keys(dietCount).length
       ? Object.entries(dietCount).map(([k,v]) =>
           `<div class="flag">⚠️ ${escapeHtml(prettyDiet(k))}<span class="flag-count">${v}</span></div>`
@@ -875,7 +968,6 @@ async function resendEmail() {
   btn.textContent = '⏳ Sending…';
   btn.disabled = true;
   try {
-    // 15 s — email send touches Resend which can be slower than a simple DB read.
     const res  = await fetchWithTimeout('/api/dashboard-api?action=send-email', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ token:_token }) }, 15000);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to send');
@@ -901,6 +993,88 @@ function showToast(msg) {
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3500);
 }
+
+// ── MESSAGE GUESTS ────────────────────────────────────────────────────────────
+
+function switchMsgTab(tab) {
+  document.getElementById('tabNote').classList.toggle('active', tab === 'note');
+  document.getElementById('tabSend').classList.toggle('active', tab === 'send');
+  document.getElementById('panelNote').classList.toggle('active', tab === 'note');
+  document.getElementById('panelSend').classList.toggle('active', tab === 'send');
+}
+
+function updateCharCount(textareaId, counterId, max) {
+  const ta  = document.getElementById(textareaId);
+  const ctr = document.getElementById(counterId);
+  if (!ta || !ctr) return;
+  const len = ta.value.length;
+  ctr.textContent = `${len} / ${max}`;
+  ctr.classList.toggle('warn', len > max * 0.9);
+}
+
+async function saveReminderNote() {
+  if (!_token) return;
+  const note = (document.getElementById('reminderNoteText')?.value || '').trim();
+  const btn  = document.getElementById('btnSaveNote');
+  const pill = document.getElementById('noteSavedPill');
+  btn.textContent = '⏳ Saving…'; btn.disabled = true;
+  try {
+    const res  = await fetchWithTimeout('/api/dashboard-api?action=save-reminder-note', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token:_token, reminder_note: note }),
+    }, 10000);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to save');
+    if (_partyData) _partyData.reminder_note = note;
+    pill.classList.add('show');
+    setTimeout(() => pill.classList.remove('show'), 3000);
+    showToast(note ? '📝 Reminder note saved' : '📝 Reminder note cleared');
+  } catch (err) {
+    showToast('⚠️ ' + describeFetchError(err));
+  } finally {
+    btn.textContent = '💾 Save note'; btn.disabled = false;
+  }
+}
+
+async function sendPartyUpdate() {
+  if (!_token) return;
+  const message = (document.getElementById('updateMessage')?.value || '').trim();
+  const subject = (document.getElementById('updateSubject')?.value || '').trim();
+  const note    = (document.getElementById('updateNote')?.value    || '').trim();
+
+  if (!message) {
+    showToast('⚠️ Please add a message before sending');
+    document.getElementById('updateMessage')?.focus();
+    return;
+  }
+
+  const btn = document.getElementById('btnSendUpdate');
+  const origText = btn.textContent;
+  btn.textContent = '⏳ Sending…'; btn.disabled = true;
+
+  try {
+    const res  = await fetchWithTimeout('/api/dashboard-api?action=send-update', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token:_token, message, subject, note }),
+    }, 20000);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to send');
+    btn.classList.add('success');
+    btn.textContent = `✓ Sent to ${data.sent || 'all'} guests`;
+    showToast(`📢 Update sent to ${data.sent || 'guests'}`);
+    ['updateMessage','updateSubject','updateNote'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    updateCharCount('updateMessage','msgCharCount',2000);
+    updateCharCount('updateNote','updateNoteCharCount',500);
+    setTimeout(() => { btn.classList.remove('success'); btn.textContent = origText; btn.disabled = false; }, 5000);
+  } catch (err) {
+    btn.textContent = origText; btn.disabled = false;
+    showToast('⚠️ ' + describeFetchError(err));
+  }
+}
+
 </script>
 </body>
 </html>

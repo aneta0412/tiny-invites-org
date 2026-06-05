@@ -149,6 +149,21 @@
 
 <canvas id="confetti-canvas"></canvas>
 
+<!-- PAGE: PARTY GONE (deleted or in the past) -->
+<div class="page" id="page-gone">
+  <div class="card" style="text-align:center;max-width:460px;">
+    <div class="brand">Tiny Invites</div>
+    <div class="ornament" id="gone-emoji">🎈</div>
+    <h2 id="gone-heading" style="margin-bottom:12px;">This party has already happened</h2>
+    <p id="gone-body" style="font-size:0.9rem;color:var(--mid);line-height:1.7;margin-bottom:0;">
+      Looks like the celebrations are over — we hope it was a wonderful time! 🎂
+    </p>
+    <p style="margin-top:20px;font-size:0.78rem;color:var(--soft);">
+      Planning your own party? <a href="/" style="color:var(--gold);text-decoration:none;">Create a free invite →</a>
+    </p>
+  </div>
+</div>
+
 <!-- PAGE 1: INVITATION -->
 <div class="page active" id="page-invite">
   <div id="invite-wrap" style="width:calc(100% - 40px);max-width:540px;animation:fadeUp 0.55s cubic-bezier(.22,.61,.36,1) both;border-radius:24px;overflow:hidden;box-shadow:0 8px 40px rgba(42,34,24,0.07);">
@@ -168,15 +183,14 @@
       </div>
       <p style="font-size:0.92rem;color:var(--mid);text-align:center;margin-bottom:24px;line-height:1.65;">We'd love to have you join us for cake, laughter, and all the good things. We can't wait! 🎈</p>
       <div style="margin-bottom:20px;">
-        <label>Your name</label>
-        <input type="text" id="landing-guest-name" placeholder="e.g. Sarah Johnson">
+        <label>Who's coming? <span style="font-size:0.7rem;font-weight:400;color:var(--soft);text-transform:none;letter-spacing:0;">(optional)</span></label>
+        <input type="text" id="landing-guest-name" placeholder="e.g. Emma &amp; James">
       </div>
       <p style="font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--soft);text-align:center;margin-bottom:14px;">Will you be joining us?</p>
       <div class="btn-group">
         <button class="btn btn-yes" onclick="proceedYes()">🎉 Yes, I'll be there!</button>
         <button class="btn btn-no" onclick="proceedNo()">Can't make it</button>
       </div>
-      <p id="landing-name-error" style="display:none;text-align:center;font-size:0.8rem;color:#e05555;margin-top:10px;">Please enter your name first 😊</p>
     </div>
   </div>
 </div>
@@ -191,7 +205,7 @@
     <div class="divider"><span></span><i>◆</i><span></span></div>
     <div class="field-group">
       <div>
-        <label>Your name</label>
+        <label>Who's coming?</label>
         <input type="text" id="guest-name" readonly style="background:var(--gold-pale);cursor:default;">
       </div>
     </div>
@@ -215,7 +229,7 @@
         </div>
         <div class="counter-btns">
           <button class="counter-btn" onclick="change('children',-1)" aria-label="fewer children">−</button>
-          <span class="counter-val" id="children-val">1</span>
+          <span class="counter-val" id="children-val">0</span>
           <button class="counter-btn" onclick="change('children',1)" aria-label="more children">+</button>
         </div>
       </div>
@@ -368,7 +382,7 @@
     if (childSmall) childSmall.textContent = ASK_BABIES ? 'Age 1 and over' : 'Including all ages';
   }
 
-  const counts = { children: 1, babies: 0, adults: 1 };
+  const counts = { children: 0, babies: 0, adults: 1 };
   function change(key, delta) {
     counts[key] = Math.max(0, counts[key] + delta);
     if (key === 'adults' && counts[key] < 1) counts[key] = 1;
@@ -386,8 +400,25 @@
     }
     if (!partyId) { renderInvite({}); return; }
     fetchWithTimeout('/api/rsvp?action=get-party&id=' + partyId, {}, 6000)
-      .then(r => r.json())
-      .then(d => renderInvite(d || {}))
+      .then(async r => {
+        const d = await r.json().catch(() => ({}));
+        if (r.status === 404) {
+          // Party deleted or never existed
+          document.getElementById('gone-emoji').textContent   = '🎈';
+          document.getElementById('gone-heading').textContent = 'This invite is no longer available';
+          document.getElementById('gone-body').textContent    = 'The party may have been cancelled or the link is no longer valid. If you think this is a mistake, check with the host directly.';
+          showPage('page-gone'); return;
+        }
+        if (r.status === 410) {
+          // Party already happened
+          const name = d.child_name ? `${d.child_name}'s party` : 'this party';
+          document.getElementById('gone-emoji').textContent   = '🎂';
+          document.getElementById('gone-heading').textContent = `Looks like ${name} has already happened!`;
+          document.getElementById('gone-body').textContent    = 'The celebrations are over — we hope everyone had a wonderful time! If you think this is a mistake, check with the host.';
+          showPage('page-gone'); return;
+        }
+        renderInvite(d || {});
+      })
       .catch(err => { console.warn('get-party fetch failed:', describeFetchError(err)); renderInvite({}); });
   });
 
@@ -404,16 +435,12 @@
 
   function proceedYes() {
     const name = document.getElementById('landing-guest-name').value.trim();
-    if (!name) { document.getElementById('landing-name-error').style.display = 'block'; document.getElementById('landing-guest-name').focus(); return; }
-    document.getElementById('landing-name-error').style.display = 'none';
     document.getElementById('guest-name').value = name;
     showPage('page-yes');
   }
 
   function proceedNo() {
     const name = document.getElementById('landing-guest-name').value.trim();
-    if (!name) { document.getElementById('landing-name-error').style.display = 'block'; document.getElementById('landing-guest-name').focus(); return; }
-    document.getElementById('landing-name-error').style.display = 'none';
     document.getElementById('no-guest-name').value = name;
     showPage('page-no');
     submitDecline();

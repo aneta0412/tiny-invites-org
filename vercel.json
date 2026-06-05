@@ -11,6 +11,10 @@
     {
       "path": "/api/cleanup-inactive-parties",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/send-final-list",
+      "schedule": "0 9 * * *"
     }
   ]
 }

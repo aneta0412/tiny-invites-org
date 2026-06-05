@@ -326,11 +326,17 @@
       </div>
 
       <div class="field" style="margin-bottom:14px;">
-        <label for="host-rsvp-cutoff" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Lock RSVPs on</label>
-        <input type="date" id="host-rsvp-cutoff"
-          style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
-          onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
-        <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">After this date, no new RSVPs or changes are accepted — giving you a final count to plan with. Most venues ask for numbers at least 7 days before the party. You can only set this now, not after the invite is live.</p>
+        <label style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Close RSVPs</label>
+        <div style="display:flex;align-items:center;gap:10px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;padding:8px 13px;" id="cutoff-row">
+          <input type="number" id="host-rsvp-days" value="8" min="1" max="60"
+            style="width:54px;padding:4px 8px;background:var(--warm-white);border:1px solid var(--gold-light);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--dark);outline:none;text-align:center;transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'"
+            oninput="updateCutoffFromPartyDate()">
+          <span style="font-size:0.88rem;color:var(--mid);">days before the party —</span>
+          <span id="cutoff-date-display" style="font-size:0.88rem;color:var(--dark);font-weight:500;"></span>
+        </div>
+        <input type="hidden" id="host-rsvp-cutoff">
+        <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:6px;line-height:1.5;">After this date, no new RSVPs or changes — giving you a locked guest count for catering and seating. Most venues ask for final numbers at least <strong>7 days</strong> before. Can only be set now, not after the invite goes live.</p>
       </div>
 
       <!-- Compact guest-counting chips: children always counted; tap to add. -->
@@ -499,17 +505,23 @@
 
   function updateCutoffFromPartyDate() {
     const partyVal  = document.getElementById('host-party-date').value;
+    const daysEl    = document.getElementById('host-rsvp-days');
     const cutoffEl  = document.getElementById('host-rsvp-cutoff');
-    if (!partyVal || !cutoffEl) return;
-    const party = new Date(partyVal);
-    party.setDate(party.getDate() - 7);
-    // Format as YYYY-MM-DD for the date input
-    const y = party.getFullYear();
-    const m = String(party.getMonth() + 1).padStart(2, '0');
-    const d = String(party.getDate()).padStart(2, '0');
-    cutoffEl.value = `${y}-${m}-${d}`;
-    // Set max so the cutoff can't be set after the party day
-    cutoffEl.max = partyVal;
+    const displayEl = document.getElementById('cutoff-date-display');
+    if (!partyVal) {
+      if (displayEl) displayEl.textContent = '';
+      if (cutoffEl)  cutoffEl.value = '';
+      return;
+    }
+    const days   = Math.max(1, Math.min(60, parseInt(daysEl?.value) || 7));
+    const cutoff = new Date(partyVal);
+    cutoff.setDate(cutoff.getDate() - days);
+    const y = cutoff.getFullYear();
+    const m = String(cutoff.getMonth() + 1).padStart(2, '0');
+    const d = String(cutoff.getDate()).padStart(2, '0');
+    const iso = `${y}-${m}-${d}`;
+    if (cutoffEl)  cutoffEl.value = iso;
+    if (displayEl) displayEl.textContent = cutoff.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
   }
 
   async function goLive() {

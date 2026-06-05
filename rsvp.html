@@ -216,7 +216,7 @@
         </div>
         <div class="counter-btns">
           <button class="counter-btn" onclick="change('children',-1)" aria-label="fewer children">−</button>
-          <span class="counter-val" id="children-val">1</span>
+          <span class="counter-val" id="children-val">0</span>
           <button class="counter-btn" onclick="change('children',1)" aria-label="more children">+</button>
         </div>
       </div>
@@ -307,11 +307,21 @@
         </div>
         <p id="guest-fix-resend-feedback" style="display:none;font-size:0.75rem;color:#5a8a6a;margin-bottom:8px;">✓ Sent! Check your inbox (and spam folder).</p>
         <div class="guest-or-divider">or</div>
-        <a id="guest-contact-host-link" href="#" style="display:block;text-align:center;padding:10px;border:1px solid var(--gold-light);border-radius:8px;font-size:0.78rem;color:var(--mid);text-decoration:none;transition:all 0.2s;"
-           onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--dark)';this.style.background='var(--gold-pale)'"
-           onmouseout="this.style.borderColor='';this.style.color='';this.style.background=''">
+        <!-- Contact-host form — relays message server-side so host email stays private -->
+        <div id="guest-contact-host-form" style="display:none;">
+          <textarea id="guest-contact-message" rows="3" placeholder="Type your message…"
+            style="width:100%;box-sizing:border-box;border:1px solid var(--gold-light);border-radius:8px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:0.83rem;color:var(--dark);background:#fff;resize:vertical;margin-bottom:8px;"></textarea>
+          <button class="btn-guest-fix-resend" id="guest-contact-send-btn" onclick="guestContactHost()" style="width:100%;">✉️ Send message</button>
+          <p id="guest-contact-feedback" style="display:none;font-size:0.75rem;color:#5a8a6a;margin-top:8px;">✓ Message sent! The host will be in touch.</p>
+          <p id="guest-contact-error" style="display:none;font-size:0.75rem;color:#c0392b;margin-top:8px;"></p>
+        </div>
+        <button id="guest-contact-host-btn"
+          onclick="document.getElementById('guest-contact-host-form').style.display='block';this.style.display='none';"
+          style="display:block;width:100%;text-align:center;padding:10px;border:1px solid var(--gold-light);border-radius:8px;font-size:0.78rem;color:var(--mid);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;"
+          onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--dark)';this.style.background='var(--gold-pale)'"
+          onmouseout="this.style.borderColor='';this.style.color='';this.style.background=''">
           ✉️ Message the host directly
-        </a>
+        </button>
       </div>
       <p class="success-note" id="success-contact" style="display:none;margin-top:14px;font-size:0.82rem;">Questions? Reach the host at <a id="success-host-email" href="#" style="color:var(--gold);"></a></p>
       <div style="text-align:center;">
@@ -534,28 +544,18 @@
       _confirmedPartyId   = pid;
       _confirmedGuestName = guestName;
 
-      // Pre-fill the fix input and set the host contact link
+      // Pre-fill the fix input
       const fixInput = document.getElementById('guest-fix-email-input');
       if (fixInput) fixInput.value = guestEmail;
-      const hostLink = document.getElementById('guest-contact-host-link');
-      if (hostLink && pd.hostEmail) {
-        const subj = encodeURIComponent('Party RSVP — update my email');
-        const body = encodeURIComponent(
-          `Hi,\n\nI RSVPd for ${pd.childName || 'the party'} but my confirmation email hasn't arrived.\n\nMy name: ${guestName}\nEmail I used: ${guestEmail}\n\nCould you check I'm on the list? Thanks!`
-        );
-        hostLink.href = `mailto:${pd.hostEmail}?subject=${subj}&body=${body}`;
-      } else if (hostLink) {
-        hostLink.style.display = 'none';
-      }
 
       showPage('page-success');
       launchConfetti();
 
-      // Show "didn't get it?" nudge after 20 s
+      // Show "didn't get it?" nudge after 5 s
       _guestDidntReceiveTimer = setTimeout(() => {
         const nudge = document.getElementById('guest-didnt-receive-btn');
         if (nudge) nudge.style.display = 'block';
-      }, 20000);
+      }, 5000);
 
     } catch (err) {
       document.getElementById('error-text').textContent = describeFetchError(err);
@@ -724,19 +724,6 @@
       if (addrEl) addrEl.textContent = newEmail;
       if (input)  input.value = newEmail;
 
-      // Update host contact link with new email
-      const hostLink = document.getElementById('guest-contact-host-link');
-      if (hostLink && hostLink.href.startsWith('mailto:')) {
-        const pd = window._partyData || {};
-        if (pd.hostEmail) {
-          const subj = encodeURIComponent('Party RSVP — update my email');
-          const body = encodeURIComponent(
-            `Hi,\n\nI RSVPd for ${pd.childName || 'the party'} but my confirmation email hasn't arrived.\n\nMy name: ${_confirmedGuestName}\nEmail I used: ${newEmail}\n\nCould you check I'm on the list? Thanks!`
-          );
-          hostLink.href = `mailto:${pd.hostEmail}?subject=${subj}&body=${body}`;
-        }
-      }
-
       if (feedback) feedback.style.display = 'block';
       btn.textContent = '✓ Sent';
 
@@ -744,6 +731,45 @@
       btn.disabled = false; btn.textContent = 'Resend';
       if (input) { input.style.borderColor = '#c0392b'; setTimeout(() => { input.style.borderColor = ''; }, 2000); }
       console.error('guestFixAndResend:', err.message);
+    }
+  }
+
+  async function guestContactHost() {
+    const textarea = document.getElementById('guest-contact-message');
+    const message  = textarea ? textarea.value.trim() : '';
+    if (!message) {
+      if (textarea) { textarea.style.borderColor = '#c0392b'; setTimeout(() => { textarea.style.borderColor = ''; }, 2000); }
+      return;
+    }
+
+    const btn      = document.getElementById('guest-contact-send-btn');
+    const feedback = document.getElementById('guest-contact-feedback');
+    const errEl    = document.getElementById('guest-contact-error');
+    btn.disabled = true; btn.textContent = '…';
+    if (errEl) errEl.style.display = 'none';
+
+    try {
+      const pd = window._partyData || {};
+      const res = await fetchWithTimeout('/api/rsvp?action=contact-host', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          party_id:   _confirmedPartyId,
+          guest_name: _confirmedGuestName || 'A guest',
+          guest_email: _confirmedEmail || null,
+          message,
+        }),
+      }, 12000);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not send message');
+
+      if (feedback) feedback.style.display = 'block';
+      btn.textContent = '✓ Sent';
+      if (textarea) textarea.disabled = true;
+
+    } catch (err) {
+      btn.disabled = false; btn.textContent = '✉️ Send message';
+      if (errEl) { errEl.textContent = 'Could not send — please try again.'; errEl.style.display = 'block'; }
+      console.error('guestContactHost:', err.message);
     }
   }
 

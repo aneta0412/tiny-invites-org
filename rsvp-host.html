@@ -207,7 +207,7 @@
   }
   @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
-  #invite-hero { position:relative; width:100%; aspect-ratio:16/9; background:var(--gold-pale); overflow:hidden; }
+  #invite-hero { position:relative; width:100%; aspect-ratio:3/2; background:var(--gold-pale); overflow:hidden; }
   #invite-hero img { width:100%; height:100%; object-fit:cover; display:block; }
   #invite-hero .overlay { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(42,34,24,0.08) 0%,rgba(42,34,24,0.45) 100%); }
 
@@ -596,24 +596,16 @@
     const btn = document.getElementById('resend-btn');
     btn.disabled = true; btn.textContent = 'Sending…';
     try {
-      const res  = await fetchWithTimeout('/api/party?action=go-live', {
+      const res  = await fetchWithTimeout('/api/party?action=resend-confirmation', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          child_name:   previewName,
-          age:          previewAge,
-          venue:        previewLocation,
-          party_date:   submittedPartyDate,
           parent_email: submittedEmail,
-          photo_url:    previewPhoto  || null,
-          special_note: previewNote   || null,
-          count_adults: submittedCountAdults,
-          count_babies: submittedCountBabies,
+          party_date:   submittedPartyDate,
         }),
       }, 12000);
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Could not resend');
       btn.textContent = '✓ Sent! Check your inbox';
-      // Show the "Didn't receive it?" button sooner on second attempt
       clearTimeout(_didntReceiveTimer);
       _didntReceiveTimer = setTimeout(() => {
         const nudge = document.getElementById('didnt-receive-btn');
@@ -641,27 +633,20 @@
     btn.disabled = true; btn.textContent = '…';
 
     try {
-      const res  = await fetchWithTimeout('/api/party?action=go-live', {
+      const res  = await fetchWithTimeout('/api/party?action=resend-confirmation', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          child_name:   previewName,
-          age:          previewAge,
-          venue:        previewLocation,
+          parent_email: submittedEmail,
           party_date:   submittedPartyDate,
-          parent_email: newEmail,
-          photo_url:    previewPhoto  || null,
-          special_note: previewNote   || null,
-          count_adults: submittedCountAdults,
-          count_babies: submittedCountBabies,
+          new_email:    newEmail,
         }),
       }, 12000);
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Could not resend');
 
-      // Update the displayed email and the stored address
+      // Update the displayed email and stored address
       submittedEmail = newEmail;
       document.getElementById('check-email-display').textContent = newEmail;
-      // Update the admin mailto too
       const adminLink = document.getElementById('contact-admin-link');
       if (adminLink) {
         const subject = encodeURIComponent('Tiny Invites — confirmation email not received');

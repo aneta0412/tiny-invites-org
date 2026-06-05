@@ -13,11 +13,11 @@
 <meta property="og:description" content="Create personalised invitations with QR codes, track RSVPs and organise your whole party in one place. No spreadsheets, no WhatsApp chaos or chasing replies.">
 <meta property="og:url" content="https://tinyinvites.org/">
 <meta property="og:site_name" content="Tiny Invites">
-<meta property="og:image" content="https://tinyinvites.org/logo.png">
+<meta property="og:image" content="https://tinyinvites.org/hero-bg.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Beautiful Kids' Party Invitations, Made Simple | Tiny Invites">
 <meta name="twitter:description" content="Create personalised invitations with QR codes, track RSVPs and organise your whole party in one place. No spreadsheets, no chasing replies.">
-<meta name="twitter:image" content="https://tinyinvites.org/logo.png">
+<meta name="twitter:image" content="https://tinyinvites.org/hero-bg.jpg">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23faf6ef'/%3E%3Ctext x='50' y='75' font-family='serif' font-size='80' font-style='italic' text-anchor='middle' fill='%23c9a84c'%3ET%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DGKQQ624LG"></script>
@@ -53,7 +53,8 @@
   .section-label::before { content:""; display:block; width:20px; height:1px; background:var(--gold); flex-shrink:0; }
   h1, h2, h3 { font-family:"Cormorant Garamond",serif; font-weight:300; }
   h2 { font-size:clamp(2rem,5vw,3.2rem); line-height:1.15; margin-bottom:14px; }
-  h2 em, h1 em { font-style:italic; color:var(--gold); }
+  h3 { font-size:clamp(1.6rem,3vw,2.2rem); line-height:1.18; margin-bottom:12px; }
+  h2 em, h1 em, h3 em { font-style:italic; color:var(--gold); }
   .section-sub { font-size:0.92rem; color:var(--mid); line-height:1.7; max-width:560px; margin-bottom:36px; }
 
   .hero { min-height:88vh; display:flex; align-items:center; padding:64px 40px; position:relative; overflow:hidden; }
@@ -64,9 +65,9 @@
   .hero-content h1 { font-size:clamp(3rem,6vw,5rem); line-height:1.06; color:var(--dark); margin-bottom:22px; opacity:0; animation:fadeUp 0.9s 0.35s forwards; }
   .hero-sub { font-size:1rem; line-height:1.72; color:var(--mid); max-width:480px; margin-bottom:32px; opacity:0; animation:fadeUp 0.9s 0.5s forwards; }
   .hero-cta-row { display:flex; gap:12px; flex-wrap:wrap; opacity:0; animation:fadeUp 0.9s 0.65s forwards; }
-  .hero-panel { background:white; border:1px solid var(--gold-pale); border-radius:16px; overflow:hidden; box-shadow:0 16px 64px rgba(42,34,24,0.1); opacity:0; animation:fadeUp 0.9s 0.5s forwards; }
+  .hero-panel { background:white; border:1px solid var(--gold-pale); border-radius:16px; overflow:hidden; box-shadow:0 16px 64px rgba(42,34,24,0.1); opacity:0; animation:fadeUp 0.9s 0.5s forwards; scroll-margin-top:90px; }
   .hero-panel-header { padding:20px 24px 16px; border-bottom:1px solid var(--gold-pale); }
-  .hero-panel-header h2 { font-size:clamp(1.55rem,2.5vw,2rem); margin-bottom:6px; }
+  .hero-panel-header h3 { font-size:clamp(1.55rem,2.5vw,2rem); margin-bottom:6px; }
   .hero-panel-header p { font-size:0.82rem; color:var(--mid); line-height:1.6; }
 
   .action-cards { display:flex; flex-direction:column; }
@@ -185,6 +186,16 @@
   .testimonial blockquote { font-family:"Cormorant Garamond",serif; font-size:0.95rem; font-style:italic; color:var(--dark); line-height:1.6; margin-bottom:10px; }
   .testimonial cite { font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--soft); font-style:normal; }
 
+  .faq { background:var(--warm-white); }
+  .faq-list { max-width:760px; margin:28px auto 0; display:flex; flex-direction:column; gap:12px; }
+  .faq-item { background:white; border:1px solid var(--gold-pale); border-radius:6px; overflow:hidden; }
+  .faq-item summary { list-style:none; cursor:pointer; padding:18px 22px; font-family:"Cormorant Garamond",serif; font-size:1.12rem; color:var(--dark); display:flex; justify-content:space-between; align-items:center; gap:16px; transition:color 0.2s; }
+  .faq-item summary::-webkit-details-marker { display:none; }
+  .faq-item summary::after { content:"+"; font-family:"DM Sans",sans-serif; font-size:1.3rem; color:var(--gold); flex-shrink:0; }
+  .faq-item[open] summary::after { content:"\2212"; }
+  .faq-item summary:hover { color:var(--gold); }
+  .faq-answer { padding:0 22px 18px; font-size:0.86rem; color:var(--mid); line-height:1.7; }
+
   footer { padding:32px 40px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--gold-pale); flex-wrap:wrap; gap:14px; }
   .footer-logo { font-family:"Cormorant Garamond",serif; font-size:1.2rem; color:var(--dark); display:flex; align-items:center; gap:8px; }
   .footer-logo img { height:24px; width:24px; border-radius:50%; object-fit:cover; }
@@ -200,6 +211,7 @@
     .other-grid { grid-template-columns:1fr 1fr; }
   }
   @media(max-width:860px) {
+    .shop-cards, .gift-grid { grid-template-columns:repeat(2,1fr) !important; }
     .hero-inner, .venue-grid, .contact-inner { grid-template-columns:1fr; gap:36px; }
     .hero { min-height:auto; padding:48px 24px; }
     .hero-panel { max-width:520px; }
@@ -230,6 +242,60 @@
     footer { align-items:flex-start; flex-direction:column; }
   }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://tinyinvites.org/#organization",
+      "name": "Tiny Invites",
+      "url": "https://tinyinvites.org/",
+      "logo": "https://tinyinvites.org/logo.png",
+      "description": "Free tools to create personalised kids' party invitations with QR codes, track RSVPs and organise your whole party in one place."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://tinyinvites.org/#website",
+      "url": "https://tinyinvites.org/",
+      "name": "Tiny Invites",
+      "description": "Beautiful kids' party invitations, made simple.",
+      "publisher": { "@id": "https://tinyinvites.org/#organization" }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://tinyinvites.org/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What if a guest changes their mind?",
+          "acceptedAnswer": { "@type": "Answer", "text": "They can reopen the same invite link, enter the same name they used before, and resubmit. Their RSVP updates automatically and you'll get a notification that their response changed." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I message all my guests at once?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. From your dashboard you can email everyone who's RSVP'd yes — handy if details change, like a venue update or a parking reminder. It goes straight to each guest's inbox." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I edit a guest's details if they contact me directly?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Your dashboard lets you update any guest's name, attendance, or guest count manually — useful when someone messages you instead of using the link." }
+        },
+        {
+          "@type": "Question",
+          "name": "What if I lose my dashboard link?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Your dashboard link was emailed to you when you created the invite, so check that email to get back in. Keep it safe — it's your private link for managing RSVPs." }
+        },
+        {
+          "@type": "Question",
+          "name": "It's free — is there a catch?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No catch. If you buy something through our party shop links we may earn a small commission, at no extra cost to you — that's what keeps the site free. We may add the occasional partner promotion over time, but we never sell your data, and guests never see ads on the RSVP page." }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <nav>
@@ -246,7 +312,7 @@
   </div>
 </nav>
 
-<section class="hero" id="how-it-works">
+<section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-inner">
     <div class="hero-content">
@@ -258,11 +324,12 @@
         <span style="font-size:0.72rem;color:var(--mid);display:flex;align-items:center;gap:6px;">✓ Free forever</span>
         <span style="font-size:0.72rem;color:var(--mid);display:flex;align-items:center;gap:6px;">✓ Guests reminded 3 days before</span>
         <span style="font-size:0.72rem;color:var(--mid);display:flex;align-items:center;gap:6px;">✓ No app needed</span>
-      </div>    </div>
-    <aside class="hero-panel" aria-label="How Tiny Invites works">
+      </div>
+    </div>
+    <aside class="hero-panel" id="how-it-works" aria-label="How Tiny Invites works">
       <div class="hero-panel-header">
         <p class="section-label">See it in action</p>
-        <h2>Your party invite, <em>ready in minutes</em></h2>
+        <h3>Your party invite, <em>ready in minutes</em></h3>
         <p>Send your invite instantly and get RSVP updates straight to your inbox.</p>
       </div>
       <div class="action-cards">
@@ -317,7 +384,7 @@
 <section class="other-section" id="other-things">
   <div style="max-width:1280px;margin:0 auto;">
     <p class="section-label">More party essentials</p>
-    <h2>Other things <em>necessary for the party</em></h2>
+    <h2>Everything else <em>your party needs</em></h2>
     <p class="section-sub" style="max-width:none;">Everything else your party needs: venues, designs, printing, and supplies, all in one place.</p>
     <div class="other-grid">
       <div class="other-card"><span class="other-card-num">01</span><p class="other-card-title">Find a Party Venue</p><p>Browse soft plays, gymnastics centres, trampoline parks, zoos, and activity venues near you. Filter by type and location, then book directly.</p><a href="/partyfinder.html">Find a venue near me →</a></div>
@@ -327,15 +394,8 @@
   </div>
 </section>
 
-<section class="venue-section">
-  <div class="venue-grid">
-    <div><div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;"><span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">02</span><p class="section-label" style="margin:0;">Find a venue</p></div><h2 style="margin-bottom:8px;">Discover party venues <em>near you.</em></h2><p class="section-sub">Browse soft plays, activity centres, and zoos in your area. Filter by type and location, then book directly with the venue.</p><a href="/partyfinder.html" class="btn-primary">Find a venue near me →</a></div>
-    <div class="venue-img"><img src="venue-finder.png" alt="Venue finder screenshot" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="venue-fallback">Party Finder preview</div></div>
-  </div>
-</section>
-
 <section class="designs" id="designs">
-  <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;"><span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">03</span><p class="section-label" style="margin:0;">Choose your design</p></div>
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;"><span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">02</span><p class="section-label" style="margin:0;">Choose your design</p></div>
   <h2 style="margin-bottom:8px;">Pick a free invitation design <em>or create your own</em></h2>
   <p class="section-sub" style="max-width:none;">Browse ready-made designs or use the AI prompt generator to create something unique. Every design includes a QR code space ready for printing.</p>
   <div class="tiles-grid">
@@ -350,7 +410,7 @@
     <a class="tile" href="img7.png" download><div class="tile-img"><img src="img7.png" alt="Design 7 preview" onerror="this.parentElement.innerHTML='Design 07'"></div><p class="tile-label">Design 07</p></a>
     <a class="tile" href="img8.png" download><div class="tile-img"><img src="img8.png" alt="Design 8 preview" onerror="this.parentElement.innerHTML='Design 08'"></div><p class="tile-label">Design 08</p></a>
     <a class="tile" href="img9.png" download><div class="tile-img"><img src="img9.png" alt="Design 9 preview" onerror="this.parentElement.innerHTML='Design 09'"></div><p class="tile-label">Design 09</p></a>
-    <a class="tile" href="img10.png" download><div class="tile-img"><img src="img10.png" alt="Design 10 preview" onerror="this.parentElement.innerHTML='Design 10'"></div><p class="tile-label">Design 10</p></a>
+    <a class="tile" href="img10.PNG" download><div class="tile-img"><img src="img10.PNG" alt="Design 10 preview" onerror="this.parentElement.innerHTML='Design 10'"></div><p class="tile-label">Design 10</p></a>
     <a class="tile" href="img11.png" download><div class="tile-img"><img src="img11.png" alt="Design 11 preview" onerror="this.parentElement.innerHTML='Design 11'"></div><p class="tile-label">Design 11</p></a>
     <a class="tile" href="img12.png" download><div class="tile-img"><img src="img12.png" alt="Design 12 preview" onerror="this.parentElement.innerHTML='Design 12'"></div><p class="tile-label">Design 12</p></a>
   </div></div>
@@ -358,7 +418,7 @@
   <div class="designs-note"><span style="font-size:1.1rem;flex-shrink:0;">💡</span><span>All designs are free to download and print at home. Want professionally printed invitations? <a href="#print" style="color:#80681f;text-decoration:underline;text-underline-offset:3px;">Browse our UK print services</a>, then add your QR code before ordering.</span></div>
   <div class="ai-panel">
     <p class="section-label" style="margin-bottom:6px;">Make it completely yours</p>
-    <h2 style="margin-bottom:8px;">Design your own with <em>AI</em></h2>
+    <h3 style="margin-bottom:8px;">Design your own with <em>AI</em></h3>
     <p class="section-sub">Pick a style and theme, then copy the prompt into ChatGPT, Midjourney, or Canva AI.</p>
     <div style="margin-bottom:14px;"><p class="field-label">Choose a style</p><div class="choice-row"><button id="style-pastel" class="style-chip active-chip" type="button" onclick="setStyle('pastel')">Soft Pastel<span>peach, mint, lilac &amp; pearl</span></button><button id="style-cartoon" class="style-chip" type="button" onclick="setStyle('cartoon')">Bold &amp; Cartoon<span>bright, punchy, illustrated</span></button></div></div>
     <div style="margin-bottom:14px;"><p class="field-label">Choose a theme</p><div class="choice-row" id="theme-chips"><button class="theme-chip active-chip" type="button" data-theme="mermaids" onclick="setTheme(this)">Mermaids</button><button class="theme-chip" type="button" data-theme="dinosaurs" onclick="setTheme(this)">Dinosaurs</button><button class="theme-chip" type="button" data-theme="unicorns" onclick="setTheme(this)">Unicorns</button><button class="theme-chip" type="button" data-theme="superheroes" onclick="setTheme(this)">Superheroes</button><button class="theme-chip" type="button" data-theme="safari animals" onclick="setTheme(this)">Safari</button><button class="theme-chip" type="button" data-theme="space and rockets" onclick="setTheme(this)">Space</button><button class="theme-chip" type="button" data-theme="princesses and castles" onclick="setTheme(this)">Princesses</button><button class="theme-chip" type="button" data-theme="jungle animals" onclick="setTheme(this)">Jungle</button><button class="theme-chip" type="button" data-theme="fairies and flowers" onclick="setTheme(this)">Fairies</button></div></div>
@@ -367,7 +427,7 @@
 </section>
 
 <section class="print-section" id="print">
-  <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;"><span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">04</span><p class="section-label" style="margin:0;">UK Print Services</p></div>
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;"><span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">03</span><p class="section-label" style="margin:0;">UK Print Services</p></div>
   <h2 style="margin-bottom:8px;">Printed invitations with your <em>QR code.</em></h2>
   <p class="section-sub" style="max-width:none;color:rgba(250,246,239,0.7);">Order beautifully printed birthday invitations with envelopes. Add your QR code so guests RSVP instantly.</p>
   <div class="print-grid">
@@ -377,16 +437,68 @@
 </section>
 
 <section class="shop-section" id="shop">
-  <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;"><span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">05</span><p class="section-label" style="margin:0;">Party Shop &amp; Gifts</p></div>
-  <h2 style="margin-bottom:8px;">Supplies &amp; gifts for the <em>perfect party.</em></h2>
-  <p class="section-sub">Jungle, unicorn, superhero, princess, dinosaur and more, hand-picked supplies and gifts across every theme.</p>
-  <div style="display:flex;gap:14px;flex-wrap:wrap;"><a href="/shop.html" class="shop-link">Browse Party Supplies →</a><a href="/shop.html#gifts" class="shop-link" style="background:transparent;color:var(--mid);border:1px solid var(--gold-light);">Browse Gift Ideas →</a></div>
+  <div style="max-width:1280px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">04</span>
+      <p class="section-label" style="margin:0;">Party Shop &amp; Gifts</p>
+    </div>
+    <h2 style="margin-bottom:8px;">Supplies &amp; gifts for the <em>perfect party.</em></h2>
+    <p class="section-sub">Everything your party needs — from decorations to gifts worth giving. Hand-picked and delivered to your door.</p>
+
+    <!-- Featured gifts -->
+    <p class="section-label" style="margin-bottom:16px;">Gift ideas they'll actually love</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;">
+      <a href="https://www.amazon.co.uk/s?k=lego+creator+set+birthday&tag=tiny-invites-21" target="_blank" rel="noopener sponsored" style="text-decoration:none;background:white;border:1px solid var(--gold-pale);border-radius:10px;padding:20px;display:block;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(42,34,24,0.09)'" onmouseout="this.style.boxShadow='none'">
+        <p style="font-size:1.4rem;margin-bottom:8px;">🧱</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--dark);margin-bottom:4px;">LEGO Creator Sets</p>
+        <p style="font-size:0.75rem;color:var(--soft);margin-bottom:10px;line-height:1.5;">Build anything, keep forever. From £35.</p>
+        <span style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);">Shop on Amazon →</span>
+      </a>
+      <a href="https://www.amazon.co.uk/s?k=jellycat+large+soft+toy&tag=tiny-invites-21" target="_blank" rel="noopener sponsored" style="text-decoration:none;background:white;border:1px solid var(--gold-pale);border-radius:10px;padding:20px;display:block;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(42,34,24,0.09)'" onmouseout="this.style.boxShadow='none'">
+        <p style="font-size:1.4rem;margin-bottom:8px;">🐰</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--dark);margin-bottom:4px;">Jellycat Soft Toys</p>
+        <p style="font-size:0.75rem;color:var(--soft);margin-bottom:10px;line-height:1.5;">Iconic, irresistibly soft, keepsake quality. From £30.</p>
+        <span style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);">Shop on Amazon →</span>
+      </a>
+      <a href="https://www.amazon.co.uk/s?k=melissa+doug+wooden+toys&tag=tiny-invites-21" target="_blank" rel="noopener sponsored" style="text-decoration:none;background:white;border:1px solid var(--gold-pale);border-radius:10px;padding:20px;display:block;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(42,34,24,0.09)'" onmouseout="this.style.boxShadow='none'">
+        <p style="font-size:1.4rem;margin-bottom:8px;">🎨</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--dark);margin-bottom:4px;">Melissa &amp; Doug</p>
+        <p style="font-size:0.75rem;color:var(--soft);margin-bottom:10px;line-height:1.5;">Beautiful wooden toys built to last. From £30.</p>
+        <span style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);">Shop on Amazon →</span>
+      </a>
+      <a href="https://www.amazon.co.uk/s?k=thames+kosmos+science+kit+kids&tag=tiny-invites-21" target="_blank" rel="noopener sponsored" style="text-decoration:none;background:white;border:1px solid var(--gold-pale);border-radius:10px;padding:20px;display:block;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(42,34,24,0.09)'" onmouseout="this.style.boxShadow='none'">
+        <p style="font-size:1.4rem;margin-bottom:8px;">🔬</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--dark);margin-bottom:4px;">Science &amp; Discovery Kits</p>
+        <p style="font-size:0.75rem;color:var(--soft);margin-bottom:10px;line-height:1.5;">Hands-on fun that actually teaches. From £35.</p>
+        <span style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);">Shop on Amazon →</span>
+      </a>
+    </div>
+
+    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+      <a href="https://www.amazon.co.uk/s?k=kids+birthday+party+supplies&tag=tiny-invites-21" target="_blank" rel="noopener sponsored" class="shop-link">Browse party supplies →</a>
+      <a href="https://www.amazon.co.uk/s?k=kids+birthday+gifts+premium&tag=tiny-invites-21" target="_blank" rel="noopener sponsored" class="shop-link" style="background:transparent;color:var(--mid);border:1px solid var(--gold-light);">Browse gift ideas →</a>
+    </div>
+    <p style="font-size:0.7rem;color:var(--soft);margin-top:12px;">As an Amazon Associate we earn from qualifying purchases, at no extra cost to you.</p>
+  </div>
 </section>
 
 <section class="contact" id="contact">
   <div class="contact-inner">
     <div><p class="section-label">Get in touch</p><h2>We would love to <em>hear from you.</em></h2><p class="contact-sub">Have a question about Tiny Invites? Want to suggest a venue or party idea? Drop us a message and we'll get back to you soon.</p><div class="contact-details"><div class="contact-detail">Party suggestions welcome</div><div class="contact-detail">Questions about your RSVP page</div><div class="contact-detail">Ideas and feedback</div></div></div>
-    <div><form class="contact-form" id="contact-form" action="https://formspree.io/f/maqvdkoj" method="POST" onsubmit="handleContact(event)"><label class="field-label" for="contact-name">Your name</label><input id="contact-name" type="text" name="name" autocomplete="name" required><label class="field-label" for="contact-email">Your email address</label><input id="contact-email" type="email" name="email" autocomplete="email" required><label class="field-label" for="contact-subject">Subject</label><input id="contact-subject" type="text" name="subject" placeholder="Venue suggestion, general question"><label class="field-label" for="contact-message">Your message</label><textarea id="contact-message" name="message" required></textarea><button type="submit" class="contact-submit">Send Message →</button></form><div class="contact-success" id="contact-success"><p>Thank you. We will be in touch soon.</p></div></div>
+    <div>
+      <form class="contact-form" id="contact-form" action="https://formspree.io/f/maqvdkoj" method="POST" onsubmit="handleContact(event)">
+        <label class="field-label" for="contact-name">Your name</label>
+        <input id="contact-name" type="text" name="name" autocomplete="name" required>
+        <label class="field-label" for="contact-email">Your email address</label>
+        <input id="contact-email" type="email" name="email" autocomplete="email" required>
+        <label class="field-label" for="contact-subject">Subject</label>
+        <input id="contact-subject" type="text" name="subject" placeholder="Venue suggestion, general question">
+        <label class="field-label" for="contact-message">Your message</label>
+        <textarea id="contact-message" name="message" required></textarea>
+        <button type="submit" class="contact-submit">Send Message →</button>
+      </form>
+      <div class="contact-success" id="contact-success"><p>Thank you. We will be in touch soon.</p></div>
+    </div>
   </div>
 </section>
 
@@ -399,9 +511,23 @@
   </div>
 </section>
 
+<section class="faq" id="faq">
+  <div style="max-width:760px;margin:0 auto;">
+    <p class="section-label">Questions &amp; answers</p>
+    <h2>Frequently asked <em>questions</em></h2>
+    <div class="faq-list">
+      <details class="faq-item"><summary>What if a guest changes their mind?</summary><div class="faq-answer">They can reopen the same invite link, enter the same name they used before, and resubmit. Their RSVP updates automatically and you'll get a notification that their response changed.</div></details>
+      <details class="faq-item"><summary>Can I message all my guests at once?</summary><div class="faq-answer">Yes. From your dashboard you can email everyone who's RSVP'd yes — handy if details change, like a venue update or a parking reminder. It goes straight to each guest's inbox.</div></details>
+      <details class="faq-item"><summary>Can I edit a guest's details if they contact me directly?</summary><div class="faq-answer">Yes. Your dashboard lets you update any guest's name, attendance, or guest count manually — useful when someone messages you instead of using the link.</div></details>
+      <details class="faq-item"><summary>What if I lose my dashboard link?</summary><div class="faq-answer">Your dashboard link was emailed to you when you created the invite, so check that email to get back in. Keep it safe — it's your private link for managing RSVPs.</div></details>
+      <details class="faq-item"><summary>It's free — is there a catch?</summary><div class="faq-answer">No catch. If you buy something through our party shop links we may earn a small commission, at no extra cost to you — that's what keeps the site free. We may add the occasional partner promotion over time, but we never sell your data, and guests never see ads on the RSVP page.</div></details>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="footer-logo"><img src="logo.png" alt="Tiny Invites logo" onerror="this.style.display='none'">Tiny Invites</div>
-  <div class="footer-links"><a href="/partyfinder.html">Party Finder</a><a href="#create">Create Invite</a><a href="#designs">Designs</a><a href="#print">Print Services</a><a href="#shop">Party Shop</a><a href="#contact">Contact</a></div>
+  <div class="footer-links"><a href="/partyfinder.html">Party Finder</a><a href="#create">Create Invite</a><a href="#designs">Designs</a><a href="#print">Print Services</a><a href="#shop">Party Shop</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
   <p class="footer-copy">Everything for the perfect children's party. Free, always.</p>
 </footer>
 
@@ -482,10 +608,7 @@
   }
   function readAndUploadPhoto(file) {
     if (file.size > 10 * 1024 * 1024) return showPhotoError('Photo is too large. Please use an image under 10 MB.');
-    const reader = new FileReader();
-    reader.onload = ev => handlePhotoFile(new Blob([ev.target.result], { type:file.type }), file.name, file.size);
-    reader.onerror = () => showPhotoError('Could not read file. Please try again.');
-    reader.readAsArrayBuffer(file);
+    handlePhotoFile(file, file.name, file.size);
   }
   async function handlePhotoFile(file, fileName) {
     showPhotoState('progress');
@@ -534,25 +657,24 @@
     return s[(v - 20) % 10] || s[v] || s[0];
   }
   function generateInvite() {
-      const name = document.getElementById('ci-name').value.trim();
-      const age = document.getElementById('ci-age').value.trim();
-      const loc = document.getElementById('ci-location').value.trim();
-      if (!name) return alert("Please enter the child's name.");
-      if (!age) return alert('Please enter their turning age.');
-      if (!loc) return alert('Please enter the party location.');
-      // Honeypot — if filled, silently do nothing (bot)
-      if (document.getElementById('ci-honeypot')?.value) return;
-      const btn = document.getElementById('ci-generate-btn');
-      btn.disabled = true; btn.textContent = 'Creating...'; btn.style.opacity = '0.7';
-      const base = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
-      const params = new URLSearchParams({
-        name, age, location:loc,
-        photo:document.getElementById('ci-photo-url').value.trim() || '',
-        note:document.getElementById('ci-note').value.trim() || '',
-        website:document.getElementById('ci-honeypot')?.value || ''
-      });
-      window.location.href = `${base}rsvp-host.html?${params.toString()}`;
-    }
+    const name = document.getElementById('ci-name').value.trim();
+    const age  = document.getElementById('ci-age').value.trim();
+    const loc  = document.getElementById('ci-location').value.trim();
+    if (!name) return alert("Please enter the child's name.");
+    if (!age)  return alert('Please enter their turning age.');
+    if (!loc)  return alert('Please enter the party location.');
+    // Honeypot — if filled, silently do nothing (bot)
+    if (document.getElementById('ci-honeypot')?.value) return;
+    const btn = document.getElementById('ci-generate-btn');
+    btn.disabled = true; btn.textContent = 'Creating...'; btn.style.opacity = '0.7';
+    const base = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+    const params = new URLSearchParams({
+      name, age, location: loc,
+      photo: document.getElementById('ci-photo-url').value.trim() || '',
+      note:  document.getElementById('ci-note').value.trim() || '',
+    });
+    window.location.href = `${base}rsvp-host.html?${params.toString()}`;
+  }
 
   let designsMoreOpen = false;
   function toggleDesignsMore() {

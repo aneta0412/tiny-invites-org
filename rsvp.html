@@ -230,7 +230,7 @@
         </div>
         <div class="counter-btns">
           <button class="counter-btn" onclick="change('children',-1)" aria-label="fewer children">−</button>
-          <span class="counter-val" id="children-val">0</span>
+          <span class="counter-val" id="children-val">1</span>
           <button class="counter-btn" onclick="change('children',1)" aria-label="more children">+</button>
         </div>
       </div>
@@ -383,10 +383,10 @@
     if (childSmall) childSmall.textContent = ASK_BABIES ? 'Age 1 and over' : 'Including all ages';
   }
 
-  const counts = { children: 0, babies: 0, adults: 1 };
+  const counts = { children: 1, babies: 0, adults: 1 };
   function change(key, delta) {
     counts[key] = Math.max(0, counts[key] + delta);
-    if (key === 'adults' && counts[key] < 1) counts[key] = 1;
+    if ((key === 'adults' || key === 'children') && counts[key] < 1) counts[key] = 1;
     document.getElementById(key + '-val').textContent = counts[key];
   }
 

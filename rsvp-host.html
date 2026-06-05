@@ -285,7 +285,7 @@
         </div>
         <p id="inv-note-row" style="display:none;font-size:0.9rem;color:var(--mid);text-align:center;margin-bottom:20px;line-height:1.65;"></p>
         <div style="margin-bottom:18px;">
-          <label style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px;display:block;">Who's coming? <span style="font-size:0.7rem;font-weight:400;color:var(--soft);text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <label style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px;display:block;">Who's coming?</label>
           <input type="text" placeholder="e.g. Emma &amp; James" disabled style="width:100%;padding:13px 16px;background:var(--cream);border:1px solid var(--gold-light);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:var(--dark);opacity:0.5;cursor:not-allowed;">
         </div>
         <p style="font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--soft);text-align:center;margin-bottom:14px;">Will you be joining us?</p>
@@ -309,7 +309,7 @@
 
       <!-- Email — required. -->
       <div class="field" style="margin-bottom:12px;">
-        <label style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Your email <span class="pill-required-soft">Required</span></label>
+        <label for="host-email" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Your email <span class="pill-required-soft">Required</span></label>
         <input type="email" id="host-email" placeholder="e.g. sarah@email.com" autocomplete="email"
           style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
           onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
@@ -317,7 +317,7 @@
       </div>
 
       <div class="field" style="margin-bottom:14px;">
-        <label style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Party date <span class="pill-required-soft">Required</span></label>
+        <label for="host-party-date" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Party date <span class="pill-required-soft">Required</span></label>
         <input type="date" id="host-party-date"
           style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
           onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
@@ -338,7 +338,7 @@
       <p class="count-chip-hint">Children (age 1+) are always counted.</p>
 
       <label class="consent-wrap" id="consent-wrap">
-        <input type="checkbox" id="host-consent">
+        <input type="checkbox" id="host-consent" onchange="if(this.checked)document.getElementById('consent-wrap').style.borderColor=''">
         <span>I agree to receive guest RSVPs by email, and understand guests give their email so I can send them reminders and important party updates. No marketing, never shared.</span>
       </label>
 
@@ -410,7 +410,7 @@
   }
 
   function getParam(n) { return new URLSearchParams(location.search).get(n) || ''; }
-  function ordinal(n) { const s=['th','st','nd','rd'],v=parseInt(n)%100; return s[(v-20)%10]||s[v]||s[0]; }
+  function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
   function formatDate(d) { try{ return new Date(d).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); } catch{ return d; } }
 
   const previewName     = getParam('name');
@@ -420,6 +420,9 @@
   const previewNote     = getParam('note');
 
   let submittedEmail = '';
+  let submittedPartyDate = null;
+  let submittedCountAdults = false;
+  let submittedCountBabies = false;
 
   window.addEventListener('DOMContentLoaded', () => {
     renderInvite({ child_name:previewName, age:previewAge, venue:previewLocation, photo_url:previewPhoto, special_note:previewNote });
@@ -438,15 +441,18 @@
       img.onerror = () => { img.src='https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80'; };
     }
 
-    document.getElementById('inv-greeting').innerHTML = `You're invited to <em>${name}'s party</em>!`;
+    const safeName = escapeHtml(name);
+    const safeAge  = escapeHtml(age);
+    document.getElementById('inv-greeting').innerHTML = `You're invited to <em>${safeName}'s party</em>!`;
     document.getElementById('inv-subtitle').innerHTML = `We'd love to celebrate with you`;
     document.getElementById('inv-age-line').innerHTML = age
-      ? `Celebrating <strong>${name}</strong> turning <strong>${age}</strong>!`
-      : `Celebrating <strong>${name}</strong>!`;
+      ? `Celebrating <strong>${safeName}</strong> turning <strong>${safeAge}</strong>!`
+      : `Celebrating <strong>${safeName}</strong>!`;
 
     if (venue) {
+      const safeVenue = escapeHtml(venue);
       const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue)}`;
-      document.getElementById('inv-location-line').innerHTML = `<a href="${mapsUrl}" target="_blank">${venue}</a> — <a href="${mapsUrl}" target="_blank" style="font-size:0.8em;">Open in Maps ↗</a>`;
+      document.getElementById('inv-location-line').innerHTML = `<a href="${mapsUrl}" target="_blank" rel="noopener">${safeVenue}</a> — <a href="${mapsUrl}" target="_blank" rel="noopener" style="font-size:0.8em;">Open in Maps ↗</a>`;
     } else {
       document.getElementById('inv-location-line').textContent = 'Location TBC';
     }
@@ -501,6 +507,9 @@
     }
 
     const { countAdults, countBabies } = getCountingPrefs();
+    submittedPartyDate   = partyDate;
+    submittedCountAdults = countAdults;
+    submittedCountBabies = countBabies;
     const btn = document.getElementById('golive-btn');
     btn.disabled=true; btn.innerHTML='⏳ Sending…';
 
@@ -593,9 +602,12 @@
           child_name:   previewName,
           age:          previewAge,
           venue:        previewLocation,
+          party_date:   submittedPartyDate,
           parent_email: submittedEmail,
           photo_url:    previewPhoto  || null,
           special_note: previewNote   || null,
+          count_adults: submittedCountAdults,
+          count_babies: submittedCountBabies,
         }),
       }, 12000);
       const data = await res.json().catch(() => ({}));
@@ -635,9 +647,12 @@
           child_name:   previewName,
           age:          previewAge,
           venue:        previewLocation,
+          party_date:   submittedPartyDate,
           parent_email: newEmail,
           photo_url:    previewPhoto  || null,
           special_note: previewNote   || null,
+          count_adults: submittedCountAdults,
+          count_babies: submittedCountBabies,
         }),
       }, 12000);
       const data = await res.json().catch(() => ({}));

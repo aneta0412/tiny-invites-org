@@ -183,7 +183,7 @@
       </div>
       <p style="font-size:0.92rem;color:var(--mid);text-align:center;margin-bottom:24px;line-height:1.65;">We'd love to have you join us for cake, laughter, and all the good things. We can't wait! 🎈</p>
       <div style="margin-bottom:20px;">
-        <label>Who's coming? <span style="font-size:0.7rem;font-weight:400;color:var(--soft);text-transform:none;letter-spacing:0;">(optional)</span></label>
+        <label>Who's coming?</label>
         <input type="text" id="landing-guest-name" placeholder="e.g. Emma &amp; James">
       </div>
       <p style="font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--soft);text-align:center;margin-bottom:14px;">Will you be joining us?</p>
@@ -191,6 +191,7 @@
         <button class="btn btn-yes" onclick="proceedYes()">🎉 Yes, I'll be there!</button>
         <button class="btn btn-no" onclick="proceedNo()">Can't make it</button>
       </div>
+      <p id="landing-name-error" style="display:none;text-align:center;font-size:0.8rem;color:#e05555;margin-top:10px;">Please enter a name first 😊</p>
     </div>
   </div>
 </div>
@@ -435,12 +436,16 @@
 
   function proceedYes() {
     const name = document.getElementById('landing-guest-name').value.trim();
+    if (!name) { document.getElementById('landing-name-error').style.display = 'block'; document.getElementById('landing-guest-name').focus(); return; }
+    document.getElementById('landing-name-error').style.display = 'none';
     document.getElementById('guest-name').value = name;
     showPage('page-yes');
   }
 
   function proceedNo() {
     const name = document.getElementById('landing-guest-name').value.trim();
+    if (!name) { document.getElementById('landing-name-error').style.display = 'block'; document.getElementById('landing-guest-name').focus(); return; }
+    document.getElementById('landing-name-error').style.display = 'none';
     document.getElementById('no-guest-name').value = name;
     showPage('page-no');
     submitDecline();
@@ -473,13 +478,16 @@
       if (img) { img.src = photoUrl; img.onerror = () => { img.src = 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80'; }; }
     }
 
-    document.getElementById('inv-greeting').innerHTML = `You're invited to <em>${childName}'s party</em>!`;
+    const safeName = escapeHtml(String(childName));
+    const safeAge  = escapeHtml(String(age));
+    document.getElementById('inv-greeting').innerHTML = `You're invited to <em>${safeName}'s party</em>!`;
     document.getElementById('inv-subtitle').innerHTML = `We'd love to celebrate with you`;
-    document.getElementById('inv-age-line').innerHTML = age ? `Celebrating <strong>${childName}</strong> turning <strong>${age}</strong>!` : `Celebrating <strong>${childName}</strong>!`;
+    document.getElementById('inv-age-line').innerHTML = age ? `Celebrating <strong>${safeName}</strong> turning <strong>${safeAge}</strong>!` : `Celebrating <strong>${safeName}</strong>!`;
 
     if (location) {
+      const safeLocation = escapeHtml(String(location));
       const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
-      document.getElementById('inv-location-line').innerHTML = `<a href="${mapsUrl}" target="_blank" rel="noopener">${location}</a> — <a href="${mapsUrl}" target="_blank" rel="noopener" style="font-size:0.8em;">Open in Maps ↗</a>`;
+      document.getElementById('inv-location-line').innerHTML = `<a href="${mapsUrl}" target="_blank" rel="noopener">${safeLocation}</a> — <a href="${mapsUrl}" target="_blank" rel="noopener" style="font-size:0.8em;">Open in Maps ↗</a>`;
     } else {
       document.getElementById('inv-location-line').textContent = 'Location TBC';
     }
@@ -511,7 +519,7 @@
 
   async function submitRSVP() {
     const guestName = document.getElementById('guest-name').value.trim();
-    if (!guestName) { alert('Please enter your name 😊'); return; }
+    if (!guestName) { alert('Please enter a name 😊'); return; }
 
     // Email is now required for everyone — it's how the host reaches guests.
     const guestEmail = document.getElementById('guest-email').value.trim();
@@ -556,7 +564,7 @@
       document.getElementById('tally-count').textContent = totalGuests || 1;
       document.getElementById('tally-label').textContent = (totalGuests === 1) ? 'guest' : 'guests';
       document.getElementById('success-message').innerHTML =
-        `We look forward to seeing <strong>${guestName}</strong> — it's going to be the most wonderful party for ${pd.childName || 'our little one'}!<br><br>
+        `We look forward to seeing <strong>${escapeHtml(guestName) || 'you'}</strong> — it's going to be the most wonderful party for ${escapeHtml(pd.childName || 'our little one')}!<br><br>
          <span style="font-size:0.84rem;color:var(--soft);">Confirmed: ${parts.length ? parts.join(' + ') : '1 guest'}</span><br><br>
          See you there! 🎈`;
 
@@ -623,7 +631,7 @@
       document.getElementById('page-no-inner').innerHTML = `
         <div class="brand">Tiny Invites</div>
         <div class="sorry-emoji">💛</div>
-        <h2>Thank you, ${escapeHtml(guestName)}!</h2>
+        <h2>${guestName ? `Thank you, ${escapeHtml(guestName)}!` : 'Thank you!'}</h2>
         <div class="divider"><span></span><i>◆</i><span></span></div>
         <p class="sorry-note">We've let the host know you can't make it.<br>Sending lots of love 💛</p>
         <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--gold-light);">
@@ -803,6 +811,8 @@
     const canvas = document.getElementById('confetti-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const onResize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    window.addEventListener('resize', onResize);
     const colors = ['#c9a84c','#e8d5a3','#f5edda','#a89880','#2a2218','#fff9f2','#d4af6b'];
     const pieces = Array.from({length:120}, () => ({ x:Math.random()*canvas.width, y:Math.random()*canvas.height-canvas.height, r:Math.random()*6+4, d:Math.random()*120+60, color:colors[Math.floor(Math.random()*colors.length)], tilt:0, tiltAngle:0, tiltAngleIncremental:Math.random()*0.07+0.05, shape:Math.random()>0.5?'rect':'circle' }));
     let angle=0, frame;
@@ -813,7 +823,7 @@
       frame=requestAnimationFrame(draw);
     }
     draw();
-    setTimeout(() => { cancelAnimationFrame(frame); ctx.clearRect(0,0,canvas.width,canvas.height); }, 5000);
+    setTimeout(() => { cancelAnimationFrame(frame); window.removeEventListener('resize', onResize); ctx.clearRect(0,0,canvas.width,canvas.height); }, 5000);
   }
 </script>
 </body>

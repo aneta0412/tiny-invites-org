@@ -149,6 +149,18 @@
 
 <canvas id="confetti-canvas"></canvas>
 
+<!-- PAGE: RSVP CLOSED (cutoff date passed) -->
+<div class="page" id="page-closed">
+  <div class="card" style="text-align:center;max-width:460px;">
+    <div class="brand">Tiny Invites</div>
+    <div class="ornament">🔒</div>
+    <h2 id="closed-heading" style="margin-bottom:12px;">RSVPs are now closed</h2>
+    <p id="closed-body" style="font-size:0.9rem;color:var(--mid);line-height:1.7;margin-bottom:0;">
+      The host has locked the guest list to finalise their plans. If you need to make a change, please contact the host directly.
+    </p>
+  </div>
+</div>
+
 <!-- PAGE: PARTY GONE (deleted or in the past) -->
 <div class="page" id="page-gone">
   <div class="card" style="text-align:center;max-width:460px;">
@@ -418,6 +430,16 @@
           document.getElementById('gone-body').textContent    = 'The celebrations are over — we hope everyone had a wonderful time! If you think this is a mistake, check with the host.';
           showPage('page-gone'); return;
         }
+        // Check RSVP cutoff before rendering
+        if (d && d.rsvp_cutoff) {
+          const today  = new Date(); today.setHours(0, 0, 0, 0);
+          const cutoff = new Date(d.rsvp_cutoff);
+          if (today > cutoff) {
+            const name = d.child_name ? `RSVPs for ${d.child_name}'s party are now closed` : 'RSVPs are now closed';
+            document.getElementById('closed-heading').textContent = name;
+            showPage('page-closed'); return;
+          }
+        }
         renderInvite(d || {});
       })
       .catch(err => { console.warn('get-party fetch failed:', describeFetchError(err)); renderInvite({}); });
@@ -553,6 +575,7 @@
     try {
       const res  = await fetchWithTimeout(RSVP_API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }, 12000);
       if (res.status === 429) { const data = await res.json().catch(() => ({})); throw new Error(data.error || 'Too many requests — please wait a moment and try again.'); }
+      if (res.status === 423) { showPage('page-closed'); return; }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
 

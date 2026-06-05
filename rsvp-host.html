@@ -320,8 +320,17 @@
         <label for="host-party-date" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Party date <span class="pill-required-soft">Required</span></label>
         <input type="date" id="host-party-date"
           style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
-          onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
+          onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'"
+          oninput="updateCutoffFromPartyDate()">
         <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">Shown to guests, and keeps your party out of the 60-day auto-archive.</p>
+      </div>
+
+      <div class="field" style="margin-bottom:14px;">
+        <label for="host-rsvp-cutoff" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Lock RSVPs on</label>
+        <input type="date" id="host-rsvp-cutoff"
+          style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
+        <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">After this date, no new RSVPs or changes are accepted — giving you a final count to plan with. Most venues ask for numbers at least 7 days before the party. You can only set this now, not after the invite is live.</p>
       </div>
 
       <!-- Compact guest-counting chips: children always counted; tap to add. -->
@@ -488,6 +497,21 @@
     };
   }
 
+  function updateCutoffFromPartyDate() {
+    const partyVal  = document.getElementById('host-party-date').value;
+    const cutoffEl  = document.getElementById('host-rsvp-cutoff');
+    if (!partyVal || !cutoffEl) return;
+    const party = new Date(partyVal);
+    party.setDate(party.getDate() - 7);
+    // Format as YYYY-MM-DD for the date input
+    const y = party.getFullYear();
+    const m = String(party.getMonth() + 1).padStart(2, '0');
+    const d = String(party.getDate()).padStart(2, '0');
+    cutoffEl.value = `${y}-${m}-${d}`;
+    // Set max so the cutoff can't be set after the party day
+    cutoffEl.max = partyVal;
+  }
+
   async function goLive() {
     const email   = document.getElementById('host-email').value.trim();
     const consent = document.getElementById('host-consent').checked;
@@ -527,8 +551,9 @@
           parent_email: email,
           photo_url:    previewPhoto  || null,
           special_note: previewNote   || null,
-          count_adults: countAdults,
-          count_babies: countBabies,
+          count_adults:  countAdults,
+          count_babies:  countBabies,
+          rsvp_cutoff:   document.getElementById('host-rsvp-cutoff').value || null,
         })
       }, 12000);
       if (res.status === 429) {

@@ -433,7 +433,7 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
       <table>
         <thead>
           <tr>
-            <th>Name</th><th>Attending</th><th>Guests</th><th>Dietary / Notes</th><th>Email</th><th></th>
+            <th>Name</th><th>Attending</th><th>Guests</th><th>Dietary / Notes</th><th></th>
           </tr>
         </thead>
         <tbody id="tableBody">
@@ -716,9 +716,6 @@ function renderDashboard(responses, stats) {
     const safeAllergyDisplay = r.allergies && r.allergies.toLowerCase() !== 'none'
       ? `<span style="color:var(--mid);font-weight:500">⚠️ ${escapeHtml(r.allergies)}</span>`
       : '<span style="color:var(--soft)">—</span>';
-    const safeEmailDisplay   = r.guest_email
-      ? `<a href="mailto:${escapeHtml(r.guest_email)}" style="color:var(--gold);text-decoration:none;font-size:0.78rem;">${escapeHtml(r.guest_email)}</a>`
-      : '<span style="color:var(--soft)">—</span>';
 
     const adults   = parseInt(r.guest_count_adults)   || 0;
     const children = parseInt(r.guest_count_children) || 0;
@@ -730,7 +727,6 @@ function renderDashboard(responses, stats) {
         <td>${att}</td>
         <td>${gsts}</td>
         <td>${safeAllergyDisplay}</td>
-        <td>${safeEmailDisplay}</td>
         <td>
           <div class="row-actions">
             <button class="btn-icon" title="Edit"

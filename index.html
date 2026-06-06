@@ -421,7 +421,8 @@
   <div class="ai-panel">
     <p class="section-label" style="margin-bottom:6px;">Make it completely yours</p>
     <h3 style="margin-bottom:8px;">Design your own with <em>AI</em></h3>
-    <p class="section-sub">Pick a style and theme, then copy the prompt into ChatGPT, Midjourney, or Canva AI.</p>
+    <p class="section-sub">Pick a style and theme, then copy the prompt into ChatGPT, Midjourney, or Gemini. With the Photo card style you can feature your birthday child as the main character — upload their photo when you paste the prompt and they'll be built right into the design.</p>
+    <div style="margin-bottom:14px;"><p class="field-label">Card type</p><div class="choice-row"><button id="card-photo" class="style-chip active-chip" type="button" onclick="setCard('photo')">Photo card<span>feature your child's photo</span></button><button id="card-illustration" class="style-chip" type="button" onclick="setCard('illustration')">Illustration only<span>themed design, no photo</span></button></div></div>
     <div style="margin-bottom:14px;"><p class="field-label">Choose a style</p><div class="choice-row"><button id="style-pastel" class="style-chip active-chip" type="button" onclick="setStyle('pastel')">Soft Pastel<span>peach, mint, lilac &amp; pearl</span></button><button id="style-cartoon" class="style-chip" type="button" onclick="setStyle('cartoon')">Bold &amp; Cartoon<span>bright, punchy, illustrated</span></button></div></div>
     <div style="margin-bottom:14px;"><p class="field-label">Choose a theme</p><div class="choice-row" id="theme-chips"><button class="theme-chip active-chip" type="button" data-theme="mermaids" onclick="setTheme(this)">Mermaids</button><button class="theme-chip" type="button" data-theme="dinosaurs" onclick="setTheme(this)">Dinosaurs</button><button class="theme-chip" type="button" data-theme="unicorns" onclick="setTheme(this)">Unicorns</button><button class="theme-chip" type="button" data-theme="superheroes" onclick="setTheme(this)">Superheroes</button><button class="theme-chip" type="button" data-theme="safari animals" onclick="setTheme(this)">Safari</button><button class="theme-chip" type="button" data-theme="space and rockets" onclick="setTheme(this)">Space</button><button class="theme-chip" type="button" data-theme="princesses and castles" onclick="setTheme(this)">Princesses</button><button class="theme-chip" type="button" data-theme="jungle animals" onclick="setTheme(this)">Jungle</button><button class="theme-chip" type="button" data-theme="fairies and flowers" onclick="setTheme(this)">Fairies</button></div></div>
     <div style="background:var(--cream);border:1px solid var(--gold-light);border-radius:10px;padding:14px;margin-bottom:12px;"><p class="field-label">Your personalised AI prompt</p><div id="prompt-lines" class="prompt-lines"></div><button onclick="copyPrompt()" id="copy-btn" class="small-button" type="button" style="margin-top:14px;width:100%;justify-content:center;">Copy full prompt</button></div>
@@ -655,14 +656,19 @@
     document.getElementById('designs-more').style.display = designsMoreOpen ? 'block' : 'none';
     document.getElementById('designs-toggle').textContent = designsMoreOpen ? 'Show fewer ↑' : 'See more designs ↓';
   }
-  let aiTheme = 'mermaids', aiStyle = 'pastel';
+  let aiTheme = 'mermaids', aiStyle = 'pastel', aiCard = 'photo';
   const styleMap = {
     pastel:{ label:'soft pastel watercolour', colors:'soft peach, mint, lilac, and pearl white' },
     cartoon:{ label:'bold cartoon illustration', colors:'bright primary colours with thick outlines and high contrast' }
   };
   function setStyle(style) {
     aiStyle = style;
-    document.querySelectorAll('.style-chip').forEach(btn => btn.classList.toggle('active-chip', btn.id === `style-${style}`));
+    document.querySelectorAll('#style-pastel, #style-cartoon').forEach(btn => btn.classList.toggle('active-chip', btn.id === `style-${style}`));
+    renderPrompt();
+  }
+  function setCard(card) {
+    aiCard = card;
+    document.querySelectorAll('#card-photo, #card-illustration').forEach(btn => btn.classList.toggle('active-chip', btn.id === `card-${card}`));
     renderPrompt();
   }
   function setTheme(el) {
@@ -673,16 +679,37 @@
   }
   function renderPrompt() {
     const st = styleMap[aiStyle];
-    const lines = [
-      { label:'Format', val:'A birthday party invitation in postcard format, A6 landscape.' },
-      { label:'Theme', val:'Use a ' + aiTheme + ' theme throughout.' },
-      { label:'Style', val:'Illustrated in a ' + st.label + ' style.' },
-      { label:'Colours', val:'Colour palette: ' + st.colors + '.' },
-      { label:'QR Space', val:'Leave a 4 x 4 cm plain white square in the bottom-right corner for a QR code.' },
-      { label:'Text', val:'Party at (LOCATION) on (DATE) at (TIME). Keep wording minimal and cheerful.' },
-      { label:'Mood', val:"Playful, celebratory, age-appropriate. It's a birthday party." },
-      { label:'Output', val:'High-resolution print-ready A6 landscape image with safe margins.' }
-    ];
+    let lines;
+    if (aiCard === 'photo') {
+      lines = [
+        { label:'Format', val:'A personalised birthday party invitation in A6 portrait format, designed as a premium photo card.' },
+        { label:'Photo Integration', val:"Use the uploaded photo as the main feature. Keep only the birthday child and remove any other people. Preserve the child's real face, expression, hair colour and clothing. Blend the child naturally into the party scene so they look professionally placed, not cut out. Do not crop the child excessively — they should fill roughly 35–45% of the card and remain the clear focal point." },
+        { label:'Theme', val:'Use a ' + aiTheme + ' theme throughout, with decorations and background that suit it.' },
+        { label:'Style', val:'Premium personalised photo invitation: realistic photography, luxury event styling, professional studio-quality finish.' },
+        { label:'Colours', val:'Colour palette: ' + st.colors + '.' },
+        { label:'Decorations', val:'Realistic balloons, birthday cake, cupcakes, gift boxes, stars, confetti and subtle themed details. Decorations should frame the child rather than cover them.' },
+        { label:'Layout', val:'Place the child on the left. Place all invitation text on the right, with clear space around it for readability.' },
+        { label:'Text', val:'(NAME) is turning (AGE). Party at (LOCATION) on (DATE) at (TIME). Please RSVP by (RSVP DATE). Spell every word correctly and align text professionally.' },
+        { label:'Typography', val:'Large elegant name near the top, large age number just below it. Modern luxury typography with excellent readability.' },
+        { label:'Mood', val:'Fun, modern, stylish, celebratory and premium.' },
+        { label:'Output', val:'High-resolution, print-ready A6 portrait image with safe margins.' },
+        { label:'Important', val:'This must look like a personalised invitation created from the uploaded photo, not a generic birthday poster. The child must remain the focal point.' }
+      ];
+    } else {
+      lines = [
+        { label:'Format', val:'A personalised birthday party invitation in A6 portrait format, designed as a premium illustrated card.' },
+        { label:'Theme', val:'Use a ' + aiTheme + ' theme throughout, with decorations and background that suit it.' },
+        { label:'Style', val:'Illustrated in a ' + st.label + ' style, with a luxury, professional, studio-quality finish.' },
+        { label:'Colours', val:'Colour palette: ' + st.colors + '.' },
+        { label:'Decorations', val:'Balloons, birthday cake, cupcakes, gift boxes, stars, confetti and subtle themed details, arranged in a balanced, elegant composition.' },
+        { label:'Layout', val:'Centre the invitation text with clear space around it for readability, framed by themed decorations.' },
+        { label:'Text', val:'(NAME) is turning (AGE). Party at (LOCATION) on (DATE) at (TIME). Please RSVP by (RSVP DATE). Spell every word correctly and align text professionally.' },
+        { label:'Typography', val:'Large elegant name near the top, large age number just below it. Modern luxury typography with excellent readability.' },
+        { label:'Mood', val:'Fun, modern, stylish, celebratory and premium.' },
+        { label:'Output', val:'High-resolution, print-ready A6 portrait image with safe margins.' },
+        { label:'Important', val:'This must look like a polished, personalised invitation, not a generic birthday poster.' }
+      ];
+    }
     const c = document.getElementById('prompt-lines');
     if (!c) return;
     c.innerHTML = lines.map(l => `<div class="prompt-line"><span class="pl-label">${l.label}</span><span class="pl-val">${l.val}</span></div>`).join('');

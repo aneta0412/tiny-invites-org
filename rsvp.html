@@ -83,6 +83,13 @@
   .sorry-emoji, .success-emoji { font-size:3rem; text-align:center; margin-bottom:16px; }
   .sorry-note, .success-note { font-size:0.9rem; color:var(--mid); text-align:center; line-height:1.7; }
   #confetti-canvas { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999; }
+
+  /* ── Elegant medallion: a gold seal/photo badge that straddles the hero photo + card ── */
+  .medallion { position:relative; z-index:2; width:104px; height:104px; margin:-62px auto 18px; border-radius:50%; padding:5px; background:linear-gradient(145deg,var(--gold-light),#f3e7c6 45%,var(--gold)); box-shadow:0 14px 30px -12px rgba(120,90,40,.55); }
+  .medallion img { width:100%; height:100%; object-fit:cover; border-radius:50%; border:3px solid var(--warm-white); display:block; }
+  .medallion.medallion-seal { display:flex; align-items:center; justify-content:center; background:linear-gradient(145deg,var(--gold-light),#fff7e6 45%,var(--gold)); }
+  .medallion.medallion-seal > span { width:100%; height:100%; border-radius:50%; background:var(--warm-white); display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 1px var(--gold-pale); font-family:"Cormorant Garamond",serif; font-size:2.3rem; color:var(--gold); line-height:1; }
+
   .tally { display:inline-flex; align-items:center; gap:6px; background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:20px; padding:5px 14px; font-size:0.8rem; color:var(--mid); margin-top:16px; }
   .tally strong { color:var(--gold); }
 
@@ -293,8 +300,8 @@
     </div>
     <div class="response-card-body" id="page-no-inner">
       <input type="hidden" id="no-guest-name">
+      <div class="medallion medallion-seal"><span>♡</span></div>
       <div class="brand">Tiny Invites</div>
-      <div class="sorry-emoji">💛</div>
       <h2>Just a moment…</h2>
       <div class="divider"><span></span><i>◆</i><span></span></div>
       <p class="sorry-note">Letting the host know you can't make it.</p>
@@ -312,8 +319,8 @@
       <img src="photo.png" alt="Party celebration" onerror="this.src='https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80'">
     </div>
     <div class="response-card-body" id="page-success-inner">
+      <div class="medallion"><img src="https://images.unsplash.com/photo-1698285439446-2ad560e31a17?w=400&q=80&auto=format&fit=crop" alt="Celebration"></div>
       <div class="brand">Tiny Invites</div>
-      <div class="success-emoji">🎉</div>
       <h2>You're on the list!</h2>
       <div class="divider"><span></span><i>◆</i><span></span></div>
       <p class="success-note" id="success-message">We look forward to seeing you — it's going to be a wonderful celebration!<br><br>Keep an eye on your inbox for any updates. See you there! 🎈</p>
@@ -652,8 +659,8 @@
       _declineResponseId = data.response_id || data.id || null;
 
       document.getElementById('page-no-inner').innerHTML = `
+        <div class="medallion medallion-seal"><span>♡</span></div>
         <div class="brand">Tiny Invites</div>
-        <div class="sorry-emoji">💛</div>
         <h2>${guestName ? `Thank you, ${escapeHtml(guestName)}!` : 'Thank you!'}</h2>
         <div class="divider"><span></span><i>◆</i><span></span></div>
         <p class="sorry-note">We've let the host know you can't make it.<br>Sending lots of love 💛</p>
@@ -681,8 +688,8 @@
     } catch (err) {
       console.error('Decline submit failed:', err.message);
       document.getElementById('page-no-inner').innerHTML = `
+        <div class="medallion medallion-seal"><span>♡</span></div>
         <div class="brand">Tiny Invites</div>
-        <div class="sorry-emoji">🥺</div>
         <h2>Oh, we'll miss you!</h2>
         <div class="divider"><span></span><i>◆</i><span></span></div>
         <p class="sorry-note" style="margin-bottom:20px;">That's a shame — but we completely understand.</p>
@@ -830,23 +837,67 @@
     }
   }
 
+  // ── Elegant confetti — bigger, slower, longer-lasting, warm palette ──
+  // Fires only on a YES. Self-contained: just call launchConfetti().
   function launchConfetti() {
     const canvas = document.getElementById('confetti-canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    const onResize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-    window.addEventListener('resize', onResize);
-    const colors = ['#c9a84c','#e8d5a3','#f5edda','#a89880','#2a2218','#fff9f2','#d4af6b'];
-    const pieces = Array.from({length:120}, () => ({ x:Math.random()*canvas.width, y:Math.random()*canvas.height-canvas.height, r:Math.random()*6+4, d:Math.random()*120+60, color:colors[Math.floor(Math.random()*colors.length)], tilt:0, tiltAngle:0, tiltAngleIncremental:Math.random()*0.07+0.05, shape:Math.random()>0.5?'rect':'circle' }));
-    let angle=0, frame;
+    let W, H, dpr;
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // warm, refined palette — gold, champagne, blush, cream (no harsh primaries)
+    const COLOURS = ['#d9b65f','#c9a84c','#e8d5a3','#f5edda','#e6b8b0','#d7a48f','#cbb89a','#fbf4e6'];
+    const r = (a, b) => a + Math.random() * (b - a);
+
+    function makePiece(burst) {
+      const t = Math.random();
+      let shape = 'rect', w, h;
+      if (t < 0.18)      { shape = 'ribbon'; w = r(4, 7);  h = r(22, 40); }   // long streamers
+      else if (t < 0.34) { shape = 'circle'; w = h = r(8, 13); }             // sequins
+      else               { shape = 'rect';   w = r(9, 17); h = r(12, 22); }  // bigger confetti
+      return {
+        x: r(0, W), y: burst ? r(-H * 0.25, 0) : r(-40, -10),
+        w, h, shape, color: COLOURS[(Math.random() * COLOURS.length) | 0],
+        rot: r(0, Math.PI * 2), rotV: r(-0.06, 0.06),
+        vy: r(0.7, 1.7), vx: r(-0.4, 0.4),
+        sway: r(0.6, 1.6), swayV: r(0.01, 0.03), phase: r(0, Math.PI * 2), op: 1
+      };
+    }
+
+    let particles = [], spawning = true, raf = null;
+    for (let i = 0; i < 150; i++) particles.push(makePiece(true));   // generous opening burst
+    const start = Date.now();
+    const trickle = setInterval(() => {                              // gentle, longer-lasting fall
+      for (let i = 0; i < 5; i++) particles.push(makePiece(false));
+      if (Date.now() - start > 6500) { clearInterval(trickle); spawning = false; }
+    }, 120);
+
     function draw() {
-      ctx.clearRect(0,0,canvas.width,canvas.height); angle+=0.01;
-      pieces.forEach(p => { p.tiltAngle+=p.tiltAngleIncremental; p.y+=(Math.cos(angle+p.d)+1.5)*1.4; p.x+=Math.sin(angle)*1.2; p.tilt=Math.sin(p.tiltAngle)*12; ctx.fillStyle=p.color; ctx.beginPath(); if(p.shape==='rect'){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.tilt*Math.PI/180);ctx.fillRect(-p.r/2,-p.r/2,p.r*2,p.r);ctx.restore();}else{ctx.arc(p.x,p.y,p.r/2,0,2*Math.PI);ctx.fill();} });
-      pieces.forEach(p => { if(p.y>canvas.height+20){p.y=-20;p.x=Math.random()*canvas.width;} });
-      frame=requestAnimationFrame(draw);
+      ctx.clearRect(0, 0, W, H);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.phase += p.swayV;
+        p.x += p.vx + Math.sin(p.phase) * p.sway;
+        p.y += p.vy; p.rot += p.rotV;
+        if (p.y > H - 60) p.op -= 0.012;
+        if (p.op <= 0 || p.y > H + 60) { particles.splice(i, 1); continue; }
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.globalAlpha = Math.max(0, p.op); ctx.fillStyle = p.color;
+        if (p.shape === 'circle') { ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill(); }
+        else ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+      if (particles.length || spawning) raf = requestAnimationFrame(draw);
+      else { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); ctx.clearRect(0, 0, W, H); }
     }
     draw();
-    setTimeout(() => { cancelAnimationFrame(frame); window.removeEventListener('resize', onResize); ctx.clearRect(0,0,canvas.width,canvas.height); }, 5000);
   }
 </script>
 </body>

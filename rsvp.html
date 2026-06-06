@@ -404,8 +404,16 @@
 
   const counts = { children: 1, babies: 0, adults: 1 };
   function change(key, delta) {
-    counts[key] = Math.max(0, counts[key] + delta);
-    if ((key === 'adults' || key === 'children') && counts[key] < 1) counts[key] = 1;
+    const next = Math.max(0, counts[key] + delta);
+    // Keep at least one attendee in total, but don't force a phantom guest into
+    // any single category — e.g. an adult attending with no children should be
+    // able to set children to 0 as long as adults (or babies) keeps the party > 0.
+    const otherTotal =
+        (key === 'children' ? 0 : counts.children) +
+        (key === 'adults'   ? 0 : (ASK_ADULTS ? counts.adults : 0)) +
+        (key === 'babies'   ? 0 : (ASK_BABIES ? counts.babies : 0));
+    if (next === 0 && otherTotal === 0) return; // can't drop the whole party to zero
+    counts[key] = next;
     document.getElementById(key + '-val').textContent = counts[key];
   }
 

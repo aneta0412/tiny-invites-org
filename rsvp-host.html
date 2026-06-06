@@ -426,7 +426,17 @@
 
   function getParam(n) { return new URLSearchParams(location.search).get(n) || ''; }
   function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-  function formatDate(d) { try{ return new Date(d).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); } catch{ return d; } }
+  // Parse a "YYYY-MM-DD" value as a LOCAL date. Using `new Date("YYYY-MM-DD")`
+  // parses as UTC midnight, which renders as the *previous* day for hosts west
+  // of UTC — shifting both the shown party date and the computed RSVP cut-off.
+  function parseLocalDate(d) {
+    if (typeof d === 'string') {
+      const m = d.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    }
+    return new Date(d);
+  }
+  function formatDate(d) { try{ return parseLocalDate(d).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); } catch{ return d; } }
 
   const previewName     = getParam('name');
   const previewAge      = getParam('age');
@@ -513,8 +523,8 @@
       if (cutoffEl)  cutoffEl.value = '';
       return;
     }
-    const days   = Math.max(1, Math.min(60, parseInt(daysEl?.value) || 7));
-    const cutoff = new Date(partyVal);
+    const days   = Math.max(1, Math.min(60, parseInt(daysEl?.value) || 8));
+    const cutoff = parseLocalDate(partyVal);
     cutoff.setDate(cutoff.getDate() - days);
     const y = cutoff.getFullYear();
     const m = String(cutoff.getMonth() + 1).padStart(2, '0');
@@ -537,7 +547,7 @@
     // Soft-warn (don't block) if the date is in the past — still required, just unusual
     {
       const today = new Date(); today.setHours(0,0,0,0);
-      if (new Date(partyDate) < today) {
+      if (parseLocalDate(partyDate) < today) {
         if (!confirm('That party date is in the past — continue anyway?')) return;
       }
     }

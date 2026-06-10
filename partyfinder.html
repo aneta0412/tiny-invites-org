@@ -149,6 +149,7 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 
 /* ── VENUE CARD ── */
 .card{background:var(--white);border-radius:6px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:var(--shadow);border:1px solid var(--line);display:flex;flex-direction:column}
+a.card{text-decoration:none;color:inherit}
 .card:hover{transform:translateY(-3px);box-shadow:var(--shadow2)}
 .card-top-bar{height:3px;width:100%;background:var(--gold)}
 .card-body{padding:20px 22px 0;flex:1;display:flex;flex-direction:column}
@@ -255,6 +256,22 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 .lp-title{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:8px}
 .landing-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;max-width:1100px;margin:0 auto;text-align:left}
 @media(max-width:500px){.landing-cards{grid-template-columns:1fr}}
+
+/* ── HAVE A VENUE CTA ── */
+.have-venue{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.have-venue a{color:var(--gold);text-decoration:none;font-weight:500}
+.have-venue a:hover{text-decoration:underline}
+
+/* ── SITE FOOTER ── */
+.site-footer{background:var(--ink);color:var(--muted);padding:28px 28px;margin-top:0}
+.footer-inner{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
+.footer-brand{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:400;color:rgba(255,255,255,.55)}
+.footer-brand a{color:var(--gold);text-decoration:none;font-weight:500}
+.footer-brand a:hover{text-decoration:underline}
+.footer-sep{opacity:.4}
+.footer-cta{font-size:12px;color:rgba(255,255,255,.4)}
+.footer-cta a{color:var(--gold);text-decoration:none;font-weight:500}
+.footer-cta a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -267,7 +284,7 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
       <h1 class="hero">Find the <em>perfect</em><br>birthday party venue</h1>
       <p class="hero-sub">Soft play · Trampolines · Gymnastics · Swimming · Farms · Museums · Parties that come to you<br>Real packages, real prices, sorted by distance from you.</p>
       <div class="stat-row">
-        <div class="stat"><strong>124</strong> verified venues</div>
+        <div class="stat"><strong>150</strong> verified venues</div>
         <div class="stat"><strong>9</strong> activity types</div>
         <div class="stat"><strong>UK-wide</strong> coverage</div>
       </div>
@@ -289,7 +306,7 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
       <div class="quick-searches">
         <div class="qs-lbl">Quick searches</div>
         <div class="qs-chips">
-          <button class="qc" onclick="qs('CV37 7F8')">West Midlands</button>
+          <button class="qc" onclick="qs('CV37 6YX')">Stratford-upon-Avon</button>
           <button class="qc" onclick="qs('B1 1AA')">Birmingham</button>
           <button class="qc" onclick="qs('SW6 2PY')">London</button>
           <button class="qc" onclick="qs('M1 1AE')">Manchester</button>
@@ -297,12 +314,16 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
           <button class="qc" onclick="qs('BS1 1AA')">Bristol</button>
           <button class="qc" onclick="qs('G1 1AB')">Glasgow</button>
           <button class="qc" onclick="qs('CF10 1AA')">Cardiff</button>
+          <button class="qc" onclick="qs('BN1 1AA')">Brighton</button>
           <button class="qc" onclick="qs('EH1 1AA')">Edinburgh</button>
           <button class="qc" onclick="qs('NE1 1AA')">Newcastle</button>
           <button class="qc" onclick="qs('S1 1AA')">Sheffield</button>
           <button class="qc" onclick="qs('SO14 1AA')">Southampton</button>
           <button class="qc" onclick="qs('BT1 1AA')">Belfast</button>
         </div>
+      </div>
+      <div class="have-venue">
+        🎉 Hosting here? <a href="https://tinyinvites.org/invite?utm_source=littlepartyfinder&utm_medium=venue_cta" target="_blank" rel="noopener">Get your digital party invite →</a>
       </div>
     </div>
   </div>
@@ -346,7 +367,7 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
     <h2 class="hs-title">Where's the party?</h2>
     <p class="hs-sub">Enter your postcode above to find the nearest toddler birthday party venues, sorted by distance. Every venue shows full package details and prices.</p>
     <div class="sample-grid">
-      <button class="sg" onclick="qs('CV37 7F8')">📍 West Midlands</button>
+      <button class="sg" onclick="qs('CV37 6YX')">📍 Stratford-upon-Avon</button>
       <button class="sg" onclick="qs('B1 1AA')">🏙️ Birmingham</button>
       <button class="sg" onclick="qs('SW6 2PY')">🌆 London</button>
       <button class="sg" onclick="qs('M1 1AE')">🐝 Manchester</button>
@@ -426,10 +447,11 @@ const CAT_CFG={
 const PC={
   // ── Specific districts (high priority – venue locations) ──
   "CV37":[52.194,-1.706],"CV34":[52.28,-1.586],"CV36":[52.062,-1.645],
-  "CV47":[52.265,-1.479],"CV8":[52.346,-1.469],"CV2":[52.416,-1.482],
+  "CV47":[52.265,-1.479],"CV8":[52.346,-1.469],"CV2":[52.416,-1.482],"CV5":[52.404,-1.544],"CV6":[52.434,-1.502],
   "B80":[52.261,-1.897],"B31":[52.39,-1.981],"B73":[52.548,-1.845],
   "B33":[52.476,-1.757],"B16":[52.473,-1.915],"B1":[52.48,-1.9],
   "B78":[52.587,-1.656],"B70":[52.519,-1.991],
+  "B96":[52.253,-1.873],"B97":[52.301,-1.944],"B98":[52.291,-1.925],
   "DE13":[52.818,-1.736],"DE24":[52.91,-1.434],
   "LE4":[52.655,-1.13],"LE1":[52.636,-1.131],
   "NG6":[52.986,-1.171],"NG1":[52.954,-1.146],
@@ -457,6 +479,7 @@ const PC={
   "IP9":[52.038,1.088],"IP1":[52.058,1.152],
   "M1":[53.48,-2.24],"M16":[53.459,-2.238],"M13":[53.467,-2.224],
   "M11":[53.481,-2.19],"M3":[53.483,-2.249],"M17":[53.46,-2.316],
+  "M19":[53.444,-2.181],"M41":[53.460,-2.316],"M46":[53.524,-2.494],"M50":[53.467,-2.280],
   "L10":[53.467,-2.948],"L1":[53.404,-2.982],
   "LS1":[53.800,-1.549],"LS2":[53.801,-1.545],"LS3":[53.800,-1.558],"LS4":[53.807,-1.578],"LS6":[53.816,-1.568],"LS7":[53.814,-1.536],"LS8":[53.824,-1.506],
   "LS9":[53.800,-1.520],"LS10":[53.773,-1.530],"LS11":[53.785,-1.555],"LS12":[53.798,-1.581],"LS13":[53.806,-1.636],"LS14":[53.834,-1.476],"LS15":[53.812,-1.461],
@@ -540,7 +563,7 @@ const PC={
   "RG":[51.455,-0.960],  // Reading
   "GU":[51.236,-0.571],  // Guildford
   "RH":[51.236,-0.179],  // Redhill
-  "BN":[50.829,-0.139],  // Brighton
+  "BN":[50.829,-0.139],"BN1":[50.827,-0.139],"BN2":[50.824,-0.126],  // Brighton
   "TN":[51.009,0.267],   // Tunbridge Wells
   "ME":[51.274,0.524],   // Maidstone
   "CT":[51.280,1.082],   // Canterbury
@@ -2901,6 +2924,368 @@ extras:["Weddings & event childcare too","Featured by national press as the luxu
 notes:"This is the premium end of the market — expect entertainer-party pricing well above the ~£170 high-street rate. Get a tailored quote with your date and numbers.",
 website:"https://www.sharkyandgeorge.com/parties/"},
 
+
+// ═══════════════════════════════════════════════
+// COVENTRY & REDDITCH (ids 110–115)
+// ═══════════════════════════════════════════════
+
+{id:125,cat:"gym",name:"The Cube Coventry",h1:"The Cube Coventry Birthday Parties",h2:"Gymnastics, Trampolining & Themed Birthday Parties in Coventry",h3:"CTGA Gym Party, Bounce Party, Dino Party and More in Coventry CV5",metaTitle:"The Cube Coventry Birthday Parties | Gymnastics & Themed Parties | Coventry CV5",metaDesc:"Birthday parties at The Cube Coventry. CTGA gymnastics and trampolining parties, Bounce Party, Dino Party, Princess Party, Gaming Party and more. Call 024 7671 2152.",sub:"Gymnastics, Trampolining & Themed Parties",postcode:"CV5 8AU",city:"Coventry",slug:"the-cube-coventry",type:"Gymnastics + Trampoline + Themed Parties",lat:52.404,lng:-1.544,
+ages:"1–12 yrs",maxKids:"30+",duration:"2 hrs",loc:"yes",food:"yes",bags:"opt",
+shortDesc:"Coventry's most versatile birthday party venue — combining CTGA trampolining and gymnastics with a wide menu of themed parties. The entry-level CTGA Gymnastics and Trampoline Party uses a 6-bed trampoline park, bouncy castle and gymnastics bars. Themed options include Dino Party (with Rory the Raptor mascot), Stitch (Fairytale Forest), Paw Patrol, Princess, Pamper, Gaming, Mario, Sonic, Build-A-Bear and Mascot parties. The PartyZone Ultimate Party offers the full exclusive experience. Sister venue Studio Megastar also available for VR and soft play parties. 18 miles from Stratford-upon-Avon.",
+packages:[
+{name:"CTGA Gymnastics & Trampoline Party",price:"Contact venue",priceNote:"coached gym and trampoline session + party room + food",maxKids:"Up to 30 children",featured:true,
+includes:["1 hr coached gymnastics and trampolining with CTGA coaches","6-bed trampoline park access","Bouncy castle","30 min party room with food","Party host"],
+excludes:["Party bags — optional","Birthday cake — bring your own"],
+slots:"Weekends — email parties@thecubecoventry.com or call 024 7671 2152",notes:"British Gymnastics qualified coaches. Suitable for all abilities."},
+{name:"Themed Party (Dino / Princess / Gaming / Pamper)",price:"Contact venue",priceNote:"multiple themed options available — contact for pricing",maxKids:"Up to 30 children",featured:false,
+includes:["Themed activity session","Party room with food","Themed decorations","Party host"],
+excludes:["Party bags","Birthday cake"],
+slots:"Weekends — contact venue",notes:"Themes include: Dino (with Rory the Raptor), Princess, Pamper, Gaming, Mario, Sonic, Paw Patrol, Build-A-Bear, Stitch and more."},
+],
+extras:["Rory the Raptor mascot appearances","Build-A-Bear parties","VR parties at sister venue Studio Megastar","Sweet shop with 400+ varieties"],
+notes:"Located at Wildcroft Road, Whoberley, Coventry CV5 8AU. Also operates Studio Megastar (CV1 3JQ) for VR and soft play parties. Tel: 024 7671 2152. Email: parties@thecubecoventry.com.",
+website:"https://www.thecubecoventry.com/parties"},
+
+{id:126,cat:"unique",name:"Little Lane Play Village",h1:"Little Lane Play Village Birthday Parties in Coventry",h2:"Role-Play Village Birthday Parties for Under-6s in Coventry CV6",h3:"Exclusive Hire Role-Play Party Packages in Coventry",metaTitle:"Little Lane Play Village Birthday Parties | Role-Play Village | Coventry CV6",metaDesc:"Exclusive birthday parties at Little Lane Play Village, Coventry. Imaginative role-play village for under-6s. Exclusive hire available. Book via littlelane.co.uk.",sub:"Role-Play Village for Under-6s",postcode:"CV6 5BJ",city:"Coventry",slug:"little-lane-play-village-coventry",type:"Role-Play Village (Under-6s Exclusive)",lat:52.434,lng:-1.502,
+ages:"0–6 yrs",maxKids:"20",duration:"2 hrs",loc:"yes",food:"opt",bags:"no",
+shortDesc:"Coventry's first dedicated role-play village designed exclusively for under-6s. Themed zones include a market, café, vet, fire station, construction site and hair salon. Children develop social skills and imagination through immersive pretend play. Birthday parties offer exclusive use of the full village — no shared sessions. A calmer, more creative alternative to traditional soft play for younger toddlers.",
+packages:[
+{name:"Exclusive Hire Birthday Party",price:"Contact venue",priceNote:"exclusive use of full play village — contact for pricing",maxKids:"Up to 20 children",featured:true,
+includes:["Exclusive use of entire role-play village","All themed zones accessible","Tables and chairs for food"],
+excludes:["Food — bring your own or arrange catering","Party bags","Birthday cake"],
+slots:"Contact venue for availability",notes:"Under-6s only. Perfect for younger toddler groups."},
+],
+extras:["Themed dressing-up costumes available"],
+notes:"Located in Coventry CV6. Under-6s only venue. Contact venue for current pricing and availability.",
+website:"https://www.littlelane.co.uk/"},
+
+{id:127,cat:"gym",name:"Midlands Gymnastics Academy",h1:"Midlands Gymnastics Academy Birthday Parties in Nuneaton",h2:"Olympic-Standard Gymnastics Parties in Nuneaton CV11",h3:"Coached Gymnastics Party Packages in Warwickshire",metaTitle:"Midlands Gymnastics Academy Birthday Parties | Nuneaton CV11",metaDesc:"Gymnastics birthday parties at Midlands Gymnastics Academy, Nuneaton. Olympic-standard facility with ex-GB coaches. Structured party format for ages 4–12.",sub:"Olympic-Standard Gymnastics Parties",postcode:"CV11 6RY",city:"Nuneaton",slug:"midlands-gymnastics-academy-nuneaton",type:"Gymnastics Party (Olympic-Standard)",lat:52.528,lng:-1.466,
+ages:"4–12 yrs",maxKids:"20",duration:"1 hr 30 min",loc:"yes",food:"no",bags:"no",
+shortDesc:"Olympic-standard gymnastics facility in Nuneaton with ex-GB coaches running structured birthday parties. Children rotate through bars, beams, floor, vault and trampoline under expert supervision. A serious gym with a fun party atmosphere — ideal for active, sporty children. 12 miles from Coventry, 20 miles from Stratford.",
+packages:[
+{name:"Gymnastics Birthday Party",price:"Contact venue",priceNote:"coached gymnastics session + party area for food",maxKids:"Up to 20 children",featured:true,
+includes:["1 hr coached gymnastics on full Olympic equipment","Rotations on bars, beams, floor, vault and trampoline","Qualified coaches throughout","30 min party area for food and presents"],
+excludes:["Food — bring your own","Party bags","Birthday cake"],
+slots:"Weekends — contact venue",notes:"Ex-GB coaches. All abilities welcome. No experience needed."},
+],
+extras:["Holiday camps available"],
+notes:"Located in Nuneaton CV11 6RY. ~12 miles from Coventry. Contact venue for current pricing.",
+website:"https://www.midlandsgymnastics.co.uk/"},
+
+{id:128,cat:"soft",name:"360 Play Redditch",h1:"360 Play Redditch Birthday Parties",h2:"Soft Play Birthday Parties at Kingfisher Centre Redditch B97",h3:"Four-Storey Soft Play Party Packages in Redditch",metaTitle:"360 Play Redditch Birthday Parties | Kingfisher Centre | B97",metaDesc:"Birthday parties at 360 Play, Kingfisher Shopping Centre, Redditch. Four-storey soft play frame with party rooms and food included.",sub:"Kingfisher Shopping Centre",postcode:"B97 4EY",city:"Redditch",slug:"360-play-redditch",type:"Soft Play (Four-Storey Frame)",lat:52.301,lng:-1.944,
+ages:"0–12 yrs",maxKids:"30",duration:"No time limit + party room",loc:"yes",food:"yes",bags:"opt",
+shortDesc:"A massive four-storey soft play frame inside the Kingfisher Shopping Centre, Redditch. No time limits on play — children can explore the full frame, ball pools, slides and toddler zones for as long as the centre is open. Birthday parties include a private party room, hot food, and dedicated party host. One of the few venues in the area with genuinely unlimited play time. Free parking at Kingfisher Centre.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"includes unlimited play + party room + food — check 360play.co.uk",maxKids:"Up to 30 children",featured:true,
+includes:["Unlimited soft play access (no time limit)","Private party room","Hot party food for all children","Dedicated party host"],
+excludes:["Party bags — available as add-on","Birthday cake — bring your own"],
+slots:"Weekends and school holidays — book via 360play.co.uk",notes:"Inside Kingfisher Shopping Centre. Free parking."},
+],
+extras:["Party bag add-ons available","Ride-on vehicles for toddlers"],
+notes:"Kingfisher Shopping Centre, Redditch B97 4EY. Free parking. ~18 miles from Stratford-upon-Avon.",
+website:"https://360play.co.uk/redditch/"},
+
+{id:129,cat:"soft",name:"Imagination Street",h1:"Imagination Street Birthday Parties in Astwood Bank",h2:"Soft Play & Inflatable Park Parties Near Redditch B96",h3:"Five-Tier Soft Play and Inflatable Birthday Packages",metaTitle:"Imagination Street Birthday Parties | Soft Play | Astwood Bank B96",metaDesc:"Birthday parties at Imagination Street, Astwood Bank near Redditch. 5-tier soft play, inflatable park and 5 party types including toddler-specific. Book online.",sub:"5-Tier Soft Play + Inflatable Park",postcode:"B96 6DT",city:"Astwood Bank, Nr Redditch",slug:"imagination-street-astwood-bank",type:"Soft Play + Inflatable Park",lat:52.253,lng:-1.873,
+ages:"0–12 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"opt",
+shortDesc:"Five-tier soft play frame plus a separate inflatable park in Astwood Bank, just outside Redditch. Five different party types including a toddler-specific option for under-4s with age-appropriate activities and gentler play. The inflatable park adds bouncy obstacles and slides alongside the main soft play. A strong choice for mixed-age groups where younger and older siblings need different play environments.",
+packages:[
+{name:"Standard Party",price:"Contact venue",priceNote:"includes play + party room + food — check website",maxKids:"Up to 30 children",featured:true,
+includes:["2 hr party session","5-tier soft play access","Private party room","Party food","Party host"],
+excludes:["Party bags — available as add-on","Birthday cake — bring your own"],
+slots:"Weekends — book via website",notes:"Toddler-specific party option available for under-4s."},
+],
+extras:["Inflatable park access","Toddler-specific party option for under-4s"],
+notes:"Located in Astwood Bank, just outside Redditch B96 6DT. ~15 miles from Stratford-upon-Avon.",
+website:"https://www.imaginationstreet.co.uk/"},
+
+{id:130,cat:"soft",name:"Joes Jungle",h1:"Joes Jungle Birthday Parties Near Redditch",h2:"Family-Run Soft Play Parties in Studley B80",h3:"Toddler-Friendly Party Packages with Fresh Food",metaTitle:"Joes Jungle Birthday Parties | Soft Play Studley B80",metaDesc:"Family-run soft play birthday parties at Joes Jungle, Studley near Redditch. Dedicated Under-3s zone, fresh food, SEN Sundays. Book via joesjunglesoftplay.co.uk.",sub:"Family-Run Soft Play",postcode:"B80 7BJ",city:"Studley, Nr Redditch",slug:"joes-jungle-studley",type:"Soft Play (Family-Run, Toddler Specialist)",lat:52.275,lng:-1.890,
+ages:"0–10 yrs",maxKids:"25",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Family-run soft play centre in Studley, between Redditch and Stratford-upon-Avon. Designated Under-3s zone completely separate from the main play area — one of the safest venues for very young toddlers. Fresh food prepared on site rather than bought-in frozen. SEN Sundays offer calmer sessions for children with additional needs. Highly rated for safety, cleanliness and genuine warmth. About 10 miles from Stratford.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"includes play + party room + fresh food — call or book online",maxKids:"Up to 25 children",featured:true,
+includes:["2 hr party session","Separate Under-3s zone available","Private party room","Freshly prepared party food","Party host"],
+excludes:["Party bags","Birthday cake — bring your own"],
+slots:"Weekends — book via joesjunglesoftplay.co.uk",notes:"Fresh food cooked on site. SEN Sundays available."},
+],
+extras:["SEN Sunday sessions","Fresh food — not frozen bought-in"],
+notes:"Located in Studley B80, ~10 miles from Stratford-upon-Avon. Family-run with strong community reputation.",
+website:"https://joesjunglesoftplay.co.uk/"},
+
+// ═══════════════════════════════════════════════
+// LONDON & OXFORD (ids 116–120)
+// ═══════════════════════════════════════════════
+
+{id:131,cat:"unique",name:"KidZania London",h1:"KidZania London Birthday Parties at Westfield",h2:"Role-Play City Birthday Parties in Shepherds Bush W12",h3:"Themed Birthday Packages with 4 Hours in the City and Party Host",metaTitle:"KidZania London Birthday Parties | Role-Play City | Westfield London W12",metaDesc:"Birthday parties at KidZania London inside Westfield London, Shepherds Bush. 4-hour parties with private party room, food, party host and extra KidZos. Ages 4–14. Call 0330 131 3333.",sub:"Role-Play City at Westfield London",postcode:"W12 7GA",city:"Shepherds Bush, W London",slug:"kidzania-london-shepherds-bush",type:"Indoor Role-Play City (75,000 sq ft)",lat:51.508,lng:-0.222,
+ages:"4–14 yrs",maxKids:"20",duration:"4 hrs",loc:"yes",food:"yes",bags:"yes",
+shortDesc:"The most distinctive birthday experience in London — a 75,000 sq ft indoor city inside Westfield where children try 60+ real-world jobs (pilot, surgeon, firefighter, radio presenter, banker). Birthday packages include 4 hours of city access, a private party room, dedicated party host, food, extra KidZos (the in-city currency), and a special gift for the birthday child. Parents can explore Westfield while children roam the city with RFID security wristbands. Ages 4–14. An unforgettable experience that children talk about for months.",
+packages:[
+{name:"KidZania Birthday Party",price:"Contact venue",priceNote:"call 0330 131 3333 or visit kidzania.co.uk/birthdays",maxKids:"Up to 20 children",featured:true,
+includes:["4-hour KidZania city access for all guests","Private party room","Dedicated party host","Party food and drinks","Extra KidZos for birthday child","Special birthday gift","RFID security wristbands for all children"],
+excludes:["Birthday cake — bring your own","Additional experiences at extra cost"],
+slots:"Daily — book via kidzania.co.uk/birthdays or call 0330 131 3333",notes:"Ages 4–14. 60+ role-play activities available. Westfield London, Shepherds Bush."},
+],
+extras:["60+ role-play jobs to try","Parents can shop Westfield during the party","Adult lounge available"],
+notes:"Inside Westfield London, Ariel Way, Shepherds Bush W12 7GA. Nearest tube: Shepherds Bush (Central line). Ample Westfield parking.",
+website:"https://kidzania.co.uk/birthdays"},
+
+{id:132,cat:"soft",name:"Bramleys Big Adventure",h1:"Bramleys Big Adventure Birthday Parties in North Kensington",h2:"Soft Play Birthday Parties in Ladbroke Grove W10",h3:"Three-Level Play Frame Party Packages from £8 per Child",metaTitle:"Bramleys Big Adventure Birthday Parties | Soft Play | North Kensington W10",metaDesc:"Birthday parties at Bramleys Big Adventure, North Kensington W10. 3-level play frame, organic café. Parties from ~£8 pp. Established 30+ years.",sub:"3-Level Play Frame + Organic Café",postcode:"W10 6SZ",city:"North Kensington, W London",slug:"bramleys-big-adventure-north-kensington",type:"Soft Play + Organic Café (Community)",lat:51.521,lng:-0.210,
+ages:"0–9 yrs",maxKids:"25",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"A beloved community soft play venue tucked under the Westway flyover in North Kensington, running for over 30 years. Three-level play frame with slides, tunnels and ball pool. Organic café serves freshly prepared food for both children and parents. Birthday parties are affordable and intimate — perfect for families who value quality food and a welcoming atmosphere over flashy theming. Strong community following in W10/W11.",
+packages:[
+{name:"Birthday Party Package",price:"From ~£8 pp",priceNote:"per child — contact venue for current rates",maxKids:"Up to 25 children",featured:true,
+includes:["2 hr party session","3-level soft play access","Private party area","Party food from organic café"],
+excludes:["Party bags","Birthday cake — bring your own"],
+slots:"Contact venue for availability",notes:"Established 30+ years. Organic café on site."},
+],
+extras:["Organic café food for parents","Community-run atmosphere"],
+notes:"Located under the Westway, North Kensington W10 6SZ. Nearest tube: Ladbroke Grove. Community institution for 30+ years.",
+website:"https://www.bramleysbigadventure.co.uk/"},
+
+{id:133,cat:"soft",name:"Clowntown Finchley",h1:"Clowntown Birthday Parties in North Finchley",h2:"Soft Play Birthday Parties in North London N12",h3:"VIP Tent Party Packages at Clowntown Finchley",metaTitle:"Clowntown Birthday Parties | Soft Play North Finchley N12",metaDesc:"Birthday parties at Clowntown, North Finchley N12. One of Londons biggest soft play frames. Private VIP tent, 10–25 guests, food included. Est. 1994.",sub:"North Londons Biggest Soft Play",postcode:"N12 0SH",city:"North Finchley, N London",slug:"clowntown-finchley",type:"Soft Play (Largest Frame in N London)",lat:51.613,lng:-0.176,
+ages:"0–12 yrs",maxKids:"25",duration:"2 hrs",loc:"yes",food:"yes",bags:"opt",
+shortDesc:"One of North Londons largest soft play frames, established since 1994. Massive multi-level structure with giant slides, ball pools, rope bridges and a dedicated toddler area. Birthday parties use a private VIP tent within the venue — more intimate than an open party area. Food, host and play all included. Strong reputation across Barnet, Finchley and Muswell Hill. Free parking directly outside.",
+packages:[
+{name:"VIP Tent Birthday Party",price:"Contact venue",priceNote:"private VIP tent + food + play — contact for pricing",maxKids:"10–25 children",featured:true,
+includes:["2 hr party session","Private VIP tent area","Full soft play access","Party food for all children","Party host"],
+excludes:["Party bags — available as add-on","Birthday cake — bring your own"],
+slots:"Weekends — book via website or call venue",notes:"Established 1994. One of the biggest frames in North London. Free parking."},
+],
+extras:["Party bag add-ons","Free parking directly outside"],
+notes:"North Finchley N12. Established 1994. Free parking. Serves Barnet, Finchley, Muswell Hill and surrounding N London postcodes.",
+website:"https://www.clowntown.co.uk/"},
+
+{id:134,cat:"soft",name:"Partyman World Oxford",h1:"Partyman World of Play Birthday Parties in Oxford",h2:"Soft Play Birthday Parties Near Kassam Stadium OX4",h3:"Themed Party Room Packages with Live Stage Shows",metaTitle:"Partyman World of Play Birthday Parties | Oxford OX4",metaDesc:"Birthday parties at Partyman World of Play, Oxford OX4. 4 themed party rooms, interactive live stage shows, food and party bags included. Near Kassam Stadium.",sub:"4 Themed Party Rooms + Live Shows",postcode:"OX4 6LB",city:"Oxford",slug:"partyman-world-oxford",type:"Soft Play + Live Entertainment",lat:51.716,lng:-1.209,
+ages:"0–12 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"yes",
+shortDesc:"Large soft play and entertainment centre near the Kassam Stadium in Oxford with four fully themed party rooms. What sets Partyman apart is the interactive live stage shows performed by the staff — genuinely entertaining, not just background music. Food and party bags included in all packages. Strong Oxford following. Free parking at Kassam Stadium complex.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"includes play + themed room + food + party bags + live show",maxKids:"Up to 30 children",featured:true,
+includes:["Soft play access","Choice of 4 themed party rooms","Interactive live stage show by Partyman staff","Party food for all children","Party bags for all children","Party host"],
+excludes:["Birthday cake — bring your own"],
+slots:"Weekends — book via partyman.co.uk",notes:"Near Kassam Stadium. Free parking. Live shows make this genuinely different."},
+],
+extras:["4 themed party rooms to choose from","Interactive live stage shows"],
+notes:"Located near Kassam Stadium, Oxford OX4 6LB. Free parking. Contact venue for current pricing.",
+website:"https://www.partyman.co.uk/world-of-play/oxford/"},
+
+{id:135,cat:"soft",name:"Snakes and Ladders Abingdon",h1:"Snakes and Ladders Birthday Parties in Abingdon",h2:"Soft Play and Role-Play Village Parties in Abingdon OX14",h3:"Themed Party Room Packages from £18.50 per Child",metaTitle:"Snakes and Ladders Birthday Parties | Soft Play | Abingdon OX14",metaDesc:"Birthday parties at Snakes and Ladders, Abingdon OX14. 3-tier play frame plus brand-new Role Play Village with 10 zones. 4 themed rooms. From £18.50 pp.",sub:"Soft Play + Brand-New Role-Play Village",postcode:"OX14 3PJ",city:"Abingdon, Oxfordshire",slug:"snakes-and-ladders-abingdon",type:"Soft Play + Role-Play Village",lat:51.668,lng:-1.282,
+ages:"0–12 yrs",maxKids:"26",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Sister venue to Snakes and Ladders Brentford, located 7 miles south of Oxford. Features a three-tier indoor play frame PLUS a brand-new Role Play Village with 10 imaginative zones (Fire Station, Space, Disco and more). Four fully themed party rooms. Birthday parties include 75 minutes play and 45 minutes in your chosen themed room with food and squash. SEN sessions every Wednesday 4:15–6:15pm during term time.",
+packages:[
+{name:"Themed Party Room",price:"From £18.50 pp",priceNote:"per child · min 10 · 75 min play + 45 min themed room · food included",maxKids:"10–26 children (varies by room)",featured:true,
+includes:["75 min play on play frame and Role Play Village","45 min in themed party room (Fire Station, Space, Glamour or Disco)","Party food with unlimited squash","1 free adult per guest + 2 free adults for birthday child"],
+excludes:["Birthday cake — bring your own","Party bags","Own decorations not permitted"],
+slots:"Available during sessions — check online booking",notes:"Brand-new Role Play Village with 10 zones. SEN sessions Wed 4:15–6:15pm term-time."},
+],
+extras:["Role Play Village with 10 themed zones","SEN sessions available","Laser Tag party option"],
+notes:"7 miles south of Oxford city centre off the A4183. Free parking. Email abingdon@snakes-and-ladders.co.uk for party enquiries.",
+website:"https://www.snakes-and-ladders.co.uk/our-locations/abingdon/"},
+
+// ═══════════════════════════════════════════════
+// BRIGHTON, BRISTOL, MANCHESTER, LEEDS, BIRMINGHAM
+// + NATIONWIDE (ids 121–135)
+// ═══════════════════════════════════════════════
+
+{id:136,cat:"soft",name:"Snakes and Ladders Brighton",h1:"Snakes and Ladders Brighton Birthday Parties",h2:"Indoor Soft Play Birthday Parties in Brighton BN2",h3:"Exclusive Hire Soft Play Parties on the South Coast",metaTitle:"Snakes and Ladders Brighton Birthday Parties | Soft Play BN2",metaDesc:"Birthday parties at Snakes and Ladders Brighton. 2-hour exclusive hire, dedicated party hostess, food and drinks. From £19.99 per child.",sub:"Exclusive Hire Soft Play",postcode:"BN2 5JT",city:"Brighton",slug:"snakes-and-ladders-brighton",type:"Soft Play (Indoor, Large)",lat:50.824,lng:-0.126,
+ages:"0–12 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"opt",
+shortDesc:"A large indoor soft play venue in Brighton with exclusive venue hire for birthday parties. Packages include 2-hour exclusive use, dedicated party hostess, tables and chairs, and party food and drinks. A popular choice for toddler parties on the south coast.",
+packages:[
+{name:"Birthday Party Package",price:"From £19.99 pp",priceNote:"per child — check venue for latest pricing",maxKids:"Up to 30 children",featured:true,
+includes:["2-hour exclusive venue hire","Full soft play access","Dedicated party hostess","Tables and chairs","Party food and drinks"],
+excludes:["Party bags — optional extra","Birthday cake — bring your own"],
+slots:"Weekends — contact venue",notes:"Exclusive hire — no shared sessions during your party."},
+],
+extras:["Party bags add-on","Character visit options"],
+notes:"Brighton BN2 5JT. Popular south coast soft play party venue.",
+website:"https://www.snakes-and-ladders.co.uk/our-locations/brighton/"},
+
+{id:137,cat:"unique",name:"Cafe Tropicana Brighton",h1:"Cafe Tropicana Birthday Parties in Brighton",h2:"Pirate-Themed Play Café Party in Brighton BN1",h3:"Mini Party Package £255 for up to 10 Children",metaTitle:"Cafe Tropicana Birthday Parties | Pirate Play Café Brighton BN1",metaDesc:"Birthday parties at Cafe Tropicana pirate-themed play café, Brighton BN1. Mini party £255 (up to 10 children), £25 per extra child. 2-hour exclusive hire.",sub:"Pirate-Themed Play Café",postcode:"BN1 1RL",city:"Brighton",slug:"cafe-tropicana-brighton",type:"Pirate-Themed Play Café",lat:50.827,lng:-0.139,
+ages:"0–8 yrs",maxKids:"20",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"A charming pirate-themed play café in central Brighton offering exclusive birthday hire. The mini party package covers 2 hours of exclusive use, party food (sandwiches, sausage rolls, cakes, juice), full decorations including tablecloths and balloons, and staff support throughout. Wonderful for toddler parties with a nautical twist.",
+packages:[
+{name:"Mini Party Package",price:"£255",priceNote:"up to 10 children · £25 per extra child",maxKids:"Up to 20 children",featured:true,
+includes:["2-hour exclusive hire of venue","Sandwiches, sausage rolls, cakes and juice","Decorations: tablecloths and balloons","Staff throughout"],
+excludes:["Birthday cake — bring your own","Party bags"],
+slots:"Weekends — contact venue for availability",notes:"Central Brighton location. Pirate theme loved by toddlers."},
+],
+extras:["Extra children £25 each"],
+notes:"Central Brighton BN1 1RL. Pirate theme perfect for toddler parties.",
+website:"https://www.cafetropicana.co.uk/"},
+
+{id:138,cat:"unique",name:"PancakePlay Bristol",h1:"PancakePlay Birthday Parties in Bristol",h2:"Pancake Café and Play Birthday Parties in Bristol BS1",h3:"Unique Pancake-Themed Party Packages in Bristol",metaTitle:"PancakePlay Birthday Parties | Pancake Café & Play | Bristol BS1",metaDesc:"Birthday parties at PancakePlay, Bristol. Unique pancake café and soft play combination. Children make their own pancakes as part of the party.",sub:"Pancake Café + Play",postcode:"BS1 6JH",city:"Bristol",slug:"pancakeplay-bristol",type:"Pancake Café + Soft Play",lat:51.454,lng:-2.597,
+ages:"0–10 yrs",maxKids:"20",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"A unique Bristol venue combining a pancake café with indoor play. Birthday parties are centred around children making and decorating their own pancakes — a genuinely creative alternative to standard party food. Play equipment for younger children included. A distinctive, memorable party experience.",
+packages:[
+{name:"Pancake Party Package",price:"Contact venue",priceNote:"pancake making + play + party area — contact for pricing",maxKids:"Up to 20 children",featured:true,
+includes:["Pancake making and decorating activity","Play session","Private party area","Drinks"],
+excludes:["Birthday cake — bring your own","Party bags"],
+slots:"Contact venue for availability",notes:"Children make their own pancakes — a unique party activity."},
+],
+extras:["Custom pancake toppings and decorations"],
+notes:"Bristol BS1. A unique party concept combining food activity with play.",
+website:"https://www.pancakeplay.co.uk/"},
+
+{id:139,cat:"soft",name:"Beavers Totters and Tots",h1:"Beavers Totters and Tots Birthday Parties in Bristol",h2:"Soft Play Birthday Parties in Kingswood BS15",h3:"Toddler-Friendly Party Packages in East Bristol",metaTitle:"Beavers Totters and Tots Birthday Parties | Soft Play | Kingswood BS15",metaDesc:"Birthday parties at Beavers Totters and Tots, Kingswood, Bristol BS15. Soft play parties with food and party room for ages 0–8.",sub:"Toddler-Friendly Soft Play",postcode:"BS15 8LX",city:"Kingswood, Bristol",slug:"beavers-totters-tots-bristol",type:"Soft Play (Toddler-Focused)",lat:51.464,lng:-2.508,
+ages:"0–8 yrs",maxKids:"25",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Family-run soft play centre in Kingswood, East Bristol, with a strong toddler focus. Multi-level play frame with dedicated baby and toddler sections. Birthday parties include a private party room, food and party host. Known locally for cleanliness and friendly staff.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"includes play + party room + food",maxKids:"Up to 25 children",featured:true,
+includes:["2 hr party session","Soft play access including toddler zone","Private party room","Party food","Party host"],
+excludes:["Party bags","Birthday cake — bring your own"],
+slots:"Weekends — contact venue",notes:"Strong toddler focus with dedicated baby and toddler sections."},
+],
+extras:["Dedicated baby and toddler sections"],
+notes:"Kingswood, Bristol BS15. Family-run venue popular with East Bristol families.",
+website:"https://www.beaverstottersandtots.co.uk/"},
+
+{id:140,cat:"soft",name:"Froglets Play Cafe",h1:"Froglets Play Cafe Birthday Parties in Levenshulme",h2:"Under-5s Play Café Parties in Manchester M19",h3:"Toddler Party Packages at Froglets Levenshulme",metaTitle:"Froglets Play Cafe Birthday Parties | Under-5s | Levenshulme M19",metaDesc:"Under-5s birthday parties at Froglets Play Cafe, Levenshulme M19. Toddler-focused play café with party packages. Book via froglets.co.uk.",sub:"Under-5s Play Café",postcode:"M19 3AB",city:"Levenshulme, Manchester",slug:"froglets-play-cafe-manchester",type:"Play Café (Under-5s)",lat:53.444,lng:-2.181,
+ages:"0–5 yrs",maxKids:"20",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"A dedicated under-5s play café in Levenshulme, South Manchester. Calm, nurturing environment specifically designed for babies and toddlers. Good quality café food for both children and parents. Birthday parties offer exclusive or semi-exclusive use with party food included. Popular with M19 and M20 families.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"under-5s only — contact for pricing",maxKids:"Up to 20 children",featured:true,
+includes:["Play session","Party food","Private party area"],
+excludes:["Party bags","Birthday cake — bring your own"],
+slots:"Contact venue for availability",notes:"Under-5s only. Calm, nurturing environment."},
+],
+extras:["Quality café food for parents"],
+notes:"Levenshulme, Manchester M19. Under-5s only venue.",
+website:"https://www.froglets.co.uk/"},
+
+{id:141,cat:"soft",name:"Tiny Wings Play Cafe",h1:"Tiny Wings Play Cafe Birthday Parties in Levenshulme",h2:"Play Café Birthday Parties in South Manchester M19",h3:"Community Play Café Party Packages",metaTitle:"Tiny Wings Play Cafe Birthday Parties | Levenshulme M19",metaDesc:"Birthday parties at Tiny Wings Play Cafe, Levenshulme, South Manchester M19. Community play café with party packages for young children.",sub:"Community Play Café",postcode:"M19 3PN",city:"Levenshulme, Manchester",slug:"tiny-wings-play-cafe-manchester",type:"Play Café (Community-Run)",lat:53.443,lng:-2.183,
+ages:"0–7 yrs",maxKids:"20",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Community-run play café in Levenshulme, South Manchester. Warm, welcoming space for young families with play equipment, toys and a café serving homemade food. Birthday parties are intimate, friendly affairs with exclusive use available. One of the area's best-loved small venues.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"community café — contact for pricing",maxKids:"Up to 20 children",featured:true,
+includes:["Play session","Party food","Party area"],
+excludes:["Party bags","Birthday cake"],
+slots:"Contact venue for availability",notes:"Community-run. Homemade food."},
+],
+extras:["Homemade café food"],
+notes:"Levenshulme, Manchester M19. Community-run venue.",
+website:"https://www.tinywingsplaycafe.co.uk/"},
+
+{id:142,cat:"soft",name:"Play Factore",h1:"Play Factore Birthday Parties in Trafford Park",h2:"Giant Soft Play Birthday Parties in Manchester M41",h3:"Multi-Level Soft Play Party Packages Near Old Trafford",metaTitle:"Play Factore Birthday Parties | Giant Soft Play | Trafford Park M41",metaDesc:"Birthday parties at Play Factore, Trafford Park, Manchester M41. Giant multi-level soft play near Old Trafford. Multiple party packages with food.",sub:"Giant Soft Play Near Old Trafford",postcode:"M41 7JA",city:"Trafford Park, Manchester",slug:"play-factore-trafford-park",type:"Soft Play (Giant Multi-Level)",lat:53.460,lng:-2.316,
+ages:"0–12 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"opt",
+shortDesc:"One of Manchester's biggest indoor play centres in Trafford Park, near Old Trafford and the Trafford Centre. Giant multi-level soft play frame with slides, tunnels, ball pools, dedicated toddler area and separate climbing zone. Multiple birthday party packages with food, host and private party room. Very popular with Greater Manchester families.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"multiple packages — check playfactore.com",maxKids:"Up to 30 children",featured:true,
+includes:["2 hr party session","Giant multi-level soft play","Private party room","Party food","Party host"],
+excludes:["Party bags — available as add-on","Birthday cake — bring your own"],
+slots:"Daily — book via playfactore.com",notes:"One of Manchester's biggest play centres. Near Trafford Centre."},
+],
+extras:["Climbing zone","Dedicated toddler area","Party bag add-ons"],
+notes:"Trafford Park, Manchester M41 7JA. Near Old Trafford and Trafford Centre. Free parking.",
+website:"https://www.playfactore.com/"},
+
+{id:143,cat:"soft",name:"Charlie Park",h1:"Charlie Park Birthday Parties in Atherton",h2:"Soft Play Birthday Parties in Atherton M46",h3:"Family-Run Soft Play Party Packages in Wigan",metaTitle:"Charlie Park Birthday Parties | Soft Play | Atherton M46",metaDesc:"Birthday parties at Charlie Park soft play, Atherton M46. Family-run venue serving Wigan, Bolton and Leigh families.",sub:"Family-Run Soft Play",postcode:"M46 0JQ",city:"Atherton, Wigan",slug:"charlie-park-atherton",type:"Soft Play (Family-Run)",lat:53.524,lng:-2.494,
+ages:"0–10 yrs",maxKids:"25",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Family-run soft play in Atherton serving Wigan, Bolton, Leigh and Tyldesley families. Multi-level play frame with slides, ball pool, toddler area and café. Birthday parties include a private party room, food and host. Strong local following for friendly staff and cleanliness.",
+packages:[
+{name:"Birthday Party Package",price:"Contact venue",priceNote:"includes play + party room + food — call or book online",maxKids:"Up to 25 children",featured:true,
+includes:["2 hr party session","Soft play access","Private party room","Party food","Party host"],
+excludes:["Party bags","Birthday cake — bring your own"],
+slots:"Weekends — contact venue",notes:"Family-run. Serves Wigan, Bolton, Leigh area."},
+],
+extras:["Café on site for parents"],
+notes:"Atherton M46, near Wigan. Family-run venue.",
+website:"https://www.charliepark.co.uk/"},
+
+{id:144,cat:"gym",name:"Manchester Academy of Gymnastics (Trafford)",h1:"Manchester Academy of Gymnastics Birthday Parties at Trafford Park",h2:"Gymnastics Birthday Parties in Trafford M50",h3:"Coached Gymnastics Party Packages in Manchester",metaTitle:"Manchester Academy of Gymnastics Birthday Parties | Trafford Park M50",metaDesc:"Coached gymnastics birthday parties at MAOG Trafford Park, Manchester M50. Qualified coaches, exclusive gym hire and party room.",sub:"Trafford Park Gym Parties",postcode:"M50 1QS",city:"Trafford Park, Manchester",slug:"maog-trafford-park-manchester",type:"Gymnastics Party (Exclusive Hire)",lat:53.467,lng:-2.280,
+ages:"3–12 yrs",maxKids:"26",duration:"1 hr 30 min",loc:"yes",food:"yes",bags:"no",
+shortDesc:"The Trafford Park branch of Manchester Academy of Gymnastics — separate from the Old Trafford venue already listed. Exclusive gymnasium hire with qualified coaches running structured gymnastics activities. Hot and cold food included. Birthday child attends free. Great for parties wanting a Trafford Park location.",
+packages:[
+{name:"Gymnastics Birthday Party",price:"Contact venue",priceNote:"exclusive gym hire + coached session + food — contact MAOG",maxKids:"Up to 26 children",featured:true,
+includes:["1 hr exclusive gymnastics hall with qualified coaches","Coached activities and games","30 min party room","Hot and cold food","Birthday child attends FREE"],
+excludes:["Party bags","Birthday cake — bring your own"],
+slots:"Weekends — email or call venue",notes:"Trafford Park location. Exclusive gym hire."},
+],
+extras:["Play Gym option for under-4s"],
+notes:"Trafford Park, Manchester M50. Contact MAOG for current pricing at this location.",
+website:"https://manchesteracademyofgymnastics.com/parties/"},
+
+{id:145,cat:"gym",name:"Flip Out Leeds",h1:"Flip Out Leeds Birthday Parties",h2:"Trampoline & Adventure Park Parties in Leeds LS14",h3:"Standard & VIP Party Packages at Flip Out Leeds",metaTitle:"Flip Out Leeds Birthday Parties | Trampoline Park | LS14",metaDesc:"Trampoline and adventure birthday parties at Flip Out Leeds LS14. Standard from £20 pp, VIP from £26 pp with party bags and slush.",sub:"Trampoline & Adventure Park",postcode:"LS14 1NH",city:"Leeds",slug:"flip-out-leeds",type:"Trampoline + Adventure Park",lat:53.834,lng:-1.476,
+ages:"4+ yrs",maxKids:"30+",duration:"90 min bounce + 2 hr room",loc:"yes",food:"yes",bags:"opt",
+shortDesc:"Flip Out's Leeds venue in Seacroft offering the full trampoline park experience — wall-to-wall trampolines, foam pits, dodgeball courts and adventure obstacles. Standard party £20 pp includes 90 min bounce, 2 hr party room, food, host and jump socks. VIP upgrade at £26 pp adds party bags, dessert, slush and free return pass. SEND-friendly Saturday morning sessions.",
+packages:[
+{name:"Standard Party",price:"£20 pp",priceNote:"per child",maxKids:"30+ children",featured:false,
+includes:["90 min on trampoline arena plus all park attractions","2 hr party room","Dedicated party host","Flip Out grip socks","Unlimited juice","Pizza and chips OR nuggets and chips","Free return pass for birthday child"],
+excludes:["Party bags","Dessert","Birthday cake — bring your own"],
+slots:"Monday–Sunday — book at flipout.co.uk",notes:"Min age 4. SEND-friendly sessions Sat 9–10am."},
+{name:"VIP Party",price:"£26 pp",priceNote:"per child",maxKids:"30+ children",featured:true,
+includes:["Everything in Standard Party","Dessert for every child","Party bags (Flip Out branded)","FREE slush per child","4 FREE hot drink vouchers for parents"],
+excludes:["Birthday cake — bring your own"],
+slots:"Monday–Sunday — book at flipout.co.uk",notes:"Most popular upgrade."},
+],
+extras:["SEND-friendly Saturday morning sessions"],
+notes:"Seacroft, Leeds LS14 1NH. Part of the Flip Out national chain (20+ UK locations).",
+website:"https://www.flipout.co.uk/birthday-parties"},
+
+{id:146,cat:"soft",name:"Rock Up Birmingham City Centre",h1:"Rock Up Birthday Parties in Birmingham City Centre",h2:"Soft Play & Climbing Birthday Parties in Birmingham B36",h3:"Soft Play and Toddler Climb Party Packages",metaTitle:"Rock Up Birthday Parties | Soft Play & Climbing | Birmingham B36",metaDesc:"Soft play and climbing birthday parties at Rock Up Birmingham. Toddler climb sessions and multi-storey soft play. From £16 pp.",sub:"Soft Play + Climbing",postcode:"B36 0QA",city:"Birmingham",slug:"rock-up-birmingham-city-centre",type:"Soft Play + Indoor Climbing",lat:52.506,lng:-1.782,
+ages:"Under 5s (soft play) / 4+ (climb)",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Rock Up's Birmingham venue offering multi-storey soft play and 25 climbing walls. Birthday parties include soft play, food and a dedicated party host. Toddler-only Climb and Play sessions available for under-5s. Birthday child gets a FREE Leap of Faith.",
+packages:[
+{name:"Soft Play Birthday Party",price:"From £16 pp",priceNote:"weekday term-time · ~£19-20 pp weekends · min 8",maxKids:"20–30 children",featured:true,
+includes:["1.5 hrs multi-storey soft play","30 min private party room","Dedicated party host","Pizza or sandwich buffet","FREE Leap of Faith for birthday child"],
+excludes:["Party bags — available as add-on","Birthday cake — bring your own"],
+slots:"Weekends — book at rock-up.co.uk",notes:"Min 8 children. Baby area for youngest guests."},
+],
+extras:["Toddler Climb and Play sessions","Party bag add-ons"],
+notes:"Birmingham B36. Part of the Rock Up national chain.",
+website:"https://www.rock-up.co.uk/"},
+
+// ── NATIONWIDE HIRE & ENTERTAINMENT ──
+
+{id:147,cat:"unique",name:"We Are Like Birds",h1:"We Are Like Birds Mobile Art Parties",h2:"Creative Mobile Birthday Parties Anywhere in the UK",h3:"Bespoke Art Party Packages Delivered to Your Venue",metaTitle:"We Are Like Birds Mobile Art Parties | Creative Parties UK-Wide",metaDesc:"Mobile creative art birthday parties by We Are Like Birds. Bespoke art workshops delivered to your venue anywhere in the UK.",sub:"Mobile Creative Art Parties",postcode:"UK-wide",city:"UK-wide (mobile — comes to you)",slug:"we-are-like-birds-uk-wide",type:"Mobile Art Party (Nationwide)",lat:52.48,lng:-1.9,
+ages:"3–12 yrs",maxKids:"20",duration:"1.5–2 hrs",loc:"no",food:"no",bags:"no",
+shortDesc:"A mobile creative arts party company that comes to your chosen venue — village hall, garden, living room or hired space. Each party is bespoke: choose from pottery painting, canvas art, textile crafts, jewellery making and more. All materials provided. Professional artist hosts the session. Children take home their creations as the party favour. Available nationwide.",
+packages:[
+{name:"Bespoke Art Party",price:"Contact venue",priceNote:"bespoke pricing based on activity, group size and location",maxKids:"Up to 20 children",featured:true,
+includes:["Professional artist host","All art materials provided","Bespoke activity chosen by you","Children take home their creations"],
+excludes:["Venue — you provide the space","Food and drinks","Party bags — the creation IS the take-home"],
+slots:"Weekends and weekdays — contact via website",notes:"Mobile service — comes to your chosen venue anywhere in the UK."},
+],
+extras:["Multiple art activities available","Can combine with other party elements"],
+notes:"Nationwide mobile service. Book via website.",
+website:"https://www.wearelikebirds.co.uk/"},
+
+{id:148,cat:"unique",name:"Soft Play in a Box",h1:"Soft Play in a Box — Delivered Soft Play Hire",h2:"Weekend Soft Play Hire Delivered to Your Home",h3:"Fri–Mon Soft Play Rental Packages from £99",metaTitle:"Soft Play in a Box | Delivered Soft Play Hire | Nationwide",metaDesc:"Soft play equipment delivered to your home for birthday parties. Weekend hire packages (Fri–Mon). Professional-grade equipment. Book at softplayinabox.co.uk.",sub:"Delivered Soft Play Hire (Fri–Mon)",postcode:"UK-wide",city:"UK-wide (delivered to your home)",slug:"soft-play-in-a-box-uk-wide",type:"Delivered Soft Play Equipment Hire",lat:52.48,lng:-1.9,
+ages:"0–6 yrs",maxKids:"15",duration:"Full weekend (Fri–Mon)",loc:"no",food:"no",bags:"no",
+shortDesc:"Professional-grade soft play equipment delivered to your home or venue for the whole weekend (Friday to Monday). Includes ball pits, foam shapes, slides, rockers and tunnels — everything you need to create a soft play party at home. Delivered, set up and collected. Perfect for garden parties, living room parties or village hall hire. Available across selected UK regions.",
+packages:[
+{name:"Weekend Hire Package",price:"From £99",priceNote:"Fri delivery — Mon collection · pricing varies by package size and location",maxKids:"Up to 15 children",featured:true,
+includes:["Professional soft play equipment delivered to your door","Full weekend hire (Friday to Monday)","Ball pit, foam shapes, slides, rockers, tunnels","Setup guidance provided"],
+excludes:["Venue — you provide the space","Food and drinks","Supervision — you supervise"],
+slots:"Book via website — advance booking required",notes:"Delivered Friday, collected Monday. Perfect for home parties."},
+],
+extras:["Multiple package sizes available","Add-on items available"],
+notes:"Delivered soft play hire — available in selected UK regions. Check website for coverage area.",
+website:"https://www.softplayinabox.co.uk/"},
+
+{id:149,cat:"unique",name:"Funky Monkeys Inflatable Hire",h1:"Funky Monkeys Bouncy Castle & Inflatable Hire",h2:"Bouncy Castle Hire for Birthday Parties Nationwide",h3:"Inflatable Hire Packages Delivered to Your Venue",metaTitle:"Funky Monkeys Inflatable Hire | Bouncy Castles | Nationwide",metaDesc:"Bouncy castle and inflatable hire for birthday parties. Delivered and set up at your venue. Multiple sizes and themes. Book at funkymonkeyshire.co.uk.",sub:"Bouncy Castle & Inflatable Hire",postcode:"UK-wide",city:"UK-wide (delivered to your venue)",slug:"funky-monkeys-inflatable-hire-uk-wide",type:"Inflatable / Bouncy Castle Hire",lat:52.48,lng:-1.9,
+ages:"All ages",maxKids:"Depends on inflatable size",duration:"Full day hire",loc:"no",food:"no",bags:"no",
+shortDesc:"Bouncy castle and inflatable hire company delivering to homes, gardens and hired venues. Multiple sizes from small indoor castles to large outdoor obstacle courses. Themes include princess, superhero, unicorn, dinosaur and more. Delivered, set up and collected. PAT-tested and insured. A budget-friendly way to create a brilliant garden party.",
+packages:[
+{name:"Inflatable Hire",price:"Contact venue",priceNote:"pricing varies by size, theme and location",maxKids:"Varies by inflatable",featured:true,
+includes:["Inflatable delivered and set up","Full day hire","Collection after event","PAT-tested and insured equipment"],
+excludes:["Venue — you provide the space","Supervision — you supervise","Food and drinks"],
+slots:"Book via website — advance booking required",notes:"Multiple sizes and themes available."},
+],
+extras:["Indoor and outdoor options","Themed inflatables (princess, superhero, dinosaur, unicorn)"],
+notes:"Nationwide inflatable hire. Check website for coverage and availability.",
+website:"https://www.funkymonkeyshire.co.uk/"},
+
+{id:150,cat:"unique",name:"Childrens Entertainers UK",h1:"Childrens Entertainers UK — DBS-Checked Party Entertainment",h2:"Professional Childrens Entertainers for Birthday Parties",h3:"Magicians, Clowns, Face Painters and Character Visits Nationwide",metaTitle:"Childrens Entertainers UK | Party Entertainment | Nationwide",metaDesc:"DBS-checked childrens entertainers for birthday parties across the UK. Magicians, face painters, balloon artists and character visits. Book online.",sub:"DBS-Checked Party Entertainers",postcode:"UK-wide",city:"UK-wide (comes to your venue)",slug:"childrens-entertainers-uk-uk-wide",type:"Mobile Party Entertainment (Nationwide Network)",lat:52.48,lng:-1.9,
+ages:"All ages",maxKids:"50+",duration:"1–3 hrs",loc:"no",food:"no",bags:"no",
+shortDesc:"A nationwide network of DBS-checked childrens entertainers available for birthday parties at any venue. Choose from magicians, clowns, face painters, balloon artists, character visits (princesses, superheroes), disco DJs and party game hosts. All entertainers are vetted, insured and experienced with young children. Book online with instant availability checks for your area.",
+packages:[
+{name:"Party Entertainer Booking",price:"Contact venue",priceNote:"pricing varies by entertainer type, duration and location",maxKids:"Up to 50+ children",featured:true,
+includes:["DBS-checked professional entertainer","All equipment and props","Fully insured"],
+excludes:["Venue — you provide the space","Food and drinks","Party bags"],
+slots:"7 days a week — book online with instant availability check",notes:"Choose: magician, face painter, balloon artist, character visit, DJ or party games host."},
+],
+extras:["Magicians","Face painters","Balloon artists","Character visits (princesses, superheroes)","Disco DJs","Party game hosts"],
+notes:"Nationwide network. All entertainers DBS-checked and insured. Book online.",
+website:"https://www.childrensentertainersuk.co.uk/"},
+
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -3127,7 +3512,7 @@ function updateMap(){
       <div class="mp-name">${v.name}</div>
       <div class="mp-meta">${c.emoji} ${c.label} · ${v.postcode==="UK-wide"?"UK-wide":v.dist.toFixed(1)+" mi away"}</div>
       <div class="mp-meta">${v.packages[0]?.price||"Contact venue"} · ${v.city}</div>
-      <a href="venue.html?venue=${encodeURIComponent(v.slug||String(v.id))}">View details →</a>
+      <a href="venue.html?venue=${encodeURIComponent(v.slug||String(v.id))}" target="_blank" rel="noopener" title="${v.name} birthday parties in ${v.city}">View details →</a>
     </div>`);
     bounds.push([v.lat,v.lng]);
   });
@@ -3215,7 +3600,7 @@ function card(v){
   const fp=v.food==="yes"?`<div class="ii yes" title="Food included">🍕</div>`:v.food==="opt"?`<div class="ii opt" title="Food optional">🍕</div>`:`<div class="ii no" title="Self-catered">🍕</div>`;
   const bp=v.bags==="yes"?`<div class="ii yes" title="Gift bags included">🎁</div>`:v.bags==="opt"?`<div class="ii opt" title="Bags available">🎁</div>`:`<div class="ii no" title="No gift bags">🎁</div>`;
   const bestPrice=v.packages[0]?.price||"Contact venue";
-  return `<div class="card" onclick="window.location.href='venue.html?venue=${encodeURIComponent(v.slug||String(v.id))}'">
+  return `<a class="card" href="venue.html?venue=${encodeURIComponent(v.slug||String(v.id))}" target="_blank" rel="noopener" title="${v.name} birthday parties in ${v.city}">
     <div class="card-top-bar" style="background:${c.color}"></div>
     ${catArt(v.cat)}
     <div class="card-body">
@@ -3231,7 +3616,7 @@ function card(v){
       <div><div class="card-price">${bestPrice}</div><div class="card-price-sub">Ages ${v.ages} · Max ${v.maxKids}</div></div>
       <div class="inc-icons">${fp}${bp}</div>
     </div>
-  </div>`;
+  </a>`;
 }
 
 // ── MODAL ─────────────────────────────────────────────────────────────────────
@@ -3305,5 +3690,17 @@ showLandingVenues();
 fillCollectionCounts();
 (function(){const d=document.getElementById("tcDate");if(d){const min=new Date();d.min=min.toISOString().slice(0,10);}})();
 </script>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span>Little Party Finder</span>
+      <span class="footer-sep">·</span>
+      <span>Powered by <a href="https://tinyinvites.org?utm_source=littlepartyfinder&utm_medium=footer" target="_blank" rel="noopener">Tiny Invites</a></span>
+    </div>
+    <div class="footer-cta">
+      Found your venue? <a href="https://tinyinvites.org/invite?utm_source=littlepartyfinder&utm_medium=footer_cta" target="_blank" rel="noopener">✉️ Create a matching invite at tinyinvites.org/invite</a>
+    </div>
+  </div>
+</footer>
 </body>
 </html>

@@ -219,9 +219,9 @@
 <div class="page" id="page-yes">
   <div class="card">
     <div class="brand">Tiny Invites</div>
-    <div class="ornament">🎊</div>
-    <h2>Wonderful!</h2>
-    <p class="subtitle">We're so excited to see you. Just a couple of quick details…</p>
+    <p style="text-align:center;font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold);margin-bottom:14px;">✦</p>
+    <h2>Wonderful, we can't wait!</h2>
+    <p class="subtitle">Just a few quick details and you're all set.</p>
     <div class="divider"><span></span><i>◆</i><span></span></div>
     <div class="field-group">
       <div>
@@ -319,11 +319,11 @@
       <img src="photo.png" alt="Party celebration" onerror="this.src='https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80'">
     </div>
     <div class="response-card-body" id="page-success-inner">
-      <div class="medallion"><img src="https://images.unsplash.com/photo-1698285439446-2ad560e31a17?w=400&q=80&auto=format&fit=crop" alt="Celebration"></div>
+      <div class="medallion medallion-seal"><span>✦</span></div>
       <div class="brand">Tiny Invites</div>
-      <h2>You're on the list!</h2>
+      <h2>You're all set!</h2>
       <div class="divider"><span></span><i>◆</i><span></span></div>
-      <p class="success-note" id="success-message">We look forward to seeing you — it's going to be a wonderful celebration!<br><br>Keep an eye on your inbox for any updates. See you there! 🎈</p>
+      <p class="success-note" id="success-message">We look forward to seeing you — it's going to be a wonderful celebration!<br><br>Keep an eye on your inbox for any updates from the host. See you there!</p>
       <p class="success-note" id="success-email-sent" style="display:none;margin-top:12px;font-size:0.82rem;color:var(--soft);">📬 Confirmation sent to <span id="success-email-address" style="color:var(--gold);"></span></p>
 
       <!-- Delayed nudge — appears after 20 s if email not found -->
@@ -361,12 +361,12 @@
         <div class="tally" id="tally-badge">👥 <strong id="tally-count">1</strong> <span id="tally-label">guest</span> confirmed</div>
       </div>
       <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--gold-light);">
-        <p style="font-size:0.88rem;color:var(--mid);text-align:center;margin-bottom:12px;">🎁 Not sure what to bring?</p>
+        <p style="font-size:0.88rem;color:var(--mid);text-align:center;margin-bottom:12px;">Not sure what to bring?</p>
         <a href="https://www.amazon.co.uk/s?k=children%27s+birthday+gifts&tag=tinyinvites-21"
            target="_blank" rel="noopener sponsored"
            style="display:block;text-align:center;background:var(--gold-pale);border:1px solid var(--gold-light);border-radius:12px;padding:13px 20px;font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--dark);text-decoration:none;transition:background 0.2s;"
            onmouseover="this.style.background='var(--gold-light)'" onmouseout="this.style.background='var(--gold-pale)'">
-          Browse present ideas ↗
+          Browse gift ideas ↗
         </a>
       </div>
       <p class="powered-by">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener">Tiny Invites</a> ✨</p>
@@ -404,16 +404,8 @@
 
   const counts = { children: 1, babies: 0, adults: 1 };
   function change(key, delta) {
-    const next = Math.max(0, counts[key] + delta);
-    // Keep at least one attendee in total, but don't force a phantom guest into
-    // any single category — e.g. an adult attending with no children should be
-    // able to set children to 0 as long as adults (or babies) keeps the party > 0.
-    const otherTotal =
-        (key === 'children' ? 0 : counts.children) +
-        (key === 'adults'   ? 0 : (ASK_ADULTS ? counts.adults : 0)) +
-        (key === 'babies'   ? 0 : (ASK_BABIES ? counts.babies : 0));
-    if (next === 0 && otherTotal === 0) return; // can't drop the whole party to zero
-    counts[key] = next;
+    counts[key] = Math.max(0, counts[key] + delta);
+    if ((key === 'adults' || key === 'children') && counts[key] < 1) counts[key] = 1;
     document.getElementById(key + '-val').textContent = counts[key];
   }
 
@@ -604,7 +596,7 @@
       document.getElementById('success-message').innerHTML =
         `We look forward to seeing <strong>${escapeHtml(guestName) || 'you'}</strong> — it's going to be the most wonderful party for ${escapeHtml(pd.childName || 'our little one')}!<br><br>
          <span style="font-size:0.84rem;color:var(--soft);">Confirmed: ${parts.length ? parts.join(' + ') : '1 guest'}</span><br><br>
-         See you there! 🎈`;
+         See you there!`;
 
       document.getElementById('success-email-address').textContent = guestEmail;
       document.getElementById('success-email-sent').style.display = 'block';

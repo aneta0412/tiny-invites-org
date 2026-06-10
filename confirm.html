@@ -18,26 +18,6 @@
       font-weight:300; min-height:100vh;
     }
 
-    /* ── HERO ── */
-    #hero-wrap {
-      display:none; width:100%; position:relative;
-      height:clamp(320px, 40vw, 520px); overflow:hidden;
-    }
-    #hero-img {
-      width:100%; height:100%; object-fit:cover; display:block;
-    }
-    #hero-overlay {
-      position:absolute; inset:0;
-      background:linear-gradient(to bottom, rgba(42,34,24,0.08) 0%, rgba(42,34,24,0.6) 100%);
-    }
-    #hero-title {
-      position:absolute; bottom:0; left:0; right:0;
-      padding:24px 32px;
-      font-family:"Cormorant Garamond",serif; font-size:2rem;
-      font-weight:400; color:#fff; line-height:1.15;
-    }
-    #hero-title em { font-style:italic; color:var(--gold-light); }
-
     /* ── PAGE ── */
     .page {
       max-width:500px; margin:0 auto;
@@ -181,6 +161,30 @@
       border-radius:8px;
     }
 
+    /* ── Next-steps list ── */
+    .next-steps {
+      text-align:left; margin:20px 0;
+      padding:18px 20px;
+      background:var(--gold-pale); border:1px solid var(--gold-light);
+      border-radius:12px;
+    }
+    .next-steps-title {
+      font-family:"Cormorant Garamond",serif; font-size:1.05rem;
+      font-weight:400; color:var(--dark); margin-bottom:14px;
+    }
+    .step-item {
+      font-size:0.82rem; color:var(--mid); line-height:1.65;
+      padding:8px 0; border-bottom:1px solid var(--gold-light);
+    }
+    .step-item:last-child { border-bottom:none; }
+    .step-number {
+      display:inline-block; width:20px; height:20px;
+      background:var(--dark); color:var(--cream); border-radius:50%;
+      font-size:0.62rem; text-align:center; line-height:20px;
+      margin-right:8px; flex-shrink:0; vertical-align:middle;
+    }
+    .step-item strong { color:var(--dark); font-weight:500; }
+
     /* States */
     .state { display:none; }
     .state.active { display:block; }
@@ -207,22 +211,15 @@
     }
 
     @media(max-width:520px) {
-      #hero-title { font-size:1.5rem; padding:20px; }
       .card { padding:28px 20px; }
       .response-card-body { padding:28px 24px 36px; }
+      .next-steps { padding:14px 16px; }
     }
   </style>
 </head>
 <body>
 
 <canvas id="confetti-canvas"></canvas>
-
-<!-- Hero image — shown when party has a photo -->
-<div id="hero-wrap">
-  <img id="hero-img" src="" alt="Party photo">
-  <div id="hero-overlay"></div>
-  <div id="hero-title"></div>
-</div>
 
 <div class="page" id="main-page">
 
@@ -234,7 +231,7 @@
     <p class="sub">Just a moment.</p>
   </div>
 
-  <!-- Success — full response card with hero + medallion -->
+  <!-- Success — single response card, no duplicate hero -->
   <div class="state" id="state-success" style="width:100%;max-width:500px;">
     <div class="response-card">
       <div class="response-card-hero">
@@ -250,17 +247,20 @@
             alt="Celebration">
         </div>
         <span class="brand">Tiny Invites</span>
-        <h2>Your party is live!</h2>
+        <h2 id="success-heading">Your RSVP page is live!</h2>
         <div class="divider"><span></span><i>◆</i><span></span></div>
         <p class="sub">
-          Your RSVP page is published and ready to share.<br>
-          Your dashboard link has been emailed to you.
+          Your RSVP page is now live and ready to share!<br><br>
+          We've emailed you your host page link, RSVP link and QR code so everything is easy to find whenever you need it.
         </p>
 
         <!-- QR + link -->
         <div class="qr-section">
-          <p class="qr-label">Share with your guests</p>
+          <p class="qr-label">QR code for your guests</p>
           <div id="qr-box"></div>
+          <p style="font-size:0.72rem;color:var(--mid);line-height:1.55;margin:10px 0 14px;text-align:left;">
+            Print or screenshot the QR code above and share it with your guests — on cards, WhatsApp, or however works best. The recommended print size is approximately 30 × 20 mm, slightly larger than a postage stamp, for reliable scanning.
+          </p>
           <div class="rsvp-link-pill">
             <div class="rsvp-link-label">Your RSVP link</div>
             <span id="qr-url-text"></span>
@@ -269,15 +269,44 @@
         </div>
 
         <button class="btn-copy" id="copy-btn" onclick="copyLink()">
-          📋 Copy invite link
+          Copy invite link
         </button>
 
         <a id="dash-link" href="#" target="_blank" rel="noopener" class="btn-dash">
-          📊 Go to your dashboard
+          Open your host page
         </a>
 
+        <!-- NEXT STEPS -->
+        <div class="next-steps">
+          <p class="next-steps-title">What happens next</p>
+          <div class="step-item">
+            <span class="step-number">1</span>
+            <strong>Share your invite</strong> — send the link or QR code to your guests via WhatsApp, text, email, or print it on your invitation cards.
+          </div>
+          <div class="step-item">
+            <span class="step-number">2</span>
+            <strong>RSVPs come to you</strong> — you'll get an email each time a guest responds. View all responses on your host page.
+          </div>
+          <div class="step-item">
+            <span class="step-number">3</span>
+            <strong>Try it out</strong> — feel free to test the invite yourself and play around. You can easily edit or remove test guests from your host page.
+          </div>
+          <div class="step-item">
+            <span class="step-number">4</span>
+            <strong>Automatic cutoff</strong> — <span id="cutoff-note">responses will close automatically 7 days before the party</span>, so you have time to finalise numbers.
+          </div>
+          <div class="step-item">
+            <span class="step-number">5</span>
+            <strong>Keep guests informed</strong> — need to share an update? From your host page you can message all confirmed guests at any time.
+          </div>
+        </div>
+
         <p class="save-note">
-          💌 We've emailed you the dashboard link, RSVP link and QR code — check your inbox so you always have it handy.
+          Save the email we just sent — it contains your unique host page link, RSVP link and QR code all in one place.
+        </p>
+
+        <p style="font-size:0.68rem;color:var(--soft);margin-top:16px;">
+          RSVPs made beautiful by <a href="https://tinyinvites.org" style="color:var(--gold);text-decoration:none;">Tiny Invites</a>
         </p>
       </div>
     </div>
@@ -286,9 +315,9 @@
   <!-- Already confirmed -->
   <div class="card state" id="state-already" style="max-width:500px;">
     <span class="brand">Tiny Invites</span>
-    <h1>Already confirmed</h1>
-    <p class="sub">This party is already live. Head to your dashboard to manage RSVPs and share your link.</p>
-    <a id="dash-link-already" href="#" class="btn-dash" style="margin-top:8px;">📊 Go to dashboard</a>
+    <h1>Already live</h1>
+    <p class="sub">This party is already live and accepting RSVPs. Head to your host page to manage guests and share your invite link.</p>
+    <a id="dash-link-already" href="#" class="btn-dash" style="margin-top:8px;">Open your host page</a>
   </div>
 
   <!-- Error -->
@@ -307,18 +336,6 @@
   function show(id) {
     document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-  }
-
-  function showHero(photoUrl, childName) {
-    if (!photoUrl) return;
-    const wrap = document.getElementById('hero-wrap');
-    const img  = document.getElementById('hero-img');
-    img.src = photoUrl;
-    img.onerror = () => { wrap.style.display = 'none'; };
-    document.getElementById('hero-title').innerHTML = childName
-      ? `<em>${childName}'s Party</em> is live`
-      : 'Your party is live';
-    wrap.style.display = 'block';
   }
 
   async function confirmParty() {
@@ -352,7 +369,6 @@
       const medallionImg = document.getElementById('success-medallion-img');
 
       if (data.photo_url) {
-        showHero(data.photo_url, data.child_name);
         if (heroImg)      heroImg.src      = data.photo_url;
         if (medallionImg) medallionImg.src = data.photo_url;
       } else {
@@ -360,10 +376,22 @@
         if (medallionImg) medallionImg.src = elegantMedallion;
       }
 
+      // Personalise heading
+      const heading = document.getElementById('success-heading');
+      if (data.child_name && heading) {
+        heading.textContent = data.child_name + ''s invite is live!';
+      }
+
       if (data.already) {
         document.getElementById('dash-link-already').href = dashUrl;
         show('state-already');
         return;
+      }
+
+      // ── Update cutoff note with party-specific value ────
+      if (data.rsvp_cutoff_days) {
+        const note = document.getElementById('cutoff-note');
+        if (note) note.textContent = 'responses will close automatically ' + data.rsvp_cutoff_days + ' days before the party';
       }
 
       // ── Success ───────────────────────────────────────────
@@ -394,7 +422,7 @@
       const btn = document.getElementById('copy-btn');
       btn.textContent = '✓ Copied!';
       btn.classList.add('copied');
-      setTimeout(() => { btn.innerHTML = '📋 Copy invite link'; btn.classList.remove('copied'); }, 2500);
+      setTimeout(() => { btn.textContent = 'Copy invite link'; btn.classList.remove('copied'); }, 2500);
     });
   }
 
@@ -423,7 +451,6 @@
     resize();
     window.addEventListener('resize', resize);
 
-    // Warm nude palette — champagne, gold, blush, linen, rose
     const COLOURS = ['#d9b65f','#c9a84c','#e8d5a3','#f5edda','#e6b8b0','#d7a48f','#cbb89a','#fbf4e6','#e8cfc0','#f0e2d0'];
     const r = (a, b) => a + Math.random() * (b - a);
 

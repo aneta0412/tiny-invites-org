@@ -114,7 +114,8 @@
   .photo-error { display:none; font-size:0.72rem; color:#9f1f1f; margin-top:5px; padding:6px 10px; background:#fef2f2; border-radius:6px; border-left:3px solid #e74c3c; }
 
   .other-section, .shop-section { background:var(--warm-white); }
-  .other-grid, .testimonials-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:32px; }
+  .other-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; margin-top:32px; }
+  .testimonials-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:32px; }
   .other-card, .testimonial { background:white; border:1px solid var(--gold-pale); border-radius:4px; padding:26px; position:relative; overflow:hidden; }
   .other-card::before, .testimonial::before { content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--gold); }
   .other-card-num { font-family:"Cormorant Garamond",serif; font-size:1.8rem; font-weight:300; color:var(--gold); opacity:0.4; display:block; margin-bottom:8px; }
@@ -335,16 +336,16 @@
       </div>
       <div class="action-cards">
         <div class="action-card">
-          <div class="action-card-text"><span class="action-card-num">01</span><p class="action-card-title">Get every RSVP instantly</p><p class="action-card-desc">Get names, guest count, and allergies the moment someone replies, or a simple daily summary if several guests respond.</p></div>
-          <div class="action-card-img"><img src="email-screen.png" alt="RSVP email notification" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="mock-card" style="display:none"><div class="mock-email-head"><span class="mock-dot">✉</span><span class="mock-title">Tiny Invites</span></div><p class="mock-title">Sarah is coming!</p><div class="mock-row" style="width:80%"></div><div class="mock-row" style="width:60%"></div></div></div>
+          <div class="action-card-text"><span class="action-card-num">01</span><p class="action-card-title">Fill in your party details</p><p class="action-card-desc">Add your child's name, age, venue, and a photo — a shareable invite page is ready in under two minutes.</p></div>
+          <div class="action-card-img"><div class="mock-card"><div class="mock-email-head"><span class="mock-dot">🎉</span><span class="mock-title">New invite</span></div><div style="font-size:0.6rem;color:var(--soft);text-transform:uppercase;letter-spacing:0.08em;margin:6px 0 3px;">Child's name</div><div style="height:14px;background:var(--gold-pale);border-radius:4px;margin-bottom:6px;"></div><div style="font-size:0.6rem;color:var(--soft);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">Party location</div><div style="height:14px;background:var(--gold-pale);border-radius:4px;margin-bottom:8px;"></div><div style="background:var(--dark);color:var(--cream);text-align:center;font-size:0.6rem;padding:5px 8px;border-radius:4px;">Create invite →</div></div></div>
         </div>
         <div class="action-card">
-          <div class="action-card-text"><span class="action-card-num">02</span><p class="action-card-title">See who's coming at a glance</p><p class="action-card-desc">Names, counts, and dietary needs, no spreadsheets. Available to you with a unique link.</p></div>
-          <div class="action-card-img"><img src="dashboard-screen.png" alt="Guest dashboard" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="mock-card" style="display:none"><div class="mock-stats"><div class="mock-stat"><strong>8</strong><span>Coming</span></div><div class="mock-stat declined"><strong>2</strong><span>Declined</span></div></div><div class="mock-row" style="width:100%"></div><div class="mock-row" style="width:75%"></div></div></div>
-        </div>
-        <div class="action-card">
-          <div class="action-card-text"><span class="action-card-num">03</span><p class="action-card-title">Guests RSVP in seconds</p><p class="action-card-desc">A polished mobile invitation with your photo. Ready instantly, no app or account needed.</p></div>
+          <div class="action-card-text"><span class="action-card-num">02</span><p class="action-card-title">Guests RSVP in seconds</p><p class="action-card-desc">A polished mobile invitation with your photo. Share the link or print the QR code — no app or account needed.</p></div>
           <div class="action-card-img"><img src="rsvp-guest-screen.png" alt="Guest RSVP page" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="mock-card" style="display:none"><p class="mock-invite-title">Olivia's party!</p><div class="mock-row" style="width:80%"></div><div class="mock-row" style="width:65%"></div><div class="mock-actions"><span>Yes</span><span>Can't make it</span></div></div></div>
+        </div>
+        <div class="action-card">
+          <div class="action-card-text"><span class="action-card-num">03</span><p class="action-card-title">Track every response instantly</p><p class="action-card-desc">Names, counts, and dietary needs land in your inbox the moment someone replies. No spreadsheets, no chasing.</p></div>
+          <div class="action-card-img"><img src="dashboard-screen.png" alt="Guest dashboard" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="mock-card" style="display:none"><div class="mock-stats"><div class="mock-stat"><strong>8</strong><span>Coming</span></div><div class="mock-stat declined"><strong>2</strong><span>Declined</span></div></div><div class="mock-row" style="width:100%"></div><div class="mock-row" style="width:75%"></div></div></div>
         </div>
       </div>
     </aside>
@@ -360,7 +361,7 @@
       <div class="create-top-grid">
         <div class="invite-field"><label for="ci-name">Child's name</label><input type="text" id="ci-name" placeholder="e.g. Olivia" autocomplete="off" required oninput="updatePreview()"></div>
         <div class="invite-field"><label for="ci-age">Turning age</label><input type="number" id="ci-age" placeholder="e.g. 5" min="1" max="18" inputmode="numeric" required oninput="updatePreview()"></div>
-        <div class="invite-field"><label for="ci-location">Party location</label><input type="text" id="ci-location" placeholder="e.g. Soft Play World, London" required oninput="updatePreview()"></div>
+        <div class="invite-field"><label for="ci-location" style="display:flex;justify-content:space-between;align-items:center;">Party location<a href="/partyfinder.html" style="font-family:'DM Sans',sans-serif;font-size:0.65rem;color:var(--gold);text-decoration:none;letter-spacing:0.04em;font-weight:400;" title="Browse UK party venues">Need a venue? →</a></label><input type="text" id="ci-location" placeholder="e.g. Soft Play World, London" required oninput="updatePreview()"></div>
         <div class="invite-field"><span class="field-label">Preview</span><div class="invite-preview" id="ci-preview" aria-live="polite">Your invitation preview will appear here as you type.</div></div>
       </div>
       <div class="create-bottom-grid">
@@ -368,9 +369,9 @@
           <label for="photo-file-input">Party photo <span style="color:var(--soft);font-weight:300;">optional</span></label>
           <input type="hidden" id="ci-photo-url">
           <div id="photo-frame" style="width:100%;aspect-ratio:3/2;border:1.5px dashed var(--gold-light);border-radius:10px;background:var(--cream);overflow:hidden;position:relative;cursor:pointer;transition:border-color 0.2s;"
-               ondragover="event.preventDefault();this.style.borderColor=’var(--gold)’"
-               ondragleave="this.style.borderColor=’’"
-               ondrop="event.preventDefault();this.style.borderColor=’’;const f=event.dataTransfer.files[0];if(f&&f.type.startsWith(‘image/’))readAndUploadPhoto(f);else showPhotoError(‘Please choose an image file.’)">
+               ondragover="event.preventDefault();this.style.borderColor='var(--gold)'"
+               ondragleave="this.style.borderColor=''"
+               ondrop="event.preventDefault();this.style.borderColor='';const f=event.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))readAndUploadPhoto(f);else showPhotoError('Please choose an image file.')">
             <!-- Empty state -->
             <div id="photo-empty" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;pointer-events:none;">
               <span style="font-size:1.6rem;">📸</span>
@@ -393,8 +394,8 @@
             </div>
             <!-- Remove button -->
             <button id="photo-remove-btn" onclick="removePhoto()" type="button"
-                    style="display:none;position:absolute;top:10px;right:10px;background:rgba(42,34,24,0.7);color:var(--cream);border:none;border-radius:6px;padding:5px 11px;font-size:0.7rem;font-family:’DM Sans’,sans-serif;cursor:pointer;transition:background 0.2s;"
-                    onmouseover="this.style.background=’rgba(42,34,24,0.95)’" onmouseout="this.style.background=’rgba(42,34,24,0.7)’">
+                    style="display:none;position:absolute;top:10px;right:10px;background:rgba(42,34,24,0.7);color:var(--cream);border:none;border-radius:6px;padding:5px 11px;font-size:0.7rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background 0.2s;"
+                    onmouseover="this.style.background='rgba(42,34,24,0.95)'" onmouseout="this.style.background='rgba(42,34,24,0.7)'">
               Remove ✕
             </button>
           </div>
@@ -403,8 +404,26 @@
         <div class="invite-field"><label for="ci-note">Special note for guests <span style="color:var(--soft);font-weight:300;">optional</span></label><textarea id="ci-note" placeholder="e.g. Parking on the left, no nut products please." rows="4"></textarea></div>
       </div>
       <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" id="ci-honeypot">
-      <button class="invite-submit" type="button" onclick="generateInvite()" id="ci-generate-btn">See my unique invite</button>      <p class="invite-note">No sign-up required. Free, always. You'll confirm before it goes live.</p>
+      <button class="invite-submit" type="button" onclick="generateInvite()" id="ci-generate-btn">See my unique invite</button>
+      <p class="invite-note">No sign-up required. Free, always. You'll confirm before it goes live.</p>
     </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="venue-section" id="party-finder" style="background:var(--warm-white);">
+  <div class="venue-grid">
+    <div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;"><span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">02</span><p class="section-label" style="margin:0;">UK Party Finder</p></div>
+      <h2 style="margin-bottom:8px;">Find the <em>perfect venue</em> near you</h2>
+      <p class="section-sub">Soft play, gymnastics, swimming, farms, museums and private clubs &mdash; over 100 verified venues with real packages and real prices, sorted by distance from your postcode.</p>
+      <a href="/partyfinder.html" class="btn-primary">Open the Party Finder &rarr;</a>
+    </div>
+    <a href="/partyfinder.html" class="venue-img" style="display:block;aspect-ratio:16/9;" aria-label="Open the Party Finder">
+      <img src="partyfinder-screen.png" alt="Party Finder &mdash; search UK party venues by postcode" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="venue-fallback"><span>&#128205; Search 100+ UK venues by postcode &mdash; soft play, swimming, farms, museums &amp; more.</span></div>
+    </a>
   </div>
 </section>
 
@@ -416,15 +435,14 @@
     <h2>Everything else <em>your party needs</em></h2>
     <p class="section-sub" style="max-width:none;">Everything else your party needs: venues, designs, printing, and supplies, all in one place.</p>
     <div class="other-grid">
-      <div class="other-card"><span class="other-card-num">01</span><p class="other-card-title">Find a Party Venue</p><p>Browse soft plays, gymnastics centres, trampoline parks, zoos, and activity venues near you. Filter by type and location, then book directly.</p><a href="/partyfinder.html">Find a venue near me →</a></div>
-      <div class="other-card"><span class="other-card-num">02</span><p class="other-card-title">Pick a Design &amp; Print</p><p>Choose from free ready-made invitation designs or generate a unique one with our AI prompt. Then order professionally printed cards.</p><div style="display:flex;flex-direction:column;gap:8px;"><a href="#designs">Browse invitation designs →</a><a href="#print" style="background:transparent;color:var(--dark);border:1px solid var(--gold-light);">Browse print services →</a></div></div>
-      <div class="other-card"><span class="other-card-num">03</span><p class="other-card-title">Browse the Party Shop</p><p>Balloons, tableware, decorations, and gifts, hand-picked across every theme: jungle, unicorn, superhero, princess, dinosaur and more.</p><a href="/shop.html">Browse party supplies →</a></div>
+      <div class="other-card"><span class="other-card-num">01</span><p class="other-card-title">Pick a Design &amp; Print</p><p>Choose from free ready-made invitation designs or generate a unique one with our AI prompt. Then order professionally printed cards.</p><div style="display:flex;flex-direction:column;gap:8px;"><a href="#designs">Browse invitation designs →</a><a href="#print" style="background:transparent;color:var(--dark);border:1px solid var(--gold-light);">Browse print services →</a></div></div>
+      <div class="other-card"><span class="other-card-num">02</span><p class="other-card-title">Browse the Party Shop</p><p>Balloons, tableware, decorations, and gifts, hand-picked across every theme: jungle, unicorn, superhero, princess, dinosaur and more.</p><a href="/shop.html">Browse party supplies →</a></div>
     </div>
   </div>
 </section>
 
 <section class="designs" id="designs">
-  <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;"><span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">02</span><p class="section-label" style="margin:0;">Choose your design</p></div>
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;"><span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">03</span><p class="section-label" style="margin:0;">Choose your design</p></div>
   <h2 style="margin-bottom:8px;">Pick a free invitation design <em>or create your own</em></h2>
   <p class="section-sub" style="max-width:none;">Browse ready-made designs or use the AI prompt generator to create something unique. Every design includes a QR code space ready for printing.</p>
   <div class="tiles-grid">
@@ -457,7 +475,7 @@
 </section>
 
 <section class="print-section" id="print">
-  <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;"><span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">03</span><p class="section-label" style="margin:0;">UK Print Services</p></div>
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;"><span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">04</span><p class="section-label" style="margin:0;">UK Print Services</p></div>
   <h2 style="margin-bottom:8px;">Printed invitations with your <em>QR code.</em></h2>
   <p class="section-sub" style="max-width:none;color:rgba(250,246,239,0.7);">Order beautifully printed birthday invitations with envelopes. Add your QR code so guests RSVP instantly.</p>
   <div class="print-grid">
@@ -469,7 +487,7 @@
 <section class="shop-section" id="shop">
   <div style="max-width:1280px;margin:0 auto;">
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;">
-      <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">04</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);opacity:0.4;line-height:1;">05</span>
       <p class="section-label" style="margin:0;">Party Shop &amp; Gifts</p>
     </div>
     <h2 style="margin-bottom:8px;">Supplies &amp; gifts for the <em>perfect party.</em></h2>

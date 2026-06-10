@@ -272,6 +272,60 @@ a.card{text-decoration:none;color:inherit}
 .footer-cta{font-size:12px;color:rgba(255,255,255,.4)}
 .footer-cta a{color:var(--gold);text-decoration:none;font-weight:500}
 .footer-cta a:hover{text-decoration:underline}
+/* ── PHOTO MARQUEE STRIP ── */
+.photo-strip-wrap{
+  position:relative;overflow:hidden;
+  background:var(--cream);
+  padding:18px 0;
+  /* subtle playful tilt */
+  transform:rotate(-1.2deg) scale(1.03);
+  margin:-6px -2% 0;
+}
+.photo-strip-wrap::before,
+.photo-strip-wrap::after{
+  content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;
+}
+.photo-strip-wrap::before{left:0;background:linear-gradient(90deg,var(--cream) 0%,transparent 100%)}
+.photo-strip-wrap::after{right:0;background:linear-gradient(270deg,var(--cream) 0%,transparent 100%)}
+
+.photo-strip{
+  display:flex;gap:12px;width:max-content;
+}
+.photo-strip.row1{animation:marqueeL 35s linear infinite}
+.photo-strip.row2{animation:marqueeR 40s linear infinite;margin-top:12px}
+
+.photo-strip-wrap:hover .photo-strip{animation-play-state:paused}
+
+@keyframes marqueeL{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+@keyframes marqueeR{
+  0%{transform:translateX(-50%)}
+  100%{transform:translateX(0)}
+}
+
+.photo-strip img{
+  display:block;width:160px;height:110px;object-fit:cover;
+  border-radius:8px;
+  flex-shrink:0;
+  /* warm tint overlay via filter to match gold/cream palette */
+  filter:saturate(.85) brightness(1.02) sepia(.08);
+  transition:filter .3s,transform .3s;
+  box-shadow:0 2px 12px rgba(42,34,24,.1);
+}
+.photo-strip img:hover{
+  filter:saturate(1) brightness(1.05) sepia(0);
+  transform:scale(1.05);
+  z-index:3;
+}
+
+@media(max-width:640px){
+  .photo-strip img{width:120px;height:82px}
+  .photo-strip-wrap{padding:12px 0}
+  .photo-strip{gap:8px}
+  .photo-strip.row2{margin-top:8px}
+}
 </style>
 </head>
 <body>
@@ -328,6 +382,51 @@ a.card{text-decoration:none;color:inherit}
     </div>
   </div>
 </header>
+
+<!-- ── PHOTO MARQUEE ── -->
+<div class="photo-strip-wrap" aria-hidden="true">
+  <!-- ROW 1 — scrolls left. Duplicate the set for seamless loop -->
+  <div class="photo-strip row1">
+    <!-- SET A (originals) — replace src with your party photos -->
+    <img src="https://placehold.co/320x220/FFECD2/c9a84c?text=🎈+Photo+1" alt="">
+    <img src="https://placehold.co/320x220/FFE0F0/d44a8a?text=🎂+Photo+2" alt="">
+    <img src="https://placehold.co/320x220/E0F0FF/3a6fa8?text=🎁+Photo+3" alt="">
+    <img src="https://placehold.co/320x220/E8FFE0/5a8f3c?text=🎉+Photo+4" alt="">
+    <img src="https://placehold.co/320x220/FFF0E0/c9a84c?text=🧁+Photo+5" alt="">
+    <img src="https://placehold.co/320x220/F0E0FF/8a5a8f?text=🎊+Photo+6" alt="">
+    <img src="https://placehold.co/320x220/FFECD2/c9a84c?text=🎈+Photo+7" alt="">
+    <img src="https://placehold.co/320x220/FFE0F0/d44a8a?text=🎂+Photo+8" alt="">
+    <!-- SET B (duplicates for seamless loop) -->
+    <img src="https://placehold.co/320x220/FFECD2/c9a84c?text=🎈+Photo+1" alt="">
+    <img src="https://placehold.co/320x220/FFE0F0/d44a8a?text=🎂+Photo+2" alt="">
+    <img src="https://placehold.co/320x220/E0F0FF/3a6fa8?text=🎁+Photo+3" alt="">
+    <img src="https://placehold.co/320x220/E8FFE0/5a8f3c?text=🎉+Photo+4" alt="">
+    <img src="https://placehold.co/320x220/FFF0E0/c9a84c?text=🧁+Photo+5" alt="">
+    <img src="https://placehold.co/320x220/F0E0FF/8a5a8f?text=🎊+Photo+6" alt="">
+    <img src="https://placehold.co/320x220/FFECD2/c9a84c?text=🎈+Photo+7" alt="">
+    <img src="https://placehold.co/320x220/FFE0F0/d44a8a?text=🎂+Photo+8" alt="">
+  </div>
+  <!-- ROW 2 — scrolls right (opposite direction) -->
+  <div class="photo-strip row2">
+    <img src="https://placehold.co/320x220/E8FFE0/5a8f3c?text=🎉+Photo+A" alt="">
+    <img src="https://placehold.co/320x220/FFF0E0/c9a84c?text=🧁+Photo+B" alt="">
+    <img src="https://placehold.co/320x220/FFECD2/c9a84c?text=🎈+Photo+C" alt="">
+    <img src="https://placehold.co/320x220/F0E0FF/8a5a8f?text=🎊+Photo+D" alt="">
+    <img src="https://placehold.co/320x220/FFE0F0/d44a8a?text=🎂+Photo+E" alt="">
+    <img src="https://placehold.co/320x220/E0F0FF/3a6fa8?text=🎁+Photo+F" alt="">
+    <img src="https://placehold.co/320x220/FFECD2/c9a84c?text=🎈+Photo+G" alt="">
+    <img src="https://placehold.co/320x220/E8FFE0/5a8f3c?text=🎉+Photo+H" alt="">
+    <!-- duplicate for loop -->
+    <img src="https://placehold.co/320x220/E8FFE0/5a8f3c?text=🎉+Photo+A" alt="">
+    <img src="https://placehold.co/320x220/FFF0E0/c9a84c?text=🧁+Photo+B" alt="">
+    <img src="https://placehold.co/320x220/FFECD2/c9a84c?text=🎈+Photo+C" alt="">
+    <img src="https://placehold.co/320x220/F0E0FF/8a5a8f?text=🎊+Photo+D" alt="">
+    <img src="https://placehold.co/320x220/FFE0F0/d44a8a?text=🎂+Photo+E" alt="">
+    <img src="https://placehold.co/320x220/E0F0FF/3a6fa8?text=🎁+Photo+F" alt="">
+    <img src="https://placehold.co/320x220/FFECD2/c9a84c?text=🎈+Photo+G" alt="">
+    <img src="https://placehold.co/320x220/E8FFE0/5a8f3c?text=🎉+Photo+H" alt="">
+  </div>
+</div>
 
 <main class="main">
   <div id="filterBar" class="filter-bar" style="display:none">

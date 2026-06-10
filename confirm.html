@@ -285,24 +285,36 @@
           </div>
           <div class="step-item">
             <span class="step-number">2</span>
-            <strong>RSVPs come to you</strong> — you'll get an email each time a guest responds. View all responses on your host page.
+            <strong>Responses arrive automatically</strong> — every RSVP lands in your inbox and on your Party Page. If more than 15 responses come in, they'll be grouped into a daily summary sent after 8pm so your inbox stays tidy.
           </div>
           <div class="step-item">
             <span class="step-number">3</span>
-            <strong>Try it out</strong> — feel free to test the invite yourself and play around. You can easily edit or remove test guests from your host page.
+            <strong>Have a play</strong> — try the invite yourself. You can edit or remove any response from your Party Page and it disappears from the system.
           </div>
           <div class="step-item">
             <span class="step-number">4</span>
-            <strong>Automatic cutoff</strong> — <span id="cutoff-note">responses will close automatically 7 days before the party</span>, so you have time to finalise numbers.
+            <strong>Automatic cutoff</strong> — responses will close automatically <strong><span id="cutoff-note">7 days before the party</span></strong>, as you selected. This setting can't be changed once invitations have been sent.
           </div>
           <div class="step-item">
             <span class="step-number">5</span>
-            <strong>Keep guests informed</strong> — need to share an update? From your host page you can message all confirmed guests at any time.
+            <strong>Guests get a reminder</strong> — we automatically email all confirmed guests 3 days before the party. Tip: add a note to your Party Page (e.g. parking details, what to bring) and it'll be included in the reminder — no need to send a separate message.
+          </div>
+          <div class="step-item">
+            <span class="step-number">6</span>
+            <strong>Message your guests</strong> — need to share an urgent update? You can message all confirmed guests from your Party Page at any time.
+          </div>
+          <div class="step-item">
+            <span class="step-number">7</span>
+            <strong>Emergency contact</strong> — if you urgently need to reach guests, you can export the full guest list with email addresses from your Party Page.
+          </div>
+          <div class="step-item">
+            <span class="step-number">8</span>
+            <strong>Photo and date are locked</strong> — once live, these can't be changed. If you need to update them, delete the party and create a new one.
           </div>
         </div>
 
         <p class="save-note">
-          Save the email we just sent — it contains your unique host page link, RSVP link and QR code all in one place.
+          Save the email we just sent — it contains your unique Party Page link, RSVP link and QR code all in one place.
         </p>
 
         <p style="font-size:0.68rem;color:var(--soft);margin-top:16px;">
@@ -316,8 +328,8 @@
   <div class="card state" id="state-already" style="max-width:500px;">
     <span class="brand">Tiny Invites</span>
     <h1>Already live</h1>
-    <p class="sub">This party is already live and accepting RSVPs. Head to your host page to manage guests and share your invite link.</p>
-    <a id="dash-link-already" href="#" class="btn-dash" style="margin-top:8px;">Open your host page</a>
+    <p class="sub">This party is already live and accepting RSVPs. Head to your Party Page to manage guests and share your invite link.</p>
+    <a id="dash-link-already" href="#" class="btn-dash" style="margin-top:8px;">Open your Party Page</a>
   </div>
 
   <!-- Error -->
@@ -391,7 +403,7 @@
       // ── Update cutoff note with party-specific value ────
       if (data.rsvp_cutoff_days) {
         const note = document.getElementById('cutoff-note');
-        if (note) note.textContent = 'responses will close automatically ' + data.rsvp_cutoff_days + ' days before the party';
+        if (note) note.textContent = data.rsvp_cutoff_days + ' days before the party';
       }
 
       // ── Success ───────────────────────────────────────────

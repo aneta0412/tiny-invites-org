@@ -150,6 +150,20 @@
     h1 { font-size:2rem; }
     .response-card-body { padding:28px 24px 36px; }
   }
+
+  /* ── GIFT IDEAS SECTION ── */
+  .gift-section { margin-top:28px; padding-top:24px; border-top:1px solid var(--gold-light); }
+  .gift-section-label { font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--gold); text-align:center; margin-bottom:6px; }
+  .gift-section-title { font-family:"Cormorant Garamond",serif; font-size:1.15rem; font-weight:400; color:var(--dark); text-align:center; margin-bottom:14px; line-height:1.3; }
+  .gift-cards { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px; }
+  .gift-card { display:block; text-decoration:none; background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:10px; padding:12px 10px; text-align:center; transition:background 0.18s, border-color 0.18s; }
+  .gift-card:hover { background:var(--gold-light); border-color:var(--gold); }
+  .gift-card-emoji { font-size:1.4rem; display:block; margin-bottom:5px; }
+  .gift-card-text { font-size:0.73rem; color:var(--dark); font-weight:400; line-height:1.35; display:block; }
+  .gift-browse-all { display:block; text-align:center; font-size:0.78rem; color:var(--soft); text-decoration:none; margin-top:8px; padding:8px; border-radius:8px; border:1px solid var(--gold-light); transition:all 0.15s; }
+  .gift-browse-all:hover { background:var(--gold-pale); color:var(--mid); }
+  .gift-aff-note { font-size:0.68rem; color:var(--soft); text-align:center; margin-top:8px; opacity:0.7; }
+  @media(max-width:380px) { .gift-cards { grid-template-columns:1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -360,15 +374,7 @@
       <div style="text-align:center;">
         <div class="tally" id="tally-badge">👥 <strong id="tally-count">1</strong> <span id="tally-label">guest</span> confirmed</div>
       </div>
-      <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--gold-light);">
-        <p style="font-size:0.88rem;color:var(--mid);text-align:center;margin-bottom:12px;">Not sure what to bring?</p>
-        <a href="https://www.amazon.co.uk/s?k=children%27s+birthday+gifts&tag=tinyinvites-21"
-           target="_blank" rel="noopener sponsored"
-           style="display:block;text-align:center;background:var(--gold-pale);border:1px solid var(--gold-light);border-radius:12px;padding:13px 20px;font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--dark);text-decoration:none;transition:background 0.2s;"
-           onmouseover="this.style.background='var(--gold-light)'" onmouseout="this.style.background='var(--gold-pale)'">
-          Browse gift ideas ↗
-        </a>
-      </div>
+      <div id="gift-ideas-section" class="gift-section" style="display:none;"></div>
       <p class="powered-by">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener">Tiny Invites</a> ✨</p>
     </div>
   </div>
@@ -614,6 +620,8 @@
 
       showPage('page-success');
       launchConfetti();
+      // Populate age-appropriate gift ideas
+      { const pd = window._partyData || {}; buildGiftSection(pd.age, pd.childName); }
 
       // Show "didn't get it?" nudge after 5 s
       _guestDidntReceiveTimer = setTimeout(() => {
@@ -899,6 +907,140 @@
     }
     draw();
   }
+
+  // ── GIFT IDEAS ENGINE ─────────────────────────────────────────────────────
+  // Age brackets: 1 (baby/first), 2-3 (young toddler), 4-5 (preschool),
+  // 6-8 (early school), 9-11 (older), 12+ (tween)
+  const TAG = 'tinyinvites-21';
+
+  function parseAge(raw) {
+    if (!raw && raw !== 0) return NaN;
+    // Handle strings like "3rd", "2nd", "1st", "first", "two" as well as plain numbers
+    const str = String(raw).toLowerCase().trim();
+    const ordinals = {first:1,second:2,third:3,fourth:4,fifth:5,sixth:6,seventh:7,eighth:8,ninth:9,tenth:10};
+    if (ordinals[str]) return ordinals[str];
+    const num = parseInt(str.replace(/[^\d]/g, ''), 10);
+    return isNaN(num) ? NaN : num;
+  }
+
+  function getGiftConfig(rawAge, childName) {
+    const age = parseAge(rawAge);
+    const name = childName && childName !== 'our little one' ? childName : null;
+    const who  = name ? `${name}'s` : 'their';
+
+    const BASE = 'https://www.amazon.co.uk/s?';
+    const p = (k) => BASE + new URLSearchParams({k, tag: TAG}).toString();
+
+    if (isNaN(age) || age <= 0) {
+      return {
+        label: 'Gift ideas', headline: 'Not sure what to bring?',
+        cards: [
+          { emoji:'🎁', text:"Browse children's gifts",    url: p("children birthday gifts uk") },
+          { emoji:'📚', text:"Books & stories",            url: p("children picture books birthday gift") },
+          { emoji:'🎨', text:"Creative play",              url: p("creative play sets children gift") },
+        ],
+        all: p("children birthday gift ideas uk"),
+      };
+    }
+
+    if (age === 1) {
+      return {
+        label: 'First birthday gift ideas 🎀',
+        headline: `Perfect gifts as ${who} little one turns one`,
+        cards: [
+          { emoji:'🧸', text:'Soft & sensory toys',        url: p("sensory soft toys baby 1 year old gift") },
+          { emoji:'🛁', text:'Bath time fun',              url: p("bath toys baby 1 year old gift uk") },
+          { emoji:'📚', text:'First board books',          url: p("board books baby 1 year old first birthday") },
+        ],
+        all: p("best gifts baby turning 1 year old uk"),
+      };
+    }
+
+    if (age >= 2 && age <= 3) {
+      return {
+        label: 'Toddler gift ideas 🎠',
+        headline: `Great gifts for ${who} toddler (ages 2–3)`,
+        cards: [
+          { emoji:'🚗', text:'Ride-ons & wheels',          url: p("ride on toy toddler 2 3 years gift uk") },
+          { emoji:'🏡', text:'Imaginative play',           url: p("imaginative play set toddler 2 3 years gift") },
+          { emoji:'🎵', text:'Music & movement',           url: p("musical toys toddler 2 3 years birthday gift") },
+        ],
+        all: p("best birthday gifts toddler 2 3 years uk"),
+      };
+    }
+
+    if (age >= 4 && age <= 5) {
+      return {
+        label: 'Pre-school gift ideas 🎨',
+        headline: `Gift ideas for ages 4–5`,
+        cards: [
+          { emoji:'🎨', text:'Arts & crafts',              url: p("art craft set children 4 5 years gift uk") },
+          { emoji:'🏃', text:'Outdoor play',               url: p("outdoor toys children 4 5 years birthday gift") },
+          { emoji:'🎲', text:'First board games',          url: p("board games for children 4 5 years gift uk") },
+        ],
+        all: p("best birthday gifts children 4 5 years uk"),
+      };
+    }
+
+    if (age >= 6 && age <= 8) {
+      return {
+        label: 'Gift ideas for ages 6–8 🌟',
+        headline: `Fun gifts for a ${age} year old`,
+        cards: [
+          { emoji:'🧩', text:'Games & puzzles',            url: p("games puzzles children 6 7 8 years birthday gift uk") },
+          { emoji:'🔬', text:'Science & discovery',        url: p("science kits children 6 7 8 years birthday gift") },
+          { emoji:'📚', text:'Chapter books',              url: p("chapter books children 6 7 8 years birthday gift uk") },
+        ],
+        all: p("best birthday gifts children 6 7 8 years uk"),
+      };
+    }
+
+    if (age >= 9 && age <= 11) {
+      return {
+        label: 'Gift ideas for ages 9–11 🎮',
+        headline: `Ideas for ${who} ${age}th birthday`,
+        cards: [
+          { emoji:'🎮', text:'Games & tech toys',          url: p("games tech toys children 9 10 11 years birthday gift") },
+          { emoji:'🏅', text:'Sports & outdoor',           url: p("sports outdoor gift children 9 10 11 years uk") },
+          { emoji:'🎨', text:'Creative kits',              url: p("creative hobby kits children 9 10 11 years gift") },
+        ],
+        all: p("best birthday gifts children 9 10 11 years uk"),
+      };
+    }
+
+    // 12+
+    return {
+      label: `Gift ideas for a ${age} year old 🎁`,
+      headline: `Thoughtful gifts for older kids`,
+      cards: [
+        { emoji:'🎧', text:'Tech & gadgets',               url: p(`tech gadgets gift children ${age} years uk`) },
+        { emoji:'📚', text:'Books & learning',             url: p(`books learning gift children ${age} years uk`) },
+        { emoji:'🎯', text:'Games & experiences',          url: p(`games gift children ${age} years uk`) },
+      ],
+      all: p(`best birthday gifts children ${age} years uk`),
+    };
+  }
+
+  function buildGiftSection(rawAge, childName) {
+    const el = document.getElementById('gift-ideas-section');
+    if (!el) return;
+    const cfg = getGiftConfig(rawAge, childName);
+    const cards = cfg.cards.map(c =>
+      `<a href="${c.url}" target="_blank" rel="noopener sponsored" class="gift-card">
+        <span class="gift-card-emoji">${c.emoji}</span>
+        <span class="gift-card-text">${c.text}</span>
+       </a>`
+    ).join('');
+    el.innerHTML = `
+      <p class="gift-section-label">${cfg.label}</p>
+      <p class="gift-section-title">${cfg.headline}</p>
+      <div class="gift-cards">${cards}</div>
+      <a href="${cfg.all}" target="_blank" rel="noopener sponsored" class="gift-browse-all">Browse all gift ideas on Amazon ↗</a>
+      <p class="gift-aff-note">Amazon affiliate links — we may earn a small commission at no cost to you.</p>
+    `;
+    el.style.display = 'block';
+  }
+
 </script>
 </body>
 </html>

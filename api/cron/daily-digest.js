@@ -15,14 +15,17 @@ export default async function handler(req, res) {
 
   try {
 
-    // Find all responses from today (UTC)
+    // Find all responses from today (UTC midnight) up to now
     const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
+    todayStart.setUTCHours(0, 0, 0, 0);
+
+    const now = new Date(); // upper bound = moment cron fires
 
     const { data: responses, error } = await supabase
       .from('guest_responses')
       .select('*, parties(*)')
-      .gte('created_at', todayStart.toISOString());
+      .gte('created_at', todayStart.toISOString())
+      .lte('created_at', now.toISOString());
 
     if (error) throw error;
     if (!responses || responses.length === 0) {

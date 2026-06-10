@@ -379,7 +379,7 @@
       // Personalise heading
       const heading = document.getElementById('success-heading');
       if (data.child_name && heading) {
-        heading.textContent = data.child_name + ''s invite is live!';
+        heading.textContent = `${data.child_name}’s invite is live!`;
       }
 
       if (data.already) {

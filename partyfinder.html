@@ -14,6 +14,8 @@
 </script>
 <title>Little Party Finder – UK Toddler Birthday Venues</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -74,6 +76,62 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 .fp.on[data-c="all"]{background:var(--ink);border-color:var(--ink);color:var(--cream)}
 .fp.on[data-c="soft"]{background:var(--gold);border-color:var(--gold);color:var(--cream)}
 .fp.on[data-c="gym"]{background:var(--ink2);border-color:var(--ink2);color:var(--cream)}
+.fp.on[data-c="bounce"]{background:#d44a8a;border-color:#d44a8a;color:var(--cream)}
+.fp.on[data-c="mobile"]{background:#c0392b;border-color:#c0392b;color:var(--cream)}
+
+/* ── VIEW TOGGLE + MAP ── */
+.view-toggle{margin-left:auto;display:flex;gap:6px}
+.vt{padding:7px 16px;border-radius:2px;border:1px solid var(--line);font-size:12px;font-weight:400;letter-spacing:.05em;cursor:pointer;background:var(--cream);color:var(--ink2);transition:all .15s}
+.vt.on{background:var(--ink);border-color:var(--ink);color:var(--cream)}
+#mapWrap{margin-bottom:24px}
+#map{height:540px;border-radius:6px;border:1px solid var(--line);box-shadow:var(--shadow);z-index:1}
+@media(max-width:640px){#map{height:420px}}
+.map-pop{font-family:'DM Sans',sans-serif;min-width:180px}
+.map-pop .mp-name{font-weight:600;color:var(--ink);font-size:14px;margin-bottom:2px}
+.map-pop .mp-meta{font-size:12px;color:var(--ink2);margin-bottom:4px}
+.map-pop a{color:var(--gold);font-weight:600;font-size:12px;text-decoration:none}
+
+/* ── CARD ART ── */
+.card-art{display:block;width:100%;height:88px;border-bottom:1px solid var(--line)}
+
+/* ── VIBE FILTERS ── */
+.fb-sep{width:1px;height:18px;background:var(--pop2);margin:0 6px}
+.vp{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:2px;border:1px dashed var(--pop2);font-size:12px;font-weight:400;letter-spacing:.05em;cursor:pointer;background:var(--cream);color:var(--ink2);transition:all .15s;white-space:nowrap}
+.vp.on{background:var(--gold);border:1px solid var(--gold);color:var(--cream)}
+
+/* ── TINY INVITES BRIDGE ── */
+.invite-banner{display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:wrap;background:var(--white);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:6px;padding:14px 20px;margin-bottom:24px;box-shadow:var(--shadow)}
+.ib-copy{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;color:var(--ink2);font-size:13px;font-weight:300}
+.ib-kicker{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.ib-btn{padding:9px 18px;background:var(--ink);color:var(--cream);border-radius:3px;font-size:12px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;white-space:nowrap;transition:background .2s}
+.ib-btn:hover{background:var(--gold)}
+.modal-invite{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:var(--gold-pale);border:1px solid var(--pop2);border-radius:6px;padding:14px 18px;margin:18px 0 4px;font-size:13px;color:var(--ink2);font-weight:300}
+.modal-invite strong{color:var(--ink);font-weight:600}
+.modal-invite a{color:var(--gold);font-weight:600;text-decoration:none;white-space:nowrap}
+
+/* ── CURATED COLLECTIONS ── */
+.collections{margin:44px auto 0;max-width:860px;text-align:left}
+.col-title{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:16px}
+.col-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.col-card{background:var(--white);border:1px solid var(--line);border-radius:6px;padding:18px 18px 16px;cursor:pointer;text-align:left;transition:transform .2s,box-shadow .2s;font-family:'DM Sans',sans-serif}
+.col-card:hover{transform:translateY(-3px);box-shadow:var(--shadow2)}
+.cc-emoji{font-size:22px;display:block;margin-bottom:8px}
+.cc-name{font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:var(--ink);line-height:1.2;margin-bottom:5px}
+.cc-sub{font-size:12px;color:var(--muted);font-weight:300;line-height:1.5;margin-bottom:8px}
+.cc-count{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+
+/* ── TIMELINE CALCULATOR ── */
+.timeline-calc{margin:36px auto 0;max-width:560px;background:var(--white);border:1px solid var(--line);border-radius:6px;padding:22px 26px;box-shadow:var(--shadow);text-align:left}
+.tc-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--ink);margin-bottom:4px}
+.tc-sub{font-size:12px;color:var(--muted);font-weight:300;margin-bottom:14px}
+.tc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tc-row label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tc-row input{padding:9px 14px;border:1px solid var(--line);border-radius:3px;background:var(--cream);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);outline:none}
+.tc-row input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
+.tc-out{margin-top:14px}
+.tc-line{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid var(--line);font-size:13px;color:var(--ink2);font-weight:300}
+.tc-line strong{color:var(--ink);font-weight:600;white-space:nowrap}
+.tc-cta{display:inline-block;margin-top:12px;color:var(--gold);font-weight:600;font-size:13px;text-decoration:none}
 .fp.on[data-c="swim"]{background:#7a8fa8;border-color:#7a8fa8;color:var(--cream)}
 .fp.on[data-c="farm"]{background:#7a8f5a;border-color:#7a8f5a;color:var(--cream)}
 .fp.on[data-c="club"]{background:var(--ink);border-color:var(--ink);color:var(--cream)}
@@ -207,10 +265,10 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
     <div>
       <div class="hdr-pill"><span></span>UK Toddler Party Finder</div>
       <h1 class="hero">Find the <em>perfect</em><br>birthday party venue</h1>
-      <p class="hero-sub">Soft play · Gymnastics · Swimming · Farms · Museums · Private clubs<br>Real packages, real prices, sorted by distance from you.</p>
+      <p class="hero-sub">Soft play · Trampolines · Gymnastics · Swimming · Farms · Museums · Parties that come to you<br>Real packages, real prices, sorted by distance from you.</p>
       <div class="stat-row">
-        <div class="stat"><strong>109</strong> verified venues</div>
-        <div class="stat"><strong>7</strong> activity types</div>
+        <div class="stat"><strong>124</strong> verified venues</div>
+        <div class="stat"><strong>9</strong> activity types</div>
         <div class="stat"><strong>UK-wide</strong> coverage</div>
       </div>
     </div>
@@ -238,6 +296,12 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
           <button class="qc" onclick="qs('LS1 1BA')">Leeds</button>
           <button class="qc" onclick="qs('BS1 1AA')">Bristol</button>
           <button class="qc" onclick="qs('G1 1AB')">Glasgow</button>
+          <button class="qc" onclick="qs('CF10 1AA')">Cardiff</button>
+          <button class="qc" onclick="qs('EH1 1AA')">Edinburgh</button>
+          <button class="qc" onclick="qs('NE1 1AA')">Newcastle</button>
+          <button class="qc" onclick="qs('S1 1AA')">Sheffield</button>
+          <button class="qc" onclick="qs('SO14 1AA')">Southampton</button>
+          <button class="qc" onclick="qs('BT1 1AA')">Belfast</button>
         </div>
       </div>
     </div>
@@ -250,15 +314,31 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
     <button class="fp on" data-c="all" onclick="setF(this)">All</button>
     <button class="fp" data-c="soft" onclick="setF(this)"><span class="dot" style="background:#ff6b47"></span>Soft Play</button>
     <button class="fp" data-c="gym" onclick="setF(this)"><span class="dot" style="background:#2d8f8b"></span>Gymnastics</button>
+    <button class="fp" data-c="bounce" onclick="setF(this)"><span class="dot" style="background:#d44a8a"></span>Trampoline & Bounce</button>
     <button class="fp" data-c="swim" onclick="setF(this)"><span class="dot" style="background:#3a6fa8"></span>Swimming</button>
     <button class="fp" data-c="farm" onclick="setF(this)"><span class="dot" style="background:#5a8f3c"></span>Farm / Outdoor</button>
     <button class="fp" data-c="club" onclick="setF(this)"><span class="dot" style="background:#7c3aed"></span>Health Club</button>
     <button class="fp" data-c="unique" onclick="setF(this)"><span class="dot" style="background:#d4a843"></span>Unique</button>
     <button class="fp" data-c="leisure" onclick="setF(this)"><span class="dot" style="background:#e0762d"></span>Leisure Centre</button>
+    <button class="fp" data-c="mobile" onclick="setF(this)"><span class="dot" style="background:#c0392b"></span>Comes to You</button>
+    <span class="fb-sep"></span>
+    <span class="fb-lbl">Vibe:</span>
+    <button class="vp" data-v="u3" onclick="setV(this)">👶 Under 3s</button>
+    <button class="vp" data-v="inc" onclick="setV(this)">🍕 All-Inclusive</button>
+    <button class="vp" data-v="exc" onclick="setV(this)">🔒 Exclusive Hire</button>
   </div>
   <div id="resultsBar" class="results-bar" style="display:none">
     <span class="res-num" id="resNum">0</span>
     <span class="res-txt" id="resTxt">venues found</span>
+    <div class="view-toggle">
+      <button class="vt on" id="vtList" onclick="setView('list')">☰ List</button>
+      <button class="vt" id="vtMap" onclick="setView('map')">🗺️ Map</button>
+    </div>
+  </div>
+  <div id="mapWrap" style="display:none"><div id="map"></div></div>
+  <div id="inviteBanner" class="invite-banner" style="display:none">
+    <div class="ib-copy"><span class="ib-kicker">✉️ Tiny Invites</span><span id="ibText">Found your venue? Spin up a matching digital invite in 60 seconds.</span></div>
+    <a id="ibLink" class="ib-btn" href="https://tinyinvites.org/?utm_source=littlepartyfinder&utm_medium=referral" target="_blank" rel="noopener">Create invite →</a>
   </div>
   <div id="grid" class="grid"></div>
   <div id="heroState" class="hero-state">
@@ -271,6 +351,48 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
       <button class="sg" onclick="qs('SW6 2PY')">🌆 London</button>
       <button class="sg" onclick="qs('M1 1AE')">🐝 Manchester</button>
       <button class="sg" onclick="qs('G1 1AB')">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Glasgow</button>
+    </div>
+    <div class="collections">
+      <div class="col-title">✦ Curated collections ✦</div>
+      <div class="col-grid">
+        <button class="col-card" onclick="openCollection('farm')">
+          <span class="cc-emoji">🚜</span>
+          <div class="cc-name">Beautiful Barns &amp; Farms</div>
+          <div class="cc-sub">Animal encounters, tractor rides and hay-bale charm.</div>
+          <div class="cc-count" id="ccFarm"></div>
+        </button>
+        <button class="col-card" onclick="openCollection('inc')">
+          <span class="cc-emoji">🍕</span>
+          <div class="cc-name">Stress-Free All-Inclusive</div>
+          <div class="cc-sub">Food, host and setup all handled — you just bring the cake.</div>
+          <div class="cc-count" id="ccInc"></div>
+        </button>
+        <button class="col-card" onclick="openCollection('unique')">
+          <span class="cc-emoji">🌟</span>
+          <div class="cc-name">Something Different</div>
+          <div class="cc-sub">Museums, mail-rail rides and make-believe worlds.</div>
+          <div class="cc-count" id="ccUnique"></div>
+        </button>
+        <button class="col-card" onclick="openCollection('mobile')">
+          <span class="cc-emoji">🚐</span>
+          <div class="cc-name">The Party Comes to You</div>
+          <div class="cc-sub">Entertainers and soft play delivered to your home or hall.</div>
+          <div class="cc-count" id="ccMobile"></div>
+        </button>
+      </div>
+    </div>
+    <div class="timeline-calc" style="margin-top:28px">
+      <div class="tc-title">The village hall formula 🏚️</div>
+      <div class="tc-sub" style="margin-bottom:0">The cheapest great party going: hire your local village or church hall (typically £10–25 an hour — search your parish council or town's "Mumbler" site), book a <a href="#" onclick="openCollection('mobile');return false" style="color:var(--gold);font-weight:600;text-decoration:none">Comes to You</a> provider to fill it, and bring your own cake. A full party for 30 kids often lands under £200.</div>
+    </div>
+    <div class="timeline-calc">
+      <div class="tc-title">When should I book?</div>
+      <div class="tc-sub">Pick your party date and we'll work the timeline backwards.</div>
+      <div class="tc-row">
+        <label for="tcDate">Party date</label>
+        <input type="date" id="tcDate" onchange="calcTimeline()">
+      </div>
+      <div class="tc-out" id="tcOut"></div>
     </div>
     <div class="landing-preview">
       <div class="lp-title"><span style="color:var(--gold)">✦</span>&nbsp;Venues to inspire you — new selection every visit&nbsp;<span style="color:var(--gold)">✦</span></div>
@@ -292,11 +414,13 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 const CAT_CFG={
   soft:{color:"#ff6b47",bg:"#fff1ed",text:"#c23d18",emoji:"🛝",label:"Soft Play"},
   gym:{color:"#2d8f8b",bg:"#eaf6f6",text:"#1a5c5b",emoji:"🤸",label:"Gymnastics"},
+  bounce:{color:"#d44a8a",bg:"#fdeef5",text:"#a82960",emoji:"🦘",label:"Trampoline & Bounce"},
   swim:{color:"#3a6fa8",bg:"#dce8f5",text:"#1d4d84",emoji:"🏊",label:"Swimming"},
   farm:{color:"#5a8f3c",bg:"#e8f5e0",text:"#2e5a1a",emoji:"🚜",label:"Farm & Outdoor"},
   club:{color:"#7c3aed",bg:"#f3effe",text:"#5b21b6",emoji:"🏋️",label:"Health Club"},
   unique:{color:"#d4a843",bg:"#fdf5e4",text:"#92400e",emoji:"🌟",label:"Unique Venue"},
   leisure:{color:"#e0762d",bg:"#fdeade",text:"#b04010",emoji:"🏢",label:"Leisure Centre"},
+  mobile:{color:"#c0392b",bg:"#fbeae7",text:"#8e2a1d",emoji:"🚐",label:"Comes to You"},
 };
 
 const PC={
@@ -899,7 +1023,7 @@ extras:["Play Gym option (less structured – great for under-4s)"],
 notes:"Manchester Academy of Gymnastics, M16 0RA. ~90 miles from Stratford. Very popular – enquire early.",
 website:"https://manchesteracademyofgymnastics.com/parties/"},
 
-{id:21,cat:"gym",name:"Flip Out",h1:"Flip Out Birthday Parties at 20+ UK Locations",h2:"Trampoline & Adventure Park Birthday Parties Nationwide",h3:"Party Packages at Flip Out Manchester, Liverpool, Sheffield & More",metaTitle:"Flip Out Birthday Parties | Trampoline Parks | 20+ UK Locations",metaDesc:"Trampoline and adventure birthday parties at Flip Out parks across the UK including Manchester, Liverpool, Sheffield and Chester.",sub:"20+ UK locations",postcode:"UK-wide",city:"Manchester / Liverpool / Sheffield / Chester / Newcastle + 15 more",slug:"flip-out-manchester-liverpool-sheffield-chester-newcastle-15-more",type:"Trampoline + Adventure Park (National Chain)",lat:53.467,lng:-2.948,
+{id:21,cat:"bounce",name:"Flip Out",h1:"Flip Out Birthday Parties at 20+ UK Locations",h2:"Trampoline & Adventure Park Birthday Parties Nationwide",h3:"Party Packages at Flip Out Manchester, Liverpool, Sheffield & More",metaTitle:"Flip Out Birthday Parties | Trampoline Parks | 20+ UK Locations",metaDesc:"Trampoline and adventure birthday parties at Flip Out parks across the UK including Manchester, Liverpool, Sheffield and Chester.",sub:"20+ UK locations",postcode:"UK-wide",city:"Manchester / Liverpool / Sheffield / Chester / Newcastle + 15 more",slug:"flip-out-manchester-liverpool-sheffield-chester-newcastle-15-more",type:"Trampoline + Adventure Park (National Chain)",lat:53.467,lng:-2.948,
 ages:"4+ yrs",maxKids:"30+",duration:"90min bounce + 2hr room",loc:"yes",food:"yes",bags:"opt",
 shortDesc:"The UK's biggest trampoline park chain with 20+ locations. Standard party £20 pp includes 90min bounce, 2hr party room, food, host and jump socks. VIP upgrade at £26 pp adds party bags, dessert, slush and free return pass.",
 packages:[
@@ -916,7 +1040,7 @@ extras:["Toddler sessions available during off-peak times","SEND-friendly Saturd
 notes:"20+ UK locations. Find nearest: flipout.co.uk. Key sites: Manchester, Liverpool (Aintree), Sheffield, Chester, Newcastle, Croydon, Lakeside, Weston-super-Mare.",
 website:"https://www.flipout.co.uk/birthday-parties"},
 
-{id:22,cat:"gym",name:"Gravity Active",h1:"Gravity Active Birthday Parties in Leeds",h2:"Trampoline Park Birthday Parties at Gravity Leeds LS4",h3:"Action-Packed Party Packages in West Yorkshire",metaTitle:"Gravity Active Birthday Parties | Trampoline Park Leeds | LS4",metaDesc:"Birthday parties at Gravity Active trampoline park, Leeds. Action-packed packages with trampoline arena, ninja course and party room.",sub:"Leeds + multiple UK sites",postcode:"LS4 2DG",city:"Leeds (+ Bluewater, Sheffield, Bristol, Guildford)",slug:"gravity-active-leeds-bluewater",type:"Trampoline Park",lat:53.807,lng:-1.578,
+{id:22,cat:"bounce",name:"Gravity Active",h1:"Gravity Active Birthday Parties in Leeds",h2:"Trampoline Park Birthday Parties at Gravity Leeds LS4",h3:"Action-Packed Party Packages in West Yorkshire",metaTitle:"Gravity Active Birthday Parties | Trampoline Park Leeds | LS4",metaDesc:"Birthday parties at Gravity Active trampoline park, Leeds. Action-packed packages with trampoline arena, ninja course and party room.",sub:"Leeds + multiple UK sites",postcode:"LS4 2DG",city:"Leeds (+ Bluewater, Sheffield, Bristol, Guildford)",slug:"gravity-active-leeds-bluewater",type:"Trampoline Park",lat:53.807,lng:-1.578,
 ages:"4+ yrs (toddler sessions separately available)",maxKids:"30+",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
 shortDesc:"Cardigan Fields Leisure Park, Leeds. Dedicated party host manages everything. Hot food, unlimited squash, jump socks and free return vouchers all included. Toddler and SEN sessions separately available.",
 packages:[
@@ -929,7 +1053,7 @@ extras:["Toddler sessions during quiet weekday times","SEN-friendly sessions ava
 notes:"Cardigan Fields Leisure Park, Kirkstall Rd, Leeds LS4. Also: Gravity at Bluewater, Sheffield, Bristol, Guildford. Check gravityactive.co.uk for nearest.",
 website:"https://www.gravityactive.co.uk/"},
 
-{id:23,cat:"soft",name:"Jump",h1:"Jump Birthday Parties in Bristol, Cardiff & Plymouth",h2:"Toddler-Focused Soft Play Birthday Parties",h3:"Indoor Soft Play Party Packages from £12 per Child",metaTitle:"Jump Birthday Parties | Soft Play | Bristol, Cardiff & Plymouth",metaDesc:"Toddler-focused indoor soft play birthday parties at Jump in Bristol, Cardiff and Plymouth. From £12 per child with food and party host.",sub:"Bristol / Cardiff / Plymouth",postcode:"BS1 6JH",city:"Bristol, Cardiff and Plymouth",slug:"jump-bristol",type:"Soft Play (Indoor – Toddler Focus)",lat:51.454,lng:-2.597,
+{id:23,cat:"bounce",name:"Jump",h1:"Jump Birthday Parties in Bristol, Cardiff & Plymouth",h2:"Toddler-Focused Soft Play Birthday Parties",h3:"Indoor Soft Play Party Packages from £12 per Child",metaTitle:"Jump Birthday Parties | Soft Play | Bristol, Cardiff & Plymouth",metaDesc:"Toddler-focused indoor soft play birthday parties at Jump in Bristol, Cardiff and Plymouth. From £12 per child with food and party host.",sub:"Bristol / Cardiff / Plymouth",postcode:"BS1 6JH",city:"Bristol, Cardiff and Plymouth",slug:"jump-bristol",type:"Soft Play (Indoor – Toddler Focus)",lat:51.454,lng:-2.597,
 ages:"0–12 yrs",maxKids:"30",duration:"1hr 45min",loc:"yes",food:"opt",bags:"no",
 shortDesc:"Three UK locations: Bristol, Cardiff and Plymouth. Secure separate toddler and baby area at every venue. Birthday child goes completely FREE. Every guest gets a free family pass to return. From just £12 per child.",
 packages:[
@@ -1965,7 +2089,7 @@ extras:["Party treat boxes £2.95 each — 5 items plus room for cake slice","Pi
 notes:"Located at Ebley Wharf, Stroud GL5 4SR. Free parking on site. For party enquiries email toyboxuk@gmail.com. Min charge equivalent to 10 children applies. One party per slot — no overlap.",
 website:"https://www.gobananas.org.uk/parties/soft-play-parties/"},
 
-{id:81,cat:"soft",name:"JumpinFun Cheltenham",sub:"12,000 sq ft Inflatable Park Birthday Parties",postcode:"GL51 9AH",city:"Cheltenham, Gloucestershire",slug:"jumpinfun-cheltenham-cheltenham",type:"Inflatable Park (Wall-to-Wall Fun)",lat:51.886,lng:-2.098,
+{id:81,cat:"bounce",name:"JumpinFun Cheltenham",sub:"12,000 sq ft Inflatable Park Birthday Parties",postcode:"GL51 9AH",city:"Cheltenham, Gloucestershire",slug:"jumpinfun-cheltenham-cheltenham",type:"Inflatable Park (Wall-to-Wall Fun)",lat:51.886,lng:-2.098,
 h1:"JumpinFun Cheltenham Birthday Parties",h2:"Inflatable Park Birthday Parties in Cheltenham GL51",h3:"Classic and Elite Hosted Party Packages at JumpinFun",metaTitle:"JumpinFun Cheltenham Birthday Parties | Inflatable Park | GL51",metaDesc:"Birthday parties at JumpinFun inflatable park, Cheltenham. 12,000 sq ft of wall-to-wall inflatables. Classic and Elite Hosted packages. Book at jumpinfun.co.uk. Adults £7 add-on.",
 ages:"2–16 yrs",maxKids:"30+",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
 shortDesc:"12,000 sq ft dedicated inflatable playground in Cheltenham — one of the largest in the Cotswolds region. Wall-to-wall bouncy inflatables, huge ball pool, slides, jumps, balance beams, climbing structures and obstacle courses. Purpose-built birthday party packages with private party room, disco ball lighting, food, unlimited squash and party bags depending on package. Air-conditioned with a great cafe upstairs for parents. Excellent for ages 2–16. Toddler-specific sessions available.",
@@ -2209,7 +2333,7 @@ extras:["Mascot hire available","Drinks packages available","DJ hire available"]
 notes:"Located in Palmers Green N13. Parking available nearby. Serves Enfield, Southgate, Wood Green, Tottenham and surrounding areas.",
 website:"https://www.kb02.co.uk/"},
 
-{id:94,cat:"soft",name:"Bounceagogo",sub:"Exclusive Disco Inflatable Birthday Parties in South Wimbledon",postcode:"SW19 1HN",city:"South Wimbledon / Wimbledon SW19 (+ Southfields, Mitcham, Putney, Esher)",slug:"bounceagogo-south-wimbledon-wimbledon-sw19-southfields",type:"Exclusive Inflatable Disco Party (School Venue Hire)",lat:51.413,lng:-0.192,
+{id:94,cat:"bounce",name:"Bounceagogo",sub:"Exclusive Disco Inflatable Birthday Parties in South Wimbledon",postcode:"SW19 1HN",city:"South Wimbledon / Wimbledon SW19 (+ Southfields, Mitcham, Putney, Esher)",slug:"bounceagogo-south-wimbledon-wimbledon-sw19-southfields",type:"Exclusive Inflatable Disco Party (School Venue Hire)",lat:51.413,lng:-0.192,
 h1:"Bounceagogo Birthday Parties in Wimbledon and South West London",h2:"Exclusive Inflatable Disco Birthday Parties in SW19",h3:"Bounceagogo Party Packages from £489 for 25 Children — Fully Staffed",metaTitle:"Bounceagogo Birthday Parties | Exclusive Inflatable Disco | Wimbledon SW19",metaDesc:"Exclusive inflatable and disco birthday parties by Bounceagogo at school venues across Wimbledon, Southfields, South Wimbledon, Mitcham, Putney and Esher. From £489 for 25 children. Fully staffed, food included, adults free. Book at bounceagogo.co.uk.",
 ages:"1–11 yrs",maxKids:"30",duration:"2 hrs",loc:"yes",food:"yes",bags:"no",
 shortDesc:"Award-winning, fully exclusive children's party provider operating from school venues across South West London and Surrey. Transforms school halls into disco-lit, inflatable-filled party spaces — 40-foot obstacle course slides, go-kart roller coasters, giant beach balls, space hoppers, ride-ons and soft play. No shared parties, ever — your group has the entire venue exclusively. Multiple party types to match the birthday child's age: Bounceagogo (1–3 yrs), Discoagogo (4–6 yrs), Discoagogo Club Classic (7–11 yrs), and Nerfagogo (7+ yrs). All food, staffing, setup and cleanup included. Adults attend free with unlimited hot drinks. SEN-inclusive.",
@@ -2409,7 +2533,7 @@ website:"https://www.minivalleykids.com/"},
 
 // ── NEW: JUMP IN / AIRHOP WARWICK ──
 
-{id:106,cat:"gym",name:"Jump In (AirHop) Warwick",sub:"Trampoline & Soft Play Birthday Parties in Warwick",postcode:"CV34 6NW",city:"Royal Leamington Spa / Warwick",type:"Trampoline Park + Soft Play + Slides + Climbing",lat:52.279,lng:-1.585,
+{id:106,cat:"bounce",name:"Jump In (AirHop) Warwick",sub:"Trampoline & Soft Play Birthday Parties in Warwick",postcode:"CV34 6NW",city:"Royal Leamington Spa / Warwick",type:"Trampoline Park + Soft Play + Slides + Climbing",lat:52.279,lng:-1.585,
 h1:"Jump In AirHop Warwick Birthday Parties",h2:"Trampoline Park Birthday Parties in Warwick CV34",h3:"Classic, Toddler Takeover and Soft Play Party Packages from £18.95 per Child",metaTitle:"Jump In AirHop Birthday Parties | Trampoline Park Warwick CV34",metaDesc:"Birthday parties at Jump In (AirHop) Warwick CV34. Classic trampoline from £18.95 pp, Toddler Takeover for ages 1–6, Soft Play parties. 20% off Mon-Fri term-time with code WEEKDAY20. Min 10 guests. Book via airhop.co.uk.",
 slug:"jump-in-airhop-warwick",
 ages:"1–16+ yrs",maxKids:"60+",duration:"2 hrs",loc:"yes",food:"yes",bags:"opt",
@@ -2503,10 +2627,355 @@ extras:["Exclusive hire available — venue closes to public for your party","Ad
 notes:"Located at 18 Highdown Road, Sydenham, Leamington Spa CV31 1XT. About 5 miles from Stratford-upon-Avon. Street parking and nearby car parks available. Family-run by Sally Smith. Tel: 01926 313324. Facebook: Welcome to the Madhouse soft play. Open Mon–Wed 9am–5pm, Thu–Sun 9am–6pm. Walk-in sessions £6.95 per child for 90 minutes.",
 website:"https://www.facebook.com/p/Welcome-to-the-Madhouse-soft-play-100076324774408/"},
 
+// ═══════════════════════════════════════════════
+// NEW REGIONAL EXPANSION (ids 110–116) — June 2026
+// Wales, Scotland, North East, Yorkshire, South West, South Coast, Northern Ireland
+// ═══════════════════════════════════════════════
+
+{id:110,cat:"soft",name:"Mambo Play Centre",sub:"Cardiff's Soft Play Party Classic",postcode:"CF24 5PG",city:"Ocean Way, Cardiff",type:"Soft Play (Go Karts + Baby Area)",lat:51.471,lng:-3.155,
+h1:"Mambo Play Centre Birthday Parties in Cardiff",h2:"Soft Play Birthday Parties in Cardiff CF24",h3:"Party Packages from £14 per Child — Party Hut & Party Zone",metaTitle:"Mambo Play Centre Birthday Parties | Soft Play Cardiff CF24",metaDesc:"Birthday parties at Mambo Play Centre, Ocean Way, Cardiff. £14 per child weekdays, £16 weekends. Hot or cold buffet, 90 min play + 30 min food. Call 02920 484007.",
+slug:"mambo-play-centre-cardiff",
+ages:"0–10 yrs",maxKids:"30–40",duration:"90 min play + 30 min food",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Cardiff's go-to soft play party venue on Ocean Way, with a baby area, go karts, spider climb and amusements. Party Hut takes up to 30 children, Party Zone up to 40. Hot or cold buffet, unlimited squash and Mambo invitations included. Sister centres in Newport and Barry.",
+packages:[
+{name:"Weekday Party",price:"£14 pp",priceNote:"per child · min 10 children · £50 deposit",maxKids:"Party Hut 30 / Party Zone 40",featured:false,
+includes:["90 minutes play + 30 minutes food","Choice of hot or cold buffet","Unlimited jugs of squash","Mambo invitations, plates, cups & napkins","20% off Go Karts & Slush","Free return pass for 1 child + 2 adults"],
+excludes:["Birthday cake (bring your own)","Party bags"],
+slots:"Weekdays · book online at mamboplay.com"},
+{name:"Weekend Party",price:"£16 pp",priceNote:"per child · min 10 children · £50 deposit",maxKids:"Party Hut 30 / Party Zone 40",featured:true,
+includes:["90 minutes play + 30 minutes food","Choice of hot or cold buffet (nuggets, pizza, chips or sandwiches & fruit)","Unlimited jugs of squash","Mambo invitations, plates, cups & napkins","20% off Go Karts & Slush","Free return pass for 1 child + 2 adults"],
+excludes:["Birthday cake (bring your own)","Party bags"],
+slots:"Sat & Sun · book online at mamboplay.com"},
+],
+extras:["Go karts and slush at 20% off for party guests","Sister venues in Newport and Barry"],
+notes:"Mambo Play Centre, Ocean Way, Cardiff CF24 5PG. Tel: 02920 484007. £50 deposit required, minimum 10 children. Email admin@mamboplay.com with questions.",
+website:"https://www.mamboplay.com/parties/"},
+
+{id:111,cat:"farm",name:"Little Farmers (Craigies Farm)",sub:"Farm Parties Near Edinburgh",postcode:"EH30 9AR",city:"South Queensferry, Edinburgh",type:"Farm Party (Play Barn + Animal Encounters)",lat:55.975,lng:-3.353,
+h1:"Little Farmers Birthday Parties at Craigies Farm",h2:"Farm Birthday Parties Near Edinburgh EH30",h3:"Animal Meet & Greet Parties from £19.99 per Child",metaTitle:"Little Farmers Birthday Parties | Craigies Farm | South Queensferry EH30",metaDesc:"Farm birthday parties at Little Farmers, Craigies Farm, South Queensferry near Edinburgh. From £19.99 per child with animal meet & greet, play barn and private party room. Call 0131 319 1048.",
+slug:"little-farmers-craigies-farm-south-queensferry",
+ages:"1–10 yrs",maxKids:"varies by room",duration:"2.5 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"One of the most exciting children's party venues near Edinburgh, set on a working farm overlooking the Forth. Three party rooms look out onto the farmyard. Parties include a private party room, animal meet-and-greet (choose a pony, sheep or goat to groom), the indoor play barn, and party lunchboxes with farm-fresh food. Nut-free environment.",
+packages:[
+{name:"Chuckling Chicks Party",price:"£19.99 pp",priceNote:"per child · includes 1 adult per guest + 2 for birthday child",maxKids:"Room capacity varies",featured:true,
+includes:["2.5 hours with private party room","Meet & groom a pony, sheep or goat","Visit pigs, pygmy goats, rabbits, donkeys & Clydesdale horse","Epic indoor play barn access","Party lunchbox & unlimited squash for every child"],
+excludes:["Birthday cake (bring your own)","Party bags (check party brochure)"],
+slots:"Book via craigies.digitickets.co.uk · call 0131 319 1048"},
+],
+extras:["Three party rooms for small and big groups","Craigies Farm shop & café on site","Pick-your-own fruit in season"],
+notes:"Craigies Farm, West Craigie Farm, South Queensferry EH30 9AR — about 20 minutes from central Edinburgh. Tel: 0131 319 1048, email contact@craigies.co.uk. Strictly nut-free site.",
+website:"https://craigieslittlefarmers.co.uk/parties/"},
+
+{id:112,cat:"soft",name:"Kiki's Kabin",sub:"Indoor & Outdoor Soft Play, North Shields",postcode:"NE30 2RQ",city:"North Shields, Tyne & Wear",type:"Soft Play + Café (Indoor & Outdoor)",lat:55.011,lng:-1.447,
+h1:"Kiki's Kabin Birthday Parties in North Shields",h2:"Soft Play Birthday Parties on Tyneside NE30",h3:"Party Packages from £12 per Child — Exclusive Hire from £350",metaTitle:"Kiki's Kabin Birthday Parties | Soft Play North Shields NE30",metaDesc:"Birthday parties at Kiki's Kabin, North Shields. From £12 per child with hot & cold buffet, or exclusive hire of the whole soft play from £350 for up to 30 children. Call 0191 296 4944.",
+slug:"kikis-kabin-north-shields",
+ages:"0–10 yrs",maxKids:"25 (50 exclusive)",duration:"1 hr 45 min total",loc:"yes",food:"yes",bags:"opt",
+shortDesc:"Family soft play centre with café and summer garden in North Shields, a short drive from Newcastle. Standard parties include a party co-ordinator, hot & cold buffet in a private party area and reserved seats for parents — they even tidy up for you. Weekend exclusive hire gives you the whole centre (bouncy castle, soft play, toddler village, sports cage) to yourselves.",
+packages:[
+{name:"Kiki's Party",price:"£12 pp",priceNote:"per child · min 10, max 25 · £40 deposit",maxKids:"Max 25 children",featured:true,
+includes:["1 hr 30 min of play","Party co-ordinator","Hot & cold buffet in private party area","Reserved seats for parents","They tidy up after you"],
+excludes:["Party bags (£1.50 each if required)","Birthday cake (bring your own)"],
+slots:"Tue–Sun · book at kikiskabin.co.uk"},
+{name:"Exclusive Hire",price:"£350",priceNote:"flat – up to 30 kids · extra children £12 each",maxKids:"Max 50 children",featured:false,
+includes:["Private use of the whole soft play","Bouncy castle, toddler village & sports cage","Sat & Sun 4pm slots","Hot & cold buffet"],
+excludes:["Party bags (£1.50 each)","Birthday cake"],
+slots:"Saturday & Sunday @ 4pm"},
+],
+extras:["Teddy Mountain build-a-bear parties £25 pp","Free small-group celebrations — just book a table","Toddler mornings Tue–Fri"],
+notes:"34 Albion Road, North Shields NE30 2RQ. Tel: 0191 296 4944. £40 non-refundable deposit; confirm numbers one day before. Closed Mondays.",
+website:"https://www.kikiskabin.co.uk/parties/"},
+
+{id:113,cat:"soft",name:"Runaround Playcentre",sub:"Sheffield Soft Play with Bear & Slime Parties",postcode:"S20 3FG",city:"Holbrook, Sheffield",type:"Soft Play (Disco, Bear-Building & Slime Add-ons)",lat:53.333,lng:-1.342,
+h1:"Runaround Playcentre Birthday Parties in Sheffield",h2:"Soft Play Birthday Parties in Sheffield S20",h3:"Party Packages from £10.50 per Child — Classic, Disco, Bear World & Slime",metaTitle:"Runaround Playcentre Birthday Parties | Soft Play Sheffield S20",metaDesc:"Birthday parties at Runaround Playcentre, Sheffield. Pricebuster from £10.50 per child weekdays, Classic £12.95, Disco £14.75, Bear World £20.95. Hot & cold buffet and party host included. Call 0114 247 6180.",
+slug:"runaround-playcentre-sheffield",
+ages:"0–8 yrs",maxKids:"25+",duration:"2 hrs",loc:"yes",food:"yes",bags:"opt",
+shortDesc:"Sheffield soft play centre with one of the widest party menus in Yorkshire: Classic and weekday Pricebuster parties, disco parties with games, Bear World parties where every child stuffs and takes home a 15-inch bear, slime-making parties, animal-experience parties and evening VIP private hire. All include a 2-hour party, hot & cold buffet, dedicated host and birthday march.",
+packages:[
+{name:"Runaround Classic",price:"£12.95 pp",priceNote:"per child · min 10 · no maximum",maxKids:"No maximum",featured:true,
+includes:["2 hours of fun","Hot & cold party buffet (nuggets, chips, sandwiches, ice cream)","Dedicated party host","Party invitations","Juice on arrival & during party","Special birthday march"],
+excludes:["Party bags (£2.75 add-on)","Birthday cake (bring your own — they'll cut & bag it)"],
+slots:"Daily · book at runaroundsoftplay.co.uk"},
+{name:"Pricebuster (weekdays)",price:"£10.50 pp",priceNote:"per child · min 15, max 25 · weekdays only",maxKids:"Max 25 children",featured:false,
+includes:["2 hours play","Hot & cold buffet","Juice on arrival & during party","Special birthday march"],
+excludes:["Party invitations","Party bags"],
+slots:"Weekdays only"},
+{name:"Bear World Party",price:"£20.95 pp",priceNote:"per child · min 10, max 16",maxKids:"Max 16 children",featured:false,
+includes:["Each child stuffs & takes home a 15\" bear","Carry-out bear bag & personalised birth certificate","2 hours of fun + hot & cold buffet","Party host, invitations & birthday march"],
+excludes:["Party bags"],
+slots:"Daily · book ahead"},
+],
+extras:["Disco party £14.75 pp","Slime party £15.95 pp (ages 4+)","Animal Experience party £20.95 pp","VIP private hire £17.50 pp (6–8pm, min 20)","Themed tableware & helium balloons add-ons"],
+notes:"Unit 1 Holbrook Rise, Sheffield S20 3FG. Tel: 0114 247 6180. SEN sessions available. Food portions designed for ages 5 and under — add extra for older kids.",
+website:"https://www.runaroundsoftplay.co.uk/parties"},
+
+{id:114,cat:"soft",name:"Wild Things Play Project",sub:"Nature-Themed Indoor Play, Cribbs Causeway",postcode:"BS34 5DG",city:"The Mall, Cribbs Causeway, Bristol",type:"Soft Play (Nature-Themed + Craft Workshop)",lat:51.525,lng:-2.598,
+h1:"Wild Things Play Project Birthday Parties in Bristol",h2:"Nature-Themed Play Parties at Cribbs Causeway BS34",h3:"Toddler Parties from £14.95 per Child — Treehouse, Sandpit & Workshop",metaTitle:"Wild Things Play Project Birthday Parties | Cribbs Causeway Bristol BS34",metaDesc:"Nature-themed birthday parties at Wild Things Play Project, The Mall, Cribbs Causeway. Toddler parties from £14.95 per child plus £25 room hire; craft and plushie parties up to £29.95. Call 0117 959 2514.",
+slug:"wild-things-play-project-bristol-cribbs-causeway",
+ages:"0–8 yrs",maxKids:"25",duration:"2–3 hrs",loc:"yes",food:"yes",bags:"yes",
+shortDesc:"Immersive nature-themed indoor play area that reimagines soft play — treehouse play frame, giant sandpit, games area and craft workshop, on level 2 of The Mall at Cribbs Causeway. All packages include a packed lunch per child, free adult admission, party bags for ages 3+, invitations and a Golden Ticket free-return for the birthday child. Sister site in Plymouth.",
+packages:[
+{name:"Toddlers Stay & Play (3 & under)",price:"£14.95 pp",priceNote:"per child + £25 room hire · min 6, max 25",maxKids:"Max 25 children",featured:true,
+includes:["2 hours play in the centre","Reserved café seating","Lunch bag for each child (sandwich, muffin, crisps, fruit, juice)","Basic party bag each","Free invitations & no charge for adults","Free-return voucher for birthday child + adult"],
+excludes:["Birthday cake (£50 add-on, or bring your own — plate fee £10)"],
+slots:"Daily · call 0117 959 2514"},
+{name:"Wild Fluffy Stuffies Party",price:"£25.95 pp",priceNote:"per child · min 6, max 25",maxKids:"Max 25 children",featured:false,
+includes:["Each child creates their own fox or squirrel plushie","Storytelling & games with a play worker host","1 hour play in main room","Lunch bag, party bag & invitations"],
+excludes:["Birthday cake (add-on)"],
+slots:"Daily · book ahead"},
+],
+extras:["Workshop party £20.95 pp (ages 4+)","Wild Extravaganza £29.95 pp (3 hrs)","Exclusive venue hire £250 for 2 hrs","Deluxe party bag upgrades from £3.95"],
+notes:"The Mall (level 2), Cribbs Causeway, Bristol BS34 5DG. Tel: 0117 959 2514, cribbs@wildthingsplay.co.uk. Min 6 children. At least 2 adults must stay throughout.",
+website:"https://wildthingsplay.co.uk/bristol-cribbs-causeway/parties/"},
+
+{id:115,cat:"bounce",name:"Airtastic Belfast",sub:"Inflata Park, Soft Play & Bowling Parties",postcode:"BT36",city:"Newtownabbey, Belfast",type:"Inflatable Park + Soft Play + Bowling",lat:54.66,lng:-5.95,
+h1:"Airtastic Belfast Birthday Parties in Newtownabbey",h2:"Inflata, Soft Play & Bowling Parties in Belfast",h3:"Party Packages from £13.50 per Child at Airtastic Belfast",metaTitle:"Airtastic Belfast Birthday Parties | Inflata & Soft Play | Newtownabbey",metaDesc:"Birthday parties at Airtastic Belfast (Newtownabbey). Soft play parties from £13.50, Inflata parties from £15.95, bowling £13.50 per child. Private party room, pizza and unlimited squash included.",
+slug:"airtastic-belfast-newtownabbey",
+ages:"0–12 yrs (Inflata 5+)",maxKids:"20+ for private",duration:"90–120 min",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Northern Ireland's biggest entertainment centre format: inflatable park, soft play frame, ten-pin bowling, laser tag and arcades under one roof in Newtownabbey. Every party includes a staff welcome, 30 minutes in a private party room with stone-baked pizza, goujons and fries, unlimited squash and a free return pass. The first Little Party Finder venue in Northern Ireland.",
+packages:[
+{name:"Soft Play Party",price:"£13.50 pp",priceNote:"off-peak (£14.95 peak) · min 10 children",maxKids:"Min 10 · private option min 20",featured:true,
+includes:["90 minutes soft play","30 minutes private party room","Pizza, chicken goujons & fries","Unlimited blackcurrant & orange squash","Airtastic return pass per child"],
+excludes:["Birthday cake, candles & party bags (bring your own)"],
+slots:"Off-peak Mon–Fri term time · Peak weekends & holidays"},
+{name:"Inflata Party",price:"£15.95 pp",priceNote:"off-peak (£19.95 peak) · min 10 · ages 5+",maxKids:"Private option min 20 (£26.95 pp)",featured:false,
+includes:["60 minutes Inflata Park (Beat The Wall, Demolition Ball, Freefall, Drop Slides)","Grip socks included","30 minutes private party room with food","Unlimited squash & return pass"],
+excludes:["Birthday cake & party bags","Under-5s (minimum age 5)"],
+slots:"Arrive 30 min early for waivers & safety brief"},
+],
+extras:["Bowling party £13.50 pp","Private soft play hire £19.95 pp (after hours)","£10 arcade cards add-on for £7.50 pp"],
+notes:"Airtastic Belfast, Newtownabbey BT36. Sister centres in Bangor, Craigavon, Lisburn, Cork and Kildare. Waivers must be completed before arrival.",
+website:"https://air-tastic.com/birthday-parties/belfast"},
+
+{id:116,cat:"unique",name:"SeaCity Museum",sub:"Titanic & Pirates Museum Parties",postcode:"SO14 7FY",city:"Southampton City Centre",type:"Museum Party (Themed History & Art Workshops)",lat:50.908,lng:-1.407,
+h1:"SeaCity Museum Birthday Parties in Southampton",h2:"Titanic, Pirate & Wizard Themed Museum Parties SO14",h3:"Museum Party Packages from £250 for 15 Children",metaTitle:"SeaCity Museum Birthday Parties | Titanic & Pirate Parties | Southampton SO14",metaDesc:"Themed birthday parties at SeaCity Museum, Southampton. Titanic, Pirates, Ancient Egyptians, Wizard School and more. From £250 for 15 children including workshop, party room and museum entry.",
+slug:"seacity-museum-southampton",
+ages:"4–11 yrs",maxKids:"15 (base price)",duration:"2 hrs + setup",loc:"yes",food:"opt",bags:"opt",
+shortDesc:"Something different from soft play: themed birthday parties inside Southampton's maritime museum. Choose a history workshop (Titanic, Tudors, Pirates, Ancient Egyptians — mummify an orange!) or an Arty Party led by an artist (Wizard School, Space, Unicorns & Dragons, clay Titanic). Includes an hour-long hosted workshop, an hour in the party room, museum entry and downloadable invitations.",
+packages:[
+{name:"Themed Museum Party",price:"£250",priceNote:"flat – 15 children · bespoke themes from £300",maxKids:"15 children (base)",featured:true,
+includes:["1-hour themed workshop led by party host","1-hour private party room after workshop","Museum entry for the party","Free downloadable invitations","30 min early access to decorate"],
+excludes:["Party tea (bookable via catering team)","Party bags (museum-shop bags bookable)","Birthday cake (bring your own)"],
+slots:"Contact museums.education@southampton.gov.uk · 02380 832 810"},
+],
+extras:["Bespoke party themes from £300","Party tea by catering team (add-on)","Museum-shop party bags (add-on)","Sister venue: Tudor House and Garden"],
+notes:"SeaCity Museum, Civic Centre, Havelock Road, Southampton SO14 7FY. Open daily 10am–5pm. Best suited to ages 4–11 — a strong option for parents wanting a non-soft-play party.",
+website:"https://seacitymuseum.co.uk/venue-hire/birthday-parties/"},
+
+// ═══════════════════════════════════════════════
+// COMES TO YOU — MOBILE PARTIES (ids 117–119) — June 2026
+// ═══════════════════════════════════════════════
+
+{id:117,cat:"mobile",name:"Froggle Parties",sub:"Entertainers Who Come to You — UK-Wide",postcode:"UK-wide",city:"London base · UK-wide coverage areas",type:"Mobile Children's Entertainers (Magic, Puppets, Games)",lat:51.55,lng:-0.17,
+h1:"Froggle Parties — Children's Entertainers That Come to You",h2:"Mobile Kids Party Entertainers Across the UK",h3:"Entertainer Parties from £150 — Magic, Puppets, Bubbles & Balloons",metaTitle:"Froggle Parties | Mobile Children's Entertainers | UK-Wide",metaDesc:"Froggle Parties brings the party to your home or hall: magic shows, puppets, games, bubbles and balloon modelling. Toddler parties from £150, entertainer parties from £170. All entertainers enhanced DBS checked.",
+slug:"froggle-parties-uk-wide",
+ages:"1–10 yrs",maxKids:"35 (surcharge above)",duration:"45 min – 2 hrs",loc:"no",food:"no",bags:"opt",
+shortDesc:"No venue needed — Froggle's costumed entertainers come to your house, hall or garden with their own music system and equipment. Shows mix comedy magic, puppet shows, party games, bubbles, balloon modelling, mini disco and prizes for every child, with dedicated formats for 2-year-olds and baby groups. All entertainers are enhanced DBS checked. Free printable invitations included.",
+packages:[
+{name:"2-Year-Old Specialist Party",price:"£175",priceNote:"1 hour · max 20 children recommended",maxKids:"Max 20 children",featured:true,
+includes:["Entertainer in full costume comes to you","Age-tuned magic, puppets & bubbles","Gentle games & mini disco","Balloon models for every child","Prizes for every child","Free printable invites & certificates"],
+excludes:["Venue, food & cake (your own home or hall)","Party bags (available as extra)"],
+slots:"Book by phone · 0208 617 9070"},
+{name:"Entertainer Party",price:"£170",priceNote:"1 hr (£205 for 1.5 hrs, £235 for 2 hrs) inc. VAT",maxKids:"35 before surcharge",featured:false,
+includes:["Magic show & puppet show","Party games, dancing, limbo & conga","Balloon modelling & rocket balloons","Bubbles & prizes for every child","Entertainer brings all equipment & music"],
+excludes:["Venue, food & cake","Over 35 children +£15, over 45 +£25"],
+slots:"Weekends book early · finalised by phone"},
+{name:"Baby & Toddler Party (45 min)",price:"£150",priceNote:"45 minutes · max 20 kids",maxKids:"Max 20 children",featured:false,
+includes:["Gentle 45-minute show for the littlest ones","Bubbles, puppets & music","Perfect for 1st & 2nd birthdays"],
+excludes:["Venue & food"],
+slots:"Any day · phone bookings"},
+],
+extras:["Bubble or snow machine £25 (both £40)","Themed & deluxe packages up to £280","Discos, science parties & Santa visits","Free party invites app"],
+notes:"Coverage and exact pricing vary by postcode — enter your postcode on froggleparties.com/costs. London-based with regional teams (incl. Warwickshire). All bookings finalised by phone: 0208 617 9070.",
+website:"https://www.froggleparties.com/"},
+
+{id:118,cat:"mobile",name:"Ready Steady Play",sub:"Luxury Mobile Soft Play Hire, Midlands & Notts",postcode:"Mobile",city:"Solihull/Birmingham + Mansfield/Notts",type:"Mobile Soft Play & Bouncy Castle Hire (Ages 0–5)",lat:52.413,lng:-1.778,
+h1:"Ready Steady Play — Mobile Soft Play Hire in Solihull & Mansfield",h2:"Luxury Soft Play Delivered to Your Venue or Garden",h3:"Elegant Soft Play & Bouncy Castle Hire for Ages 0–5",metaTitle:"Ready Steady Play | Mobile Soft Play Hire | Solihull & Mansfield",metaDesc:"Family-run luxury soft play and bouncy castle hire covering Solihull, Birmingham, Mansfield and Nottinghamshire. Elegant sets for ages 0–5, delivered and set up for you.",
+slug:"ready-steady-play-solihull-mansfield",
+ages:"0–5 yrs",maxKids:"depends on space",duration:"flexible hire",loc:"no",food:"no",bags:"no",
+shortDesc:"Family-run hire company that delivers elegant, neutral-toned soft play sets, ball pits and bouncy castles to your home, garden or hired hall — designed to look classy at weddings and christenings as well as toddler birthdays. Covers Solihull/Birmingham (free within 5 miles) and Mansfield/Nottinghamshire (within 10 miles); nearby areas on request.",
+packages:[
+{name:"Soft Play Hire Package",price:"POA",priceNote:"contact for a quote · delivery, setup & collection included",maxKids:"Depends on your space",featured:true,
+includes:["Luxury soft play set for ages 0–5","Ball pits, rockers & ride-ons","Bouncy castle options","Delivery, setup & collection","Weddings, christenings & garden parties too"],
+excludes:["Venue, food & supervision (you host)"],
+slots:"Book via readysteadyplay.co.uk · 07803 066229"},
+],
+extras:["Garden games hire","Themed colour schemes for events"],
+notes:"Free delivery within 5 miles of Solihull and 10 miles of Mansfield; ask about areas just outside. Tel: 07803 066229, info@readysteadyplay.co.uk.",
+website:"https://readysteadyplay.co.uk/"},
+
+{id:119,cat:"mobile",name:"NE Children's Parties",sub:"Mobile Soft Play Parties on Tyneside",postcode:"NE3 3LL",city:"Kenton, Newcastle upon Tyne (+ mobile)",type:"Soft Play Parties — At Their Venue or Yours",lat:55.005,lng:-1.66,
+h1:"NE Children's Parties — Soft Play Parties in Newcastle",h2:"Soft Play Parties at Kenton Park or Delivered to You",h3:"Venue Parties from £120 · Mobile Parties from £150",metaTitle:"NE Children's Parties | Mobile Soft Play | Newcastle upon Tyne NE3",metaDesc:"Soft play birthday parties in Newcastle from £120 at Kenton Park Sports Centre, or mobile soft play brought to your venue from £150. For babies to age 7, up to 14 children.",
+slug:"ne-childrens-parties-newcastle",
+ages:"0–7 yrs",maxKids:"14",duration:"1 hr play",loc:"no",food:"no",bags:"no",
+shortDesc:"Budget-friendly Tyneside option with two ways to party: a hosted soft play party at Kenton Park Sports Centre from £120, or the same soft play kit delivered and set up at your own hall from £150. Designed for babies to 7-year-olds with groups up to 14 children — well suited to smaller, calmer toddler parties.",
+packages:[
+{name:"Venue Party (Kenton Park)",price:"£120",priceNote:"flat · up to 14 children · 1 hour play",maxKids:"Max 14 children",featured:true,
+includes:["1 hour of soft play","Kenton Park Sports Centre NE3","Babies to 7-year-olds","Setup & pack-down handled"],
+excludes:["Food & cake (bring your own)","Party bags"],
+slots:"Book via nechildrensparties.co.uk"},
+{name:"Mobile Party (your venue)",price:"£150",priceNote:"flat · they bring the soft play to you",maxKids:"Max 14 children",featured:false,
+includes:["Soft play kit delivered & set up at your hall","1 hour of play","Babies to 7-year-olds"],
+excludes:["Venue hire, food & cake"],
+slots:"Subject to travel area · enquire online"},
+],
+extras:["Good budget pick for first & second birthdays"],
+notes:"Based at Kenton Park Sports Centre, Newcastle NE3 3LL. Check current prices and travel area at nechildrensparties.co.uk.",
+website:"https://nechildrensparties.co.uk/softplayparty.php"},
+
+{id:120,cat:"mobile",name:"Childsplay Hire",sub:"Soft Play Delivered Across London",postcode:"Mobile",city:"All London + Kent, Essex, Surrey, Herts",type:"Mobile Soft Play & Ball Pit Hire",lat:51.51,lng:-0.12,
+h1:"Childsplay Hire — Mobile Soft Play Across London",h2:"Soft Play & Ball Pit Packages Delivered to You",h3:"Themed Soft Play Sets from £70 — All London Areas",metaTitle:"Childsplay Hire | Mobile Soft Play London | From £70",metaDesc:"Mobile soft play hire delivered across all of London plus Kent, Essex, Surrey and Hertfordshire. Themed soft play sets and ball pit packages from £70 to £214. Book online.",
+slug:"childsplay-hire-london",
+ages:"0–5 yrs",maxKids:"depends on space",duration:"flexible hire",loc:"no",food:"opt",bags:"no",
+shortDesc:"Themed soft play sets, ball pits and bouncy castle combos delivered, set up and collected anywhere in London (plus Kent, Essex, Surrey and Hertfordshire). Packages run from £70 ball pits to £214 full themed setups — think Paw Patrol, pastel pinks and clean all-white sets — with add-ons like tables & chairs, party food, balloon decoration and entertainment. Online booking with live availability.",
+packages:[
+{name:"Ball Pit Packages",price:"£70–£95",priceNote:"per hire · delivered, set up & collected",maxKids:"Depends on your space",featured:true,
+includes:["Colour-themed ball pit (pink, green, blue, red, yellow)","Wiggle cars with selected packages","Delivery, setup & collection across London","Indoor or outdoor setup"],
+excludes:["Venue & food (add-ons available)"],
+slots:"Book online · childsplayhire.com"},
+{name:"Themed Soft Play Packages",price:"£70–£214",priceNote:"per hire · themed sets & playmazes",maxKids:"Depends on your space",featured:false,
+includes:["Themed sets (Paw Patrol, Night Heroes, pastels, all-white)","Soft shapes, slides & play tiles","Bouncy castle + soft play combos £150–£170","5% off first booking via their WhatsApp community"],
+excludes:["Venue & food (party food add-on available)"],
+slots:"Mon–Sun 10am–4pm · 07395 346380"},
+],
+extras:["Tables & chairs, party food & toys add-ons","Balloon decoration & light-up numbers","Inflatable playparks for bigger spaces"],
+notes:"Delivers to North, East, South East, South West, West and Central London and surrounding counties. Email bookings@childsplayhire.com.",
+website:"https://childsplayhire.com/soft-play-packages/"},
+
+{id:121,cat:"mobile",name:"Unique Children's Parties",sub:"Glasgow's One-Stop Mobile Party Shop",postcode:"Mobile",city:"Glasgow, Lanarkshire, Renfrewshire & Ayrshire",type:"Mobile Soft Play + Entertainers + Fun Foods",lat:55.86,lng:-4.25,
+h1:"Unique Children's Parties — Mobile Parties Across Glasgow",h2:"Soft Play, Entertainers & Character Visits in West Scotland",h3:"Mobile Soft Play from £70 for 2 Hours",metaTitle:"Unique Children's Parties | Mobile Soft Play Glasgow | From £70",metaDesc:"Mobile soft play hire from £70, plus entertainers, mascots, face painting, discos and character visits across Glasgow, Lanarkshire and Ayrshire. Call 0141 280 4233.",
+slug:"unique-childrens-parties-glasgow",
+ages:"0–10 yrs",maxKids:"depends on space",duration:"2 hrs + extensions",loc:"no",food:"opt",bags:"no",
+shortDesc:"One company, the whole party: mobile soft play and ball pools from £70, plus bouncy castles, face painting, balloon modelling, mascot and character visits, pamper parties, pony parties, discos, science parties and even fun-food carts — across Glasgow, Lanarkshire, Renfrewshire and Ayrshire. Regularly sets up in homes, halls and nurseries; outdoor setups under canopies possible.",
+packages:[
+{name:"Standard Soft Play (2 hrs)",price:"£70",priceNote:"private family events · part of 3-option party package",maxKids:"Small/medium venues",featured:true,
+includes:["Padded floor tiles, soft shapes & building blocks","Ride-on toys","Commercial ball pool","Extra hours £24.50"],
+excludes:["Delivery fee (quoted by location)","Venue & food (fun-food carts available)"],
+slots:"Office Mon–Fri 9.30–3 · 0141 280 4233"},
+],
+extras:["Premium, Deluxe & Super Deluxe sets with bouncy castles","Entertainers, mascots & character visits","Face painting, glitter tattoos & balloon modelling","Discos, science & foam parties"],
+notes:"WhatsApp 07536 092650 or email info@uniquechildrensparties.co.uk. Corporate and public event pricing differs — ask for the current list.",
+website:"https://www.uniquechildrensparties.co.uk/mobilesoftplayhire"},
+
+{id:122,cat:"mobile",name:"Little Posh People",sub:"Luxury Soft Play Hire Across Scotland",postcode:"Mobile",city:"Ayr to Aberdeen — most of Scotland",type:"Luxury Mobile Soft Play (Ages 0–4)",lat:56.0,lng:-3.5,
+h1:"Little Posh People — Luxury Soft Play Hire in Scotland",h2:"Stylish Soft Play Delivered from Ayr to Aberdeen",h3:"Sophisticated Soft Play Packages for Under-4s",metaTitle:"Little Posh People | Luxury Soft Play Hire Scotland",metaDesc:"Stylish, luxury soft play hire for parties, weddings and naming days across Scotland — Edinburgh, Glasgow, Dundee, Aberdeen, Ayrshire and more. Ideal for 0–4 year olds. Delivered, set up and collected.",
+slug:"little-posh-people-scotland",
+ages:"0–4 yrs",maxKids:"depends on space",duration:"flexible hire",loc:"no",food:"no",bags:"no",
+shortDesc:"The 'minimalist luxury' end of mobile soft play: elegant, neutral-toned sets, wooden role-play toys and an inflatable ball pit, fully customisable to your theme — popular at weddings and naming days as well as birthdays. Family-run, fully insured, with delivery, setup and collection across most of Scotland from Ayr to Aberdeen, including Edinburgh, the Lothians, Glasgow, Dundee, Perthshire and Stirling.",
+packages:[
+{name:"Posh Packages (Mini Posh Tot → Posh XL)",price:"POA",priceNote:"four package sizes · theme customisation included",maxKids:"Sized to your space",featured:true,
+includes:["Luxury neutral soft play & wooden playsets","Inflatable ball pit option","Theme customisation","Delivery, setup & collection (or cheaper to-door option)","Fully insured, cleaned after every hire"],
+excludes:["Venue & food (you host)"],
+slots:"Book via littleposhpeople.com · 07917 541145"},
+],
+extras:["Midweek Cup of Posh — small weekday package","Wooden role-play sets","Gift cards available"],
+notes:"Email littleposhpeoplesoftplay@gmail.com. Delivery charge varies by distance — see their delivery page.",
+website:"https://www.littleposhpeople.com/"},
+
+{id:123,cat:"mobile",name:"E-I-O Soft Play & Balloons",sub:"Luxury Soft Play & Balloon Decor, Manchester",postcode:"Mobile",city:"Bury & Greater Manchester",type:"Mobile Soft Play + Balloon Styling",lat:53.593,lng:-2.297,
+h1:"E-I-O Soft Play Birthday Hire in Greater Manchester",h2:"Luxury Soft Play & Balloon Decor Delivered to You",h3:"Neutral Soft Play Sets with 8 Standard Themes",metaTitle:"E-I-O Soft Play | Mobile Soft Play & Balloons | Manchester",metaDesc:"Luxury mobile soft play, bouncy castles and balloon decor across Greater Manchester. Neutral equipment with 8 themes as standard, custom themes available. Based in Bury.",
+slug:"eio-soft-play-manchester",
+ages:"0–5 yrs",maxKids:"depends on space",duration:"flexible hire",loc:"no",food:"no",bags:"no",
+shortDesc:"Bury-based hire company pairing neutral, luxury-look soft play with vibrant themed accessories — 8 themes as standard plus custom themes on request. Also does full balloon styling (number stacks, hoops, sail boards, LED numbers), so one supplier can handle both play and decor for first birthdays, christenings and gender reveals across Greater Manchester.",
+packages:[
+{name:"Soft Play Hire",price:"POA",priceNote:"enquire with date & theme for a quote",maxKids:"Sized to your space",featured:true,
+includes:["Luxury neutral soft play equipment","8 standard themes or custom theme","Bouncy castle options","Delivery, setup & collection in Greater Manchester"],
+excludes:["Venue & food (you host)"],
+slots:"Enquire via eiosoftplay.co.uk"},
+],
+extras:["Balloon decor: number stacks, hoops, sail boards & LED numbers","Personalised backdrops","Sister shop eioplayco.co.uk"],
+notes:"Based in Bury, covers Greater Manchester. Email eiosoftplay@gmail.com. Consistently 5-star reviewed for styling and reliability.",
+website:"https://www.eiosoftplay.co.uk/"},
+
+{id:124,cat:"mobile",name:"Sharky + George",sub:"London's Luxury Party Entertainers",postcode:"Mobile",city:"London & Cotswolds (travel UK-wide)",type:"Premium Children's Entertainers & Party Planners",lat:51.49,lng:-0.17,
+h1:"Sharky + George — Luxury Children's Party Entertainers",h2:"High-Energy Bespoke Kids' Parties in London",h3:"Over 30,000 Parties Thrown — Bespoke Pricing",metaTitle:"Sharky + George | Luxury Children's Entertainers | London",metaDesc:"Premium children's party planners and entertainers in London and the Cotswolds. High-energy games, disco, science and fully bespoke themed parties. Over 30,000 events thrown. Enquire for pricing.",
+slug:"sharky-and-george-london",
+ages:"3–12 yrs",maxKids:"any size (bespoke)",duration:"bespoke",loc:"no",food:"no",bags:"no",
+shortDesc:"The 'kings of the lavish kids' party' — premium entertainers and full party planners who've thrown over 30,000 events in London, Bristol and worldwide. Signature formats include high-energy games parties, disco and mini-disco parties, science parties and music-video parties, or fully bespoke themes planned around your child. The top-end option when you want the whole thing designed and run for you.",
+packages:[
+{name:"Bespoke Party",price:"POA",priceNote:"priced per brief · entertainers through to full production",maxKids:"Any group size",featured:true,
+includes:["Expert entertainers & personalised games","Signature formats: disco, science, music video","Full party planning available","London, Cotswolds & travel further afield"],
+excludes:["Pricing on enquiry — premium tier"],
+slots:"Enquire via sharkyandgeorge.com"},
+],
+extras:["Weddings & event childcare too","Featured by national press as the luxury benchmark"],
+notes:"This is the premium end of the market — expect entertainer-party pricing well above the ~£170 high-street rate. Get a tailored quote with your date and numbers.",
+website:"https://www.sharkyandgeorge.com/parties/"},
+
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let radius=10, activeFilter="all", userCoords=null, userPC="";
+
+// ── TINY INVITES BRIDGE ──────────────────────────────────────────────────────
+const TINY_INVITES="https://tinyinvites.org";
+const INVITE_STYLES={soft:"playful pastel",gym:"bold & bright",bounce:"high-energy",swim:"splashy seaside",farm:"soft neutral animal",club:"classic elegant",unique:"vintage poster",leisure:"clean & simple",mobile:"at-home celebration"};
+function tinyLink(cat){return TINY_INVITES+"/?utm_source=littlepartyfinder&utm_medium=referral&theme="+(cat&&cat!=="all"?cat:"all");}
+
+// ── VIBE FILTERS ─────────────────────────────────────────────────────────────
+let vibes={u3:false,inc:false,exc:false};
+function isU3(v){const m=String(v.ages).match(/\d+/);return !!m&&parseInt(m[0],10)<=2;}
+function isInc(v){return v.food==="yes";}
+function isExc(v){const t=JSON.stringify([v.type,v.shortDesc,v.extras,v.notes,v.packages]).toLowerCase();return t.includes("exclusive")||t.includes("private hire")||t.includes("sole use")||t.includes("whole venue");}
+function vibePass(v){return (!vibes.u3||isU3(v))&&(!vibes.inc||isInc(v))&&(!vibes.exc||isExc(v));}
+function setV(btn){const k=btn.dataset.v;vibes[k]=!vibes[k];btn.classList.toggle("on",vibes[k]);if(userCoords)render();}
+
+// ── CURATED COLLECTIONS ──────────────────────────────────────────────────────
+function openCollection(kind){
+  vibes={u3:false,inc:false,exc:false};
+  document.querySelectorAll(".vp").forEach(b=>b.classList.remove("on"));
+  if(kind==="inc"){
+    activeFilter="all";vibes.inc=true;
+    const b=document.querySelector('.vp[data-v="inc"]');if(b)b.classList.add("on");
+  }else{activeFilter=kind;}
+  document.querySelectorAll(".fp").forEach(b=>b.classList.toggle("on",b.dataset.c===(kind==="inc"?"all":kind)));
+  radius=9999;
+  document.querySelectorAll(".rc").forEach(b=>b.classList.toggle("on",b.dataset.r==="9999"));
+  if(!userCoords){userCoords=[52.4862,-1.8904];userPC="the UK";}
+  document.getElementById("heroState").style.display="none";
+  document.getElementById("filterBar").style.display="flex";
+  document.getElementById("resultsBar").style.display="flex";
+  render();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function fillCollectionCounts(){
+  const set=(id,n)=>{const e=document.getElementById(id);if(e)e.textContent=n+" venues →";};
+  set("ccFarm",DB.filter(v=>v.cat==="farm").length);
+  set("ccInc",DB.filter(isInc).length);
+  set("ccUnique",DB.filter(v=>v.cat==="unique").length);
+  set("ccMobile",DB.filter(v=>v.cat==="mobile").length);
+}
+
+// ── TIMELINE CALCULATOR ──────────────────────────────────────────────────────
+function calcTimeline(){
+  const el=document.getElementById("tcDate"),out=document.getElementById("tcOut");
+  if(!el||!out||!el.value) return;
+  const party=new Date(el.value+"T12:00:00"),today=new Date();today.setHours(0,0,0,0);
+  const days=Math.round((party-today)/86400000);
+  const fmt=d=>d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});
+  const minus=w=>{const d=new Date(party);d.setDate(d.getDate()-w*7);return d;};
+  if(days<0){out.innerHTML=`<div class="tc-line">That date has already passed — pick a future date! 🎈</div>`;return;}
+  const line=(when,what,passed)=>`<div class="tc-line"><strong>${passed?"ASAP":fmt(when)}</strong><span>${what}${passed?" — popular slots go fast, call rather than email":""}</span></div>`;
+  out.innerHTML=
+    line(minus(8),"Book your venue (weekend slots fill 6–8 weeks out)",minus(8)<today)+
+    line(minus(4),"Send your invitations",minus(4)<today)+
+    line(minus(2),"Order the cake & party bags",minus(2)<today)+
+    line(minus(1),"Confirm final numbers with the venue",minus(1)<today)+
+    `<a class="tc-cta" href="${tinyLink(activeFilter)}" target="_blank" rel="noopener">✉️ Create your invite on Tiny Invites →</a>`;
+}
+
+// ── INVITE BANNER ────────────────────────────────────────────────────────────
+function updateInviteBanner(n){
+  const ib=document.getElementById("inviteBanner");if(!ib)return;
+  if(!n){ib.style.display="none";return;}
+  ib.style.display="flex";
+  const txt=document.getElementById("ibText"),link=document.getElementById("ibLink");
+  if(activeFilter!=="all"&&CAT_CFG[activeFilter]){
+    txt.textContent=`Found your venue? Matching ${INVITE_STYLES[activeFilter]} invite templates for ${CAT_CFG[activeFilter].label.toLowerCase()} parties — ready in 60 seconds.`;
+  }else{
+    txt.textContent="Found your venue? Spin up a matching digital invite in 60 seconds.";
+  }
+  if(link)link.href=tinyLink(activeFilter);
+}
 
 // ═══════════════════════════════════════════════════
 // NATIONWIDE — no postcode required
@@ -2614,6 +3083,7 @@ function render(){
   let venues=DB.map(v=>({...v,dist:hav(ux,uy,v.lat,v.lng)}))
     .filter(v=>v.dist<=radius)
     .filter(v=>activeFilter==="all"||v.cat===activeFilter)
+    .filter(vibePass)
     .sort((a,b)=>a.dist-b.dist);
   const n=venues.length;
   document.getElementById("resNum").textContent=n;
@@ -2624,6 +3094,119 @@ function render(){
     return;
   }
   g.innerHTML=venues.map(v=>card(v)).join("");
+  lastResults=venues;
+  updateMap();
+  updateInviteBanner(n);
+}
+
+// ── MAP VIEW (Leaflet + OpenStreetMap) ───────────────────────────────────────
+let lastResults=[],lpfMap=null,markerLayer=null,curView="list";
+function setView(view){
+  curView=view;
+  document.getElementById("vtList").classList.toggle("on",view==="list");
+  document.getElementById("vtMap").classList.toggle("on",view==="map");
+  document.getElementById("grid").style.display=view==="list"?"grid":"none";
+  document.getElementById("mapWrap").style.display=view==="map"?"block":"none";
+  if(view==="map") updateMap();
+}
+function updateMap(){
+  if(curView!=="map"||!userCoords||typeof L==="undefined") return;
+  if(!lpfMap){
+    lpfMap=L.map("map",{scrollWheelZoom:false});
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"}).addTo(lpfMap);
+    markerLayer=L.layerGroup().addTo(lpfMap);
+  }
+  markerLayer.clearLayers();
+  const bounds=[userCoords];
+  L.circleMarker(userCoords,{radius:8,color:"#2a2218",weight:3,fillColor:"#fff9f2",fillOpacity:1})
+    .bindTooltip("You · "+userPC,{permanent:false}).addTo(markerLayer);
+  lastResults.forEach(v=>{
+    const c=CAT_CFG[v.cat];
+    const m=L.circleMarker([v.lat,v.lng],{radius:9,color:"#fff9f2",weight:2,fillColor:c.color,fillOpacity:.95}).addTo(markerLayer);
+    m.bindPopup(`<div class="map-pop">
+      <div class="mp-name">${v.name}</div>
+      <div class="mp-meta">${c.emoji} ${c.label} · ${v.postcode==="UK-wide"?"UK-wide":v.dist.toFixed(1)+" mi away"}</div>
+      <div class="mp-meta">${v.packages[0]?.price||"Contact venue"} · ${v.city}</div>
+      <a href="venue.html?venue=${encodeURIComponent(v.slug||String(v.id))}">View details →</a>
+    </div>`);
+    bounds.push([v.lat,v.lng]);
+  });
+  setTimeout(()=>{
+    lpfMap.invalidateSize();
+    if(bounds.length>1) lpfMap.fitBounds(bounds,{padding:[40,40],maxZoom:12});
+    else lpfMap.setView(userCoords,11);
+  },60);
+}
+
+// ── CATEGORY ILLUSTRATIONS (flat SVG scenes, gold/cream palette) ─────────────
+function catArt(cat){
+  const c=CAT_CFG[cat]||CAT_CFG.unique;
+  const col=c.color,pale=c.bg,gold="#c9a84c",sand="#e8d5a3",ink2="#6b5c45",white="#fff9f2";
+  const scenes={
+soft:`<rect width="330" height="88" fill="${pale}"/>
+<circle cx="292" cy="16" r="12" fill="${gold}" opacity=".5"/>
+<polygon points="36,12 62,12 98,58 72,58" fill="${sand}"/>
+<rect x="20" y="50" width="290" height="34" rx="10" fill="${white}" stroke="${sand}"/>
+<circle cx="60" cy="66" r="8" fill="${col}"/><circle cx="84" cy="72" r="8" fill="${gold}"/><circle cx="108" cy="64" r="8" fill="${sand}"/><circle cx="132" cy="72" r="8" fill="${col}" opacity=".6"/><circle cx="156" cy="65" r="8" fill="${gold}" opacity=".6"/><circle cx="180" cy="72" r="8" fill="${col}"/><circle cx="204" cy="65" r="8" fill="${sand}"/><circle cx="228" cy="72" r="8" fill="${gold}"/><circle cx="252" cy="65" r="8" fill="${col}" opacity=".7"/><circle cx="276" cy="72" r="8" fill="${sand}"/>`,
+gym:`<rect width="330" height="88" fill="${pale}"/>
+<rect x="20" y="74" width="290" height="6" rx="3" fill="${sand}"/>
+<rect x="50" y="50" width="150" height="8" rx="3" fill="${col}"/>
+<rect x="70" y="58" width="8" height="18" fill="${ink2}"/><rect x="172" y="58" width="8" height="18" fill="${ink2}"/>
+<line x1="250" y1="8" x2="250" y2="34" stroke="${ink2}" stroke-width="3"/><line x1="285" y1="8" x2="285" y2="34" stroke="${ink2}" stroke-width="3"/>
+<circle cx="250" cy="42" r="9" fill="none" stroke="${gold}" stroke-width="4"/><circle cx="285" cy="42" r="9" fill="none" stroke="${gold}" stroke-width="4"/>
+<circle cx="36" cy="22" r="10" fill="${gold}" opacity=".5"/>`,
+bounce:`<rect width="330" height="88" fill="${pale}"/>
+<ellipse cx="165" cy="64" rx="80" ry="10" fill="${col}"/>
+<ellipse cx="165" cy="61" rx="68" ry="7" fill="${white}"/>
+<line x1="100" y1="70" x2="88" y2="84" stroke="${ink2}" stroke-width="4"/><line x1="230" y1="70" x2="242" y2="84" stroke="${ink2}" stroke-width="4"/>
+<circle cx="165" cy="24" r="11" fill="${gold}"/>
+<path d="M130 40 Q165 8 200 40" fill="none" stroke="${sand}" stroke-width="3" stroke-dasharray="5 6"/>
+<circle cx="40" cy="18" r="8" fill="${col}" opacity=".35"/><circle cx="294" cy="22" r="6" fill="${gold}" opacity=".5"/>`,
+swim:`<rect width="330" height="88" fill="${pale}"/>
+<circle cx="288" cy="18" r="13" fill="${gold}" opacity=".6"/>
+<path d="M0 50 Q27 40 55 50 T110 50 T165 50 T220 50 T275 50 T330 50 V88 H0 Z" fill="${col}" opacity=".35"/>
+<path d="M0 60 Q27 50 55 60 T110 60 T165 60 T220 60 T275 60 T330 60 V88 H0 Z" fill="${col}" opacity=".55"/>
+<path d="M0 70 Q27 62 55 70 T110 70 T165 70 T220 70 T275 70 T330 70 V88 H0 Z" fill="${col}"/>
+<circle cx="62" cy="36" r="10" fill="${white}" stroke="${gold}" stroke-width="3"/>`,
+farm:`<rect width="330" height="88" fill="${pale}"/>
+<circle cx="42" cy="18" r="11" fill="${gold}" opacity=".6"/>
+<path d="M0 70 Q90 52 180 66 T330 62 V88 H0 Z" fill="${col}" opacity=".8"/>
+<rect x="238" y="30" width="56" height="34" fill="${sand}"/><polygon points="232,32 266,12 300,32" fill="${col}"/>
+<rect x="258" y="44" width="16" height="20" fill="${ink2}"/>
+<rect x="40" y="46" width="5" height="22" fill="${ink2}"/><rect x="80" y="46" width="5" height="22" fill="${ink2}"/><rect x="120" y="46" width="5" height="22" fill="${ink2}"/><rect x="160" y="46" width="5" height="22" fill="${ink2}"/>
+<rect x="34" y="50" width="138" height="4" fill="${ink2}" opacity=".7"/><rect x="34" y="60" width="138" height="4" fill="${ink2}" opacity=".7"/>`,
+club:`<rect width="330" height="88" fill="${pale}"/>
+<rect x="100" y="28" width="130" height="52" fill="${white}" stroke="${sand}"/>
+<polygon points="92,30 165,10 238,30" fill="${col}"/>
+<rect x="115" y="40" width="20" height="16" fill="${sand}"/><rect x="155" y="40" width="20" height="16" fill="${sand}"/><rect x="195" y="40" width="20" height="16" fill="${sand}"/>
+<rect x="152" y="60" width="26" height="20" fill="${col}"/>
+<line x1="165" y1="10" x2="165" y2="0" stroke="${ink2}" stroke-width="2"/><polygon points="165,0 185,4 165,9" fill="${gold}"/>
+<rect x="20" y="80" width="290" height="4" rx="2" fill="${sand}"/>`,
+unique:`<rect width="330" height="88" fill="${pale}"/>
+<path d="M10 14 Q165 38 320 14" fill="none" stroke="${ink2}" stroke-width="2"/>
+<polygon points="40,18 52,19 46,34" fill="${col}"/><polygon points="90,24 102,25 96,40" fill="${gold}"/><polygon points="140,27 152,28 146,43" fill="${sand}"/><polygon points="190,27 202,26 196,42" fill="${col}"/><polygon points="240,23 252,22 246,38" fill="${gold}"/><polygon points="288,17 300,16 294,32" fill="${sand}"/>
+<path d="M60 62 l4 8 9 1 -6 7 1 9 -8 -4 -8 4 1 -9 -6 -7 9 -1 z" fill="${gold}"/>
+<path d="M250 58 l4 8 9 1 -6 7 1 9 -8 -4 -8 4 1 -9 -6 -7 9 -1 z" fill="${col}"/>
+<circle cx="160" cy="70" r="6" fill="${sand}"/>`,
+leisure:`<rect width="330" height="88" fill="${pale}"/>
+<rect x="60" y="26" width="210" height="54" fill="${white}" stroke="${sand}"/>
+<rect x="60" y="26" width="210" height="10" fill="${col}"/>
+<rect x="74" y="46" width="26" height="20" fill="${sand}"/><rect x="112" y="46" width="26" height="20" fill="${sand}"/><rect x="150" y="46" width="26" height="20" fill="${col}" opacity=".4"/><rect x="188" y="46" width="26" height="20" fill="${sand}"/><rect x="226" y="46" width="26" height="20" fill="${sand}"/>
+<circle cx="34" cy="18" r="9" fill="${gold}" opacity=".5"/>
+<rect x="20" y="80" width="290" height="4" rx="2" fill="${sand}"/>`,
+mobile:`<rect width="330" height="88" fill="${pale}"/>
+<rect x="0" y="72" width="330" height="16" fill="${sand}" opacity=".7"/>
+<rect x="96" y="34" width="110" height="38" rx="6" fill="${col}"/>
+<path d="M206 44 h34 l16 16 v12 h-50 Z" fill="${col}"/>
+<rect x="214" y="48" width="20" height="12" rx="2" fill="${white}"/>
+<rect x="108" y="42" width="22" height="13" rx="2" fill="${white}"/><rect x="140" y="42" width="22" height="13" rx="2" fill="${white}"/>
+<circle cx="128" cy="74" r="9" fill="#2a2218"/><circle cx="128" cy="74" r="4" fill="${white}"/>
+<circle cx="226" cy="74" r="9" fill="#2a2218"/><circle cx="226" cy="74" r="4" fill="${white}"/>
+<line x1="150" y1="34" x2="150" y2="20" stroke="${ink2}" stroke-width="2"/>
+<circle cx="142" cy="14" r="8" fill="${gold}"/><circle cx="158" cy="12" r="8" fill="${sand}"/><circle cx="150" cy="6" r="7" fill="${col}" opacity=".7"/>
+<line x1="56" y1="48" x2="84" y2="48" stroke="${ink2}" stroke-width="3" opacity=".5"/><line x1="48" y1="58" x2="84" y2="58" stroke="${ink2}" stroke-width="3" opacity=".35"/>`
+  };
+  return `<svg class="card-art" viewBox="0 0 330 88" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${scenes[cat]||scenes.unique}</svg>`;
 }
 
 function card(v){
@@ -2634,6 +3217,7 @@ function card(v){
   const bestPrice=v.packages[0]?.price||"Contact venue";
   return `<div class="card" onclick="window.location.href='venue.html?venue=${encodeURIComponent(v.slug||String(v.id))}'">
     <div class="card-top-bar" style="background:${c.color}"></div>
+    ${catArt(v.cat)}
     <div class="card-body">
       <div class="card-row1">
         <div class="card-name">${v.name}<br><span style="font-family:'DM Sans';font-size:12px;font-weight:500;color:var(--muted)">${v.sub}</span></div>
@@ -2703,6 +3287,10 @@ function openM(id){
     <div class="packages">${pkgs}</div>
     ${extras}
     ${v.notes?`<div class="notes-box">💡 <strong>Good to know:</strong> ${v.notes}</div>`:""}
+    <div class="modal-invite">
+      <div><strong>Booked your slot?</strong> Spin up a matching ${INVITE_STYLES[v.cat]||"beautiful"} invite in 60 seconds.</div>
+      <a href="${tinyLink(v.cat)}" target="_blank" rel="noopener">✉️ Create invite →</a>
+    </div>
     <div class="modal-actions">
       <a class="btn-primary" href="${v.website}" target="_blank" rel="noopener">Book or get details →</a>
       <button class="btn-sec" onclick="closeM()">← Back</button>
@@ -2714,6 +3302,8 @@ function closeM(){document.getElementById("overlay").classList.remove("open");do
 function closeMO(e){if(e.target===document.getElementById("overlay"))closeM();}
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeM();});
 showLandingVenues();
+fillCollectionCounts();
+(function(){const d=document.getElementById("tcDate");if(d){const min=new Date();d.min=min.toISOString().slice(0,10);}})();
 </script>
 </body>
 </html>

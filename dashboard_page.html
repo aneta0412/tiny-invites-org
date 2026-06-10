@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Your Party Dashboard | Tiny Invites</title>
+<title>Your Party Page | Tiny Invites</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
@@ -261,7 +261,7 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
   <img id="dashHeroImg" src="" alt="Party photo">
   <div class="dash-hero-overlay"></div>
   <div class="dash-hero-text">
-    <div class="dash-hero-eyebrow">Party Dashboard</div>
+    <div class="dash-hero-eyebrow">Party Page</div>
     <h1 class="dash-hero-title"><em id="heroTitle">Your Party</em></h1>
     <p class="dash-hero-meta" id="heroMeta">—</p>
   </div>
@@ -270,7 +270,7 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
 <div class="page">
 
   <div class="dash-header" id="dashHeaderText">
-    <div class="dash-eyebrow">Party Dashboard</div>
+    <div class="dash-eyebrow">Party Page</div>
     <h1 class="dash-title"><em id="textTitle">Your Party</em></h1>
     <p class="dash-sub" id="textMeta">—</p>
   </div>
@@ -344,15 +344,15 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     <div class="digest-note-icon">✉️</div>
     <div>
       <strong id="todayResponsesLine">0 responses today.</strong>
-      We email you each new RSVP as it arrives. If you receive <strong>more than 15 in one day</strong>, we'll pause individual emails and send you one summary instead — it arrives in the evening after <strong>8pm</strong>. (Your dashboard always stays up to date in real time.)
+      You get an email for each RSVP. More than 15 in a day? We'll send one evening summary instead.
     </div>
   </div>
 
   <div class="digest-note" style="margin-bottom:8px;border-left-color:var(--gold);">
     <div class="digest-note-icon">💬</div>
     <div>
-      <strong>Need to contact your guests?</strong> Use the <em>Message Guests</em> panel below — it sends directly to everyone who confirmed. Guest emails are kept private by default and handled by Tiny Invites on your behalf.<br>
-      <span style="color:var(--soft);font-size:0.74rem;">In an emergency — if you need to reach guests outside this platform — you can request the full guest list including email addresses using the button below.</span>
+      <strong>Need to reach your guests?</strong> Use the panel below to message everyone who confirmed. Guest emails are always kept private.<br>
+      <span style="color:var(--soft);font-size:0.74rem;">In an emergency, use the button below to export the full guest list with contacts.</span>
     </div>
   </div>
 
@@ -375,10 +375,8 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     <!-- Panel: Reminder note -->
     <div class="msg-panel active" id="panelNote">
       <div class="msg-hint">
-        <strong>Add a note to the 3-day reminder email.</strong>
-        Sent to all confirmed guests as a reminder before the party.
-        It appears in a highlighted block in their reminder. Leave it blank and it won't show.
-        Changes take effect on the next cron run (daily at 4pm UTC).
+        <strong>Add a note to the 3-day reminder.</strong>
+        This appears as a highlighted block in the reminder sent to confirmed guests. Leave blank to skip.
       </div>
       <div class="msg-field-wrap">
         <label class="msg-label" for="reminderNoteText">Note from you</label>
@@ -399,10 +397,8 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     <!-- Panel: Send update now -->
     <div class="msg-panel" id="panelSend">
       <div class="msg-hint">
-        <strong>Send a message to all confirmed guests right now.</strong>
-        This is a service message (like a booking confirmation) so it goes to <em>all</em> guests
-        who RSVPd yes. Use it for important updates only: venue changes,
-        time changes, what to bring. Not for general announcements.
+        <strong>Send a message to all confirmed guests now.</strong>
+        Use for important updates only — venue changes, time changes, what to bring.
       </div>
       <div class="msg-field-wrap">
         <label class="msg-label" for="updateSubject">Subject <span style="color:var(--soft);font-style:italic;text-transform:none;letter-spacing:0">(optional)</span></label>
@@ -507,7 +503,7 @@ function escapeHtml(str) {
 window.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(location.search);
   _token = params.get('token');
-  if (!_token) { showError('No dashboard token found. Please use the link from your invitation email.'); return; }
+  if (!_token) { showError('No party page token found. Please use the link from your invitation email.'); return; }
   showLoading(true);
   try {
     const res  = await fetchWithTimeout(`/api/dashboard-api?action=load&token=${encodeURIComponent(_token)}`, {}, 8000);
@@ -1049,7 +1045,7 @@ async function resendEmail() {
 function ordSuffix(n) { const s=['th','st','nd','rd'],v=n%100; return s[(v-20)%10]||s[v]||s[0]; }
 function showLoading(on) { document.querySelector('.page').style.opacity = on ? '0.4' : '1'; }
 function showError(msg) {
-  document.querySelector('.page').innerHTML = `<div style="text-align:center;padding:80px 20px"><p style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--mid);margin-bottom:16px;">Couldn't load dashboard</p><p style="font-size:0.85rem;color:var(--soft);">${msg}</p><a href="/" style="display:inline-block;margin-top:32px;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);text-decoration:none;">← Back to home</a></div>`;
+  document.querySelector('.page').innerHTML = `<div style="text-align:center;padding:80px 20px"><p style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--mid);margin-bottom:16px;">Couldn't load your party page</p><p style="font-size:0.85rem;color:var(--soft);">${msg}</p><a href="/" style="display:inline-block;margin-top:32px;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);text-decoration:none;">← Back to home</a></div>`;
 }
 function showToast(msg) {
   const t = document.getElementById('toast');

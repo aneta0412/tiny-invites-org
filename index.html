@@ -59,7 +59,7 @@
 
   .hero { min-height:88vh; display:flex; align-items:center; padding:64px 40px; position:relative; overflow:hidden; }
   .hero-bg { position:absolute; inset:0; background:linear-gradient(to right, rgba(250,246,239,0.98) 0%, rgba(250,246,239,0.94) 48%, rgba(250,246,239,0.72) 100%), url('hero-bg.jpg') center/cover no-repeat; z-index:0; }
-  .hero-inner { position:relative; z-index:1; display:grid; grid-template-columns:minmax(0,1fr) minmax(420px,540px); gap:48px; align-items:center; max-width:1320px; margin:0 auto; width:100%; }
+  .hero-inner { position:relative; z-index:1; display:grid; grid-template-columns:minmax(0,1fr) minmax(440px,560px); gap:52px; align-items:center; max-width:1320px; margin:0 auto; width:100%; }
   .hero-content { max-width:560px; }
   .eyebrow { opacity:0; animation:fadeUp 0.8s 0.2s forwards; }
   .hero-content h1 { font-size:clamp(3rem,6vw,5rem); line-height:1.06; color:var(--dark); margin-bottom:22px; opacity:0; animation:fadeUp 0.9s 0.35s forwards; }
@@ -69,6 +69,60 @@
   .hero-panel-header { padding:20px 24px 16px; border-bottom:1px solid var(--gold-pale); }
   .hero-panel-header h3 { font-size:clamp(1.55rem,2.5vw,2rem); margin-bottom:6px; }
   .hero-panel-header p { font-size:0.82rem; color:var(--mid); line-height:1.6; }
+
+  /* ===== Hero animated invite collage (right column) ===== */
+  .hero-collage { display:grid; grid-template-columns:1fr 1fr; gap:12px; position:relative; opacity:0; animation:fadeUp 0.9s 0.5s forwards; }
+  .hero-collage::after { content:""; position:absolute; inset:-9% -7%; z-index:-1; background:radial-gradient(58% 58% at 70% 28%, rgba(201,168,76,0.14), transparent 72%); }
+  .hc-col-2 { margin-top:30px; }
+  .hc-tile { position:relative; width:100%; aspect-ratio:3/2; border-radius:12px; overflow:hidden; border:1px solid var(--gold-pale); box-shadow:0 10px 30px rgba(42,34,24,0.10); background:#fff; }
+  .hc-tile + .hc-tile { margin-top:12px; }
+  .hc-slide { position:absolute; inset:0; opacity:0; animation:hcFade 16s ease-in-out infinite; }
+  .hc-slide img { width:100%; height:100%; object-fit:cover; }
+  @keyframes hcFade {
+    0% { opacity:0; transform:scale(1.04); }
+    4% { opacity:1; transform:scale(1); }
+    22% { opacity:1; transform:scale(1); }
+    27% { opacity:0; transform:scale(1.02); }
+    100% { opacity:0; }
+  }
+  .hc-a .hc-slide:nth-child(1){animation-delay:0s}.hc-a .hc-slide:nth-child(2){animation-delay:4s}.hc-a .hc-slide:nth-child(3){animation-delay:8s}
+  .hc-b .hc-slide:nth-child(1){animation-delay:1.3s}.hc-b .hc-slide:nth-child(2){animation-delay:5.3s}.hc-b .hc-slide:nth-child(3){animation-delay:9.3s}
+  .hc-c .hc-slide:nth-child(1){animation-delay:2.6s}.hc-c .hc-slide:nth-child(2){animation-delay:6.6s}.hc-c .hc-slide:nth-child(3){animation-delay:10.6s}
+  .hc-d .hc-slide:nth-child(1){animation-delay:3.9s}.hc-d .hc-slide:nth-child(2){animation-delay:7.9s}.hc-d .hc-slide:nth-child(3){animation-delay:11.9s}
+  @media (prefers-reduced-motion: reduce) {
+    .hc-slide { animation:none; }
+    .hc-slide:not(:first-child) { display:none; }
+    .floating-balloon { animation:none !important; }
+  }
+
+  /* ===== Floating balloon ===== */
+  .floating-balloon {
+    position:fixed; right:28px; top:32px; z-index:999;
+    width:52px; height:68px; cursor:pointer; user-select:none;
+    filter:drop-shadow(0 6px 16px rgba(201,168,76,0.22));
+    transition:right 0.8s cubic-bezier(.25,.46,.45,.94), top 0.8s cubic-bezier(.25,.46,.45,.94);
+    animation:balloonBob 3.6s ease-in-out infinite;
+  }
+  .floating-balloon svg { width:100%; height:100%; }
+  .floating-balloon:hover { filter:drop-shadow(0 8px 20px rgba(201,168,76,0.35)); }
+  .floating-balloon:active { transform:scale(0.9); }
+  @keyframes balloonBob {
+    0%,100% { transform:translateY(0); }
+    50% { transform:translateY(-16px); }
+  }
+
+  /* ===== Confetti ===== */
+  .confetti-piece {
+    position:fixed; z-index:9999; pointer-events:none;
+    width:8px; height:8px; border-radius:1px;
+    animation:confettiFall var(--fall-duration,6s) var(--fall-ease,cubic-bezier(.08,.9,.25,1)) forwards;
+    opacity:0;
+  }
+  @keyframes confettiFall {
+    0% { opacity:1; transform:translate(0,0) rotate(0deg) scale(1); }
+    25% { opacity:1; }
+    100% { opacity:0; transform:translate(var(--dx,40px), var(--dy,600px)) rotate(var(--rot,720deg)) scale(0.3); }
+  }
 
   .action-cards { display:flex; flex-direction:column; }
   .action-card { display:grid; grid-template-columns:minmax(0,1fr) minmax(150px,0.72fr); min-height:150px; border-bottom:1px solid var(--gold-pale); }
@@ -202,6 +256,7 @@
     .hero-inner, .contact-inner { grid-template-columns:1fr; gap:36px; }
     .hero { min-height:auto; padding:48px 24px; }
     .hero-panel { max-width:520px; }
+    .hero-collage { max-width:520px; }
     .other-grid, .testimonials-grid, .print-grid { grid-template-columns:1fr; }
     .tiles-grid { grid-template-columns:repeat(4,1fr); }
     .prompt-lines { grid-template-columns:1fr; }
@@ -334,31 +389,43 @@
         <span style="font-size:0.72rem;color:var(--mid);display:flex;align-items:center;gap:6px;">✓ No app needed</span>
       </div>
     </div>
-    <aside class="hero-panel" id="how-it-works" aria-label="How Tiny Invites works">
-      <div class="hero-panel-header">
-        <p class="section-label">See it in action</p>
-        <h3>Venue to RSVPs, <em>all in one place</em></h3>
-        <p>Find your venue, send your invite instantly and get RSVP updates straight to your inbox.</p>
-      </div>
-      <div class="action-cards">
-        <a class="action-card action-card--compact" href="/partyfinder.html">
-          <div class="action-card-text"><span class="action-card-num">01</span><p class="action-card-title">Find your perfect party location</p><p class="action-card-desc">Search 100+ UK venues by postcode — soft play, swimming, farms and more.</p></div>
-          <div class="action-card-img"><img src="venue-finder.png" alt="Party venue"></div>
-        </a>
-        <div class="action-card">
-          <div class="action-card-text"><span class="action-card-num">02</span><p class="action-card-title">Fill in your party details</p><p class="action-card-desc">Add your child's name, age, venue, and a photo — a shareable invite page is ready in under two minutes.</p></div>
-          <div class="action-card-img"><div class="mock-card"><div class="mock-email-head"><span class="mock-dot">🎉</span><span class="mock-title">New invite</span></div><div style="font-size:0.6rem;color:var(--soft);text-transform:uppercase;letter-spacing:0.08em;margin:6px 0 3px;">Child's name</div><div style="height:14px;background:var(--gold-pale);border-radius:4px;margin-bottom:6px;"></div><div style="font-size:0.6rem;color:var(--soft);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">Party location</div><div style="height:14px;background:var(--gold-pale);border-radius:4px;margin-bottom:8px;"></div><div style="background:var(--dark);color:var(--cream);text-align:center;font-size:0.6rem;padding:5px 8px;border-radius:4px;">Create invite →</div></div></div>
+    <!-- Animated invite-screenshot collage -->
+    <div class="hero-collage" aria-hidden="true">
+      <div>
+        <div class="hc-tile hc-a">
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156130/bkvlfmho1pfbus3etqen.jpg" alt="Daisy's party invite"></div>
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156466/uv0dwmieznqlcl6virvl.jpg" alt="Olivia's party invite"></div>
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156500/liky3tattybomfvdmnyv.jpg" alt="Lily's party invite"></div>
         </div>
-        <div class="action-card">
-          <div class="action-card-text"><span class="action-card-num">03</span><p class="action-card-title">Guests RSVP in seconds</p><p class="action-card-desc">A polished mobile invitation with your photo. Share the link or print the QR code — no app or account needed.</p></div>
-          <div class="action-card-img"><img src="rsvp-guest-screen.png" alt="Guest RSVP page" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="mock-card" style="display:none"><p class="mock-invite-title">Olivia's party!</p><div class="mock-row" style="width:80%"></div><div class="mock-row" style="width:65%"></div><div class="mock-actions"><span>Yes</span><span>Can't make it</span></div></div></div>
+        <div class="hc-tile hc-c">
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156192/t4nndy2n3x3qxp5elf7y.jpg" alt="Kai's party invite"></div>
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156492/snbcnre4z42fpb0mozga.jpg" alt="Leo's party invite"></div>
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156462/snlxmrdcmg8pxzeyv2d2.jpg" alt="Ruby's party invite"></div>
         </div>
-        <div class="action-card">
-          <div class="action-card-text"><span class="action-card-num">04</span><p class="action-card-title">Track every response instantly</p><p class="action-card-desc">Names, counts, and dietary needs land in your inbox the moment someone replies. No spreadsheets, no chasing.</p></div>
-          <div class="action-card-img"><img src="dashboard-screen.png" alt="Guest dashboard" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="mock-card" style="display:none"><div class="mock-stats"><div class="mock-stat"><strong>8</strong><span>Coming</span></div><div class="mock-stat declined"><strong>2</strong><span>Declined</span></div></div><div class="mock-row" style="width:100%"></div><div class="mock-row" style="width:75%"></div></div></div>
+        <div class="hc-tile hc-a">
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156496/anmto9gm8ntsfolu5vfb.jpg" alt="Max's party invite"></div>
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156188/lqdtzosgtc660hsah708.jpg" alt="Noah's party invite"></div>
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156197/kxvouvouv4ddp9za7jne.jpg" alt="Freddie's party invite"></div>
         </div>
       </div>
-    </aside>
+      <div class="hc-col-2">
+        <div class="hc-tile hc-b">
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156188/lqdtzosgtc660hsah708.jpg" alt="Noah's party invite"></div>
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156130/bkvlfmho1pfbus3etqen.jpg" alt="Daisy's party invite"></div>
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156470/b9qmkdwz6uapefshczk9.jpg" alt="Theo's party invite"></div>
+        </div>
+        <div class="hc-tile hc-d">
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156197/kxvouvouv4ddp9za7jne.jpg" alt="Freddie's party invite"></div>
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156462/snlxmrdcmg8pxzeyv2d2.jpg" alt="Ruby's party invite"></div>
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156496/anmto9gm8ntsfolu5vfb.jpg" alt="Max's party invite"></div>
+        </div>
+        <div class="hc-tile hc-b">
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156470/b9qmkdwz6uapefshczk9.jpg" alt="Theo's party invite"></div>
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156192/t4nndy2n3x3qxp5elf7y.jpg" alt="Kai's party invite"></div>
+          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156500/liky3tattybomfvdmnyv.jpg" alt="Lily's party invite"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -382,16 +449,9 @@
                ondragover="event.preventDefault();this.style.borderColor='var(--gold)'"
                ondragleave="this.style.borderColor=''"
                ondrop="event.preventDefault();this.style.borderColor='';const f=event.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))readAndUploadPhoto(f);else showPhotoError('Please choose an image file.')">
-            <!-- Decorative party elements -->
-            <div id="photo-decor" style="position:absolute;inset:0;pointer-events:none;opacity:0.35;">
-              <span style="position:absolute;top:10%;left:8%;font-size:7rem;transform:rotate(0deg);">🎈</span>
-              <span style="position:absolute;top:6%;right:12%;font-size:7rem;transform:rotate(0deg);">🎈</span>
-              <span style="position:absolute;top:14%;left:28%;font-size:6rem;transform:rotate(0deg);">✨</span>
-              <span style="position:absolute;bottom:18%;left:10%;font-size:7rem;transform:rotate(0deg);">🎈</span>
-              <span style="position:absolute;bottom:14%;right:8%;font-size:7rem;transform:rotate(0deg);">🎈</span>
-              <span style="position:absolute;top:8%;left:50%;font-size:6rem;">✨</span>
-              <span style="position:absolute;bottom:22%;right:28%;font-size:7rem;transform:rotate(0deg);">✨</span>
-              <span style="position:absolute;bottom:10%;left:38%;font-size:6rem;transform:rotate(0deg);">✨</span>
+            <!-- Decorative background image -->
+            <div id="photo-decor" style="position:absolute;inset:0;pointer-events:none;opacity:0.18;">
+              <img src="hero-bg.jpg" alt="" style="width:100%;height:100%;object-fit:cover;filter:blur(1px) saturate(0.6);">
             </div>
             <!-- Empty state -->
             <div id="photo-empty" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;pointer-events:none;z-index:1;">
@@ -797,6 +857,71 @@
         errEl.textContent = describeFetchError(err);
       });
   }
+
+  /* ===== Floating balloon + confetti ===== */
+  (function() {
+    const balloon = document.createElement('div');
+    balloon.className = 'floating-balloon';
+    balloon.setAttribute('aria-label', 'Click for a surprise');
+    balloon.setAttribute('role', 'button');
+    balloon.innerHTML = '<svg viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="bg" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#ffe87a"/><stop offset="60%" stop-color="#f0d04a"/><stop offset="100%" stop-color="#d4a830"/></radialGradient></defs><ellipse cx="30" cy="34" rx="22" ry="28" fill="url(#bg)" opacity="0.92"/><ellipse cx="24" cy="22" rx="5" ry="7" fill="#fff" opacity="0.28" transform="rotate(-18 24 22)"/><path d="M28 62 Q30 66 32 62" stroke="#c9a84c" stroke-width="1.2" fill="none"/><line x1="30" y1="63" x2="30" y2="88" stroke="#c9a84c" stroke-width="1" opacity="0.5"/></svg>';
+    document.body.appendChild(balloon);
+
+    // Balloon drifts as you scroll: top-right → center → bottom-left
+    let ticking = false;
+    function updateBalloonPosition() {
+      const scrollY = window.scrollY || window.pageYOffset;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = Math.min(scrollY / (maxScroll || 1), 1); // 0 at top, 1 at bottom
+
+      // Vertical: from top:32px to bottom:32px
+      const topVal = 32 + pct * (window.innerHeight - 68 - 64);
+      // Horizontal: from right:28px to ~center then to left side
+      // Use a sine curve so it swings to center mid-page
+      const swing = Math.sin(pct * Math.PI); // peaks at 0.5
+      const rightVal = 28 + swing * (window.innerWidth / 2 - 54);
+
+      balloon.style.top = topVal + 'px';
+      balloon.style.right = rightVal + 'px';
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        requestAnimationFrame(updateBalloonPosition);
+        ticking = true;
+      }
+    }, { passive: true });
+
+    const palette = ['#f5edda','#e8d5a3','#d4c49a','#c9b88a','#f0e6d0','#e0d2b8','#c9a84c','#f8f2e4'];
+
+    balloon.addEventListener('click', function(e) {
+      const rect = balloon.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      for (let i = 0; i < 60; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-piece';
+        const angle = (Math.PI * 0.3) + (Math.random() * Math.PI * 0.4) + (Math.random() - 0.5) * 1.2;
+        const dist = 150 + Math.random() * 500;
+        const dx = (Math.random() - 0.5) * 600;
+        const dy = 200 + Math.random() * 600;
+        const rot = (Math.random() - 0.5) * 1440;
+        const dur = 5 + Math.random() * 3;
+        p.style.cssText = `
+          left:${cx}px; top:${cy}px;
+          background:${palette[Math.floor(Math.random() * palette.length)]};
+          width:${5 + Math.random() * 6}px;
+          height:${5 + Math.random() * 6}px;
+          border-radius:${Math.random() > 0.5 ? '50%' : '1px'};
+          --dx:${dx}px; --dy:${dy}px; --rot:${rot}deg;
+          --fall-duration:${dur}s;
+        `;
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), dur * 1000 + 100);
+      }
+    });
+  })();
 </script>
 </body>
 </html>

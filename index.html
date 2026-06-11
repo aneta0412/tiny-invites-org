@@ -986,7 +986,7 @@
 /* ===== Floating balloon + confetti ===== */
 (function () {
   const W_B = 44, H_B = 58;       // must match CSS width/height
-  const R_EDGE = 20, B_EDGE = 24; // corner margins
+  const R_EDGE = 20, B_EDGE = 24; // initial corner margins
 
   // ── Build element ─────────────────────────────────────────
   const balloon = document.createElement('div');
@@ -999,33 +999,41 @@
 
   // ── State ─────────────────────────────────────────────────
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let posX = 0, posY = 0;
-  let isDragging = false, isSpringBack = false, springTimer = null;
+  // homeX / homeY = the anchor point the balloon idles around (updates when you drop it)
+  let homeX = window.innerWidth  - W_B - R_EDGE;
+  let homeY = window.innerHeight - H_B - B_EDGE;
+  let posX = homeX, posY = homeY;
+  let isDragging = false, settleTimer = null, settling = false;
   let dragSMX, dragSMY, dragSPX, dragSPY;
 
-  // ── Drift functions (independent H + V wave stacks) ───────
-  const dH = t => Math.sin(t*0.27)*26 + Math.sin(t*0.63+1.4)*16 + Math.sin(t*1.17+2.8)*8;
-  const dV = t => Math.cos(t*0.34+0.6)*12 + Math.cos(t*0.79+1.7)*7 + Math.sin(t*0.52+1.1)*5;
-  const baseX = () => window.innerWidth  - W_B - R_EDGE;
-  const baseY = () => window.innerHeight - H_B - B_EDGE;
+  // ── Idle drift — bigger, bouncier wave stacks ─────────────
+  const dH = t => Math.sin(t*0.42)*40 + Math.sin(t*0.91+1.4)*22 + Math.sin(t*1.6+2.8)*11;
+  const dV = t => Math.cos(t*0.5+0.6)*34 + Math.cos(t*1.05+1.7)*16 + Math.sin(t*0.72+1.1)*9;
+  // springy vertical bob — taller and a touch faster
+  const bobAt = t => reduced ? 0 : (Math.sin(t*2.1)*16 + Math.sin(t*3.7+0.8)*5);
 
   // Switch from CSS right/bottom to JS left/top immediately
   balloon.style.right = 'auto'; balloon.style.bottom = 'auto';
-  posX = baseX(); posY = baseY();
   balloon.style.left = posX + 'px'; balloon.style.top = posY + 'px';
 
-  // ── RAF loop: drift position + gentle bob ─────────────────
+  // keep the home anchor on-screen after a resize
+  window.addEventListener('resize', () => {
+    homeX = Math.min(homeX, window.innerWidth  - W_B - 4);
+    homeY = Math.min(homeY, window.innerHeight - H_B - 4);
+  });
+
+  // ── RAF loop: idle drift + bob around the home anchor ─────
   (function loop() {
-    if (!isDragging && !isSpringBack) {
+    if (!isDragging && !settling) {
       const t = Date.now() / 1000;
-      posX = baseX() - dH(t);
-      posY = baseY() + dV(t);
+      posX = homeX + dH(t);
+      posY = homeY + dV(t);
+      // keep it from drifting off-screen
+      posX = Math.max(4, Math.min(posX, window.innerWidth  - W_B - 4));
+      posY = Math.max(4, Math.min(posY, window.innerHeight - H_B - 4));
       balloon.style.left = posX + 'px';
       balloon.style.top  = posY + 'px';
-      if (!reduced) {
-        const bob = Math.sin(t * 1.745) * 10; // ±10 px, ~3.6 s period
-        balloon.style.transform = `translateY(${bob}px)`;
-      }
+      balloon.style.transform = `translateY(${bobAt(t)}px)`;
     }
     requestAnimationFrame(loop);
   })();
@@ -1033,8 +1041,8 @@
   // ── Drag ──────────────────────────────────────────────────
   function startDrag(mx, my) {
     if (isDragging) return;
-    isDragging = true; isSpringBack = false;
-    clearTimeout(springTimer);
+    isDragging = true; settling = false;
+    clearTimeout(settleTimer);
     dragSMX = mx; dragSMY = my; dragSPX = posX; dragSPY = posY;
     balloon.style.transition = 'none';
     balloon.style.cursor = 'grabbing';
@@ -1059,17 +1067,20 @@
 
   function endDrag() {
     if (!isDragging) return;
-    isDragging = false; isSpringBack = true;
+    isDragging = false; settling = true;
     balloon.style.cursor = 'grab';
-    const t  = Date.now() / 1000;
-    const tx = baseX() - dH(t), ty = baseY() + dV(t);
-    const bob = reduced ? 0 : Math.sin(t * 1.745) * 10;
-    balloon.style.transition = 'left .52s cubic-bezier(.34,1.56,.64,1), top .52s cubic-bezier(.34,1.56,.64,1), transform .42s cubic-bezier(.34,1.56,.64,1)';
-    balloon.style.left = tx + 'px'; balloon.style.top = ty + 'px';
-    balloon.style.transform = `translateY(${bob}px)`;  // spring deform back
-    posX = tx; posY = ty;
-    clearTimeout(springTimer);
-    springTimer = setTimeout(() => { balloon.style.transition = ''; isSpringBack = false; }, 580);
+
+    // STAY where dropped: the drop point becomes the new home anchor.
+    // We subtract the current drift so idle motion resumes smoothly from here.
+    const t = Date.now() / 1000;
+    homeX = posX - dH(t);
+    homeY = posY - dV(t);
+
+    // little springy shape-recovery in place (position does NOT move back)
+    balloon.style.transition = 'transform .42s cubic-bezier(.34,1.56,.64,1)';
+    balloon.style.transform = `translateY(${bobAt(t)}px)`;
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(() => { balloon.style.transition = ''; settling = false; }, 440);
   }
 
   // Mouse

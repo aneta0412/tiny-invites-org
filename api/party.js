@@ -2,6 +2,7 @@
 // Router: /api/party?action=create-party | go-live | confirm-party | delete-party | resend-confirmation
 //
 // publish-party was removed — the real go-live flow runs through confirm-party.
+import createParty         from '../lib/create-party.js';
 import goLive              from '../lib/go-live.js';
 import confirmParty        from '../lib/confirm-party.js';
 import deleteParty         from '../lib/delete-party.js';

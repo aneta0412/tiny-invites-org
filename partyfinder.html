@@ -386,7 +386,7 @@ a.card{text-decoration:none;color:inherit}
         </div>
       </div>
       <div class="have-venue">
-        🎉 Hosting here? <a href="https://tinyinvites.org/#create" target="_blank" rel="noopener">Get your digital party invite →</a>
+        🎉 Hosting here? <a href="https://tinyinvites.org/invite?utm_source=littlepartyfinder&utm_medium=venue_cta" target="_blank" rel="noopener">Get your digital party invite →</a>
       </div>
     </div>
   </div>
@@ -405,6 +405,7 @@ a.card{text-decoration:none;color:inherit}
     <img src="images/farm1.png" alt="">
     <img src="images/bg5_green.png" alt="">
     <img src="images/tramp2.png" alt="">
+    <img src="images/bb9.png" alt="">
     <img src="images/bb1_ball.png" alt="">   
     <img src="images/dino.PNG" alt="">
     <img src="images/hall.PNG" alt="">
@@ -418,6 +419,7 @@ a.card{text-decoration:none;color:inherit}
     <img src="images/farm1.png" alt="">
     <img src="images/bg5_green.png" alt="">
     <img src="images/tramp2.png" alt="">
+    <img src="images/bb9.png" alt="">
     <img src="images/bb1_ball.png" alt="">   
     <img src="images/dino.PNG" alt="">
     <img src="images/hall.PNG" alt="">
@@ -425,6 +427,7 @@ a.card{text-decoration:none;color:inherit}
   </div>
   <!-- ROW 2 — scrolls right (opposite direction) -->
   <div class="photo-strip row2">
+    <img src="images/tramp2.png" alt="">
     <img src="images/bb9.png" alt="">
     <img src="images/bb1_ball.png" alt="">
     <img src="images/room.png" alt="">
@@ -433,10 +436,11 @@ a.card{text-decoration:none;color:inherit}
     <img src="images/old_c.png" alt="">
     <img src="images/peppa.PNG" alt="">
     <img src="images/space.PNG" alt="">
-    <img src="images/superh.PNG" alt="">
-    <img src="images/tramp.PNG" alt="">  
-    <img src="images/unicorn.PNG" alt="">  
+    <img src="images/superh.png" alt="">
+    <img src="images/tramp.png" alt="">  
+    <img src="images/unicorn.png" alt="">  
     <!-- duplicate for loop -->
+    <img src="images/tramp2.png" alt="">
     <img src="images/bb9.png" alt="">
     <img src="images/bb1_ball.png" alt="">
     <img src="images/room.png" alt="">
@@ -445,9 +449,9 @@ a.card{text-decoration:none;color:inherit}
     <img src="images/old_c.png" alt="">
     <img src="images/peppa.PNG" alt="">
     <img src="images/space.PNG" alt="">
-    <img src="images/superh.PNG" alt="">
-    <img src="images/tramp.PNG" alt="">  
-    <img src="images/unicorn.PNG" alt="">  
+    <img src="images/superh.png" alt="">
+    <img src="images/tramp.png" alt="">  
+    <img src="images/unicorn.png" alt="">  
   </div>
 </div>
 
@@ -3806,6 +3810,25 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeM();});
 showLandingVenues();
 fillCollectionCounts();
 (function(){const d=document.getElementById("tcDate");if(d){const min=new Date();d.min=min.toISOString().slice(0,10);}})();
+
+// ── AUTO-SEARCH FROM URL PARAMS ─────────────────────────────────────────────
+// Supports ?pc=CV37+6YX (postcode) and optionally &r=10 (radius in miles).
+// Used by RSVP page "Browse party venues" link to deep-link into results.
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const pc = params.get('pc');
+  if (pc) {
+    const r = parseInt(params.get('r'));
+    if (r && !isNaN(r)) {
+      radius = r;
+      document.querySelectorAll('.rc').forEach(b => {
+        b.classList.toggle('on', parseInt(b.dataset.r) === r);
+      });
+    }
+    document.getElementById('pc').value = pc;
+    doSearch();
+  }
+})();
 </script>
 <footer class="site-footer">
   <div class="footer-inner">

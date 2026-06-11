@@ -57,25 +57,23 @@
   h2 em, h1 em, h3 em { font-style:italic; color:var(--gold); }
   .section-sub { font-size:0.92rem; color:var(--mid); line-height:1.7; max-width:560px; margin-bottom:36px; }
 
-  .hero { min-height:88vh; display:flex; align-items:center; padding:64px 40px; position:relative; overflow:hidden; }
-  .hero-bg { position:absolute; inset:0; background:linear-gradient(to right, rgba(250,246,239,0.98) 0%, rgba(250,246,239,0.94) 48%, rgba(250,246,239,0.72) 100%), url('hero-bg.jpg') center/cover no-repeat; z-index:0; }
-  .hero-inner { position:relative; z-index:1; display:grid; grid-template-columns:minmax(0,1fr) minmax(440px,560px); gap:52px; align-items:center; max-width:1320px; margin:0 auto; width:100%; }
-  .hero-content { max-width:560px; }
+  .hero { min-height:auto; display:flex; align-items:center; padding:64px 40px 48px; position:relative; overflow:hidden; }
+  .hero-bg { position:absolute; inset:0; background:linear-gradient(to bottom, rgba(250,246,239,0.98) 0%, rgba(250,246,239,0.94) 60%, rgba(250,246,239,0.88) 100%), url('hero-bg.jpg') center/cover no-repeat; z-index:0; }
+  .hero-inner { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; max-width:1320px; margin:0 auto; width:100%; gap:36px; }
+  .hero-content { max-width:720px; text-align:center; }
   .eyebrow { opacity:0; animation:fadeUp 0.8s 0.2s forwards; }
   .hero-content h1 { font-size:clamp(3rem,6vw,5rem); line-height:1.06; color:var(--dark); margin-bottom:22px; opacity:0; animation:fadeUp 0.9s 0.35s forwards; }
-  .hero-sub { font-size:1rem; line-height:1.72; color:var(--mid); max-width:480px; margin-bottom:32px; opacity:0; animation:fadeUp 0.9s 0.5s forwards; }
-  .hero-cta-row { display:flex; gap:12px; flex-wrap:wrap; opacity:0; animation:fadeUp 0.9s 0.65s forwards; }
+  .hero-sub { font-size:1rem; line-height:1.72; color:var(--mid); max-width:540px; margin:0 auto 32px; opacity:0; animation:fadeUp 0.9s 0.5s forwards; }
+  .hero-cta-row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; opacity:0; animation:fadeUp 0.9s 0.65s forwards; }
   .hero-panel { background:white; border:1px solid var(--gold-pale); border-radius:16px; overflow:hidden; box-shadow:0 16px 64px rgba(42,34,24,0.1); opacity:0; animation:fadeUp 0.9s 0.5s forwards; scroll-margin-top:90px; }
   .hero-panel-header { padding:20px 24px 16px; border-bottom:1px solid var(--gold-pale); }
   .hero-panel-header h3 { font-size:clamp(1.55rem,2.5vw,2rem); margin-bottom:6px; }
   .hero-panel-header p { font-size:0.82rem; color:var(--mid); line-height:1.6; }
 
-  /* ===== Hero animated invite collage (right column) ===== */
-  .hero-collage { display:grid; grid-template-columns:1fr 1fr; gap:12px; position:relative; opacity:0; animation:fadeUp 0.9s 0.5s forwards; }
-  .hero-collage::after { content:""; position:absolute; inset:-9% -7%; z-index:-1; background:radial-gradient(58% 58% at 70% 28%, rgba(201,168,76,0.14), transparent 72%); }
-  .hc-col-2 { margin-top:30px; }
-  .hc-tile { position:relative; width:100%; aspect-ratio:3/2; border-radius:12px; overflow:hidden; border:1px solid var(--gold-pale); box-shadow:0 10px 30px rgba(42,34,24,0.10); background:#fff; }
-  .hc-tile + .hc-tile { margin-top:12px; }
+  /* ===== Hero animated invite collage (below text) ===== */
+  .hero-collage { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; position:relative; opacity:0; animation:fadeUp 0.9s 0.7s forwards; max-width:780px; width:100%; }
+  .hero-collage::after { content:""; position:absolute; inset:-9% -7%; z-index:-1; background:radial-gradient(58% 58% at 50% 40%, rgba(201,168,76,0.10), transparent 72%); }
+  .hc-tile { position:relative; width:100%; aspect-ratio:3/4; border-radius:10px; overflow:hidden; border:1px solid var(--gold-pale); box-shadow:0 8px 24px rgba(42,34,24,0.08); background:#fff; }
   .hc-slide { position:absolute; inset:0; opacity:0; animation:hcFade 16s ease-in-out infinite; }
   .hc-slide img { width:100%; height:100%; object-fit:cover; }
   @keyframes hcFade {
@@ -249,14 +247,13 @@
   @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
 
   @media(max-width:1100px) {
-    .hero-inner { grid-template-columns:1fr 460px; gap:36px; }
     .other-grid { grid-template-columns:1fr 1fr; }
   }
   @media(max-width:860px) {
-    .hero-inner, .contact-inner { grid-template-columns:1fr; gap:36px; }
-    .hero { min-height:auto; padding:48px 24px; }
+    .contact-inner { grid-template-columns:1fr; gap:36px; }
+    .hero { padding:48px 24px; }
     .hero-panel { max-width:520px; }
-    .hero-collage { max-width:520px; }
+    .hero-collage { max-width:520px; grid-template-columns:repeat(4,1fr); }
     .other-grid, .testimonials-grid, .print-grid { grid-template-columns:1fr; }
     .tiles-grid { grid-template-columns:repeat(4,1fr); }
     .prompt-lines { grid-template-columns:1fr; }
@@ -272,6 +269,7 @@
     .hero { padding:52px 24px 44px; }
     .hero-bg { background:linear-gradient(to bottom, rgba(250,246,239,0.99) 0%, rgba(250,246,239,0.96) 72%, rgba(250,246,239,0.9) 100%), url('hero-bg.jpg') center/cover no-repeat; }
     .hero-content h1 { font-size:clamp(2.7rem,13vw,4rem); }
+    .hero-collage { grid-template-columns:repeat(4,1fr); gap:8px; }
     .hero-sub { color:#4f4434; font-size:0.96rem; }
     .btn-primary { width:100%; min-height:48px; }
     .section-divider { margin:0 20px; }
@@ -382,7 +380,7 @@
         <a href="/partyfinder.html" class="btn-primary">Find a venue →</a>
         <a href="#create" class="btn-primary" style="background:transparent;color:var(--dark) !important;border-color:var(--gold-light);">Create your invite →</a>
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;opacity:0;animation:fadeUp 0.9s 0.8s forwards;">
+      <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;justify-content:center;opacity:0;animation:fadeUp 0.9s 0.8s forwards;">
         <span style="font-size:0.72rem;color:var(--mid);display:flex;align-items:center;gap:6px;">✓ 100+ UK venues</span>
         <span style="font-size:0.72rem;color:var(--mid);display:flex;align-items:center;gap:6px;">✓ Guests reminded 3 days before</span>
         <span style="font-size:0.72rem;color:var(--mid);display:flex;align-items:center;gap:6px;">✓ Free forever</span>
@@ -391,38 +389,95 @@
     </div>
     <!-- Animated invite-screenshot collage -->
     <div class="hero-collage" aria-hidden="true">
-      <div>
-        <div class="hc-tile hc-a">
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156130/bkvlfmho1pfbus3etqen.jpg" alt="Daisy's party invite"></div>
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156466/uv0dwmieznqlcl6virvl.jpg" alt="Olivia's party invite"></div>
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156500/liky3tattybomfvdmnyv.jpg" alt="Lily's party invite"></div>
-        </div>
-        <div class="hc-tile hc-c">
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156192/t4nndy2n3x3qxp5elf7y.jpg" alt="Kai's party invite"></div>
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156492/snbcnre4z42fpb0mozga.jpg" alt="Leo's party invite"></div>
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156462/snlxmrdcmg8pxzeyv2d2.jpg" alt="Ruby's party invite"></div>
-        </div>
-        <div class="hc-tile hc-a">
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156496/anmto9gm8ntsfolu5vfb.jpg" alt="Max's party invite"></div>
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156188/lqdtzosgtc660hsah708.jpg" alt="Noah's party invite"></div>
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156197/kxvouvouv4ddp9za7jne.jpg" alt="Freddie's party invite"></div>
-        </div>
+      <div class="hc-tile hc-a">
+        <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156130/bkvlfmho1pfbus3etqen.jpg" alt="Daisy's party invite"></div>
+        <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156466/uv0dwmieznqlcl6virvl.jpg" alt="Olivia's party invite"></div>
+        <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156500/liky3tattybomfvdmnyv.jpg" alt="Lily's party invite"></div>
       </div>
-      <div class="hc-col-2">
-        <div class="hc-tile hc-b">
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156188/lqdtzosgtc660hsah708.jpg" alt="Noah's party invite"></div>
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156130/bkvlfmho1pfbus3etqen.jpg" alt="Daisy's party invite"></div>
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156470/b9qmkdwz6uapefshczk9.jpg" alt="Theo's party invite"></div>
+      <div class="hc-tile hc-b">
+        <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156192/t4nndy2n3x3qxp5elf7y.jpg" alt="Kai's party invite"></div>
+        <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156492/snbcnre4z42fpb0mozga.jpg" alt="Leo's party invite"></div>
+        <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156462/snlxmrdcmg8pxzeyv2d2.jpg" alt="Ruby's party invite"></div>
+      </div>
+      <div class="hc-tile hc-c">
+        <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156496/anmto9gm8ntsfolu5vfb.jpg" alt="Max's party invite"></div>
+        <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156188/lqdtzosgtc660hsah708.jpg" alt="Noah's party invite"></div>
+        <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156197/kxvouvouv4ddp9za7jne.jpg" alt="Freddie's party invite"></div>
+      </div>
+      <div class="hc-tile hc-d">
+        <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156470/b9qmkdwz6uapefshczk9.jpg" alt="Theo's party invite"></div>
+        <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156197/kxvouvouv4ddp9za7jne.jpg" alt="Freddie's party invite"></div>
+        <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156462/snlxmrdcmg8pxzeyv2d2.jpg" alt="Ruby's party invite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how-it-works" style="padding:72px 40px;background:var(--warm-white);">
+  <div style="max-width:1280px;margin:0 auto;">
+    <div class="hero-panel">
+      <div class="hero-panel-header">
+        <h3>See it in <em>action</em></h3>
+        <p>Four simple steps — from venue to party day.</p>
+      </div>
+      <div class="action-cards">
+        <a class="action-card action-card--compact" href="/partyfinder.html">
+          <div class="action-card-text">
+            <span class="action-card-num">STEP 00</span>
+            <p class="action-card-title">Find your perfect party venue</p>
+            <p class="action-card-desc">Browse 100+ UK party venues by location and type — soft play, trampoline parks, swimming, outdoor adventures and more. Filter by age, price, and distance.</p>
+          </div>
+          <div class="action-card-img">
+            <img src="partyfinder-screenshot.jpg" alt="Party Finder screenshot showing venue search results" onerror="this.parentElement.innerHTML='<div class=\'mock-card\'><div class=\'mock-email-head\'><div class=\'mock-dot\'>&#x1F3E0;</div><p class=\'mock-title\'>Party Finder</p></div><div class=\'mock-row\' style=\'width:100%\'></div><div class=\'mock-row\' style=\'width:75%\'></div><div class=\'mock-row\' style=\'width:90%\'></div><div class=\'mock-actions\'><span>Search venues</span><span>Filter</span></div></div>'">
+          </div>
+        </a>
+        <div class="action-card">
+          <div class="action-card-text">
+            <span class="action-card-num">STEP 01</span>
+            <p class="action-card-title">Create your invite in 30 seconds</p>
+            <p class="action-card-desc">Enter your child's name, age, and party location. Add a photo if you like. You'll get a unique invite link and QR code instantly.</p>
+          </div>
+          <div class="action-card-img">
+            <div class="mock-card">
+              <p class="mock-invite-title">Olivia's 5th Birthday</p>
+              <div class="mock-row" style="width:80%"></div>
+              <div class="mock-row" style="width:60%"></div>
+              <div class="mock-actions"><span>Create invite</span><span>Preview</span></div>
+            </div>
+          </div>
         </div>
-        <div class="hc-tile hc-d">
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156197/kxvouvouv4ddp9za7jne.jpg" alt="Freddie's party invite"></div>
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156462/snlxmrdcmg8pxzeyv2d2.jpg" alt="Ruby's party invite"></div>
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156496/anmto9gm8ntsfolu5vfb.jpg" alt="Max's party invite"></div>
+        <div class="action-card">
+          <div class="action-card-text">
+            <span class="action-card-num">STEP 02</span>
+            <p class="action-card-title">Share the link or print the QR code</p>
+            <p class="action-card-desc">Send your unique link via WhatsApp, text, or email. Or print it on invitation cards — guests scan to RSVP instantly.</p>
+          </div>
+          <div class="action-card-img">
+            <div class="mock-card">
+              <div class="mock-email-head"><div class="mock-dot">&#9993;</div><p class="mock-title">Share invite</p></div>
+              <div class="mock-row" style="width:90%"></div>
+              <div class="mock-row" style="width:70%"></div>
+              <div class="mock-actions"><span>Copy link</span><span>QR code</span></div>
+            </div>
+          </div>
         </div>
-        <div class="hc-tile hc-b">
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156470/b9qmkdwz6uapefshczk9.jpg" alt="Theo's party invite"></div>
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156192/t4nndy2n3x3qxp5elf7y.jpg" alt="Kai's party invite"></div>
-          <div class="hc-slide"><img src="https://res.cloudinary.com/dlkwbg59c/image/upload/v1781156500/liky3tattybomfvdmnyv.jpg" alt="Lily's party invite"></div>
+        <div class="action-card">
+          <div class="action-card-text">
+            <span class="action-card-num">STEP 03</span>
+            <p class="action-card-title">Track RSVPs from your Party Page</p>
+            <p class="action-card-desc">See who's coming in real time. Guest counts, allergies, and dietary needs — all in one place. Guests are reminded 3 days before.</p>
+          </div>
+          <div class="action-card-img">
+            <div class="mock-card">
+              <div class="mock-stats">
+                <div class="mock-stat"><strong>12</strong><span>Coming</span></div>
+                <div class="mock-stat"><strong>3</strong><span>Pending</span></div>
+                <div class="mock-stat declined"><strong>1</strong><span>Declined</span></div>
+              </div>
+              <div class="mock-row" style="width:100%"></div>
+              <div class="mock-row" style="width:85%"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -512,10 +567,10 @@
   <div class="tiles-grid">
     <a class="tile" href="bear1.jpeg" download="tiny-invites-design-01.jpeg"><div class="tile-img"><img src="bear1.jpeg" alt="Design 1 preview" onerror="this.parentElement.innerHTML='Design 01'"></div><p class="tile-label">Design 01</p></a>
     <a class="tile" href="img2.png" download="tiny-invites-design-02.png"><div class="tile-img"><img src="img2.png" alt="Design 2 preview" onerror="this.parentElement.innerHTML='Design 02'"></div><p class="tile-label">Design 02</p></a>
-    <a class="tile" href="images/img3.png" download="tiny-invites-design-03.png"><div class="tile-img"><img src="images/img3.png" alt="Design 3 preview" onerror="this.parentElement.innerHTML='Design 03'"></div><p class="tile-label">Design 03</p></a>
-    <a class="tile" href="images/img4.png" download="tiny-invites-design-04.png"><div class="tile-img"><img src="images/img4.png" alt="Design 4 preview" onerror="this.parentElement.innerHTML='Design 04'"></div><p class="tile-label">Design 04</p></a>
-    <a class="tile" href="images/img5.png" download="tiny-invites-design-05.png"><div class="tile-img"><img src="images/img5.png" alt="Design 5 preview" onerror="this.parentElement.innerHTML='Design 05'"></div><p class="tile-label">Design 05</p></a>
-    <a class="tile" href="images/img7.png" download="tiny-invites-design-06.png"><div class="tile-img"><img src="images/img7.png" alt="Design 6 preview" onerror="this.parentElement.innerHTML='Design 06'"></div><p class="tile-label">Design 06</p></a>
+    <a class="tile" href="img3.png" download="tiny-invites-design-03.png"><div class="tile-img"><img src="img3.png" alt="Design 3 preview" onerror="this.parentElement.innerHTML='Design 03'"></div><p class="tile-label">Design 03</p></a>
+    <a class="tile" href="img4.png" download="tiny-invites-design-04.png"><div class="tile-img"><img src="img4.png" alt="Design 4 preview" onerror="this.parentElement.innerHTML='Design 04'"></div><p class="tile-label">Design 04</p></a>
+    <a class="tile" href="img5.png" download="tiny-invites-design-05.png"><div class="tile-img"><img src="img5.png" alt="Design 5 preview" onerror="this.parentElement.innerHTML='Design 05'"></div><p class="tile-label">Design 05</p></a>
+    <a class="tile" href="img6.png" download="tiny-invites-design-06.png"><div class="tile-img"><img src="img6.png" alt="Design 6 preview" onerror="this.parentElement.innerHTML='Design 06'"></div><p class="tile-label">Design 06</p></a>
   </div>
   <div id="designs-more" style="display:none;"><div class="tiles-grid" style="margin-top:12px;">
     <a class="tile" href="img7.png" download><div class="tile-img"><img src="img7.png" alt="Design 7 preview" onerror="this.parentElement.innerHTML='Design 07'"></div><p class="tile-label">Design 07</p></a>

@@ -62,8 +62,6 @@
     background: var(--warm-white); border: 1px solid var(--gold-light);
     border-radius: 16px; padding: 22px;
   }
-  #golive-card.hidden { display:none; }
-
   .golive-label { font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
   .golive-heading { font-family:"Cormorant Garamond",serif; font-size:1.15rem; font-weight:400; color:var(--dark); margin-bottom:6px; line-height:1.3; }
   .golive-sub { font-size:0.78rem; color:var(--mid); line-height:1.6; margin-bottom:16px; }
@@ -450,6 +448,13 @@
   let submittedCountBabies = false;
 
   window.addEventListener('DOMContentLoaded', () => {
+    // Native date picker shouldn't offer past dates (typed past dates still
+    // get the soft confirm in goLive()).
+    const dateEl = document.getElementById('host-party-date');
+    if (dateEl) {
+      const t = new Date();
+      dateEl.min = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+    }
     renderInvite({ child_name:previewName, age:previewAge, venue:previewLocation, photo_url:previewPhoto, special_note:previewNote });
   });
 
@@ -531,7 +536,12 @@
     const d = String(cutoff.getDate()).padStart(2, '0');
     const iso = `${y}-${m}-${d}`;
     if (cutoffEl)  cutoffEl.value = iso;
-    if (displayEl) displayEl.textContent = cutoff.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    if (displayEl) {
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const txt = cutoff.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      displayEl.textContent = cutoff < today ? txt + ' (already passed!)' : txt;
+      displayEl.style.color = cutoff < today ? '#c0392b' : '';
+    }
   }
 
   async function goLive() {

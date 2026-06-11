@@ -160,6 +160,7 @@
   .gift-card:hover { background:var(--gold-light); border-color:var(--gold); }
   .gift-card-emoji { font-size:1.4rem; display:block; margin-bottom:5px; }
   .gift-card-text { font-size:0.73rem; color:var(--dark); font-weight:400; line-height:1.35; display:block; }
+  .gift-card-price { font-size:0.68rem; color:var(--gold); display:block; margin-top:3px; font-weight:500; }
   .gift-browse-all { display:block; text-align:center; font-size:0.78rem; color:var(--soft); text-decoration:none; margin-top:8px; padding:8px; border-radius:8px; border:1px solid var(--gold-light); transition:all 0.15s; }
   .gift-browse-all:hover { background:var(--gold-pale); color:var(--mid); }
   .gift-aff-note { font-size:0.68rem; color:var(--soft); text-align:center; margin-top:8px; opacity:0.7; }
@@ -296,10 +297,10 @@
       <textarea id="guest-allergies" placeholder="e.g. nut allergy, vegetarian, no dairy…"></textarea>
     </div>
     <button class="btn-primary" id="submit-btn" onclick="submitRSVP()">
-      <div class="spinner"></div>
+      <span class="spinner"></span>
       <span class="btn-label">✓ Confirm my RSVP</span>
     </button>
-    <div class="error-banner" id="error-banner">⚠️ <span id="error-text">Something went wrong. Please try again.</span></div>
+    <div class="error-banner" id="error-banner" role="alert">⚠️ <span id="error-text">Something went wrong. Please try again.</span></div>
     <p style="text-align:center;margin-top:14px;">
       <button onclick="showPage('page-invite')" style="background:none;border:none;color:var(--soft);font-size:0.8rem;cursor:pointer;text-decoration:underline;">← Go back</button>
     </p>
@@ -340,7 +341,7 @@
       <p class="success-note" id="success-message">We look forward to seeing you — it's going to be a wonderful celebration!<br><br>Keep an eye on your inbox for any updates from the host. See you there!</p>
       <p class="success-note" id="success-email-sent" style="display:none;margin-top:12px;font-size:0.82rem;color:var(--soft);">📬 Confirmation sent to <span id="success-email-address" style="color:var(--gold);"></span></p>
 
-      <!-- Delayed nudge — appears after 20 s if email not found -->
+      <!-- Delayed nudge — appears after 5 s -->
       <button id="guest-didnt-receive-btn" onclick="showGuestDidntReceive()">
         Didn't get the confirmation email?
       </button>
@@ -411,12 +412,18 @@
   const counts = { children: 1, babies: 0, adults: 1 };
   function change(key, delta) {
     counts[key] = Math.max(0, counts[key] + delta);
-    if ((key === 'adults' || key === 'children') && counts[key] < 1) counts[key] = 1;
+    // Adults include the responder, so min 1. Children only have a floor of 1
+    // when they're the sole count — with adults counted too, an adults-only
+    // RSVP (0 children) is valid.
+    if (key === 'adults' && counts[key] < 1) counts[key] = 1;
+    if (key === 'children' && !ASK_ADULTS && counts[key] < 1) counts[key] = 1;
     document.getElementById(key + '-val').textContent = counts[key];
   }
 
   window.addEventListener('DOMContentLoaded', () => {
     applyCountingPrefs();
+    const nameInput = document.getElementById('landing-guest-name');
+    if (nameInput) nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') proceedYes(); });
     const partyId  = getParam('party') || getParam('partyId') || '';
     const photoUrl = getParam('photo') || '';
     window._partyId = partyId;
@@ -446,7 +453,7 @@
         // Check RSVP cutoff before rendering
         if (d && d.rsvp_cutoff) {
           const today  = new Date(); today.setHours(0, 0, 0, 0);
-          const cutoff = new Date(d.rsvp_cutoff);
+          const cutoff = parseLocalDate(d.rsvp_cutoff);
           if (today > cutoff) {
             const name = d.child_name ? `RSVPs for ${d.child_name}'s party are now closed` : 'RSVPs are now closed';
             document.getElementById('closed-heading').textContent = name;
@@ -534,7 +541,8 @@
     }
     if (phoneNumber) {
       const el = document.createElement('div'); el.className = 'info-item host-phone';
-      el.innerHTML = `<span class="icon">📱</span><span>Contact the host: <a href="tel:${phoneNumber}">${phoneNumber}</a></span>`;
+      const telHref = 'tel:' + String(phoneNumber).replace(/[^+\d]/g, '');
+      el.innerHTML = `<span class="icon">📱</span><span>Contact the host: <a href="${telHref}">${escapeHtml(String(phoneNumber))}</a></span>`;
       document.getElementById('inv-details').appendChild(el);
     }
     if (specialNote) {
@@ -549,8 +557,18 @@
     }
   }
 
-  function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>'); }
-  function formatDate(d) { try { return new Date(d).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); } catch { return d; } }
+  function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/\n/g,'<br>'); }
+  // Parse "YYYY-MM-DD" as a LOCAL date. `new Date("YYYY-MM-DD")` parses as UTC
+  // midnight, which renders as the *previous* day (and mis-times the RSVP
+  // cutoff) for anyone west of UTC.
+  function parseLocalDate(d) {
+    if (typeof d === 'string') {
+      const m = d.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    }
+    return new Date(d);
+  }
+  function formatDate(d) { try { return parseLocalDate(d).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); } catch { return d; } }
 
   async function submitRSVP() {
     const guestName = document.getElementById('guest-name').value.trim();
@@ -565,6 +583,7 @@
     const babiesCount   = ASK_BABIES ? counts.babies : null;
     const adultsCount   = ASK_ADULTS ? counts.adults : null;
     const totalGuests   = childrenCount + (ASK_BABIES ? counts.babies : 0) + (ASK_ADULTS ? counts.adults : 0);
+    if (totalGuests < 1) { alert('Please add at least one guest 😊'); return; }
 
     const pd  = window._partyData || {};
     const pid = pd.partyId || window._partyId || '';
@@ -682,7 +701,7 @@
           <button id="decline-note-btn" onclick="sendDeclineNote()"
             style="width:100%;margin-top:10px;padding:14px;background:var(--dark);color:var(--cream);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.92rem;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;"
             onmouseover="this.style.background='var(--gold)'" onmouseout="this.style.background='var(--dark)'">
-            <div class="spinner" id="decline-note-spinner"></div>
+            <span class="spinner" id="decline-note-spinner"></span>
             <span id="decline-note-label">Send note to host</span>
           </button>
           <p id="decline-note-sent" style="display:none;text-align:center;font-size:0.82rem;color:var(--soft);margin-top:10px;">✓ Note sent to the host 💛</p>
@@ -909,13 +928,48 @@
   }
 
   // ── GIFT IDEAS ENGINE ─────────────────────────────────────────────────────
-  // Age brackets: 1 (baby/first), 2-3 (young toddler), 4-5 (preschool),
-  // 6-8 (early school), 9-11 (older), 12+ (tween)
+  // Shown ONLY when the guest is attending (built from the YES success path).
+  // Declines never see gifts. Catalogue mirrors the site's shop section;
+  // placeholder / malformed links are excluded.
   const TAG = 'tinyinvites-21';
+  const dp = (asin) => `https://www.amazon.co.uk/dp/${asin}?tag=${TAG}`;
+
+  // age: 'baby' (<1), 'toddler' (1-3), 'preschool' (3-5), 'older' (6+)
+  const GIFT_CATALOG = [
+    // Baby & under 1
+    { emoji:'🐛', title:'Firefly Clip-On Pram Toy',                  price:'~£14', age:'baby',      best:true,  url:dp('B000I2Q0F4') },
+    { emoji:'🐣', title:'Squeaky Eggs Shape Sorter',                 price:'~£12', age:'baby',      best:true,  url:dp('B0C77Z2G86') },
+    { emoji:'🎀', title:'Peek-a-Boo Tissue Box Toy',                 price:'~£13', age:'baby',      best:true,  url:dp('B0CJLWD1VM') },
+    { emoji:'🧦', title:'Wrist Rattle & Foot Finder Socks Set',      price:'~£8',  age:'baby',      best:true,  url:dp('B0CF26W6XL') },
+    { emoji:'🌀', title:'Spinning Suction Toy for High Chairs',      price:'~£16', age:'baby',      best:true,  url:dp('B07DPBB4CT') },
+    // Toddler 1-3
+    { emoji:'🎨', title:'Play-Doh Rainbow Colours Set',              price:'~£8',  age:'toddler',   best:false, url:'https://amzn.to/4uH66a7' },
+    { emoji:'👸', title:'Rapunzel Princess Doll',                    price:'~£8',  age:'toddler',   best:false, url:'https://amzn.to/4366p2s' },
+    { emoji:'🦄', title:'Unicorn Headband Craft Kit',                price:'~£8',  age:'toddler',   best:false, url:'https://amzn.to/4dhD6P8' },
+    { emoji:'🚂', title:'Letter Building Blocks Train',              price:'~£18', age:'toddler',   best:true,  url:dp('B01IWX5EVQ') },
+    { emoji:'🔨', title:'Wooden Hammer & Xylophone Toy',             price:'~£20', age:'toddler',   best:true,  url:dp('B0F1F9T8WH') },
+    { emoji:'🧺', title:'Interactive Shapes Picnic Basket',          price:'~£20', age:'toddler',   best:true,  url:dp('B07CT16FH3') },
+    { emoji:'🛁', title:'Mould-Free Bath Toy Set',                   price:'~£10', age:'toddler',   best:true,  url:dp('B0DRJSSSR5') },
+    { emoji:'🌀', title:'Pretend Play Light-Up Vacuum Toy',          price:'~£22', age:'toddler',   best:true,  url:dp('B079JWMS51') },
+    // Preschool 3-5
+    { emoji:'🚗', title:'Flip & Spin Unicorn Stunt Car',             price:'~£17', age:'preschool', best:false, url:'https://amzn.to/4u8APx8' },
+    { emoji:'🏎️', title:'LEGO Lightning McQueen Race Car',           price:'~£45', age:'preschool', best:false, url:'https://amzn.to/4nvrOfa' },
+    { emoji:'🎲', title:'My First Snakes & Ladders Board Game',      price:'~£10', age:'preschool', best:true,  url:dp('B01E6SKZVK') },
+    { emoji:'🧹', title:'Henry Hoover Role Play Toy',                price:'~£20', age:'preschool', best:true,  url:dp('B07TZRXSM1') },
+    { emoji:'🖍️', title:'Washable Felt Tip Markers (24 pack)',       price:'~£8',  age:'preschool', best:true,  url:dp('B01BF6F20K') },
+    { emoji:'🛒', title:'Play Shop Cash Register with Scanner',      price:'~£20', age:'preschool', best:true,  url:dp('B0CYL659J5') },
+    { emoji:'🐾', title:'Vet & Pet Care Role Play Set',              price:'~£18', age:'preschool', best:true,  url:dp('B07PXLDFF3') },
+    // Age 6+
+    { emoji:'🏆', title:'World Cup 2026 Sticker Starter Pack',       price:'~£8',  age:'older',     best:false, url:'https://amzn.to/4uC4pul' },
+    { emoji:'🃏', title:'Dobble — Fast-Matching Card Game',          price:'~£12', age:'older',     best:true,  url:dp('B00KIQ3X4Q') },
+    { emoji:'🏎️', title:'LEGO Ferrari F1 Pit Stop Set',              price:'~£20', age:'older',     best:true,  url:dp('B0DHSHH218') },
+    { emoji:'🔬', title:'Science Experiments Kit (50+ activities)',  price:'~£18', age:'older',     best:true,  url:dp('B0FJ1PRWY7') },
+    { emoji:'🖊️', title:'Colour Screen Drawing Tablets (twin pack)', price:'~£14', age:'older',     best:true,  url:dp('B0BJ6M9ZYW') },
+    { emoji:'🦁', title:'LEGO 3-in-1 Wild Animals Building Set',     price:'~£25', age:'older',     best:true,  url:dp('B0DHSF89CQ') },
+  ];
 
   function parseAge(raw) {
     if (!raw && raw !== 0) return NaN;
-    // Handle strings like "3rd", "2nd", "1st", "first", "two" as well as plain numbers
     const str = String(raw).toLowerCase().trim();
     const ordinals = {first:1,second:2,third:3,fourth:4,fifth:5,sixth:6,seventh:7,eighth:8,ninth:9,tenth:10};
     if (ordinals[str]) return ordinals[str];
@@ -923,119 +977,64 @@
     return isNaN(num) ? NaN : num;
   }
 
-  function getGiftConfig(rawAge, childName) {
-    const age = parseAge(rawAge);
-    const name = childName && childName !== 'our little one' ? childName : null;
-    const who  = name ? `${name}'s` : 'their';
+  // Which shop brackets fit a child turning `age`
+  function bracketsForAge(age) {
+    if (isNaN(age) || age <= 0) return null;          // unknown — show a mix
+    if (age === 1)              return ['toddler', 'baby'];
+    if (age <= 3)               return ['toddler'];
+    if (age <= 5)               return ['preschool'];
+    return ['older'];
+  }
 
-    const BASE = 'https://www.amazon.co.uk/s?';
-    const p = (k) => BASE + new URLSearchParams({k, tag: TAG}).toString();
-
-    if (isNaN(age) || age <= 0) {
-      return {
-        label: 'Gift ideas', headline: 'Not sure what to bring?',
-        cards: [
-          { emoji:'🎁', text:"Browse children's gifts",    url: p("children birthday gifts uk") },
-          { emoji:'📚', text:"Books & stories",            url: p("children picture books birthday gift") },
-          { emoji:'🎨', text:"Creative play",              url: p("creative play sets children gift") },
-        ],
-        all: p("children birthday gift ideas uk"),
-      };
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = (Math.random() * (i + 1)) | 0;
+      [a[i], a[j]] = [a[j], a[i]];
     }
+    return a;
+  }
 
-    if (age === 1) {
-      return {
-        label: 'First birthday gift ideas 🎀',
-        headline: `Perfect gifts as ${who} little one turns one`,
-        cards: [
-          { emoji:'🧸', text:'Soft & sensory toys',        url: p("sensory soft toys baby 1 year old gift") },
-          { emoji:'🛁', text:'Bath time fun',              url: p("bath toys baby 1 year old gift uk") },
-          { emoji:'📚', text:'First board books',          url: p("board books baby 1 year old first birthday") },
-        ],
-        all: p("best gifts baby turning 1 year old uk"),
-      };
-    }
-
-    if (age >= 2 && age <= 3) {
-      return {
-        label: 'Toddler gift ideas 🎠',
-        headline: `Great gifts for ${who} toddler (ages 2–3)`,
-        cards: [
-          { emoji:'🚗', text:'Ride-ons & wheels',          url: p("ride on toy toddler 2 3 years gift uk") },
-          { emoji:'🏡', text:'Imaginative play',           url: p("imaginative play set toddler 2 3 years gift") },
-          { emoji:'🎵', text:'Music & movement',           url: p("musical toys toddler 2 3 years birthday gift") },
-        ],
-        all: p("best birthday gifts toddler 2 3 years uk"),
-      };
-    }
-
-    if (age >= 4 && age <= 5) {
-      return {
-        label: 'Pre-school gift ideas 🎨',
-        headline: `Gift ideas for ages 4–5`,
-        cards: [
-          { emoji:'🎨', text:'Arts & crafts',              url: p("art craft set children 4 5 years gift uk") },
-          { emoji:'🏃', text:'Outdoor play',               url: p("outdoor toys children 4 5 years birthday gift") },
-          { emoji:'🎲', text:'First board games',          url: p("board games for children 4 5 years gift uk") },
-        ],
-        all: p("best birthday gifts children 4 5 years uk"),
-      };
-    }
-
-    if (age >= 6 && age <= 8) {
-      return {
-        label: 'Gift ideas for ages 6–8 🌟',
-        headline: `Fun gifts for a ${age} year old`,
-        cards: [
-          { emoji:'🧩', text:'Games & puzzles',            url: p("games puzzles children 6 7 8 years birthday gift uk") },
-          { emoji:'🔬', text:'Science & discovery',        url: p("science kits children 6 7 8 years birthday gift") },
-          { emoji:'📚', text:'Chapter books',              url: p("chapter books children 6 7 8 years birthday gift uk") },
-        ],
-        all: p("best birthday gifts children 6 7 8 years uk"),
-      };
-    }
-
-    if (age >= 9 && age <= 11) {
-      return {
-        label: 'Gift ideas for ages 9–11 🎮',
-        headline: `Ideas for ${who} ${age}th birthday`,
-        cards: [
-          { emoji:'🎮', text:'Games & tech toys',          url: p("games tech toys children 9 10 11 years birthday gift") },
-          { emoji:'🏅', text:'Sports & outdoor',           url: p("sports outdoor gift children 9 10 11 years uk") },
-          { emoji:'🎨', text:'Creative kits',              url: p("creative hobby kits children 9 10 11 years gift") },
-        ],
-        all: p("best birthday gifts children 9 10 11 years uk"),
-      };
-    }
-
-    // 12+
-    return {
-      label: `Gift ideas for a ${age} year old 🎁`,
-      headline: `Thoughtful gifts for older kids`,
-      cards: [
-        { emoji:'🎧', text:'Tech & gadgets',               url: p(`tech gadgets gift children ${age} years uk`) },
-        { emoji:'📚', text:'Books & learning',             url: p(`books learning gift children ${age} years uk`) },
-        { emoji:'🎯', text:'Games & experiences',          url: p(`games gift children ${age} years uk`) },
-      ],
-      all: p(`best birthday gifts children ${age} years uk`),
-    };
+  function giftCard(item) {
+    return `<a href="${item.url}" target="_blank" rel="noopener sponsored" class="gift-card">
+        <span class="gift-card-emoji">${item.emoji}</span>
+        <span class="gift-card-text">${escapeHtml(item.title)}</span>
+        <span class="gift-card-price">${item.price}</span>
+      </a>`;
   }
 
   function buildGiftSection(rawAge, childName) {
     const el = document.getElementById('gift-ideas-section');
     if (!el) return;
-    const cfg = getGiftConfig(rawAge, childName);
-    const cards = cfg.cards.map(c =>
-      `<a href="${c.url}" target="_blank" rel="noopener sponsored" class="gift-card">
-        <span class="gift-card-emoji">${c.emoji}</span>
-        <span class="gift-card-text">${c.text}</span>
-       </a>`
-    ).join('');
+
+    const age      = parseAge(rawAge);
+    const brackets = bracketsForAge(age);
+    const inBracket = (item) => !brackets || brackets.includes(item.age);
+
+    // 1. Relevant shop picks for this age (random 3)
+    const picks = shuffle(GIFT_CATALOG.filter(inBracket)).slice(0, 3);
+    const picked = new Set(picks.map(p => p.url));
+
+    // 2. Random Amazon bestsellers — same age group first, then top up from the rest
+    const bestSame  = shuffle(GIFT_CATALOG.filter(i => i.best && inBracket(i) && !picked.has(i.url)));
+    const bestOther = shuffle(GIFT_CATALOG.filter(i => i.best && !inBracket(i) && !picked.has(i.url)));
+    const bestsellers = bestSame.concat(bestOther).slice(0, 3);
+
+    const name     = childName && childName !== 'our little one' ? escapeHtml(String(childName)) : '';
+    const headline = name ? `Gift ideas for ${name}` : 'Not sure what to bring?';
+    const allUrl   = 'https://www.amazon.co.uk/s?' + new URLSearchParams({
+      k: isNaN(age) ? 'children birthday gift ideas uk' : `birthday gifts ${age} year old uk`,
+      tag: TAG,
+    }).toString();
+
     el.innerHTML = `
-      <p class="gift-section-label">${cfg.label}</p>
-      <p class="gift-section-title">${cfg.headline}</p>
-      <div class="gift-cards">${cards}</div>
-      <a href="${cfg.all}" target="_blank" rel="noopener sponsored" class="gift-browse-all">Browse all gift ideas on Amazon ↗</a>
+      <p class="gift-section-label">From our gift shop 🎁</p>
+      <p class="gift-section-title">${headline}</p>
+      <div class="gift-cards">${picks.map(giftCard).join('')}</div>
+      ${bestsellers.length ? `
+        <p class="gift-section-label" style="margin-top:14px;">Popular on Amazon ⭐</p>
+        <div class="gift-cards">${bestsellers.map(giftCard).join('')}</div>` : ''}
+      <a href="${allUrl}" target="_blank" rel="noopener sponsored" class="gift-browse-all">Browse all gift ideas on Amazon ↗</a>
       <p class="gift-aff-note">Amazon affiliate links — we may earn a small commission at no cost to you.</p>
     `;
     el.style.display = 'block';

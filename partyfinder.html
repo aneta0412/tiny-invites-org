@@ -169,7 +169,7 @@ a.card{text-decoration:none;color:inherit}
 .ii.opt{background:var(--gold-pale);color:var(--gold)}
 
 /* ── HERO STATE ── */
-.hero-state{text-align:center;padding:80px 20px}
+.hero-state{text-align:center;padding:40px 20px}
 .hs-icon{font-size:64px;margin-bottom:20px;display:block}
 .hs-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:300;color:var(--ink);margin-bottom:10px}
 .hs-sub{color:var(--muted);font-size:15px;max-width:420px;margin:0 auto 28px;line-height:1.65;font-weight:300}
@@ -279,7 +279,7 @@ a.card{text-decoration:none;color:inherit}
   padding:18px 0;
   /* subtle playful tilt */
   transform:rotate(-1.2deg) scale(1.03);
-  margin:-6px -2% 0;
+  margin:-6px -2% -20px;
 }
 .photo-strip-wrap::before,
 .photo-strip-wrap::after{
@@ -304,6 +304,15 @@ a.card{text-decoration:none;color:inherit}
   0%{transform:translateX(-50%)}
   100%{transform:translateX(0)}
 }
+
+.strip-tile{
+  width:160px;height:110px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:38px;box-shadow:0 2px 12px rgba(42,34,24,.1);
+  transition:transform .3s;
+}
+.strip-tile:hover{transform:scale(1.05)}
+@media(max-width:640px){.strip-tile{width:120px;height:82px;font-size:30px}}
 
 .photo-strip img{
   display:block;width:160px;height:110px;object-fit:cover;
@@ -459,7 +468,7 @@ a.card{text-decoration:none;color:inherit}
   </div>
   <div id="grid" class="grid"></div>
   <div id="heroState" class="hero-state">
-    <span class="hs-icon">🎈</span>
+
     <h2 class="hs-title">Where's the party?</h2>
     <p class="hs-sub">Enter your postcode above to find the nearest toddler birthday party venues, sorted by distance. Every venue shows full package details and prices.</p>
     <div class="sample-grid">

@@ -1,4 +1,4 @@
-// Updated: 2026-06-02
+// Updated: 2026-06-11
 // Router: /api/dashboard-api?action=load | update-guest | send-email | save-reminder-note | send-update
 import loadDashboard    from '../lib/dashboard.js';
 import updateGuest      from '../lib/update-guest.js';
@@ -25,5 +25,14 @@ export default async function handler(req, res) {
     });
   }
 
-  return route(req, res);
+  try {
+    return await route(req, res);
+  } catch (err) {
+    // Sub-handlers catch their own errors; this is the last-resort net so a
+    // throw never escapes the function runtime as an unhandled rejection.
+    console.error(`[dashboard-api] unhandled error in action "${action}":`, err);
+    if (!res.headersSent) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 }

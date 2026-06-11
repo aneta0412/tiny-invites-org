@@ -50,6 +50,11 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // All non-405 responses are HTML pages
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+
+  try {
+
   const id = String(req.query?.id || req.body?.id || '').trim();
 
   if (!id || !UUID_RE.test(id)) {
@@ -96,4 +101,12 @@ export default async function handler(req, res) {
     page('Unsubscribed', 'You\'ve been unsubscribed ✓',
       'You won\'t receive any more reminder or update emails for this party. Your RSVP is still confirmed.')
   );
+
+  } catch (err) {
+    console.error('[unsubscribe-reminder] unexpected error:', err);
+    return res.status(500).send(
+      page('Error', 'Something went wrong',
+        'We couldn\'t process your request. Please <a href="mailto:hello@tinyinvites.org">email us</a> and we\'ll remove you manually.')
+    );
+  }
 }

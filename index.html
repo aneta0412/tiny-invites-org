@@ -95,19 +95,14 @@
 
   /* ===== Floating balloon ===== */
   .floating-balloon {
-    position:fixed; right:28px; top:32px; z-index:999;
-    width:52px; height:68px; cursor:pointer; user-select:none;
-    filter:drop-shadow(0 6px 16px rgba(201,168,76,0.22));
-    transition:right 0.8s cubic-bezier(.25,.46,.45,.94), top 0.8s cubic-bezier(.25,.46,.45,.94);
-    animation:balloonBob 3.6s ease-in-out infinite;
+    position:fixed; right:20px; bottom:24px; z-index:999;
+    width:44px; height:58px;
+    cursor:grab; user-select:none; touch-action:none;
+    opacity:0.52;
+    filter:drop-shadow(0 3px 10px rgba(201,168,76,0.12));
   }
   .floating-balloon svg { width:100%; height:100%; }
-  .floating-balloon:hover { filter:drop-shadow(0 8px 20px rgba(201,168,76,0.35)); }
-  .floating-balloon:active { transform:scale(0.9); }
-  @keyframes balloonBob {
-    0%,100% { transform:translateY(0); }
-    50% { transform:translateY(-16px); }
-  }
+  .floating-balloon:hover { opacity:0.80; filter:drop-shadow(0 5px 14px rgba(201,168,76,0.24)); }
 
   /* ===== Confetti ===== */
   .confetti-piece {
@@ -245,6 +240,33 @@
   .footer-copy { font-size:0.7rem; color:var(--soft); }
 
   @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── Instagram section ──────────────────────────────────── */
+  .instagram-section { background:var(--cream); padding:72px 40px; overflow:hidden; }
+  .instagram-section .section-sub { margin-bottom:42px; }
+  .insta-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:38px; max-width:880px; }
+  .insta-tile { position:relative; display:block; aspect-ratio:1/1; border-radius:4px; overflow:hidden; border:1px solid var(--gold-pale); background:var(--gold-pale); text-decoration:none; transition:transform 0.25s,box-shadow 0.25s; }
+  .insta-tile:hover { transform:translateY(-4px); box-shadow:0 14px 40px rgba(42,34,24,0.13); }
+  .insta-tile img { width:100%; height:100%; object-fit:cover; display:block; }
+  .insta-tile-placeholder { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:linear-gradient(135deg,var(--gold-pale) 0%,var(--warm-white) 100%); }
+  .insta-tile-placeholder span { font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--soft); }
+  .insta-caption-overlay { position:absolute; inset:0; background:rgba(42,34,24,0.52); display:flex; align-items:flex-end; padding:18px 16px; opacity:0; transition:opacity 0.22s; }
+  .insta-tile:hover .insta-caption-overlay { opacity:1; }
+  .insta-caption-overlay p { font-size:0.76rem; color:rgba(255,255,255,0.9); line-height:1.5; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .insta-follow-row { display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+  .insta-handle { display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--dark); transition:color 0.2s; }
+  .insta-handle:hover { color:var(--gold); }
+  .insta-logo { width:28px; height:28px; flex-shrink:0; fill:currentColor; }
+  .insta-handle-text { font-size:0.9rem; letter-spacing:0.04em; font-weight:400; }
+  .insta-follow-btn { background:var(--dark); color:var(--cream); border:1px solid var(--dark); padding:10px 22px; border-radius:2px; font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; transition:background 0.2s,border-color 0.2s; display:inline-flex; align-items:center; gap:8px; }
+  .insta-follow-btn:hover { background:var(--gold); border-color:var(--gold); }
+  .insta-tagline { font-size:0.78rem; color:var(--soft); margin-left:4px; display:flex; align-items:center; }
+  @media (max-width:640px) {
+    .instagram-section { padding:52px 20px; }
+    .insta-grid { grid-template-columns:repeat(2,1fr); max-width:100%; }
+    .insta-grid .insta-tile:last-child { display:none; }
+    .insta-follow-row { flex-direction:column; align-items:flex-start; gap:12px; }
+  }
 
   @media(max-width:1100px) {
     .other-grid { grid-template-columns:1fr 1fr; }
@@ -672,9 +694,60 @@
   </div>
 </section>
 
+<div class="section-divider"></div>
+
+<section class="instagram-section" id="instagram">
+  <p class="section-label">Find us on Instagram</p>
+  <h2>Party <em>inspiration,</em> daily.</h2>
+  <p class="section-sub">Ideas, themes, and behind-the-scenes moments from Tiny Invites. Follow along and tag us in your parties — we love to see them.</p>
+
+  <div class="insta-grid">
+
+    <a class="insta-tile" href="https://instagram.com/tinyinvites" target="_blank" rel="noopener" aria-label="View post on Instagram">
+      <img src="insta-post-1.jpg" alt="Tiny Invites Instagram post" onerror="this.style.display='none'">
+      <div class="insta-tile-placeholder">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="#c9a84c" stroke="none"/></svg>
+        <span>Coming soon</span>
+      </div>
+      <div class="insta-caption-overlay"><p>Planning a kids' party should feel exciting, not stressful. That's why we built Tiny Invites ✨</p></div>
+    </a>
+
+    <a class="insta-tile" href="https://instagram.com/tinyinvites" target="_blank" rel="noopener" aria-label="View post on Instagram">
+      <img src="insta-post-2.jpg" alt="Tiny Invites Instagram post" onerror="this.style.display='none'">
+      <div class="insta-tile-placeholder">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="#c9a84c" stroke="none"/></svg>
+        <span>Coming soon</span>
+      </div>
+      <div class="insta-caption-overlay"><p>Still waiting for Sharon to reply to the WhatsApp group... 😅 There's a better way — link in bio.</p></div>
+    </a>
+
+    <a class="insta-tile" href="https://instagram.com/tinyinvites" target="_blank" rel="noopener" aria-label="View post on Instagram">
+      <img src="insta-post-3.jpg" alt="Tiny Invites Instagram post" onerror="this.style.display='none'">
+      <div class="insta-tile-placeholder">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="#c9a84c" stroke="none"/></svg>
+        <span>Coming soon</span>
+      </div>
+      <div class="insta-caption-overlay"><p>Your party page is live in under 2 minutes 🎂 No app downloads. No account setup faff.</p></div>
+    </a>
+
+  </div>
+
+  <div class="insta-follow-row">
+    <a class="insta-handle" href="https://instagram.com/tinyinvites" target="_blank" rel="noopener">
+      <svg class="insta-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      <span class="insta-handle-text">@tinyinvites</span>
+    </a>
+    <a class="insta-follow-btn" href="https://instagram.com/tinyinvites" target="_blank" rel="noopener">
+      Follow us
+      <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M10 4l6 6-6 6"/></svg>
+    </a>
+    <span class="insta-tagline">Party inspiration, real stories &amp; behind-the-scenes moments</span>
+  </div>
+</section>
+
 <footer>
   <div class="footer-logo"><img src="logo.png" alt="Tiny Invites logo" onerror="this.style.display='none'">Tiny Invites</div>
-  <div class="footer-links"><a href="/partyfinder.html">Party Finder</a><a href="#create">Create Invite</a><a href="#designs">Designs</a><a href="#print">Print Services</a><a href="#shop">Party Shop</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
+  <div class="footer-links"><a href="/partyfinder.html">Party Finder</a><a href="#create">Create Invite</a><a href="#designs">Designs</a><a href="#print">Print Services</a><a href="#shop">Party Shop</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="https://instagram.com/tinyinvites" target="_blank" rel="noopener">Instagram</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
   <p class="footer-copy">Everything for the perfect children's party. Free, always.</p>
 </footer>
 
@@ -919,41 +992,118 @@
       });
   }
 /* ===== Floating balloon + confetti ===== */
-(function() {
+(function () {
+  const W_B = 44, H_B = 58;       // must match CSS width/height
+  const R_EDGE = 20, B_EDGE = 24; // corner margins
+
+  // ── Build element ─────────────────────────────────────────
   const balloon = document.createElement('div');
   balloon.className = 'floating-balloon';
-  balloon.setAttribute('aria-label', 'Click for a surprise');
+  balloon.setAttribute('aria-label', 'Double-click for a surprise');
   balloon.setAttribute('role', 'button');
+  balloon.setAttribute('tabindex', '0');
   balloon.innerHTML = '<svg viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="bg" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#ffe87a"/><stop offset="60%" stop-color="#f0d04a"/><stop offset="100%" stop-color="#d4a830"/></radialGradient></defs><ellipse cx="30" cy="34" rx="22" ry="28" fill="url(#bg)" opacity="0.92"/><ellipse cx="24" cy="22" rx="5" ry="7" fill="#fff" opacity="0.28" transform="rotate(-18 24 22)"/><path d="M28 62 Q30 66 32 62" stroke="#c9a84c" stroke-width="1.2" fill="none"/><line x1="30" y1="63" x2="30" y2="88" stroke="#c9a84c" stroke-width="1" opacity="0.5"/></svg>';
   document.body.appendChild(balloon);
 
-  let ticking = false;
-  function updateBalloonPosition() {
-    const scrollY = window.scrollY || window.pageYOffset;
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    const pct = Math.min(scrollY / (maxScroll || 1), 1);
-    const topVal = 32 + pct * (window.innerHeight - 68 - 64);
-    const swing = Math.sin(pct * Math.PI);
-    const rightVal = 28 + swing * (window.innerWidth / 2 - 54);
-    balloon.style.top = topVal + 'px';
-    balloon.style.right = rightVal + 'px';
-    ticking = false;
+  // ── State ─────────────────────────────────────────────────
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let posX = 0, posY = 0;
+  let isDragging = false, isSpringBack = false, springTimer = null;
+  let dragSMX, dragSMY, dragSPX, dragSPY;
+
+  // ── Drift functions (independent H + V wave stacks) ───────
+  const dH = t => Math.sin(t*0.27)*26 + Math.sin(t*0.63+1.4)*16 + Math.sin(t*1.17+2.8)*8;
+  const dV = t => Math.cos(t*0.34+0.6)*12 + Math.cos(t*0.79+1.7)*7 + Math.sin(t*0.52+1.1)*5;
+  const baseX = () => window.innerWidth  - W_B - R_EDGE;
+  const baseY = () => window.innerHeight - H_B - B_EDGE;
+
+  // Switch from CSS right/bottom to JS left/top immediately
+  balloon.style.right = 'auto'; balloon.style.bottom = 'auto';
+  posX = baseX(); posY = baseY();
+  balloon.style.left = posX + 'px'; balloon.style.top = posY + 'px';
+
+  // ── RAF loop: drift position + gentle bob ─────────────────
+  (function loop() {
+    if (!isDragging && !isSpringBack) {
+      const t = Date.now() / 1000;
+      posX = baseX() - dH(t);
+      posY = baseY() + dV(t);
+      balloon.style.left = posX + 'px';
+      balloon.style.top  = posY + 'px';
+      if (!reduced) {
+        const bob = Math.sin(t * 1.745) * 10; // ±10 px, ~3.6 s period
+        balloon.style.transform = `translateY(${bob}px)`;
+      }
+    }
+    requestAnimationFrame(loop);
+  })();
+
+  // ── Drag ──────────────────────────────────────────────────
+  function startDrag(mx, my) {
+    if (isDragging) return;
+    isDragging = true; isSpringBack = false;
+    clearTimeout(springTimer);
+    dragSMX = mx; dragSMY = my; dragSPX = posX; dragSPY = posY;
+    balloon.style.transition = 'none';
+    balloon.style.cursor = 'grabbing';
   }
-  window.addEventListener('scroll', function() {
-    if (!ticking) { requestAnimationFrame(updateBalloonPosition); ticking = true; }
-  }, { passive: true });
 
-  balloon.addEventListener('click', function() {
-    // Bail out if confetti is already running
-    if (document.getElementById('balloon-confetti-canvas')) return;
+  function moveDrag(mx, my) {
+    if (!isDragging) return;
+    const dx = mx - dragSMX, dy = my - dragSMY;
+    posX = dragSPX + dx; posY = dragSPY + dy;
+    balloon.style.left = posX + 'px'; balloon.style.top = posY + 'px';
 
+    // Directional stretch via rotate-scale-unrotate matrix
+    const dist  = Math.sqrt(dx*dx + dy*dy);
+    const fac   = Math.min(dist / 88, 1);
+    const angle = Math.atan2(dy, dx);
+    const sx = 1 + fac * 0.42;          // stretch along pull axis
+    const sy = 1 / (1 + fac * 0.22);    // squish across it
+    const c = Math.cos(angle), s = Math.sin(angle);
+    const ma = c*c*sx + s*s*sy, mb = s*c*(sx-sy), md = s*s*sx + c*c*sy;
+    balloon.style.transform = `matrix(${ma},${mb},${mb},${md},0,0)`;
+  }
+
+  function endDrag() {
+    if (!isDragging) return;
+    isDragging = false; isSpringBack = true;
+    balloon.style.cursor = 'grab';
+    const t  = Date.now() / 1000;
+    const tx = baseX() - dH(t), ty = baseY() + dV(t);
+    const bob = reduced ? 0 : Math.sin(t * 1.745) * 10;
+    balloon.style.transition = 'left .52s cubic-bezier(.34,1.56,.64,1), top .52s cubic-bezier(.34,1.56,.64,1), transform .42s cubic-bezier(.34,1.56,.64,1)';
+    balloon.style.left = tx + 'px'; balloon.style.top = ty + 'px';
+    balloon.style.transform = `translateY(${bob}px)`;  // spring deform back
+    posX = tx; posY = ty;
+    clearTimeout(springTimer);
+    springTimer = setTimeout(() => { balloon.style.transition = ''; isSpringBack = false; }, 580);
+  }
+
+  // Mouse
+  balloon.addEventListener('mousedown', e => { if (e.detail < 2) { startDrag(e.clientX, e.clientY); e.preventDefault(); } });
+  document.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+  document.addEventListener('mouseup', endDrag);
+
+  // Touch
+  balloon.addEventListener('touchstart', e => { startDrag(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); }, { passive:false });
+  document.addEventListener('touchmove', e => { if (!isDragging) return; moveDrag(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); }, { passive:false });
+  document.addEventListener('touchend', endDrag);
+
+  // ── Double-click / double-tap → confetti ──────────────────
+  balloon.addEventListener('dblclick', () => { endDrag(); if (!document.getElementById('balloon-confetti-canvas')) launchConfetti(); });
+
+  // ── Auto confetti every 8 minutes ─────────────────────────
+  setInterval(() => { if (!document.getElementById('balloon-confetti-canvas')) launchConfetti(); }, 8 * 60 * 1000);
+
+  // ── Confetti ──────────────────────────────────────────────
+  function launchConfetti() {
     const canvas = document.createElement('canvas');
     canvas.id = 'balloon-confetti-canvas';
     canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
     let W, H, dpr;
-
     function resize() {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       W = window.innerWidth; H = window.innerHeight;
@@ -962,58 +1112,45 @@
     }
     resize();
     window.addEventListener('resize', resize);
-
     const COLOURS = ['#d9b65f','#c9a84c','#e8d5a3','#f5edda','#e6b8b0','#d7a48f','#cbb89a','#fbf4e6'];
     const r = (a, b) => a + Math.random() * (b - a);
-
     function makePiece(burst) {
-      const t = Math.random();
-      let shape = 'rect', w, h;
-      if (t < 0.18)      { shape = 'ribbon'; w = r(4, 7);  h = r(14, 26); }
-      else if (t < 0.34) { shape = 'circle'; w = h = r(8, 13); }
-      else               { shape = 'rect';   w = r(9, 17); h = r(8, 15); }
-      return {
-        x: r(0, W), y: burst ? r(-H * 0.25, 0) : r(-40, -10),
-        w, h, shape, color: COLOURS[(Math.random() * COLOURS.length) | 0],
-        rot: r(0, Math.PI * 2), rotV: r(-0.06, 0.06),
-        vy: r(0.7, 1.7), vx: r(-0.4, 0.4),
-        sway: r(0.6, 1.6), swayV: r(0.01, 0.03), phase: r(0, Math.PI * 2), op: 1
-      };
+      const t = Math.random(); let shape = 'rect', w, h;
+      if (t < 0.18)      { shape = 'ribbon'; w = r(4,7);  h = r(14,26); }
+      else if (t < 0.34) { shape = 'circle'; w = h = r(8,13); }
+      else               { shape = 'rect';   w = r(9,17); h = r(8,15); }
+      return { x:r(0,W), y:burst?r(-H*0.25,0):r(-40,-10), w, h, shape,
+               color:COLOURS[(Math.random()*COLOURS.length)|0],
+               rot:r(0,Math.PI*2), rotV:r(-0.06,0.06), vy:r(1.2,2.5), vx:r(-0.4,0.4),
+               sway:r(0.6,1.6), swayV:r(0.01,0.03), phase:r(0,Math.PI*2), op:1 };
     }
-
     let particles = [], spawning = true, raf = null;
-    for (let i = 0; i < 120; i++) particles.push(makePiece(true));
+    for (let i = 0; i < 60; i++) particles.push(makePiece(true));
     const start = Date.now();
     const trickle = setInterval(() => {
-      for (let i = 0; i < 5; i++) particles.push(makePiece(false));
-      if (Date.now() - start > 3500) { clearInterval(trickle); spawning = false; }
+      for (let i = 0; i < 3; i++) particles.push(makePiece(false));
+      if (Date.now() - start > 2000) { clearInterval(trickle); spawning = false; }
     }, 120);
-
     function draw() {
       ctx.clearRect(0, 0, W, H);
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
-        p.phase += p.swayV;
-        p.x += p.vx + Math.sin(p.phase) * p.sway;
+        p.phase += p.swayV; p.x += p.vx + Math.sin(p.phase) * p.sway;
         p.y += p.vy; p.rot += p.rotV;
         if (p.y > H - 60) p.op -= 0.012;
         if (p.op <= 0 || p.y > H + 60) { particles.splice(i, 1); continue; }
         ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
         ctx.globalAlpha = Math.max(0, p.op); ctx.fillStyle = p.color;
-        if (p.shape === 'circle') { ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill(); }
-        else ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        if (p.shape === 'circle') { ctx.beginPath(); ctx.arc(0, 0, p.w/2, 0, Math.PI*2); ctx.fill(); }
+        else ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
         ctx.restore();
       }
-      if (particles.length || spawning) {
-        raf = requestAnimationFrame(draw);
-      } else {
-        cancelAnimationFrame(raf);
-        window.removeEventListener('resize', resize);
-        canvas.remove();
-      }
+      if (particles.length || spawning) { raf = requestAnimationFrame(draw); }
+      else { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); canvas.remove(); }
     }
     draw();
-  });
+  }
+
 })();
 </script>
 </body>

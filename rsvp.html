@@ -1060,51 +1060,64 @@
   }
 
   // ── VENUE DISCOVERY ───────────────────────────────────────────────────────
-  // Detects the region from the party venue and links to the relevant
-  // partyfinder page with a pre-filled postcode.
+  // Detects postcode or region from the party venue string and deep-links
+  // into the partyfinder with auto-search results (10-mile radius).
+
+  // Try to extract a UK postcode from a venue/address string.
+  // Matches patterns like "CV37 6YX", "SW6 2PY", "M1 1AE", etc.
+  const UK_PC_RE = /\b([A-Z]{1,2}\d[A-Z\d]?)\s*(\d[A-Z]{2})\b/i;
+
+  function extractPostcode(str) {
+    if (!str) return null;
+    const m = str.match(UK_PC_RE);
+    if (m) return (m[1] + ' ' + m[2]).toUpperCase();
+    return null;
+  }
+
+  // Fallback: match city/area names to a representative postcode
   const REGION_MAP = [
-    { keywords:['london','hackney','camden','islington','brixton','croydon','greenwich','lewisham','southwark','lambeth','wandsworth','westminster','kensington','chelsea','hammersmith','fulham','tower hamlets','newham','barking','walthamstow','enfield','barnet','harrow','ealing','brent','haringey','stratford','docklands','canary wharf','woolwich','eltham','catford','peckham','dulwich','clapham','battersea','putney','wimbledon','richmond','kingston','sutton','bromley','ilford','romford','dagenham','chingford','tottenham','wood green','muswell hill','finchley','hampstead','maida vale','notting hill','paddington','marylebone','soho','covent garden','shoreditch','bethnal green','mile end','bow','poplar','deptford','bermondsey','rotherhithe','surbiton','twickenham','hounslow','feltham','uxbridge','ruislip','wembley','edgware','stanmore','mill hill','chiswick','acton','shepherd.s bush','white city','earls court','pimlico','vauxhall','stockwell','streatham','tooting','balham','mitcham','morden','cheam','epsom','croydon','beckenham','sidcup','bexley','erith','plumstead','thamesmead','abbey wood','charlton','blackheath','forest hill','sydenham','crystal palace','norwood','tulse hill','herne hill','brixton','oval','kennington','elephant','walworth','camberwell','nunhead','new cross','brockley','honor oak','east dulwich','west norwood','gipsy hill'],
-      postcode:'SW6 2PY', label:'London' },
-    { keywords:['birmingham','solihull','edgbaston','erdington','sutton coldfield','moseley','selly oak','harborne','handsworth','aston','small heath','sparkhill','acocks green','kings heath','hall green','northfield','bournville','quinton','rubery','longbridge','ladywood'],
-      postcode:'B1 1AA', label:'Birmingham' },
-    { keywords:['manchester','salford','stockport','oldham','bolton','bury','rochdale','wigan','trafford','tameside','altrincham','sale','stretford','didsbury','chorlton','withington','fallowfield','rusholme','levenshulme','gorton','openshaw','denton','ashton','stalybridge','hyde','glossop','marple','bramhall','cheadle','heald green','gatley','poynton','wilmslow','macclesfield','prestwich','whitefield','radcliffe','ramsbottom','heywood','middleton','failsworth','droylsden','dukinfield','mossley'],
-      postcode:'M1 1AE', label:'Manchester' },
-    { keywords:['leeds','bradford','wakefield','huddersfield','halifax','dewsbury','batley','keighley','shipley','pudsey','morley','garforth','wetherby','otley','ilkley','headingley','chapel allerton','roundhay','horsforth','guiseley','yeadon','bingley','saltaire','idle','baildon','calverley'],
-      postcode:'LS1 1BA', label:'Leeds' },
-    { keywords:['sheffield','rotherham','doncaster','barnsley','chesterfield','meadowhall','hillsborough','ecclesall','crookes','walkley','broomhill','woodseats','dore','totley','beauchief'],
-      postcode:'S1 2BJ', label:'Sheffield' },
-    { keywords:['liverpool','wirral','bootle','birkenhead','wallasey','crosby','formby','kirkby','prescot','huyton','knowsley','halewood','speke','garston','toxteth','wavertree','childwall','woolton','allerton','mossley hill','aigburth','sefton park','anfield','everton','walton','fazakerley','aintree','netherton','litherland','maghull','lydiate','southport'],
-      postcode:'L1 1JD', label:'Liverpool' },
-    { keywords:['bristol','bath','weston-super-mare','clevedon','portishead','keynsham','yate','thornbury','chipping sodbury','nailsea','backwell','long ashton','filton','patchway','bradley stoke','stoke gifford','frenchay','fishponds','easton','redland','clifton','cotham','montpelier','st pauls','bedminster','southville','knowle','brislington','hengrove','whitchurch','hartcliffe','bishopsworth'],
-      postcode:'BS1 5TR', label:'Bristol' },
-    { keywords:['nottingham','derby','leicester','loughborough','mansfield','newark','arnold','carlton','beeston','west bridgford','stapleford','long eaton','hucknall','bulwell','bestwood','sherwood','mapperley','gedling','netherfield','colwick'],
-      postcode:'NG1 5FW', label:'Nottingham' },
-    { keywords:['newcastle','gateshead','sunderland','durham','south shields','north shields','tynemouth','whitley bay','blyth','cramlington','ashington','morpeth','hexham','jarrow','hebburn','washington','chester-le-street','consett','stanley','bishop auckland','darlington','middlesbrough','hartlepool','stockton','redcar'],
-      postcode:'NE1 4ST', label:'Newcastle' },
-    { keywords:['edinburgh','glasgow','dundee','aberdeen','stirling','perth','inverness','falkirk','livingston','dunfermline','kirkcaldy','paisley','east kilbride','hamilton','motherwell','airdrie','coatbridge','clydebank','dumbarton','greenock'],
-      postcode:'EH1 1RE', label:'Edinburgh' },
-    { keywords:['cardiff','swansea','newport','bridgend','pontypridd','merthyr','caerphilly','barry','penarth','cowbridge','llantrisant','aberdare','treorchy','tonypandy','porth','ferndale','treherbert','mountain ash'],
-      postcode:'CF10 1EP', label:'Cardiff' },
-    { keywords:['coventry','warwick','leamington','stratford','rugby','nuneaton','bedworth','kenilworth','solihull'],
-      postcode:'CV1 1FT', label:'Coventry' },
-    { keywords:['cambridge','ely','huntingdon','st neots','newmarket','haverhill','saffron walden'],
-      postcode:'CB1 1DT', label:'Cambridge' },
-    { keywords:['oxford','abingdon','witney','bicester','banbury','didcot','thame','henley','wallingford'],
-      postcode:'OX1 1BX', label:'Oxford' },
-    { keywords:['brighton','hove','lewes','worthing','eastbourne','crawley','horsham','haywards heath','burgess hill','shoreham'],
-      postcode:'BN1 1AE', label:'Brighton' },
-    { keywords:['southampton','portsmouth','winchester','eastleigh','fareham','gosport','havant','basingstoke','andover','romsey','lymington','new forest','hedge end','chandlers ford'],
-      postcode:'SO14 7DW', label:'Southampton' },
-    { keywords:['exeter','plymouth','torbay','torquay','paignton','newton abbot','barnstaple','tiverton','exmouth','sidmouth','dawlish','teignmouth','totnes','dartmouth','salcombe','kingsbridge','okehampton','crediton','honiton','axminster','budleigh salterton','cullompton'],
-      postcode:'EX1 1HS', label:'Exeter' },
+    { kw:['london','hackney','camden','islington','brixton','croydon','greenwich','lewisham','southwark','lambeth','wandsworth','westminster','kensington','chelsea','hammersmith','fulham','tower hamlets','newham','barking','walthamstow','enfield','barnet','harrow','ealing','brent','haringey','docklands','canary wharf','woolwich','eltham','catford','peckham','dulwich','clapham','battersea','putney','wimbledon','richmond','kingston','sutton','bromley','ilford','romford','dagenham','tottenham','finchley','hampstead','shoreditch','deptford','bermondsey','twickenham','hounslow','wembley','chiswick','acton','streatham','tooting','balham','mitcham','crystal palace','camberwell','brockley'],
+      pc:'SW6 2PY', label:'London' },
+    { kw:['birmingham','solihull','edgbaston','erdington','sutton coldfield','moseley','selly oak','harborne','handsworth','aston','small heath','kings heath','northfield','ladywood'],
+      pc:'B1 1AA', label:'Birmingham' },
+    { kw:['manchester','salford','stockport','oldham','bolton','bury','rochdale','wigan','trafford','tameside','altrincham','sale','stretford','didsbury','chorlton'],
+      pc:'M1 1AE', label:'Manchester' },
+    { kw:['leeds','bradford','wakefield','huddersfield','halifax','dewsbury','headingley','roundhay','horsforth'],
+      pc:'LS1 1BA', label:'Leeds' },
+    { kw:['sheffield','rotherham','doncaster','barnsley','chesterfield','meadowhall'],
+      pc:'S1 2BJ', label:'Sheffield' },
+    { kw:['liverpool','wirral','birkenhead','crosby','kirkby','knowsley','southport'],
+      pc:'L1 1JD', label:'Liverpool' },
+    { kw:['bristol','bath','weston-super-mare','keynsham','filton','clifton','bedminster'],
+      pc:'BS1 5TR', label:'Bristol' },
+    { kw:['nottingham','derby','leicester','loughborough','mansfield','beeston','west bridgford'],
+      pc:'NG1 5FW', label:'Nottingham' },
+    { kw:['newcastle','gateshead','sunderland','durham','south shields','tynemouth','darlington','middlesbrough'],
+      pc:'NE1 4ST', label:'Newcastle' },
+    { kw:['edinburgh','glasgow','dundee','aberdeen','stirling','perth','inverness','falkirk'],
+      pc:'EH1 1RE', label:'Edinburgh' },
+    { kw:['cardiff','swansea','newport','bridgend','pontypridd','caerphilly','barry'],
+      pc:'CF10 1EP', label:'Cardiff' },
+    { kw:['coventry','warwick','leamington','stratford','rugby','nuneaton','kenilworth'],
+      pc:'CV1 1FT', label:'Coventry & Warwickshire' },
+    { kw:['cambridge','ely','huntingdon','newmarket'],
+      pc:'CB1 1DT', label:'Cambridge' },
+    { kw:['oxford','abingdon','witney','bicester','banbury','didcot'],
+      pc:'OX1 1BX', label:'Oxford' },
+    { kw:['brighton','hove','worthing','eastbourne','crawley','horsham'],
+      pc:'BN1 1AE', label:'Brighton' },
+    { kw:['southampton','portsmouth','winchester','fareham','basingstoke'],
+      pc:'SO14 7DW', label:'Southampton' },
+    { kw:['exeter','plymouth','torquay','paignton','newton abbot','barnstaple'],
+      pc:'EX1 1HS', label:'Exeter' },
   ];
 
   function detectRegion(venueStr) {
     if (!venueStr) return null;
     const lower = venueStr.toLowerCase();
-    for (const region of REGION_MAP) {
-      for (const kw of region.keywords) {
-        if (lower.includes(kw)) return region;
+    for (const r of REGION_MAP) {
+      for (const kw of r.kw) {
+        if (lower.includes(kw)) return r;
       }
     }
     return null;
@@ -1115,13 +1128,29 @@
     if (!el) return;
 
     const pd = window._partyData || {};
-    const region = detectRegion(pd.location);
+    const venue = pd.location || '';
+
+    // Priority 1: actual postcode in the venue string (most accurate)
+    // Priority 2: city/area keyword match → representative postcode
+    // Priority 3: generic link (no search)
+    const extractedPC = extractPostcode(venue);
+    const region      = detectRegion(venue);
+
     const baseUrl = 'https://tinyinvites.org/partyfinder';
-    let venueUrl = baseUrl;
-    let label = 'Browse Party Venues';
-    if (region) {
-      venueUrl = baseUrl + '?pc=' + encodeURIComponent(region.postcode);
-      label = `Browse Party Venues in ${region.label}`;
+    let venueUrl, label;
+
+    if (extractedPC) {
+      // Best case: we have the actual postcode, search within 10 miles
+      venueUrl = baseUrl + '?pc=' + encodeURIComponent(extractedPC) + '&r=10';
+      label = region ? `Party Venues near ${region.label}` : `Party Venues near ${extractedPC}`;
+    } else if (region) {
+      // Good case: we matched a city name, use its representative postcode
+      venueUrl = baseUrl + '?pc=' + encodeURIComponent(region.pc) + '&r=10';
+      label = `Party Venues near ${region.label}`;
+    } else {
+      // Fallback: generic link
+      venueUrl = baseUrl;
+      label = 'Browse Party Venues near you';
     }
 
     el.innerHTML = `

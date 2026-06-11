@@ -378,7 +378,7 @@
         Resend confirmation email
       </button>
 
-      <!-- Delayed "didn't receive it?" nudge — appears after 20 s -->
+      <!-- Delayed "didn't receive it?" nudge — appears after 8 s -->
       <button id="didnt-receive-btn" onclick="showDidntReceive()">
         Didn't receive it?
       </button>
@@ -681,7 +681,7 @@
     const newEmail = input ? input.value.trim() : '';
     if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
       input.focus(); input.style.borderColor = '#c0392b';
-      setTimeout(() => { input.style.borderColor = ''; }, 2000);
+      setTimeout(() => { input.style.borderColor = ''; }, 800);
       return;
     }
 

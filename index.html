@@ -75,7 +75,7 @@
   .hero-collage::after { content:""; position:absolute; inset:-9% -7%; z-index:-1; background:radial-gradient(58% 58% at 50% 40%, rgba(201,168,76,0.10), transparent 72%); }
   .hc-tile { position:relative; width:100%; aspect-ratio:3/4; border-radius:10px; overflow:hidden; border:1px solid var(--gold-pale); box-shadow:0 8px 24px rgba(42,34,24,0.08); background:#fff; }
   .hc-slide { position:absolute; inset:0; opacity:0; animation:hcFade 16s ease-in-out infinite; }
-  .hc-slide img { width:100%; height:100%; object-fit:cover; }
+  .hc-slide img { width:100%; height:100%; object-fit:cover; object-position:center top; }
   @keyframes hcFade {
     0% { opacity:0; transform:scale(1.04); }
     4% { opacity:1; transform:scale(1); }
@@ -289,9 +289,10 @@
     .nav-links a { padding:13px 0; border-top:1px solid var(--gold-pale); font-size:0.78rem; }
     .nav-cta { margin-top:10px; text-align:center; justify-content:center; padding:12px 16px !important; }
     .hero { padding:52px 24px 44px; }
+    .hero-inner { gap:22px; }
     .hero-bg { background:linear-gradient(to bottom, rgba(250,246,239,0.99) 0%, rgba(250,246,239,0.96) 72%, rgba(250,246,239,0.9) 100%), url('hero-bg.jpg') center/cover no-repeat; }
     .hero-content h1 { font-size:clamp(2.7rem,13vw,4rem); }
-    .hero-collage { grid-template-columns:repeat(4,1fr); gap:8px; }
+    .hero-collage { grid-template-columns:repeat(4,1fr); gap:8px; margin:0 -10px; }
     .hero-sub { color:#4f4434; font-size:0.96rem; }
     .btn-primary { width:100%; min-height:48px; }
     .section-divider { margin:0 20px; }
@@ -986,7 +987,7 @@
 /* ===== Floating balloon + confetti ===== */
 (function () {
   const W_B = 44, H_B = 58;       // must match CSS width/height
-  const R_EDGE = 20, B_EDGE = 24; // initial corner margins
+  const R_EDGE = 20, B_EDGE = 24; // corner margins
 
   // ── Build element ─────────────────────────────────────────
   const balloon = document.createElement('div');
@@ -999,41 +1000,33 @@
 
   // ── State ─────────────────────────────────────────────────
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // homeX / homeY = the anchor point the balloon idles around (updates when you drop it)
-  let homeX = window.innerWidth  - W_B - R_EDGE;
-  let homeY = window.innerHeight - H_B - B_EDGE;
-  let posX = homeX, posY = homeY;
-  let isDragging = false, settleTimer = null, settling = false;
+  let posX = 0, posY = 0;
+  let isDragging = false, isSpringBack = false, springTimer = null;
   let dragSMX, dragSMY, dragSPX, dragSPY;
 
-  // ── Idle drift — bigger, bouncier wave stacks ─────────────
-  const dH = t => Math.sin(t*0.42)*40 + Math.sin(t*0.91+1.4)*22 + Math.sin(t*1.6+2.8)*11;
-  const dV = t => Math.cos(t*0.5+0.6)*34 + Math.cos(t*1.05+1.7)*16 + Math.sin(t*0.72+1.1)*9;
-  // springy vertical bob — taller and a touch faster
-  const bobAt = t => reduced ? 0 : (Math.sin(t*2.1)*16 + Math.sin(t*3.7+0.8)*5);
+  // ── Drift functions (independent H + V wave stacks) ───────
+  const dH = t => Math.sin(t*0.27)*26 + Math.sin(t*0.63+1.4)*16 + Math.sin(t*1.17+2.8)*8;
+  const dV = t => Math.cos(t*0.34+0.6)*12 + Math.cos(t*0.79+1.7)*7 + Math.sin(t*0.52+1.1)*5;
+  const baseX = () => window.innerWidth  - W_B - R_EDGE;
+  const baseY = () => window.innerHeight - H_B - B_EDGE;
 
   // Switch from CSS right/bottom to JS left/top immediately
   balloon.style.right = 'auto'; balloon.style.bottom = 'auto';
+  posX = baseX(); posY = baseY();
   balloon.style.left = posX + 'px'; balloon.style.top = posY + 'px';
 
-  // keep the home anchor on-screen after a resize
-  window.addEventListener('resize', () => {
-    homeX = Math.min(homeX, window.innerWidth  - W_B - 4);
-    homeY = Math.min(homeY, window.innerHeight - H_B - 4);
-  });
-
-  // ── RAF loop: idle drift + bob around the home anchor ─────
+  // ── RAF loop: drift position + gentle bob ─────────────────
   (function loop() {
-    if (!isDragging && !settling) {
+    if (!isDragging && !isSpringBack) {
       const t = Date.now() / 1000;
-      posX = homeX + dH(t);
-      posY = homeY + dV(t);
-      // keep it from drifting off-screen
-      posX = Math.max(4, Math.min(posX, window.innerWidth  - W_B - 4));
-      posY = Math.max(4, Math.min(posY, window.innerHeight - H_B - 4));
+      posX = baseX() - dH(t);
+      posY = baseY() + dV(t);
       balloon.style.left = posX + 'px';
       balloon.style.top  = posY + 'px';
-      balloon.style.transform = `translateY(${bobAt(t)}px)`;
+      if (!reduced) {
+        const bob = Math.sin(t * 1.745) * 10; // ±10 px, ~3.6 s period
+        balloon.style.transform = `translateY(${bob}px)`;
+      }
     }
     requestAnimationFrame(loop);
   })();
@@ -1041,8 +1034,8 @@
   // ── Drag ──────────────────────────────────────────────────
   function startDrag(mx, my) {
     if (isDragging) return;
-    isDragging = true; settling = false;
-    clearTimeout(settleTimer);
+    isDragging = true; isSpringBack = false;
+    clearTimeout(springTimer);
     dragSMX = mx; dragSMY = my; dragSPX = posX; dragSPY = posY;
     balloon.style.transition = 'none';
     balloon.style.cursor = 'grabbing';
@@ -1067,20 +1060,17 @@
 
   function endDrag() {
     if (!isDragging) return;
-    isDragging = false; settling = true;
+    isDragging = false; isSpringBack = true;
     balloon.style.cursor = 'grab';
-
-    // STAY where dropped: the drop point becomes the new home anchor.
-    // We subtract the current drift so idle motion resumes smoothly from here.
-    const t = Date.now() / 1000;
-    homeX = posX - dH(t);
-    homeY = posY - dV(t);
-
-    // little springy shape-recovery in place (position does NOT move back)
-    balloon.style.transition = 'transform .42s cubic-bezier(.34,1.56,.64,1)';
-    balloon.style.transform = `translateY(${bobAt(t)}px)`;
-    clearTimeout(settleTimer);
-    settleTimer = setTimeout(() => { balloon.style.transition = ''; settling = false; }, 440);
+    const t  = Date.now() / 1000;
+    const tx = baseX() - dH(t), ty = baseY() + dV(t);
+    const bob = reduced ? 0 : Math.sin(t * 1.745) * 10;
+    balloon.style.transition = 'left .52s cubic-bezier(.34,1.56,.64,1), top .52s cubic-bezier(.34,1.56,.64,1), transform .42s cubic-bezier(.34,1.56,.64,1)';
+    balloon.style.left = tx + 'px'; balloon.style.top = ty + 'px';
+    balloon.style.transform = `translateY(${bob}px)`;  // spring deform back
+    posX = tx; posY = ty;
+    clearTimeout(springTimer);
+    springTimer = setTimeout(() => { balloon.style.transition = ''; isSpringBack = false; }, 580);
   }
 
   // Mouse

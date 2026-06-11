@@ -8,8 +8,10 @@ const supabase = createClient(
 
 export default async function handler(req, res) {
 
-  // Protect the cron endpoint — Vercel sets this header automatically
-  if (req.headers['authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {
+  // Protect the cron endpoint — Vercel sets this header automatically.
+  // Fail closed if CRON_SECRET is unset.
+  if (!process.env.CRON_SECRET
+      || req.headers['authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
@@ -39,33 +41,49 @@ export default async function handler(req, res) {
       byParty[r.party_id].responses.push(r);
     });
 
+    // Hosts get individual emails for the first 15 RSVPs of the day
+    // (submit-rsvp.js INDIVIDUAL_NOTIFICATION_LIMIT). The digest exists to
+    // bundle the overflow — sending it below that threshold duplicates
+    // every notification the host already received.
+    const INDIVIDUAL_NOTIFICATION_LIMIT = 15;
+
     const results = [];
 
     for (const [party_id, { party, responses: partyResponses }] of Object.entries(byParty)) {
-      // Only send digest if there are 2+ responses today (first was already sent instantly)
-      if (partyResponses.length < 2) {
-        results.push({ party_id, skipped: true, reason: 'Only 1 response today, already sent.' });
-        continue;
+      try {
+        if (partyResponses.length <= INDIVIDUAL_NOTIFICATION_LIMIT) {
+          results.push({ party_id, skipped: true, reason: 'All responses today were sent individually.' });
+          continue;
+        }
+        if (!party || !party.parent_email || !party.confirmed) {
+          results.push({ party_id, skipped: true, reason: 'No host email / party not confirmed.' });
+          continue;
+        }
+
+        // Normalise attending field ('yes' is the canonical stored value)
+        const normalised = partyResponses.map(r => ({
+          ...r,
+          attending: r.attending === true || r.attending === 'true' || r.attending === 'yes' ? 'yes' : 'no'
+        }));
+
+        await sendEmail({
+          to:      party.parent_email,
+          subject: `📋 ${partyResponses.length} RSVPs today for ${party.child_name}'s party`,
+          html:    digestEmailHtml({ party, responses: normalised }),
+        });
+
+        results.push({ party_id, sent: true, count: partyResponses.length });
+      } catch (err) {
+        // One bad party must not abort digests for every other party
+        console.error(`[daily-digest] ${party_id}:`, err);
+        results.push({ party_id, sent: false, error: err.message });
       }
-
-      // Normalise attending field
-      const normalised = partyResponses.map(r => ({
-        ...r,
-        attending: r.attending === true || r.attending === 'true' ? 'yes' : 'no'
-      }));
-
-      await sendEmail({
-        to:      party.parent_email,
-        subject: `📋 ${partyResponses.length} RSVPs today for ${party.child_name}'s party`,
-        html:    digestEmailHtml({ party, responses: normalised }),
-      });
-
-      results.push({ party_id, sent: true, count: partyResponses.length });
     }
 
     return res.status(200).json({ results });
 
   } catch (err) {
+    console.error('[daily-digest] fatal:', err);
     return res.status(500).json({ error: err.message });
   }
 }

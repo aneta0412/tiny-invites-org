@@ -50,7 +50,12 @@ function buildCsv(responses) {
     ]);
   }
   return rows
-    .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    .map(row => row.map(cell => {
+      let v = String(cell).replace(/"/g, '""');
+      // Neutralise spreadsheet formula injection (=, +, -, @ at cell start)
+      if (/^[=+\-@]/.test(v)) v = `'${v}`;
+      return `"${v}"`;
+    }).join(','))
     .join('\r\n');
 }
 
@@ -68,7 +73,7 @@ function finalListHtml({ party, yes, no, responses, dashUrl }) {
         <td style="padding:9px 12px;font-size:0.82rem;color:#2a2218;border-bottom:1px solid #f5edda;">${esc(r.guest_name || '—')}</td>
         <td style="padding:9px 12px;font-size:0.78rem;color:#6b5c45;border-bottom:1px solid #f5edda;text-align:center;">${r.guest_count ?? 1}</td>
         <td style="padding:9px 12px;font-size:0.74rem;color:#6b5c45;border-bottom:1px solid #f5edda;">
-          ${r.guest_email ? `<a href="mailto:${encodeURIComponent(r.guest_email)}" style="color:#c9a84c;text-decoration:none;">${esc(r.guest_email)}</a>` : '—'}
+          ${r.guest_email ? `<a href="mailto:${esc(r.guest_email)}" style="color:#c9a84c;text-decoration:none;">${esc(r.guest_email)}</a>` : '—'}
         </td>
         <td style="padding:9px 12px;font-size:0.74rem;color:#6b5c45;border-bottom:1px solid #f5edda;">${r.allergies ? esc(r.allergies) : '—'}</td>
       </tr>`)
@@ -98,7 +103,7 @@ function finalListHtml({ party, yes, no, responses, dashUrl }) {
               <strong style="font-family:Georgia,serif;font-size:2rem;color:#2a2218;">${yes}</strong>
               <span style="display:block;font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:#8c7b63;">Confirmed</span>
             </td>
-            <td style="padding:12px 16px;text-align:center;border-left:1px solid var(--gold-light);">
+            <td style="padding:12px 16px;text-align:center;border-left:1px solid #e8d5a3;">
               <strong style="font-family:Georgia,serif;font-size:2rem;color:#2a2218;">${no}</strong>
               <span style="display:block;font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:#8c7b63;">Declined</span>
             </td>
@@ -133,7 +138,10 @@ function finalListHtml({ party, yes, no, responses, dashUrl }) {
 // ── Main handler ──────────────────────────────────────────
 
 export default async function handler(req, res) {
-  if (req.headers['authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {
+  // If CRON_SECRET is unset, `Bearer undefined` would match a literal
+  // "Bearer undefined" header — fail closed instead.
+  if (!process.env.CRON_SECRET
+      || req.headers['authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
@@ -217,7 +225,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ today, parties: parties.length, results });
 
   } catch (err) {
-    console.error('[send-final-list] fatal:', err.message);
+    console.error('[send-final-list] fatal:', err);
     return res.status(500).json({ error: err.message });
   }
 }

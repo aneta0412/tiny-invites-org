@@ -148,7 +148,7 @@ function buildReminderHtml({ party, guest, note }) {
                   ${party.parent_email ? `<tr>
                     <td style="padding:6px 0;font-size:13px;width:28px;">✉️</td>
                     <td style="padding:6px 0;font-size:13px;">
-                      <a href="mailto:${party.parent_email}" style="color:#c9a84c;">${party.parent_email}</a>
+                      <a href="mailto:${esc(party.parent_email)}" style="color:#c9a84c;">${esc(party.parent_email)}</a>
                     </td>
                   </tr>` : ''}
                 </table>
@@ -187,7 +187,10 @@ function buildReminderHtml({ party, guest, note }) {
 
 export default async function handler(req, res) {
 
-  if (req.headers['authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {
+  // If CRON_SECRET is unset, `Bearer undefined` would match a literal
+  // "Bearer undefined" header — fail closed instead.
+  if (!process.env.CRON_SECRET
+      || req.headers['authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
@@ -219,7 +222,7 @@ export default async function handler(req, res) {
         .from('guest_responses')
         .select('*')
         .eq('party_id', party.party_id)
-        .eq('attending', 'yes')
+        .in('attending', ['yes', 'true'])   // legacy rows stored 'true'
         .eq('reminder_optin', true)
         .not('guest_email', 'is', null)
         .neq('guest_email', '');
@@ -254,7 +257,7 @@ export default async function handler(req, res) {
     // ── Admin summary ─────────────────────────────────────
     const failureRows = failures.length
       ? `<br/><strong>Failed addresses:</strong><br/>` +
-        failures.map(f => `• ${f.name} &lt;${f.email}&gt; — ${f.error}`).join('<br/>')
+        failures.map(f => `• ${esc(f.name)} &lt;${esc(f.email)}&gt; — ${esc(f.error)}`).join('<br/>')
       : '';
 
     const partiesWithNotes = parties.filter(p => !!p.reminder_note).length;
@@ -287,7 +290,7 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    console.error('[send-reminders] Fatal:', err.message);
+    console.error('[send-reminders] Fatal:', err);
     return res.status(500).json({ error: err.message });
   }
 }

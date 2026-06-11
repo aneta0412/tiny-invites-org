@@ -163,8 +163,19 @@
   .gift-card-price { font-size:0.68rem; color:var(--gold); display:block; margin-top:3px; font-weight:500; }
   .gift-browse-all { display:block; text-align:center; font-size:0.78rem; color:var(--soft); text-decoration:none; margin-top:8px; padding:8px; border-radius:8px; border:1px solid var(--gold-light); transition:all 0.15s; }
   .gift-browse-all:hover { background:var(--gold-pale); color:var(--mid); }
+  .gift-btn-row { display:flex; gap:8px; margin-top:12px; }
+  .gift-btn-row a { flex:1; display:block; text-align:center; font-size:0.78rem; text-decoration:none; padding:10px 8px; border-radius:10px; transition:all 0.18s; font-family:"DM Sans",sans-serif; }
+  .gift-btn-amazon { background:var(--dark); color:var(--cream); }
+  .gift-btn-amazon:hover { background:var(--gold); color:var(--cream); }
+  .gift-btn-shop { background:transparent; color:var(--mid); border:1px solid var(--gold-light); }
+  .gift-btn-shop:hover { background:var(--gold-pale); color:var(--dark); border-color:var(--gold); }
   .gift-aff-note { font-size:0.68rem; color:var(--soft); text-align:center; margin-top:8px; opacity:0.7; }
-  @media(max-width:380px) { .gift-cards { grid-template-columns:1fr 1fr; } }
+  .gift-randomize-note { font-size:0.72rem; color:var(--soft); text-align:center; margin-top:6px; font-style:italic; opacity:0.8; }
+  .venue-section { margin-top:24px; padding-top:20px; border-top:1px solid var(--gold-light); text-align:center; }
+  .venue-section-title { font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--soft); margin-bottom:10px; }
+  .venue-btn { display:inline-block; font-size:0.78rem; color:var(--mid); text-decoration:none; padding:10px 18px; border-radius:10px; border:1px solid var(--gold-light); transition:all 0.18s; font-family:"DM Sans",sans-serif; }
+  .venue-btn:hover { background:var(--gold-pale); color:var(--dark); border-color:var(--gold); }
+  @media(max-width:380px) { .gift-cards { grid-template-columns:1fr 1fr; } .gift-btn-row { flex-direction:column; } }
 </style>
 </head>
 <body>
@@ -376,6 +387,7 @@
         <div class="tally" id="tally-badge">👥 <strong id="tally-count">1</strong> <span id="tally-label">guest</span> confirmed</div>
       </div>
       <div id="gift-ideas-section" class="gift-section" style="display:none;"></div>
+      <div id="venue-section" class="venue-section" style="display:none;"></div>
       <p class="powered-by">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener">Tiny Invites</a> ✨</p>
     </div>
   </div>
@@ -1011,14 +1023,14 @@
     const brackets = bracketsForAge(age);
     const inBracket = (item) => !brackets || brackets.includes(item.age);
 
-    // 1. Relevant shop picks for this age (random 3)
-    const picks = shuffle(GIFT_CATALOG.filter(inBracket)).slice(0, 3);
+    // 1. One pick from our shop (randomised)
+    const picks = shuffle(GIFT_CATALOG.filter(inBracket)).slice(0, 1);
     const picked = new Set(picks.map(p => p.url));
 
-    // 2. Random Amazon bestsellers — same age group first, then top up from the rest
+    // 2. Two random Amazon bestsellers — same age group first, then top up
     const bestSame  = shuffle(GIFT_CATALOG.filter(i => i.best && inBracket(i) && !picked.has(i.url)));
     const bestOther = shuffle(GIFT_CATALOG.filter(i => i.best && !inBracket(i) && !picked.has(i.url)));
-    const bestsellers = bestSame.concat(bestOther).slice(0, 3);
+    const bestsellers = bestSame.concat(bestOther).slice(0, 2);
 
     const name     = childName && childName !== 'our little one' ? escapeHtml(String(childName)) : '';
     const headline = name ? `Gift ideas for ${name}` : 'Not sure what to bring?';
@@ -1026,16 +1038,95 @@
       k: isNaN(age) ? 'children birthday gift ideas uk' : `birthday gifts ${age} year old uk`,
       tag: TAG,
     }).toString();
+    const shopUrl  = 'https://tinyinvites.org/#gifts';
+
+    const allCards = picks.concat(bestsellers);
 
     el.innerHTML = `
-      <p class="gift-section-label">From our gift shop 🎁</p>
+      <p class="gift-section-label">Gift inspiration 🎁</p>
       <p class="gift-section-title">${headline}</p>
-      <div class="gift-cards">${picks.map(giftCard).join('')}</div>
-      ${bestsellers.length ? `
-        <p class="gift-section-label" style="margin-top:14px;">Popular on Amazon ⭐</p>
-        <div class="gift-cards">${bestsellers.map(giftCard).join('')}</div>` : ''}
-      <a href="${allUrl}" target="_blank" rel="noopener sponsored" class="gift-browse-all">Browse all gift ideas on Amazon ↗</a>
+      <div class="gift-cards">${allCards.map(giftCard).join('')}</div>
+      <p class="gift-randomize-note">Suggestions are randomised — every guest sees a different pick!</p>
+      <div class="gift-btn-row">
+        <a href="${allUrl}" target="_blank" rel="noopener sponsored" class="gift-btn-amazon">Shop Bestsellers on Amazon ↗</a>
+        <a href="${shopUrl}" target="_blank" rel="noopener" class="gift-btn-shop">Browse Our Gift Shop ↗</a>
+      </div>
       <p class="gift-aff-note">Amazon affiliate links — we may earn a small commission at no cost to you.</p>
+    `;
+    el.style.display = 'block';
+
+    // Build venue section
+    buildVenueSection();
+  }
+
+  // ── VENUE DISCOVERY ───────────────────────────────────────────────────────
+  // Detects the region from the party venue and links to the relevant
+  // partyfinder page with a pre-filled postcode.
+  const REGION_MAP = [
+    { keywords:['london','hackney','camden','islington','brixton','croydon','greenwich','lewisham','southwark','lambeth','wandsworth','westminster','kensington','chelsea','hammersmith','fulham','tower hamlets','newham','barking','walthamstow','enfield','barnet','harrow','ealing','brent','haringey','stratford','docklands','canary wharf','woolwich','eltham','catford','peckham','dulwich','clapham','battersea','putney','wimbledon','richmond','kingston','sutton','bromley','ilford','romford','dagenham','chingford','tottenham','wood green','muswell hill','finchley','hampstead','maida vale','notting hill','paddington','marylebone','soho','covent garden','shoreditch','bethnal green','mile end','bow','poplar','deptford','bermondsey','rotherhithe','surbiton','twickenham','hounslow','feltham','uxbridge','ruislip','wembley','edgware','stanmore','mill hill','chiswick','acton','shepherd.s bush','white city','earls court','pimlico','vauxhall','stockwell','streatham','tooting','balham','mitcham','morden','cheam','epsom','croydon','beckenham','sidcup','bexley','erith','plumstead','thamesmead','abbey wood','charlton','blackheath','forest hill','sydenham','crystal palace','norwood','tulse hill','herne hill','brixton','oval','kennington','elephant','walworth','camberwell','nunhead','new cross','brockley','honor oak','east dulwich','west norwood','gipsy hill'],
+      postcode:'SW6 2PY', label:'London' },
+    { keywords:['birmingham','solihull','edgbaston','erdington','sutton coldfield','moseley','selly oak','harborne','handsworth','aston','small heath','sparkhill','acocks green','kings heath','hall green','northfield','bournville','quinton','rubery','longbridge','ladywood'],
+      postcode:'B1 1AA', label:'Birmingham' },
+    { keywords:['manchester','salford','stockport','oldham','bolton','bury','rochdale','wigan','trafford','tameside','altrincham','sale','stretford','didsbury','chorlton','withington','fallowfield','rusholme','levenshulme','gorton','openshaw','denton','ashton','stalybridge','hyde','glossop','marple','bramhall','cheadle','heald green','gatley','poynton','wilmslow','macclesfield','prestwich','whitefield','radcliffe','ramsbottom','heywood','middleton','failsworth','droylsden','dukinfield','mossley'],
+      postcode:'M1 1AE', label:'Manchester' },
+    { keywords:['leeds','bradford','wakefield','huddersfield','halifax','dewsbury','batley','keighley','shipley','pudsey','morley','garforth','wetherby','otley','ilkley','headingley','chapel allerton','roundhay','horsforth','guiseley','yeadon','bingley','saltaire','idle','baildon','calverley'],
+      postcode:'LS1 1BA', label:'Leeds' },
+    { keywords:['sheffield','rotherham','doncaster','barnsley','chesterfield','meadowhall','hillsborough','ecclesall','crookes','walkley','broomhill','woodseats','dore','totley','beauchief'],
+      postcode:'S1 2BJ', label:'Sheffield' },
+    { keywords:['liverpool','wirral','bootle','birkenhead','wallasey','crosby','formby','kirkby','prescot','huyton','knowsley','halewood','speke','garston','toxteth','wavertree','childwall','woolton','allerton','mossley hill','aigburth','sefton park','anfield','everton','walton','fazakerley','aintree','netherton','litherland','maghull','lydiate','southport'],
+      postcode:'L1 1JD', label:'Liverpool' },
+    { keywords:['bristol','bath','weston-super-mare','clevedon','portishead','keynsham','yate','thornbury','chipping sodbury','nailsea','backwell','long ashton','filton','patchway','bradley stoke','stoke gifford','frenchay','fishponds','easton','redland','clifton','cotham','montpelier','st pauls','bedminster','southville','knowle','brislington','hengrove','whitchurch','hartcliffe','bishopsworth'],
+      postcode:'BS1 5TR', label:'Bristol' },
+    { keywords:['nottingham','derby','leicester','loughborough','mansfield','newark','arnold','carlton','beeston','west bridgford','stapleford','long eaton','hucknall','bulwell','bestwood','sherwood','mapperley','gedling','netherfield','colwick'],
+      postcode:'NG1 5FW', label:'Nottingham' },
+    { keywords:['newcastle','gateshead','sunderland','durham','south shields','north shields','tynemouth','whitley bay','blyth','cramlington','ashington','morpeth','hexham','jarrow','hebburn','washington','chester-le-street','consett','stanley','bishop auckland','darlington','middlesbrough','hartlepool','stockton','redcar'],
+      postcode:'NE1 4ST', label:'Newcastle' },
+    { keywords:['edinburgh','glasgow','dundee','aberdeen','stirling','perth','inverness','falkirk','livingston','dunfermline','kirkcaldy','paisley','east kilbride','hamilton','motherwell','airdrie','coatbridge','clydebank','dumbarton','greenock'],
+      postcode:'EH1 1RE', label:'Edinburgh' },
+    { keywords:['cardiff','swansea','newport','bridgend','pontypridd','merthyr','caerphilly','barry','penarth','cowbridge','llantrisant','aberdare','treorchy','tonypandy','porth','ferndale','treherbert','mountain ash'],
+      postcode:'CF10 1EP', label:'Cardiff' },
+    { keywords:['coventry','warwick','leamington','stratford','rugby','nuneaton','bedworth','kenilworth','solihull'],
+      postcode:'CV1 1FT', label:'Coventry' },
+    { keywords:['cambridge','ely','huntingdon','st neots','newmarket','haverhill','saffron walden'],
+      postcode:'CB1 1DT', label:'Cambridge' },
+    { keywords:['oxford','abingdon','witney','bicester','banbury','didcot','thame','henley','wallingford'],
+      postcode:'OX1 1BX', label:'Oxford' },
+    { keywords:['brighton','hove','lewes','worthing','eastbourne','crawley','horsham','haywards heath','burgess hill','shoreham'],
+      postcode:'BN1 1AE', label:'Brighton' },
+    { keywords:['southampton','portsmouth','winchester','eastleigh','fareham','gosport','havant','basingstoke','andover','romsey','lymington','new forest','hedge end','chandlers ford'],
+      postcode:'SO14 7DW', label:'Southampton' },
+    { keywords:['exeter','plymouth','torbay','torquay','paignton','newton abbot','barnstaple','tiverton','exmouth','sidmouth','dawlish','teignmouth','totnes','dartmouth','salcombe','kingsbridge','okehampton','crediton','honiton','axminster','budleigh salterton','cullompton'],
+      postcode:'EX1 1HS', label:'Exeter' },
+  ];
+
+  function detectRegion(venueStr) {
+    if (!venueStr) return null;
+    const lower = venueStr.toLowerCase();
+    for (const region of REGION_MAP) {
+      for (const kw of region.keywords) {
+        if (lower.includes(kw)) return region;
+      }
+    }
+    return null;
+  }
+
+  function buildVenueSection() {
+    const el = document.getElementById('venue-section');
+    if (!el) return;
+
+    const pd = window._partyData || {};
+    const region = detectRegion(pd.location);
+    const baseUrl = 'https://tinyinvites.org/partyfinder';
+    let venueUrl = baseUrl;
+    let label = 'Browse Party Venues';
+    if (region) {
+      venueUrl = baseUrl + '?pc=' + encodeURIComponent(region.postcode);
+      label = `Browse Party Venues in ${region.label}`;
+    }
+
+    el.innerHTML = `
+      <p class="venue-section-title">Planning a party yourself?</p>
+      <a href="${venueUrl}" target="_blank" rel="noopener" class="venue-btn">🎈 ${label} ↗</a>
     `;
     el.style.display = 'block';
   }

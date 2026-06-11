@@ -918,71 +918,103 @@
         errEl.textContent = describeFetchError(err);
       });
   }
+/* ===== Floating balloon + confetti ===== */
+(function() {
+  const balloon = document.createElement('div');
+  balloon.className = 'floating-balloon';
+  balloon.setAttribute('aria-label', 'Click for a surprise');
+  balloon.setAttribute('role', 'button');
+  balloon.innerHTML = '<svg viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="bg" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#ffe87a"/><stop offset="60%" stop-color="#f0d04a"/><stop offset="100%" stop-color="#d4a830"/></radialGradient></defs><ellipse cx="30" cy="34" rx="22" ry="28" fill="url(#bg)" opacity="0.92"/><ellipse cx="24" cy="22" rx="5" ry="7" fill="#fff" opacity="0.28" transform="rotate(-18 24 22)"/><path d="M28 62 Q30 66 32 62" stroke="#c9a84c" stroke-width="1.2" fill="none"/><line x1="30" y1="63" x2="30" y2="88" stroke="#c9a84c" stroke-width="1" opacity="0.5"/></svg>';
+  document.body.appendChild(balloon);
 
-  /* ===== Floating balloon + confetti ===== */
-  (function() {
-    const balloon = document.createElement('div');
-    balloon.className = 'floating-balloon';
-    balloon.setAttribute('aria-label', 'Click for a surprise');
-    balloon.setAttribute('role', 'button');
-    balloon.innerHTML = '<svg viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="bg" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#ffe87a"/><stop offset="60%" stop-color="#f0d04a"/><stop offset="100%" stop-color="#d4a830"/></radialGradient></defs><ellipse cx="30" cy="34" rx="22" ry="28" fill="url(#bg)" opacity="0.92"/><ellipse cx="24" cy="22" rx="5" ry="7" fill="#fff" opacity="0.28" transform="rotate(-18 24 22)"/><path d="M28 62 Q30 66 32 62" stroke="#c9a84c" stroke-width="1.2" fill="none"/><line x1="30" y1="63" x2="30" y2="88" stroke="#c9a84c" stroke-width="1" opacity="0.5"/></svg>';
-    document.body.appendChild(balloon);
+  let ticking = false;
+  function updateBalloonPosition() {
+    const scrollY = window.scrollY || window.pageYOffset;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = Math.min(scrollY / (maxScroll || 1), 1);
+    const topVal = 32 + pct * (window.innerHeight - 68 - 64);
+    const swing = Math.sin(pct * Math.PI);
+    const rightVal = 28 + swing * (window.innerWidth / 2 - 54);
+    balloon.style.top = topVal + 'px';
+    balloon.style.right = rightVal + 'px';
+    ticking = false;
+  }
+  window.addEventListener('scroll', function() {
+    if (!ticking) { requestAnimationFrame(updateBalloonPosition); ticking = true; }
+  }, { passive: true });
 
-    // Balloon drifts as you scroll: top-right → center → bottom-left
-    let ticking = false;
-    function updateBalloonPosition() {
-      const scrollY = window.scrollY || window.pageYOffset;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = Math.min(scrollY / (maxScroll || 1), 1); // 0 at top, 1 at bottom
+  balloon.addEventListener('click', function() {
+    // Bail out if confetti is already running
+    if (document.getElementById('balloon-confetti-canvas')) return;
 
-      // Vertical: from top:32px to bottom:32px
-      const topVal = 32 + pct * (window.innerHeight - 68 - 64);
-      // Horizontal: from right:28px to ~center then to left side
-      // Use a sine curve so it swings to center mid-page
-      const swing = Math.sin(pct * Math.PI); // peaks at 0.5
-      const rightVal = 28 + swing * (window.innerWidth / 2 - 54);
+    const canvas = document.createElement('canvas');
+    canvas.id = 'balloon-confetti-canvas';
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    let W, H, dpr;
 
-      balloon.style.top = topVal + 'px';
-      balloon.style.right = rightVal + 'px';
-      ticking = false;
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const COLOURS = ['#d9b65f','#c9a84c','#e8d5a3','#f5edda','#e6b8b0','#d7a48f','#cbb89a','#fbf4e6'];
+    const r = (a, b) => a + Math.random() * (b - a);
+
+    function makePiece(burst) {
+      const t = Math.random();
+      let shape = 'rect', w, h;
+      if (t < 0.18)      { shape = 'ribbon'; w = r(4, 7);  h = r(14, 26); }
+      else if (t < 0.34) { shape = 'circle'; w = h = r(8, 13); }
+      else               { shape = 'rect';   w = r(9, 17); h = r(8, 15); }
+      return {
+        x: r(0, W), y: burst ? r(-H * 0.25, 0) : r(-40, -10),
+        w, h, shape, color: COLOURS[(Math.random() * COLOURS.length) | 0],
+        rot: r(0, Math.PI * 2), rotV: r(-0.06, 0.06),
+        vy: r(0.7, 1.7), vx: r(-0.4, 0.4),
+        sway: r(0.6, 1.6), swayV: r(0.01, 0.03), phase: r(0, Math.PI * 2), op: 1
+      };
     }
 
-    window.addEventListener('scroll', function() {
-      if (!ticking) {
-        requestAnimationFrame(updateBalloonPosition);
-        ticking = true;
-      }
-    }, { passive: true });
+    let particles = [], spawning = true, raf = null;
+    for (let i = 0; i < 120; i++) particles.push(makePiece(true));
+    const start = Date.now();
+    const trickle = setInterval(() => {
+      for (let i = 0; i < 5; i++) particles.push(makePiece(false));
+      if (Date.now() - start > 3500) { clearInterval(trickle); spawning = false; }
+    }, 120);
 
-    const palette = ['#f5edda','#e8d5a3','#d4c49a','#c9b88a','#f0e6d0','#e0d2b8','#c9a84c','#f8f2e4'];
-
-    balloon.addEventListener('click', function(e) {
-      const rect = balloon.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      for (let i = 0; i < 60; i++) {
-        const p = document.createElement('div');
-        p.className = 'confetti-piece';
-        const angle = (Math.PI * 0.3) + (Math.random() * Math.PI * 0.4) + (Math.random() - 0.5) * 1.2;
-        const dist = 150 + Math.random() * 500;
-        const dx = (Math.random() - 0.5) * 600;
-        const dy = 200 + Math.random() * 600;
-        const rot = (Math.random() - 0.5) * 1440;
-        const dur = 5 + Math.random() * 3;
-        p.style.cssText = `
-          left:${cx}px; top:${cy}px;
-          background:${palette[Math.floor(Math.random() * palette.length)]};
-          width:${5 + Math.random() * 6}px;
-          height:${5 + Math.random() * 6}px;
-          border-radius:${Math.random() > 0.5 ? '50%' : '1px'};
-          --dx:${dx}px; --dy:${dy}px; --rot:${rot}deg;
-          --fall-duration:${dur}s;
-        `;
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), dur * 1000 + 100);
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.phase += p.swayV;
+        p.x += p.vx + Math.sin(p.phase) * p.sway;
+        p.y += p.vy; p.rot += p.rotV;
+        if (p.y > H - 60) p.op -= 0.012;
+        if (p.op <= 0 || p.y > H + 60) { particles.splice(i, 1); continue; }
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.globalAlpha = Math.max(0, p.op); ctx.fillStyle = p.color;
+        if (p.shape === 'circle') { ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill(); }
+        else ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
       }
-    });
-  })();
+      if (particles.length || spawning) {
+        raf = requestAnimationFrame(draw);
+      } else {
+        cancelAnimationFrame(raf);
+        window.removeEventListener('resize', resize);
+        canvas.remove();
+      }
+    }
+    draw();
+  });
+})();
 </script>
 </body>
 </html>

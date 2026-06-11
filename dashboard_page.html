@@ -508,6 +508,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   try {
     const res  = await fetchWithTimeout(`/api/dashboard-api?action=load&token=${encodeURIComponent(_token)}`, {}, 8000);
     const data = await res.json();
+    if (res.status === 404) {
+      showError('This party page no longer exists — the party may have been deleted, or the link is out of date. If you think this is a mistake, contact hello@tinyinvites.org.');
+      showLoading(false);
+      return;
+    }
     if (!res.ok) throw new Error(data.error || 'Failed to load dashboard');
     _partyData = data.party;
     populateHeader(data.party);

@@ -361,7 +361,13 @@
     }
 
     try {
-      const res  = await fetch('/api/party?action=confirm-party&token=' + encodeURIComponent(token));
+      // POST, not GET — email link scanners (Outlook/Gmail) pre-fetch GETs,
+      // which would confirm the party before the host even opens the email.
+      const res  = await fetch('/api/party?action=confirm-party', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ token }),
+      });
       const data = await res.json();
 
       if (!res.ok) {

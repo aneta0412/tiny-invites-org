@@ -237,17 +237,17 @@
   let _token = '';
 
   function show(id) {
-    document.querySelectorAll(‘.state’).forEach(el => el.classList.remove(‘active’));
-    document.getElementById(id).classList.add(‘active’);
+    document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
   }
 
   async function confirmParty() {
     const params = new URLSearchParams(window.location.search);
-    const token  = params.get(‘token’);
+    const token  = params.get('token');
 
     if (!token) {
-      document.getElementById(‘error-message’).textContent = ‘No confirmation token found in this link.’;
-      show(‘state-error’);
+      document.getElementById('error-message').textContent = ‘No confirmation token found in this link.’;
+      show('state-error');
       return;
     }
 
@@ -269,14 +269,14 @@
         return;
       }
 
-      const dashUrl = data.dashboard || (‘/dashboard_page.html?token=’ + token);
+      const dashUrl = data.dashboard || ('/dashboard_page.html?token=' + token);
 
       // ── Set hero image and medallion ─────────────────────
-      const elegantDefault = ‘https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=1200&q=80’;
-      const elegantMedallion = ‘https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&q=80&auto=format&fit=crop’;
+      const elegantDefault = 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=1200&q=80';
+      const elegantMedallion = 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&q=80&auto=format&fit=crop';
 
-      const heroImg      = document.getElementById(‘success-hero-img’);
-      const medallionImg = document.getElementById(‘success-medallion-img’);
+      const heroImg      = document.getElementById('success-hero-img');
+      const medallionImg = document.getElementById('success-medallion-img');
 
       if (data.photo_url) {
         if (heroImg)      heroImg.src      = data.photo_url;

@@ -146,19 +146,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD UTC
-
+   
     // Find parties whose RSVP cutoff is today
-    const { data: parties, error: partyErr } = await supabase
-      .from('parties')
-      .select('*')
-      .eq('rsvp_cutoff', today)
-      .eq('confirmed', true);
+    const yesterday = new Date();
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+    const cutoffDate = yesterday.toISOString().slice(0, 10); // YYYY-MM-DD UTC
 
+    // Find parties whose RSVP cutoff was yesterday (cutoff day has now passed)
+    const { data: parties, error: partyErr } = await supabase
+    .from('parties')
+    .select('*')
+    .eq('rsvp_cutoff', cutoffDate)
+    .eq('confirmed', true);
     if (partyErr) throw partyErr;
 
     if (!parties || parties.length === 0) {
-      return res.status(200).json({ message: 'No parties closing today.' });
+      return res.status(200).json({ message: 'No parties to send finals' });
     }
 
     const results = [];
@@ -214,7 +217,7 @@ export default async function handler(req, res) {
           <strong>Final guest list cron completed</strong><br/><br/>
           ✅ <strong>Emails sent:</strong> ${sent}<br/>
           ❌ <strong>Failed:</strong> ${failed}<br/>
-          📅 <strong>Cutoff date:</strong> ${today}<br/>
+          📅 <strong>Cutoff date:</strong> ${cutoffDate}<br/>
           🕓 <strong>Ran at:</strong> ${new Date().toUTCString()}
         </p>`,
       });
@@ -222,7 +225,7 @@ export default async function handler(req, res) {
       console.error('[send-final-list] admin summary failed:', adminErr.message);
     }
 
-    return res.status(200).json({ today, parties: parties.length, results });
+    return res.status(200).json({ cutoffDate, parties: parties.length, results });
 
   } catch (err) {
     console.error('[send-final-list] fatal:', err);

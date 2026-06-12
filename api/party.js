@@ -1,5 +1,5 @@
 // Updated: 2026-06-05
-// Router: /api/party?action=create-party | go-live | confirm-party | delete-party | resend-confirmation
+// Router: /api/party?action=create-party | go-live | confirm-party | delete-party | resend-confirmation | resend-welcome
 //
 // publish-party was removed — the real go-live flow runs through confirm-party.
 import createParty         from '../lib/create-party.js';
@@ -7,6 +7,7 @@ import goLive              from '../lib/go-live.js';
 import confirmParty        from '../lib/confirm-party.js';
 import deleteParty         from '../lib/delete-party.js';
 import resendConfirmation  from '../lib/resend-confirmation.js';
+import resendWelcome       from '../lib/resend-welcome.js';
 
 const routes = {
   'create-party':         createParty,
@@ -14,6 +15,7 @@ const routes = {
   'confirm-party':        confirmParty,
   'delete-party':         deleteParty,
   'resend-confirmation':  resendConfirmation,
+  'resend-welcome':       resendWelcome,
 };
 
 export default async function handler(req, res) {

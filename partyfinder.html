@@ -3726,8 +3726,13 @@ function render(){
     .filter(searchPass)
     .sort((a,b)=>(isNational(a)?1e9:a.dist)-(isNational(b)?1e9:b.dist)); // locals nearest-first, UK-wide listed after
   const n=venues.length;
+  const nNat=venues.filter(isNational).length, nLoc=n-nNat;
   document.getElementById("resNum").textContent=n;
-  document.getElementById("resTxt").textContent=`venue${n!==1?"s":""} ${anyVibe?"across the UK"+(hasPC()?" · nearest to "+userPC+" shown first":""):anywhere?"available anywhere in the UK":"within "+(effRadius===9999?"any distance":effRadius+" miles")+" of "+userPC}`;
+  document.getElementById("resTxt").textContent=
+    anyVibe?`venue${n!==1?"s":""} across the UK${hasPC()?" · nearest to "+userPC+" shown first":""}`
+    :anywhere?`venue${n!==1?"s":""} available anywhere in the UK`
+    :`venue${nLoc!==1?"s":""} within ${effRadius===9999?"any distance":effRadius+" miles"} of ${userPC}${nNat?` · plus ${nNat} UK-wide provider${nNat!==1?"s":""} (listed after, not pinned on map)`:""}`;
+  if(!anyVibe&&!anywhere)document.getElementById("resNum").textContent=nLoc;
   const g=document.getElementById("grid");
   if(n===0){
     g.innerHTML=`<div class="empty"><span class="empty-icon">🔍</span><div class="empty-title">No venues in range</div><div class="empty-sub">Try increasing the radius or changing the filter.</div></div>`;
@@ -3761,6 +3766,7 @@ function updateMap(){
   L.circleMarker(userCoords,{radius:8,color:"#2a2218",weight:3,fillColor:"#fff9f2",fillOpacity:1})
     .bindTooltip("You · "+userPC,{permanent:false}).addTo(markerLayer);
   lastResults.forEach(v=>{
+    if(isNational(v))return; // UK-wide providers have no real location — don't pin them
     const c=CAT_CFG[v.cat];
     const m=L.circleMarker([v.lat,v.lng],{radius:9,color:"#fff9f2",weight:2,fillColor:c.color,fillOpacity:.95}).addTo(markerLayer);
     m.bindPopup(`<div class="map-pop">

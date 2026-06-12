@@ -2,11 +2,11 @@
   "crons": [
     {
       "path": "/api/cron/daily-digest",
-      "schedule": "0 23 * * *"
+      "schedule": "0 22 * * *"
     },
     {
       "path": "/api/cron/send-reminders",
-      "schedule": "0 23 * * *"
+      "schedule": "0 22 * * *"
     },
     {
       "path": "/api/cleanup-inactive-parties",

@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Your party is live — Tiny Invites</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
@@ -102,38 +101,6 @@
     .divider span { flex:1; height:1px; background:var(--gold-light); }
     .divider i { color:var(--gold); font-size:0.7rem; }
 
-    /* ── QR ── */
-    .qr-section {
-      background:var(--gold-pale); border:1px solid var(--gold-light);
-      border-radius:14px; padding:20px; margin-bottom:20px;
-    }
-    .qr-label {
-      font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase;
-      color:var(--soft); margin-bottom:14px;
-    }
-    #qr-box { display:flex; justify-content:center; margin-bottom:12px; }
-    #qr-box canvas, #qr-box img { border-radius:4px; display:block; }
-
-    .rsvp-link-pill {
-      background:var(--warm-white); border:1px solid var(--gold-light);
-      border-radius:8px; padding:10px 14px; margin-bottom:12px;
-      font-size:0.72rem; color:var(--gold); word-break:break-all;
-      line-height:1.5; text-align:left;
-    }
-    .rsvp-link-label {
-      font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase;
-      color:var(--soft); margin-bottom:4px;
-    }
-
-    .btn-dl-qr {
-      display:inline-flex; align-items:center; justify-content:center; gap:6px;
-      width:100%; padding:9px; background:var(--dark); color:var(--cream);
-      border-radius:8px; font-size:0.72rem; letter-spacing:0.06em;
-      text-transform:uppercase; border:none; cursor:pointer;
-      font-family:"DM Sans",sans-serif; transition:background 0.2s;
-    }
-    .btn-dl-qr:hover { background:var(--gold); color:var(--dark); }
-
     .btn-copy {
       display:flex; align-items:center; justify-content:center; gap:6px;
       width:100%; padding:13px; background:var(--dark); color:var(--cream);
@@ -143,6 +110,7 @@
     }
     .btn-copy:hover { background:var(--gold); color:var(--dark); }
     .btn-copy.copied { background:#5a8a6a; }
+    .btn-copy:disabled { opacity:0.7; cursor:default; }
 
     .btn-dash {
       display:flex; align-items:center; justify-content:center; gap:6px;
@@ -160,30 +128,6 @@
       padding:10px 14px; background:var(--gold-pale);
       border-radius:8px;
     }
-
-    /* ── Next-steps list ── */
-    .next-steps {
-      text-align:left; margin:20px 0;
-      padding:18px 20px;
-      background:var(--gold-pale); border:1px solid var(--gold-light);
-      border-radius:12px;
-    }
-    .next-steps-title {
-      font-family:"Cormorant Garamond",serif; font-size:1.05rem;
-      font-weight:400; color:var(--dark); margin-bottom:14px;
-    }
-    .step-item {
-      font-size:0.82rem; color:var(--mid); line-height:1.65;
-      padding:8px 0; border-bottom:1px solid var(--gold-light);
-    }
-    .step-item:last-child { border-bottom:none; }
-    .step-number {
-      display:inline-block; width:20px; height:20px;
-      background:var(--dark); color:var(--cream); border-radius:50%;
-      font-size:0.62rem; text-align:center; line-height:20px;
-      margin-right:8px; flex-shrink:0; vertical-align:middle;
-    }
-    .step-item strong { color:var(--dark); font-weight:500; }
 
     /* States */
     .state { display:none; }
@@ -213,7 +157,6 @@
     @media(max-width:520px) {
       .card { padding:28px 20px; }
       .response-card-body { padding:28px 24px 36px; }
-      .next-steps { padding:14px 16px; }
     }
   </style>
 </head>
@@ -247,75 +190,25 @@
             alt="Celebration">
         </div>
         <span class="brand">Tiny Invites</span>
-        <h2 id="success-heading">Your RSVP page is live!</h2>
+        <h2 id="success-heading">Your party is live!</h2>
         <div class="divider"><span></span><i>◆</i><span></span></div>
-        <p class="sub">
-          Your RSVP page is now live and ready to share!<br><br>
-          We've emailed you your host page link, RSVP link and QR code so everything is easy to find whenever you need it.
+        <p class="sub" style="margin-bottom:10px;">
+          Thanks for confirming — everything is set and your RSVP page is ready to go.
+        </p>
+        <p class="sub" style="margin-bottom:10px;">
+          We've sent you an email with your RSVP link, QR code, Party Page link and everything you need to get started. Read it carefully — it walks you through the whole process.
+        </p>
+        <p class="sub" style="margin-bottom:24px;">
+          Keep that email handy — it has all the info in one place. Now enjoy the fun part!
         </p>
 
-        <!-- QR + link -->
-        <div class="qr-section">
-          <p class="qr-label">QR code for your guests</p>
-          <div id="qr-box"></div>
-          <p style="font-size:0.72rem;color:var(--mid);line-height:1.55;margin:10px 0 14px;text-align:left;">
-            Print or screenshot the QR code above and share it with your guests — on cards, WhatsApp, or however works best. The recommended print size is approximately 30 × 20 mm, slightly larger than a postage stamp, for reliable scanning.
-          </p>
-          <div class="rsvp-link-pill">
-            <div class="rsvp-link-label">Your RSVP link</div>
-            <span id="qr-url-text"></span>
-          </div>
-          <button class="btn-dl-qr" onclick="downloadQR()">↓ Download QR as PNG</button>
+        <div class="save-note" style="margin-bottom:20px;">
+          Didn't receive the email? Check your spam folder, or click below to resend it.
         </div>
 
-        <button class="btn-copy" id="copy-btn" onclick="copyLink()">
-          Copy invite link
+        <button class="btn-copy" id="resend-btn" onclick="resendEmail()">
+          Resend confirmation email
         </button>
-
-        <a id="dash-link" href="#" target="_blank" rel="noopener" class="btn-dash">
-          Open your host page
-        </a>
-
-        <!-- NEXT STEPS -->
-        <div class="next-steps">
-          <p class="next-steps-title">What happens next</p>
-          <div class="step-item">
-            <span class="step-number">1</span>
-            <strong>Share your invite</strong> — send the link or QR code to your guests via WhatsApp, text, email, or print it on your invitation cards.
-          </div>
-          <div class="step-item">
-            <span class="step-number">2</span>
-            <strong>Responses arrive automatically</strong> — every RSVP lands in your inbox and on your Party Page. If more than 15 responses come in, they'll be grouped into a daily summary sent after 8pm so your inbox stays tidy.
-          </div>
-          <div class="step-item">
-            <span class="step-number">3</span>
-            <strong>Have a play</strong> — try the invite yourself. You can edit or remove any response from your Party Page and it disappears from the system.
-          </div>
-          <div class="step-item">
-            <span class="step-number">4</span>
-            <strong>Automatic cutoff</strong> — responses will close automatically <strong><span id="cutoff-note">7 days before the party</span></strong>, as you selected. This setting can't be changed once invitations have been sent.
-          </div>
-          <div class="step-item">
-            <span class="step-number">5</span>
-            <strong>Guests get a reminder</strong> — we automatically email all confirmed guests 3 days before the party. Tip: add a note to your Party Page (e.g. parking details, what to bring) and it'll be included in the reminder — no need to send a separate message.
-          </div>
-          <div class="step-item">
-            <span class="step-number">6</span>
-            <strong>Message your guests</strong> — need to share an urgent update? You can message all confirmed guests from your Party Page at any time.
-          </div>
-          <div class="step-item">
-            <span class="step-number">7</span>
-            <strong>Emergency contact</strong> — if you urgently need to reach guests, you can export the full guest list with email addresses from your Party Page.
-          </div>
-          <div class="step-item">
-            <span class="step-number">8</span>
-            <strong>Photo and date are locked</strong> — once live, these can't be changed. If you need to update them, delete the party and create a new one.
-          </div>
-        </div>
-
-        <p class="save-note">
-          Save the email we just sent — it contains your unique Party Page link, RSVP link and QR code all in one place.
-        </p>
 
         <p style="font-size:0.68rem;color:var(--soft);margin-top:16px;">
           RSVPs made beautiful by <a href="https://tinyinvites.org" style="color:var(--gold);text-decoration:none;">Tiny Invites</a>
@@ -343,48 +236,49 @@
 </div>
 
 <script>
-  let _rsvpUrl = '';
+  let _token = ‘’;
 
   function show(id) {
-    document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    document.querySelectorAll(‘.state’).forEach(el => el.classList.remove(‘active’));
+    document.getElementById(id).classList.add(‘active’);
   }
 
   async function confirmParty() {
     const params = new URLSearchParams(window.location.search);
-    const token  = params.get('token');
+    const token  = params.get(‘token’);
 
     if (!token) {
-      document.getElementById('error-message').textContent = 'No confirmation token found in this link.';
-      show('state-error');
+      document.getElementById(‘error-message’).textContent = ‘No confirmation token found in this link.’;
+      show(‘state-error’);
       return;
     }
+
+    _token = token;
 
     try {
       // POST, not GET — email link scanners (Outlook/Gmail) pre-fetch GETs,
       // which would confirm the party before the host even opens the email.
-      const res  = await fetch('/api/party?action=confirm-party', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res  = await fetch(‘/api/party?action=confirm-party’, {
+        method:  ‘POST’,
+        headers: { ‘Content-Type’: ‘application/json’ },
         body:    JSON.stringify({ token }),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        document.getElementById('error-message').textContent = data.error || 'Something went wrong.';
-        show('state-error');
+        document.getElementById(‘error-message’).textContent = data.error || ‘Something went wrong.’;
+        show(‘state-error’);
         return;
       }
 
-      const dashUrl = data.dashboard || ('/dashboard_page.html?token=' + token);
-      const rsvpUrl = data.rsvp_url  || ('/rsvp.html?party=' + data.party_id);
+      const dashUrl = data.dashboard || (‘/dashboard_page.html?token=’ + token);
 
       // ── Set hero image and medallion ─────────────────────
-      const elegantDefault = 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=1200&q=80';
-      const elegantMedallion = 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&q=80&auto=format&fit=crop';
+      const elegantDefault = ‘https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=1200&q=80’;
+      const elegantMedallion = ‘https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&q=80&auto=format&fit=crop’;
 
-      const heroImg      = document.getElementById('success-hero-img');
-      const medallionImg = document.getElementById('success-medallion-img');
+      const heroImg      = document.getElementById(‘success-hero-img’);
+      const medallionImg = document.getElementById(‘success-medallion-img’);
 
       if (data.photo_url) {
         if (heroImg)      heroImg.src      = data.photo_url;
@@ -395,64 +289,51 @@
       }
 
       // Personalise heading
-      const heading = document.getElementById('success-heading');
+      const heading = document.getElementById(‘success-heading’);
       if (data.child_name && heading) {
-        heading.textContent = `${data.child_name}’s invite is live!`;
+        heading.textContent = `${data.child_name}’s party is live!`;
       }
 
       if (data.already) {
-        document.getElementById('dash-link-already').href = dashUrl;
-        show('state-already');
+        document.getElementById(‘dash-link-already’).href = dashUrl;
+        show(‘state-already’);
         return;
       }
 
-      // ── Update cutoff note with party-specific value ────
-      if (data.rsvp_cutoff_days) {
-        const note = document.getElementById('cutoff-note');
-        if (note) note.textContent = data.rsvp_cutoff_days + ' days before the party';
-      }
-
       // ── Success ───────────────────────────────────────────
-      _rsvpUrl = rsvpUrl;
-      document.getElementById('dash-link').href = dashUrl;
-
-      const qrBox = document.getElementById('qr-box');
-      qrBox.innerHTML = '';
-      new QRCode(qrBox, {
-        text: rsvpUrl, width:200, height:200,
-        colorDark:'#2a2218', colorLight:'#ffffff',
-        correctLevel: QRCode.CorrectLevel.M
-      });
-      document.getElementById('qr-url-text').textContent = rsvpUrl;
-
-      show('state-success');
+      show(‘state-success’);
       launchConfetti();
 
     } catch (err) {
-      document.getElementById('error-message').textContent = 'Network error — please try again.';
-      show('state-error');
+      document.getElementById(‘error-message’).textContent = ‘Network error — please try again.’;
+      show(‘state-error’);
     }
   }
 
-  function copyLink() {
-    if (!_rsvpUrl) return;
-    navigator.clipboard.writeText(_rsvpUrl).then(() => {
-      const btn = document.getElementById('copy-btn');
-      btn.textContent = '✓ Copied!';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = 'Copy invite link'; btn.classList.remove('copied'); }, 2500);
-    });
-  }
-
-  function downloadQR() {
-    setTimeout(() => {
-      const canvas = document.querySelector('#qr-box canvas');
-      if (!canvas) return;
-      const a = document.createElement('a');
-      a.download = 'invite-qr.png';
-      a.href = canvas.toDataURL('image/png');
-      a.click();
-    }, 100);
+  async function resendEmail() {
+    const btn = document.getElementById(‘resend-btn’);
+    if (!_token || btn.disabled) return;
+    btn.disabled = true;
+    btn.textContent = ‘Sending…’;
+    try {
+      const res = await fetch(‘/api/party?action=resend-welcome’, {
+        method: ‘POST’,
+        headers: { ‘Content-Type’: ‘application/json’ },
+        body: JSON.stringify({ token: _token }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        btn.textContent = ‘✓ Email sent!’;
+        btn.classList.add(‘copied’);
+        setTimeout(() => { btn.textContent = ‘Resend confirmation email’; btn.classList.remove(‘copied’); btn.disabled = false; }, 4000);
+      } else {
+        btn.textContent = data.error || ‘Failed — try again’;
+        setTimeout(() => { btn.textContent = ‘Resend confirmation email’; btn.disabled = false; }, 3000);
+      }
+    } catch (e) {
+      btn.textContent = ‘Network error — try again’;
+      setTimeout(() => { btn.textContent = ‘Resend confirmation email’; btn.disabled = false; }, 3000);
+    }
   }
 
   // ── Elegant warm confetti — bigger, slower, nude palette ──

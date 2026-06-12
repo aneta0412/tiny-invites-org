@@ -69,7 +69,18 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 @media(max-width:640px){.main{padding:24px 16px 60px}}
 
 /* ── FILTER BAR ── */
-.filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+.filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.special-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:28px;padding:10px 14px;background:var(--gold-pale);border:1px dashed var(--gold-light,#e8d5a3);border-radius:6px}
+.sb-note{font-size:11px;color:var(--ink2);font-weight:300;letter-spacing:.02em;flex-basis:100%;opacity:.85}
+@media(min-width:900px){.sb-note{flex-basis:auto;margin-left:auto;max-width:420px;text-align:right}}
+.scope-note{margin-bottom:20px;padding:10px 16px;background:var(--gold-pale);border-left:3px solid var(--gold);border-radius:4px;font-size:13px;color:var(--ink2);font-weight:300}
+.promo-links{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}
+@media(max-width:720px){.promo-links{grid-template-columns:1fr}}
+.pl-item{display:block;padding:18px 24px;background:var(--white);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;box-shadow:var(--shadow);font-size:16px;font-weight:500;color:var(--ink);text-decoration:none;transition:transform .15s,box-shadow .15s}
+.pl-item:hover{transform:translateY(-2px)}
+.pl-item span{display:block;margin-top:4px;font-size:14px;font-weight:400;color:var(--gold)}
+.vq{flex:1;min-width:160px;max-width:280px;margin-left:auto;padding:9px 14px;border:1px solid var(--line);border-radius:3px;background:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color .2s}
+.vq:focus{border-color:var(--gold)}
 .fb-lbl{font-size:11px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:4px}
 .fp{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:2px;border:1px solid var(--line);font-size:12px;font-weight:400;letter-spacing:.05em;cursor:pointer;background:var(--cream);color:var(--ink);transition:all .15s;white-space:nowrap}
 .fp .dot{width:7px;height:7px;border-radius:50%}
@@ -347,7 +358,7 @@ a.card{text-decoration:none;color:inherit}
       <h1 class="hero">Find the <em>perfect</em><br>birthday party venue</h1>
       <p class="hero-sub">Soft play · Trampolines · Gymnastics · Swimming · Farms · Museums · Parties that come to you<br>Real packages, real prices, sorted by distance from you.</p>
       <div class="stat-row">
-        <div class="stat"><strong>150</strong> verified venues</div>
+        <div class="stat"><strong>154</strong> verified venues</div>
         <div class="stat"><strong>9</strong> activity types</div>
         <div class="stat"><strong>UK-wide</strong> coverage</div>
       </div>
@@ -384,9 +395,6 @@ a.card{text-decoration:none;color:inherit}
           <button class="qc" onclick="qs('SO14 1AA')">Southampton</button>
           <button class="qc" onclick="qs('BT1 1AA')">Belfast</button>
         </div>
-      </div>
-      <div class="have-venue">
-        🎉 Hosting here? <a href="https://tinyinvites.org/invite?utm_source=littlepartyfinder&utm_medium=venue_cta" target="_blank" rel="noopener">Get your digital party invite →</a>
       </div>
     </div>
   </div>
@@ -468,15 +476,20 @@ a.card{text-decoration:none;color:inherit}
     <button class="fp" data-c="unique" onclick="setF(this)"><span class="dot" style="background:#d4a843"></span>Unique</button>
     <button class="fp" data-c="leisure" onclick="setF(this)"><span class="dot" style="background:#e0762d"></span>Leisure Centre</button>
     <button class="fp" data-c="mobile" onclick="setF(this)"><span class="dot" style="background:#c0392b"></span>Comes to You</button>
-    <span class="fb-sep" style="margin-left:auto"></span>
-    <span class="fb-lbl">Vibe:</span>
+    <button class="fp" data-c="national" onclick="setF(this)"><span class="dot" style="background:#2c5f8a"></span>National Providers</button>
+  </div>
+  <div id="specialBar" class="special-bar" style="display:none">
+    <span class="fb-lbl">✨ Special:</span>
     <button class="vp" data-v="u3" onclick="setV(this)">👶 Under 3s</button>
     <button class="vp" data-v="inc" onclick="setV(this)">🍕 All-Inclusive</button>
     <button class="vp" data-v="exc" onclick="setV(this)">🔒 Exclusive Hire</button>
+    <span class="sb-note">Shown UK-wide on the map — too few per region for radius filtering. Each card still shows its distance from you.</span>
   </div>
+  <div id="scopeNote" class="scope-note" style="display:none"></div>
   <div id="resultsBar" class="results-bar" style="display:none">
     <span class="res-num" id="resNum">0</span>
     <span class="res-txt" id="resTxt">venues found</span>
+    <input class="vq" id="vq" type="search" placeholder="🔍 Search venues by name…" oninput="setQ(this.value)" autocomplete="off">
     <div class="view-toggle">
       <button class="vt on" id="vtList" onclick="setView('list')">☰ List</button>
       <button class="vt" id="vtMap" onclick="setView('map')">🗺️ Map</button>
@@ -487,9 +500,10 @@ a.card{text-decoration:none;color:inherit}
     <div class="ib-copy"><span class="ib-kicker">✉️ Tiny Invites</span><span id="ibText">Found your venue? Spin up a matching digital invite in 60 seconds.</span></div>
     <a id="ibLink" class="ib-btn" href="https://tinyinvites.org/?utm_source=littlepartyfinder&utm_medium=referral" target="_blank" rel="noopener">Create invite →</a>
   </div>
-  <div class="footer-cta">
-       <a href="https://tinyinvites.org/#contact" target="_blank" rel="noopener">Spoted an error or know a venue we need to add? Get in touch →</a>
-    </div>
+  <div class="promo-links">
+    <a class="pl-item" href="https://tinyinvites.org/invite?utm_source=littlepartyfinder&utm_medium=venue_cta" target="_blank" rel="noopener">🎉 Hosting a party? <span>Get your digital party invite →</span></a>
+    <a class="pl-item" href="https://tinyinvites.org/#contact" target="_blank" rel="noopener">📝 Spotted an error or know a venue we should add? <span>Get in touch →</span></a>
+  </div>
   <div id="grid" class="grid"></div>
   <div id="heroState" class="hero-state">
 
@@ -566,7 +580,28 @@ const CAT_CFG={
   unique:{color:"#d4a843",bg:"#fdf5e4",text:"#92400e",emoji:"🌟",label:"Unique Venue"},
   leisure:{color:"#e0762d",bg:"#fdeade",text:"#b04010",emoji:"🏢",label:"Leisure Centre"},
   mobile:{color:"#c0392b",bg:"#fbeae7",text:"#8e2a1d",emoji:"🚐",label:"Comes to You"},
+  national:{color:"#2c5f8a",bg:"#e6eef5",text:"#1d4d84",emoji:"🌐",label:"National Provider"},
 };
+// Venues/categories that go anywhere — postcode & radius don't apply
+function isNational(v){return v.postcode==="UK-wide";}
+function hasPC(){return !!userPC&&userPC!=="the UK";}
+// ── VENUE NAME SEARCH ─────────────────────────────────────────────────────────
+let searchQ="";
+function setQ(q){
+  searchQ=q.trim().toLowerCase();
+  if(!userCoords){userCoords=[52.4862,-1.8904];userPC="";}
+  render();
+}
+function searchPass(v){
+  if(!searchQ)return true;
+  return [v.name,v.city,v.postcode,v.type,v.sub].join(" ").toLowerCase().includes(searchQ);
+}
+function isAnywhereFilter(f){return f==="mobile"||f==="national";}
+function matchCat(v,f){
+  if(f==="all")return true;
+  if(f==="national")return isNational(v);
+  return v.cat===f;
+}
 
 const PC={
   // ── Specific districts (high priority – venue locations) ──
@@ -3410,6 +3445,58 @@ extras:["Magicians","Face painters","Balloon artists","Character visits (princes
 notes:"Nationwide network. All entertainers DBS-checked and insured. Book online.",
 website:"https://www.childrensentertainersuk.co.uk/"},
 
+{id:151,cat:"unique",name:"LUSH Parties",h1:"LUSH In-Store Birthday Parties",h2:"Bath Bomb Making Birthday Parties at LUSH Stores Nationwide",h3:"Hands-On Product Making Parties from £25 per Head",metaTitle:"LUSH Birthday Parties | Bath Bomb Making | UK Stores Nationwide",metaDesc:"Book a hands-on birthday party at your local LUSH store. Bath bomb making, games and exclusive party products from £25 per head. Min age 5.",sub:"Bath Bomb Making Party",postcode:"UK-wide",city:"UK-wide (LUSH stores nationwide)",slug:"lush-parties-uk-wide",type:"In-Store Product Making Party (National Chain)",lat:52.48,lng:-1.9,
+ages:"5–16",maxKids:"Varies by store",duration:"1.5 hrs",loc:"yes",food:"no",bags:"yes",
+shortDesc:"Hands-on parties at LUSH stores across the UK. Guests make their own bath bombs or other products to take home, with games and activities tailored to the group. Every guest gets an exclusive party product, and the birthday child receives three exclusive gifts. Minimum recommended age 5; under-16s must be accompanied by at least two adults. A brilliant fizzy alternative to the usual soft play.",
+packages:[
+{name:"LUSH Party",price:"£25 per head",priceNote:"includes making kit and exclusive party product",maxKids:"Varies by store size",featured:true,
+includes:["Product making kit of your choice","Games and activities tailored to you","Exclusive party product for each guest","Three exclusive gifts for the guest of honour"],
+excludes:["Food and drinks","Venue beyond the store session"],
+slots:"Book via your local store",notes:"Minimum age 5. Under-16s accompanied by at least two adults."},
+],
+extras:["Themed product making options","Hen do / family versions for mixed-age groups"],
+notes:"Available at LUSH stores nationwide — contact your local store to book.",
+website:"https://www.lush.com/uk/en/a/lush-parties"},
+
+{id:152,cat:"unique",name:"Build-A-Bear Workshop",h1:"Build-A-Bear Workshop Birthday Parties",h2:"Make-Your-Own-Bear Parties at Stores Nationwide",h3:"Party Packages from £17 per Guest",metaTitle:"Build-A-Bear Birthday Parties | Stores Nationwide | From £17 per Guest",metaDesc:"Book a Build-A-Bear birthday party at your local store. Every guest makes their own furry friend, with party games and a dedicated host. From £17 per guest.",sub:"Make-Your-Own-Bear Party",postcode:"UK-wide",city:"UK-wide (stores nationwide)",slug:"build-a-bear-workshop-uk-wide",type:"In-Store Make-Your-Own Party (National Chain)",lat:52.48,lng:-1.9,
+ages:"3+",maxKids:"Varies by store",duration:"1–1.5 hrs",loc:"yes",food:"no",bags:"no",
+shortDesc:"Birthday parties at Build-A-Bear Workshop stores across the UK. Every guest stuffs, dresses and names their own furry friend to take home — the party gift and the activity in one. A party leader runs the heart ceremony and games. Packages from £17 per guest, with bigger bundles adding outfits and accessories. Great for ages 3–8.",
+packages:[
+{name:"Birthday Party Package",price:"From £17 per guest",priceNote:"higher tiers (~£28–£37) add outfits & accessories",maxKids:"Varies by store",featured:true,
+includes:["A furry friend for every guest","Party leader and heart ceremony","Party games in store"],
+excludes:["Food and drinks","Party room — held in store"],
+slots:"Book online or via your local store",notes:"The birthday child counts as a guest. Tiers vary by store."},
+],
+extras:["Outfits and accessories","Themed bears (princess, superhero, dinosaur)"],
+notes:"Available at Build-A-Bear stores nationwide. Book at buildabear.co.uk/birthday.",
+website:"https://www.buildabear.co.uk/birthday"},
+
+{id:153,cat:"unique",name:"Pizza Express Kids Parties",h1:"Pizza Express Pizza-Making Birthday Parties",h2:"Make-Your-Own-Pizza Parties at Restaurants Nationwide",h3:"Pizzaiolo Parties £14.95 per Child",metaTitle:"Pizza Express Birthday Parties | Pizza Making | Restaurants Nationwide",metaDesc:"Book a pizza-making birthday party at your local Pizza Express. Kids make their own pizza, play games and get gelato. £14.95 per child, 90–120 minutes.",sub:"Pizza-Making Party",postcode:"UK-wide",city:"UK-wide (restaurants nationwide)",slug:"pizza-express-kids-parties-uk-wide",type:"Restaurant Pizza-Making Party (National Chain)",lat:52.48,lng:-1.9,
+ages:"3–12",maxKids:"Varies by restaurant",duration:"1.5–2 hrs",loc:"yes",food:"yes",bags:"no",
+shortDesc:"Pizza-making birthday parties at Pizza Express restaurants across the UK. Kids don mini pizzaiolo hats, make (and eat!) their own pizza, play party games and finish with gelato — bottomless squash included. Food, activity and venue all in one for £14.95 per child. One of the easiest all-inclusive party options going.",
+packages:[
+{name:"Pizzaiolo Party",price:"£14.95 per child",priceNote:"food and activity included",maxKids:"Varies by restaurant",featured:true,
+includes:["Make-your-own pizza activity","Mini pizzaiolo hats","Pizza meal and gelato","Bottomless squash","Party games"],
+excludes:["Party bags","Decorations"],
+slots:"Book via your local restaurant",notes:"Lasts 90–120 minutes. Availability varies by restaurant."},
+],
+extras:["Adult dining menu alongside","Birthday cake — bring your own"],
+notes:"Available at Pizza Express restaurants nationwide — book through your local restaurant.",
+website:"https://www.pizzaexpress.com/"},
+
+{id:154,cat:"unique",name:"Hobbycraft Kids Parties",h1:"Hobbycraft Craft Birthday Parties",h2:"Creative Craft Parties at Hobbycraft Stores Nationwide",h3:"Artisan-Led Craft Workshops for Birthdays",metaTitle:"Hobbycraft Birthday Parties | Craft Workshops | Stores Nationwide",metaDesc:"Book a creative craft birthday party at your local Hobbycraft. Artisan-led workshops with all materials provided in a craft kit. Stores nationwide.",sub:"Craft Workshop Party",postcode:"UK-wide",city:"UK-wide (stores nationwide)",slug:"hobbycraft-kids-parties-uk-wide",type:"In-Store Craft Party (National Chain)",lat:52.48,lng:-1.9,
+ages:"4+",maxKids:"Varies by store",duration:"1–2 hrs",loc:"yes",food:"no",bags:"no",
+shortDesc:"Creative craft birthday parties at Hobbycraft stores across the UK. Workshops are led by expert Hobbycraft Artisans, with all materials provided in a craft kit — guests take their creations home. Themes range from slime and clay to seasonal makes. A calm, creative alternative for kids who'd rather make than bounce.",
+packages:[
+{name:"Craft Party Workshop",price:"Contact venue",priceNote:"pricing varies by craft and store",maxKids:"Varies by store",featured:true,
+includes:["Expert Hobbycraft Artisan host","All materials in a craft kit","Creations to take home"],
+excludes:["Food and drinks","Party bags"],
+slots:"Book via your local store or classbento.co.uk/hobbycraft",notes:"Craft themes vary by store and season."},
+],
+extras:["Slime, clay and seasonal craft themes"],
+notes:"Available at Hobbycraft stores nationwide — check your local store for themes and pricing.",
+website:"https://classbento.co.uk/hobbycraft/party"},
+
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -3417,7 +3504,7 @@ let radius=10, activeFilter="all", userCoords=null, userPC="";
 
 // ── TINY INVITES BRIDGE ──────────────────────────────────────────────────────
 const TINY_INVITES="https://tinyinvites.org";
-const INVITE_STYLES={soft:"playful pastel",gym:"bold & bright",bounce:"high-energy",swim:"splashy seaside",farm:"soft neutral animal",club:"classic elegant",unique:"vintage poster",leisure:"clean & simple",mobile:"at-home celebration"};
+const INVITE_STYLES={soft:"playful pastel",gym:"bold & bright",bounce:"high-energy",swim:"splashy seaside",farm:"soft neutral animal",club:"classic elegant",unique:"vintage poster",leisure:"clean & simple",mobile:"at-home celebration",national:"anywhere-in-the-UK"};
 function tinyLink(cat){return TINY_INVITES+"/?utm_source=littlepartyfinder&utm_medium=referral&theme="+(cat&&cat!=="all"?cat:"all");}
 
 // ── VIBE FILTERS ─────────────────────────────────────────────────────────────
@@ -3428,17 +3515,33 @@ function isExc(v){const t=JSON.stringify([v.type,v.shortDesc,v.extras,v.notes,v.
 function vibePass(v){return (!vibes.u3||isU3(v))&&(!vibes.inc||isInc(v))&&(!vibes.exc||isExc(v));}
 function setV(btn){
   const k=btn.dataset.v;
+  const turningOn=!vibes[k];
   vibes[k]=!vibes[k];
   btn.classList.toggle("on",vibes[k]);
-  updateRadiusChips();
-  if(userCoords)render();
+  if(!userCoords){userCoords=[52.4862,-1.8904];userPC="";}
+  updateScopeUI();
+  render();
+  if(turningOn)setView("map"); // special collections default to the map
 }
-function updateRadiusChips(){
+function updateScopeUI(){
   const anyVibe=vibes.u3||vibes.inc||vibes.exc;
+  const anywhere=isAnywhereFilter(activeFilter);
   const wrap=document.querySelector(".radius-chips");
   if(wrap){
-    wrap.style.opacity=anyVibe?"0.4":"";
-    wrap.style.pointerEvents=anyVibe?"none":"";
+    wrap.style.opacity=(anyVibe||anywhere)?"0.4":"";
+    wrap.style.pointerEvents=(anyVibe||anywhere)?"none":"";
+  }
+  const note=document.getElementById("scopeNote");
+  if(!note)return;
+  if(anyVibe){
+    const names=[vibes.u3&&"Under 3s",vibes.inc&&"All-Inclusive",vibes.exc&&"Exclusive Hire"].filter(Boolean).join(" + ");
+    note.textContent=`✨ ${names} venues are shown UK-wide (radius is ignored — there aren't enough per region).${hasPC()?" The nearest to "+userPC+" are shown first — check each card's distance.":""}`;
+    note.style.display="block";
+  }else if(anywhere){
+    note.textContent=`🌐 ${activeFilter==="mobile"?"“Comes to You” providers travel to your venue":"National providers operate across the UK"} — no postcode or radius needed.`;
+    note.style.display="block";
+  }else{
+    note.style.display="none";
   }
 }
 
@@ -3453,11 +3556,13 @@ function openCollection(kind){
   document.querySelectorAll(".fp").forEach(b=>b.classList.toggle("on",b.dataset.c===(kind==="inc"?"all":kind)));
   radius=9999;
   document.querySelectorAll(".rc").forEach(b=>b.classList.toggle("on",b.dataset.r==="9999"));
-  if(!userCoords){userCoords=[52.4862,-1.8904];userPC="the UK";}
+  if(!userCoords){userCoords=[52.4862,-1.8904];userPC="";}
   document.getElementById("heroState").style.display="none";
-  document.getElementById("filterBar").style.display="flex";
+  document.getElementById("filterBar").style.display="flex";document.getElementById("specialBar").style.display="flex";
   document.getElementById("resultsBar").style.display="flex";
+  updateScopeUI();
   render();
+  if(kind==="inc")setView("map"); // special collections open on the map
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function fillCollectionCounts(){
@@ -3507,7 +3612,7 @@ function updateInviteBanner(n){
 function showNationwideVenues(){
   const venues=DB.filter(v=>v.postcode==="UK-wide");
   document.getElementById("heroState").style.display="none";
-  document.getElementById("filterBar").style.display="none";
+  document.getElementById("filterBar").style.display="none";document.getElementById("specialBar").style.display="none";
   document.getElementById("resultsBar").style.display="flex";
   document.getElementById("resNum").textContent=venues.length;
   document.getElementById("resTxt").textContent="nationwide venues — available anywhere in the UK (no postcode needed)";
@@ -3530,7 +3635,7 @@ function setRNation(btn){
     userCoords=coords;
     userPC=raw.toUpperCase();
     document.getElementById("heroState").style.display="none";
-    document.getElementById("filterBar").style.display="flex";
+    document.getElementById("filterBar").style.display="flex";document.getElementById("specialBar").style.display="flex";
     document.getElementById("resultsBar").style.display="flex";
     render();
     setView('map');
@@ -3584,6 +3689,12 @@ function setF(btn){
   document.querySelectorAll(".fp").forEach(b=>b.classList.remove("on"));
   btn.classList.add("on");
   activeFilter=btn.dataset.c;
+  // Comes to You / National Providers work anywhere — no postcode needed
+  if(!userCoords){
+    if(isAnywhereFilter(activeFilter)){userCoords=[52.4862,-1.8904];userPC="";}
+    else return;
+  }
+  updateScopeUI();
   render();
 }
 function qs(pc){document.getElementById("pc").value=pc; doSearch();}
@@ -3596,7 +3707,7 @@ function doSearch(){
   if(!coords){alert("Postcode not recognised — please check and try again.\nExamples: OX1 1AA, CV37 6YX, SW6 2PY, M1 1AE, EH1 1YZ, BT1 1AA");return;}
   userCoords=coords; userPC=raw.toUpperCase();
   document.getElementById("heroState").style.display="none";
-  document.getElementById("filterBar").style.display="flex";
+  document.getElementById("filterBar").style.display="flex";document.getElementById("specialBar").style.display="flex";
   document.getElementById("resultsBar").style.display="flex";
   render();
   setView('map');
@@ -3606,15 +3717,17 @@ function doSearch(){
 function render(){
   const [ux,uy]=userCoords;
   const anyVibe=vibes.u3||vibes.inc||vibes.exc;
-  const effRadius=anyVibe?9999:radius;
+  const anywhere=isAnywhereFilter(activeFilter);
+  const effRadius=(anyVibe||anywhere)?9999:radius;
   let venues=DB.map(v=>({...v,dist:hav(ux,uy,v.lat,v.lng)}))
-    .filter(v=>v.dist<=effRadius)
-    .filter(v=>activeFilter==="all"||v.cat===activeFilter)
+    .filter(v=>isNational(v)||v.dist<=effRadius) // UK-wide providers go anywhere — never cut by radius
+    .filter(v=>matchCat(v,activeFilter))
     .filter(vibePass)
-    .sort((a,b)=>a.dist-b.dist);
+    .filter(searchPass)
+    .sort((a,b)=>(isNational(a)?1e9:a.dist)-(isNational(b)?1e9:b.dist)); // locals nearest-first, UK-wide listed after
   const n=venues.length;
   document.getElementById("resNum").textContent=n;
-  document.getElementById("resTxt").textContent=`venue${n!==1?"s":""} ${anyVibe?"across the UK":"within "+(effRadius===9999?"any distance":effRadius+" miles")+" of "+userPC}`;
+  document.getElementById("resTxt").textContent=`venue${n!==1?"s":""} ${anyVibe?"across the UK"+(hasPC()?" · nearest to "+userPC+" shown first":""):anywhere?"available anywhere in the UK":"within "+(effRadius===9999?"any distance":effRadius+" miles")+" of "+userPC}`;
   const g=document.getElementById("grid");
   if(n===0){
     g.innerHTML=`<div class="empty"><span class="empty-icon">🔍</span><div class="empty-title">No venues in range</div><div class="empty-sub">Try increasing the radius or changing the filter.</div></div>`;

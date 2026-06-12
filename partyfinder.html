@@ -468,7 +468,7 @@ a.card{text-decoration:none;color:inherit}
     <button class="fp" data-c="unique" onclick="setF(this)"><span class="dot" style="background:#d4a843"></span>Unique</button>
     <button class="fp" data-c="leisure" onclick="setF(this)"><span class="dot" style="background:#e0762d"></span>Leisure Centre</button>
     <button class="fp" data-c="mobile" onclick="setF(this)"><span class="dot" style="background:#c0392b"></span>Comes to You</button>
-    <span class="fb-sep"></span>
+    <span class="fb-sep" style="margin-left:auto"></span>
     <span class="fb-lbl">Vibe:</span>
     <button class="vp" data-v="u3" onclick="setV(this)">👶 Under 3s</button>
     <button class="vp" data-v="inc" onclick="setV(this)">🍕 All-Inclusive</button>
@@ -3423,7 +3423,21 @@ function isU3(v){const m=String(v.ages).match(/\d+/);return !!m&&parseInt(m[0],1
 function isInc(v){return v.food==="yes";}
 function isExc(v){const t=JSON.stringify([v.type,v.shortDesc,v.extras,v.notes,v.packages]).toLowerCase();return t.includes("exclusive")||t.includes("private hire")||t.includes("sole use")||t.includes("whole venue");}
 function vibePass(v){return (!vibes.u3||isU3(v))&&(!vibes.inc||isInc(v))&&(!vibes.exc||isExc(v));}
-function setV(btn){const k=btn.dataset.v;vibes[k]=!vibes[k];btn.classList.toggle("on",vibes[k]);if(userCoords)render();}
+function setV(btn){
+  const k=btn.dataset.v;
+  vibes[k]=!vibes[k];
+  btn.classList.toggle("on",vibes[k]);
+  updateRadiusChips();
+  if(userCoords)render();
+}
+function updateRadiusChips(){
+  const anyVibe=vibes.u3||vibes.inc||vibes.exc;
+  const wrap=document.querySelector(".radius-chips");
+  if(wrap){
+    wrap.style.opacity=anyVibe?"0.4":"";
+    wrap.style.pointerEvents=anyVibe?"none":"";
+  }
+}
 
 // ── CURATED COLLECTIONS ──────────────────────────────────────────────────────
 function openCollection(kind){
@@ -3516,6 +3530,7 @@ function setRNation(btn){
     document.getElementById("filterBar").style.display="flex";
     document.getElementById("resultsBar").style.display="flex";
     render();
+    setView('map');
   } else {
     alert("Postcode not recognised — please check and try again.");
   }
@@ -3581,19 +3596,22 @@ function doSearch(){
   document.getElementById("filterBar").style.display="flex";
   document.getElementById("resultsBar").style.display="flex";
   render();
+  setView('map');
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function render(){
   const [ux,uy]=userCoords;
+  const anyVibe=vibes.u3||vibes.inc||vibes.exc;
+  const effRadius=anyVibe?9999:radius;
   let venues=DB.map(v=>({...v,dist:hav(ux,uy,v.lat,v.lng)}))
-    .filter(v=>v.dist<=radius)
+    .filter(v=>v.dist<=effRadius)
     .filter(v=>activeFilter==="all"||v.cat===activeFilter)
     .filter(vibePass)
     .sort((a,b)=>a.dist-b.dist);
   const n=venues.length;
   document.getElementById("resNum").textContent=n;
-  document.getElementById("resTxt").textContent=`venue${n!==1?"s":""} within ${radius===9999?"any distance":radius+" miles"} of ${userPC}`;
+  document.getElementById("resTxt").textContent=`venue${n!==1?"s":""} ${anyVibe?"across the UK":"within "+(effRadius===9999?"any distance":effRadius+" miles")+" of "+userPC}`;
   const g=document.getElementById("grid");
   if(n===0){
     g.innerHTML=`<div class="empty"><span class="empty-icon">🔍</span><div class="empty-title">No venues in range</div><div class="empty-sub">Try increasing the radius or changing the filter.</div></div>`;

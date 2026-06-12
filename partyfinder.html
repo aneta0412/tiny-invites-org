@@ -3518,6 +3518,11 @@ function setV(btn){
   const turningOn=!vibes[k];
   vibes[k]=!vibes[k];
   btn.classList.toggle("on",vibes[k]);
+  if(turningOn){
+    // specials are standalone collections — reset the type filter so they never silently combine
+    activeFilter="all";
+    document.querySelectorAll(".fp").forEach(b=>b.classList.toggle("on",b.dataset.c==="all"));
+  }
   if(!userCoords){userCoords=[52.4862,-1.8904];userPC="";}
   updateScopeUI();
   render();
@@ -3736,6 +3741,10 @@ function render(){
   const g=document.getElementById("grid");
   if(n===0){
     g.innerHTML=`<div class="empty"><span class="empty-icon">🔍</span><div class="empty-title">No venues in range</div><div class="empty-sub">Try increasing the radius or changing the filter.</div></div>`;
+    lastResults=[];
+    updateMap(); // clear stale pins
+    updateInviteBanner(0);
+    if(curView==="map")setView("list"); // show the empty message instead of a blank map
     return;
   }
   g.innerHTML=venues.map(v=>card(v)).join("");

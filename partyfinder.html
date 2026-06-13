@@ -3529,26 +3529,28 @@ function setV(btn){
   if(turningOn)setView("map"); // special collections default to the map
 }
 function updateScopeUI(){
-  const anyVibe=vibes.u3||vibes.inc||vibes.exc;
-  const anywhere=isAnywhereFilter(activeFilter);
-  const wrap=document.querySelector(".radius-chips");
+  var anyVibe=vibes.u3||vibes.inc||vibes.exc;
+  var anywhere=isAnywhereFilter(activeFilter);
+  var wrap=document.querySelector(".radius-chips");
   if(wrap){
     wrap.style.opacity=(anyVibe||anywhere)?"0.4":"";
     wrap.style.pointerEvents=(anyVibe||anywhere)?"none":"";
   }
-  const vt=document.getElementById("viewToggle");
+  var vt=document.getElementById("viewToggle");
   if(vt)vt.style.display=activeFilter==="national"?"none":"";
-  const note=document.getElementById("scopeNote");
+  var note=document.getElementById("scopeNote");
   if(!note)return;
   if(anyVibe){
-    const names=[vibes.u3&&"Under 3s",vibes.inc&&"All-Inclusive",vibes.exc&&"Exclusive Hire"].filter(Boolean).join(" + ");
-    note.textContent=`✨ ${names} venues are shown UK-wide (radius is ignored — there aren't enough per region).${hasPC()?" The nearest to "+userPC+" are shown first — check each card's distance.":""}`;
+    var names=[vibes.u3&&"Under 3s",vibes.inc&&"All-Inclusive",vibes.exc&&"Exclusive Hire"].filter(Boolean).join(" + ");
+    var extra=hasPC()?" The nearest to "+userPC+" are shown first — check each card's distance.":"";
+    note.textContent="✨ "+names+" venues are shown UK-wide (radius is ignored — there aren't enough per region)."+extra;
     note.style.display="block";
-  }else if(anywhere){
-    note.textContent=activeFilter===”national”
-      ?”🌐 National providers operate across the whole UK — no postcode needed. Map view is disabled; check the list below for all providers and their contact details.”
-      :`🌐 “Comes to You” providers travel to your venue — no postcode or radius needed.`;
-    note.style.display=”block”;
+  }else if(activeFilter==="national"){
+    note.textContent="🌐 National providers operate across the whole UK — no postcode needed. Browse the list below for all providers and contact details.";
+    note.style.display="block";
+  }else if(activeFilter==="mobile"){
+    note.textContent="🌐 Comes to You providers travel to your venue — no postcode or radius needed.";
+    note.style.display="block";
   }else{
     note.style.display="none";
   }

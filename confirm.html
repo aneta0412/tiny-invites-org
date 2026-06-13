@@ -242,20 +242,20 @@
 </div>
 
 <script>
-  let _token = ‘’;
+  let _token = '';
 
   function show(id) {
-    document.querySelectorAll(‘.state’).forEach(el => el.classList.remove(‘active’));
-    document.getElementById(id).classList.add(‘active’);
+    document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
   }
 
   async function confirmParty() {
     const params = new URLSearchParams(window.location.search);
-    const token  = params.get(‘token’);
+    const token  = params.get('token');
 
     if (!token) {
-      document.getElementById(‘error-message’).textContent = ‘No confirmation token found in this link.’;
-      show(‘state-error’);
+      document.getElementById('error-message').textContent = 'No confirmation token found in this link.';
+      show('state-error');
       return;
     }
 
@@ -264,27 +264,27 @@
     try {
       // POST, not GET — email link scanners (Outlook/Gmail) pre-fetch GETs,
       // which would confirm the party before the host even opens the email.
-      const res  = await fetch(‘/api/party?action=confirm-party’, {
-        method:  ‘POST’,
-        headers: { ‘Content-Type’: ‘application/json’ },
+      const res  = await fetch('/api/party?action=confirm-party', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ token }),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        document.getElementById(‘error-message’).textContent = data.error || ‘Something went wrong.’;
-        show(‘state-error’);
+        document.getElementById('error-message').textContent = data.error || 'Something went wrong.';
+        show('state-error');
         return;
       }
 
-      const dashUrl = data.dashboard || (‘/dashboard_page.html?token=’ + token);
+      const dashUrl = data.dashboard || ('/dashboard_page.html?token=' + token);
 
       // ── Set hero image and medallion ─────────────────────
-      const elegantDefault = ‘https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=1200&q=80’;
-      const elegantMedallion = ‘https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&q=80&auto=format&fit=crop’;
+      const elegantDefault = 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=1200&q=80';
+      const elegantMedallion = 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&q=80&auto=format&fit=crop';
 
-      const heroImg      = document.getElementById(‘success-hero-img’);
-      const medallionImg = document.getElementById(‘success-medallion-img’);
+      const heroImg      = document.getElementById('success-hero-img');
+      const medallionImg = document.getElementById('success-medallion-img');
 
       if (data.photo_url) {
         if (heroImg)      heroImg.src      = data.photo_url;
@@ -295,50 +295,50 @@
       }
 
       // Personalise heading
-      const heading = document.getElementById(‘success-heading’);
+      const heading = document.getElementById('success-heading');
       if (data.child_name && heading) {
-        heading.textContent = `${data.child_name}’s party is live!`;
+        heading.textContent = `${data.child_name}'s party is live!`;
       }
 
       if (data.already) {
-        document.getElementById(‘dash-link-already’).href = dashUrl;
-        show(‘state-already’);
+        document.getElementById('dash-link-already').href = dashUrl;
+        show('state-already');
         return;
       }
 
       // ── Success ───────────────────────────────────────────
-      show(‘state-success’);
+      show('state-success');
       launchConfetti();
 
     } catch (err) {
-      document.getElementById(‘error-message’).textContent = ‘Network error — please try again.’;
-      show(‘state-error’);
+      document.getElementById('error-message').textContent = 'Network error — please try again.';
+      show('state-error');
     }
   }
 
   async function resendEmail() {
-    const btn = document.getElementById(‘resend-btn’);
+    const btn = document.getElementById('resend-btn');
     if (!_token || btn.disabled) return;
     btn.disabled = true;
-    btn.textContent = ‘Sending…’;
+    btn.textContent = 'Sending…';
     try {
-      const res = await fetch(‘/api/party?action=resend-welcome’, {
-        method: ‘POST’,
-        headers: { ‘Content-Type’: ‘application/json’ },
+      const res = await fetch('/api/party?action=resend-welcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: _token }),
       });
       const data = await res.json();
       if (res.ok) {
-        btn.textContent = ‘✓ Email sent!’;
-        btn.classList.add(‘copied’);
-        setTimeout(() => { btn.textContent = ‘Resend confirmation email’; btn.classList.remove(‘copied’); btn.disabled = false; }, 4000);
+        btn.textContent = '✓ Email sent!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Resend confirmation email'; btn.classList.remove('copied'); btn.disabled = false; }, 4000);
       } else {
-        btn.textContent = data.error || ‘Failed — try again’;
-        setTimeout(() => { btn.textContent = ‘Resend confirmation email’; btn.disabled = false; }, 3000);
+        btn.textContent = data.error || 'Failed — try again';
+        setTimeout(() => { btn.textContent = 'Resend confirmation email'; btn.disabled = false; }, 3000);
       }
     } catch (e) {
-      btn.textContent = ‘Network error — try again’;
-      setTimeout(() => { btn.textContent = ‘Resend confirmation email’; btn.disabled = false; }, 3000);
+      btn.textContent = 'Network error — try again';
+      setTimeout(() => { btn.textContent = 'Resend confirmation email'; btn.disabled = false; }, 3000);
     }
   }
 

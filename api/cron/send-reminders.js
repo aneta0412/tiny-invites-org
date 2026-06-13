@@ -1,4 +1,4 @@
-// Updated: 2026-06-04
+// Updated: 2026-06-13
 // api/cron/send-reminders.js
 // Runs daily at 16:00 UTC via vercel.json cron.
 // Finds parties in exactly 3 days and emails confirmed guests.
@@ -23,10 +23,19 @@ const FROM_EMAIL  = 'Tiny Invites <hello@tinyinvites.org>';
 
 // ── Helpers ───────────────────────────────────────────────
 
+// Returns the UK calendar date (Europe/London) that is `n` days from now.
+// Using Europe/London (rather than raw UTC) ensures the date matches the
+// calendar day hosts picked when creating their party, even across the
+// BST/GMT clock change.
 function dateInDays(n) {
-  const d = new Date();
-  d.setUTCDate(d.getUTCDate() + n);
-  return d.toISOString().slice(0, 10);
+  const d = new Date(Date.now() + n * 24 * 60 * 60 * 1000);
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(d);
+  const map = {};
+  for (const p of parts) map[p.type] = p.value;
+  return `${map.year}-${map.month}-${map.day}`;
 }
 
 function formatDate(dateStr) {
@@ -196,6 +205,16 @@ export default async function handler(req, res) {
 
   try {
     const targetDate = dateInDays(DAYS_BEFORE);
+
+    // Debug logging — lets us confirm the cron fired, what UK/UTC time it
+    // ran at, and exactly which date string it searched for. Compare
+    // targetDate against the party_date stored in Supabase if a reminder
+    // appears to be missing.
+    console.log('[send-reminders] debug', {
+      nowUTC: new Date().toISOString(),
+      nowLondon: new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' }),
+      targetDate,
+    });
     console.log(`[send-reminders] Looking for parties on ${targetDate}`);
 
     const { data: parties, error: partiesError } = await supabase
@@ -208,7 +227,27 @@ export default async function handler(req, res) {
 
     if (!parties || parties.length === 0) {
       console.log('[send-reminders] No confirmed parties in 3 days.');
-      return res.status(200).json({ message: 'No parties in 3 days.' });
+
+      // Send an admin email even on zero matches, so a "silent" run is
+      // visibly distinguishable from a cron that never fired / failed auth.
+      try {
+        await resend.emails.send({
+          from:    FROM_EMAIL,
+          to:      ADMIN_EMAIL,
+          subject: `⏰ send-reminders ran — 0 parties found for ${targetDate}`,
+          html: `<p style="font-family:Arial,sans-serif;font-size:14px;color:#2a2218;line-height:1.8;">
+            <strong>Daily reminder cron completed</strong><br/><br/>
+            🎯 <strong>Target date searched:</strong> ${targetDate}<br/>
+            🕓 <strong>Ran at (UTC):</strong> ${new Date().toUTCString()}<br/>
+            🕓 <strong>Ran at (London):</strong> ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}<br/>
+            ℹ️ No confirmed parties matched this date.
+          </p>`,
+        });
+      } catch (adminErr) {
+        console.error('Admin "no parties" email failed:', adminErr.message);
+      }
+
+      return res.status(200).json({ message: 'No parties in 3 days.', targetDate });
     }
 
     let sent = 0, skipped = 0;

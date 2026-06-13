@@ -16,7 +16,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-const DAYS_BEFORE = 2;
+const DAYS_BEFORE = 3;
 const BASE_URL    = 'https://tinyinvites.org';
 const ADMIN_EMAIL = 'hello@tinyinvites.org';
 const FROM_EMAIL  = 'Tiny Invites <hello@tinyinvites.org>';

@@ -105,7 +105,7 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 @media(max-width:900px){
   .split-wrap{flex-direction:column}
   .list-panel{flex:none;width:100%;max-height:none;overflow-y:visible;padding-right:0}
-  .map-panel{position:static;width:100%;display:block!important} /* always show map on tablet stacked layout */
+  .map-panel{position:static;width:100%;display:block!important;order:-1} /* map on top, list below on tablet */
   #map{height:420px}
 }
 /* list-only grid (National Providers, no map) */

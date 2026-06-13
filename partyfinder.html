@@ -490,7 +490,7 @@ a.card{text-decoration:none;color:inherit}
     <span class="res-num" id="resNum">0</span>
     <span class="res-txt" id="resTxt">venues found</span>
     <input class="vq" id="vq" type="search" placeholder="🔍 Search venues by name…" oninput="setQ(this.value)" autocomplete="off">
-    <div class="view-toggle">
+    <div class="view-toggle" id="viewToggle">
       <button class="vt on" id="vtList" onclick="setView('list')">☰ List</button>
       <button class="vt" id="vtMap" onclick="setView('map')">🗺️ Map</button>
     </div>
@@ -3536,6 +3536,8 @@ function updateScopeUI(){
     wrap.style.opacity=(anyVibe||anywhere)?"0.4":"";
     wrap.style.pointerEvents=(anyVibe||anywhere)?"none":"";
   }
+  const vt=document.getElementById("viewToggle");
+  if(vt)vt.style.display=activeFilter==="national"?"none":"";
   const note=document.getElementById("scopeNote");
   if(!note)return;
   if(anyVibe){
@@ -3543,8 +3545,10 @@ function updateScopeUI(){
     note.textContent=`✨ ${names} venues are shown UK-wide (radius is ignored — there aren't enough per region).${hasPC()?" The nearest to "+userPC+" are shown first — check each card's distance.":""}`;
     note.style.display="block";
   }else if(anywhere){
-    note.textContent=`🌐 ${activeFilter==="mobile"?"“Comes to You” providers travel to your venue":"National providers operate across the UK"} — no postcode or radius needed.`;
-    note.style.display="block";
+    note.textContent=activeFilter===”national”
+      ?”🌐 National providers operate across the whole UK — no postcode needed. Map view is disabled; check the list below for all providers and their contact details.”
+      :`🌐 “Comes to You” providers travel to your venue — no postcode or radius needed.`;
+    note.style.display=”block”;
   }else{
     note.style.display="none";
   }
@@ -3701,6 +3705,7 @@ function setF(btn){
   }
   updateScopeUI();
   render();
+  if(activeFilter==="national")setView("list");
 }
 function qs(pc){document.getElementById("pc").value=pc; doSearch();}
 document.getElementById("pc").addEventListener("keydown",e=>{if(e.key==="Enter")doSearch();});

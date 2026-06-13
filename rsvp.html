@@ -161,10 +161,14 @@
   .gift-card-emoji { font-size:1.4rem; display:block; margin-bottom:5px; }
   .gift-card-text { font-size:0.73rem; color:var(--dark); font-weight:400; line-height:1.35; display:block; }
   .gift-card-price { font-size:0.68rem; color:var(--gold); display:block; margin-top:3px; font-weight:500; }
+  .gift-browse-all { display:block; text-align:center; font-size:0.78rem; color:var(--soft); text-decoration:none; margin-top:8px; padding:8px; border-radius:8px; border:1px solid var(--gold-light); transition:all 0.15s; }
+  .gift-browse-all:hover { background:var(--gold-pale); color:var(--mid); }
   .gift-btn-row { display:flex; gap:8px; margin-top:12px; }
   .gift-btn-row a { flex:1; display:block; text-align:center; font-size:0.78rem; text-decoration:none; padding:10px 8px; border-radius:10px; transition:all 0.18s; font-family:"DM Sans",sans-serif; }
   .gift-btn-amazon { background:var(--dark); color:var(--cream); }
   .gift-btn-amazon:hover { background:var(--gold); color:var(--cream); }
+  .gift-btn-shop { background:transparent; color:var(--mid); border:1px solid var(--gold-light); }
+  .gift-btn-shop:hover { background:var(--gold-pale); color:var(--dark); border-color:var(--gold); }
   .gift-aff-note { font-size:0.68rem; color:var(--soft); text-align:center; margin-top:8px; opacity:0.7; }
   .gift-randomize-note { font-size:0.72rem; color:var(--soft); text-align:center; margin-top:6px; font-style:italic; opacity:0.8; }
   .venue-section { margin-top:24px; padding-top:20px; border-top:1px solid var(--gold-light); text-align:center; }
@@ -717,10 +721,6 @@
             Or skip — the host has already been notified you can't attend.
           </p>
         </div>
-        <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--gold-light);text-align:center;">
-          <p class="venue-section-title">Planning a party yourself?</p>
-          <a href="https://tinyinvites.org/partyfinder.html" target="_blank" rel="noopener" class="venue-btn">🎈 Browse Party Venues near you ↗</a>
-        </div>
         <p class="powered-by" style="margin-top:28px;">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">Tiny Invites</a> ✨</p>
       `;
 
@@ -736,10 +736,6 @@
         <button onclick="_submitted=false;submitDecline()" style="width:100%;padding:14px;background:var(--dark);color:var(--cream);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.92rem;cursor:pointer;">Try again</button>
         <div style="margin-top:16px;text-align:center;">
           <button onclick="showPage('page-invite')" style="background:none;border:none;color:var(--soft);font-size:0.8rem;cursor:pointer;text-decoration:underline;">← Go back</button>
-        </div>
-        <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--gold-light);text-align:center;">
-          <p class="venue-section-title">Planning a party yourself?</p>
-          <a href="https://tinyinvites.org/partyfinder.html" target="_blank" rel="noopener" class="venue-btn">🎈 Browse Party Venues near you ↗</a>
         </div>
         <p class="powered-by" style="margin-top:28px;">RSVPs made beautiful by <a href="https://tinyinvites.org" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">Tiny Invites</a> ✨</p>
       `;
@@ -945,65 +941,55 @@
 
   // ── GIFT IDEAS ENGINE ─────────────────────────────────────────────────────
   // Shown ONLY when the guest is attending (built from the YES success path).
-  // Declines never see gifts. Every item below is a hardcoded Amazon
-  // bestseller-style pick, tagged with our affiliate ID. Add as many as you
-  // like to each age bracket — more entries = more variety for guests.
+  // Declines never see gifts. Catalogue mirrors the site's shop section;
+  // placeholder / malformed links are excluded.
   const TAG = 'tinyinvites-21';
   const dp = (asin) => `https://www.amazon.co.uk/dp/${asin}?tag=${TAG}`;
 
   // age: 'baby' (<1), 'toddler' (1-3), 'preschool' (3-5), 'older' (6+)
   const GIFT_CATALOG = [
-    // ── Baby & under 1 ──
-    { emoji:'🐛', title:'Firefly Clip-On Pram Toy',                  price:'~£14', age:'baby',      url:dp('B000I2Q0F4') },
-    { emoji:'🐣', title:'Squeaky Eggs Shape Sorter',                 price:'~£12', age:'baby',      url:dp('B0C77Z2G86') },
-    { emoji:'🎀', title:'Peek-a-Boo Tissue Box Toy',                 price:'~£13', age:'baby',      url:dp('B0CJLWD1VM') },
-    { emoji:'🧦', title:'Wrist Rattle & Foot Finder Socks Set',      price:'~£8',  age:'baby',      url:dp('B0CF26W6XL') },
-    { emoji:'🌀', title:'Spinning Suction Toy for High Chairs',      price:'~£16', age:'baby',      url:dp('B07DPBB4CT') },
-    // TODO: verify ASIN before going live
-    { emoji:'📖', title:'Soft Crinkle Sensory Book',                 price:'~£10', age:'baby',      url:dp('B07XYZBABY1') },
-    // TODO: verify ASIN before going live
-    { emoji:'🧊', title:'Silicone Teething Ring Set',                price:'~£11', age:'baby',      url:dp('B07XYZBABY2') },
-    // TODO: verify ASIN before going live
-    { emoji:'🎲', title:'Soft Fabric Activity Cube',                 price:'~£18', age:'baby',      url:dp('B07XYZBABY3') },
-
-    // ── Toddler 1-3 ──
-    { emoji:'🚂', title:'Letter Building Blocks Train',              price:'~£18', age:'toddler',   url:dp('B01IWX5EVQ') },
-    { emoji:'🔨', title:'Wooden Hammer & Xylophone Toy',             price:'~£20', age:'toddler',   url:dp('B0F1F9T8WH') },
-    { emoji:'🧺', title:'Interactive Shapes Picnic Basket',          price:'~£20', age:'toddler',   url:dp('B07CT16FH3') },
-    { emoji:'🛁', title:'Mould-Free Bath Toy Set',                   price:'~£10', age:'toddler',   url:dp('B0DRJSSSR5') },
-    { emoji:'🌀', title:'Pretend Play Light-Up Vacuum Toy',          price:'~£22', age:'toddler',   url:dp('B079JWMS51') },
-    // TODO: verify ASIN before going live
-    { emoji:'🥤', title:'Stacking Cups Set',                         price:'~£9',  age:'toddler',   url:dp('B07XYZTODD1') },
-    // TODO: verify ASIN before going live
-    { emoji:'🚶', title:'Push-Along Wooden Walker',                  price:'~£25', age:'toddler',   url:dp('B07XYZTODD2') },
-    // TODO: verify ASIN before going live
-    { emoji:'🖌️', title:'Magnetic Doodle Drawing Board',             price:'~£14', age:'toddler',   url:dp('B07XYZTODD3') },
-
-    // ── Preschool 3-5 ──
-    { emoji:'🎲', title:'My First Snakes & Ladders Board Game',      price:'~£10', age:'preschool', url:dp('B01E6SKZVK') },
-    { emoji:'🧹', title:'Henry Hoover Role Play Toy',                price:'~£20', age:'preschool', url:dp('B07TZRXSM1') },
-    { emoji:'🖍️', title:'Washable Felt Tip Markers (24 pack)',       price:'~£8',  age:'preschool', url:dp('B01BF6F20K') },
-    { emoji:'🛒', title:'Play Shop Cash Register with Scanner',      price:'~£20', age:'preschool', url:dp('B0CYL659J5') },
-    { emoji:'🐾', title:'Vet & Pet Care Role Play Set',              price:'~£18', age:'preschool', url:dp('B07PXLDFF3') },
-    // TODO: verify ASIN before going live
-    { emoji:'🦖', title:'Dinosaur Figures Playset',                  price:'~£15', age:'preschool', url:dp('B07XYZPRES1') },
-    // TODO: verify ASIN before going live
-    { emoji:'🧩', title:'Wooden Jigsaw Puzzle Set',                  price:'~£12', age:'preschool', url:dp('B07XYZPRES2') },
-    // TODO: verify ASIN before going live
-    { emoji:'🩺', title:'Pretend Doctor’s Kit',                      price:'~£16', age:'preschool', url:dp('B07XYZPRES3') },
-
-    // ── Age 6+ ──
-    { emoji:'🃏', title:'Dobble — Fast-Matching Card Game',          price:'~£12', age:'older',     url:dp('B00KIQ3X4Q') },
-    { emoji:'🏎️', title:'LEGO Ferrari F1 Pit Stop Set',              price:'~£20', age:'older',     url:dp('B0DHSHH218') },
-    { emoji:'🔬', title:'Science Experiments Kit (50+ activities)',  price:'~£18', age:'older',     url:dp('B0FJ1PRWY7') },
-    { emoji:'🖊️', title:'Colour Screen Drawing Tablets (twin pack)', price:'~£14', age:'older',     url:dp('B0BJ6M9ZYW') },
-    { emoji:'🦁', title:'LEGO 3-in-1 Wild Animals Building Set',     price:'~£25', age:'older',     url:dp('B0DHSF89CQ') },
-    // TODO: verify ASIN before going live
-    { emoji:'🏙️', title:'LEGO City Starter Building Set',            price:'~£20', age:'older',     url:dp('B07XYZOLD1') },
-    // TODO: verify ASIN before going live
-    { emoji:'🍣', title:'Sushi Go! Card Game',                       price:'~£12', age:'older',     url:dp('B07XYZOLD2') },
-    // TODO: verify ASIN before going live
-    { emoji:'⌚', title:'Kids Smartwatch Activity Tracker',          price:'~£18', age:'older',     url:dp('B07XYZOLD3') },
+    // Baby & under 1
+    { emoji:'🐛', title:'Firefly Clip-On Pram Toy',                  price:'~£14', age:'baby',      best:true,  url:dp('B000I2Q0F4') },
+    { emoji:'🐣', title:'Squeaky Eggs Shape Sorter',                 price:'~£12', age:'baby',      best:true,  url:dp('B0C77Z2G86') },
+    { emoji:'🎀', title:'Peek-a-Boo Tissue Box Toy',                 price:'~£13', age:'baby',      best:true,  url:dp('B0CJLWD1VM') },
+    { emoji:'🧦', title:'Wrist Rattle & Foot Finder Socks Set',      price:'~£8',  age:'baby',      best:true,  url:dp('B0CF26W6XL') },
+    { emoji:'🌀', title:'Spinning Suction Toy for High Chairs',      price:'~£16', age:'baby',      best:true,  url:dp('B07DPBB4CT') },
+    { emoji:'📖', title:'Soft Crinkle Sensory Books (6 pack)',       price:'~£10', age:'baby',      best:true,  url:dp('B07DNQ4N7S') },
+    { emoji:'🐘', title:'Silicone Elephant Teether Toy',             price:'~£7',  age:'baby',      best:true,  url:dp('B07XDVCHTV') },
+    { emoji:'🧸', title:'Soft Fabric Activity Cube',                price:'~£12', age:'baby',      best:true,  url:dp('B07BMV4B3L') },
+    // Toddler 1-3
+    { emoji:'🎨', title:'Play-Doh Rainbow Colours Set',              price:'~£8',  age:'toddler',   best:false, url:'https://amzn.to/4uH66a7' },
+    { emoji:'👸', title:'Rapunzel Princess Doll',                    price:'~£8',  age:'toddler',   best:false, url:'https://amzn.to/4366p2s' },
+    { emoji:'🦄', title:'Unicorn Headband Craft Kit',                price:'~£8',  age:'toddler',   best:false, url:'https://amzn.to/4dhD6P8' },
+    { emoji:'🚂', title:'Letter Building Blocks Train',              price:'~£18', age:'toddler',   best:true,  url:dp('B01IWX5EVQ') },
+    { emoji:'🔨', title:'Wooden Hammer & Xylophone Toy',             price:'~£20', age:'toddler',   best:true,  url:dp('B0F1F9T8WH') },
+    { emoji:'🧺', title:'Interactive Shapes Picnic Basket',          price:'~£20', age:'toddler',   best:true,  url:dp('B07CT16FH3') },
+    { emoji:'🛁', title:'Mould-Free Bath Toy Set',                   price:'~£10', age:'toddler',   best:true,  url:dp('B0DRJSSSR5') },
+    { emoji:'🌀', title:'Pretend Play Light-Up Vacuum Toy',          price:'~£22', age:'toddler',   best:true,  url:dp('B079JWMS51') },
+    { emoji:'🥤', title:'Mushie Stacking Cups (8 piece)',            price:'~£15', age:'toddler',   best:true,  url:dp('B0C665CFTC') },
+    { emoji:'🚶', title:'Wooden Baby Walker with Building Blocks',   price:'~£20', age:'toddler',   best:true,  url:dp('B07HMSTGRV') },
+    { emoji:'🖌️', title:'Magnetic Doodle Drawing Board',             price:'~£24', age:'toddler',   best:true,  url:dp('B0BGN2HQHH') },
+    // Preschool 3-5
+    { emoji:'🚗', title:'Flip & Spin Unicorn Stunt Car',             price:'~£17', age:'preschool', best:false, url:'https://amzn.to/4u8APx8' },
+    { emoji:'🏎️', title:'LEGO Lightning McQueen Race Car',           price:'~£45', age:'preschool', best:false, url:'https://amzn.to/4nvrOfa' },
+    { emoji:'🎲', title:'My First Snakes & Ladders Board Game',      price:'~£10', age:'preschool', best:true,  url:dp('B01E6SKZVK') },
+    { emoji:'🧹', title:'Henry Hoover Role Play Toy',                price:'~£20', age:'preschool', best:true,  url:dp('B07TZRXSM1') },
+    { emoji:'🖍️', title:'Washable Felt Tip Markers (24 pack)',       price:'~£8',  age:'preschool', best:true,  url:dp('B01BF6F20K') },
+    { emoji:'🛒', title:'Play Shop Cash Register with Scanner',      price:'~£20', age:'preschool', best:true,  url:dp('B0CYL659J5') },
+    { emoji:'🐾', title:'Vet & Pet Care Role Play Set',              price:'~£18', age:'preschool', best:true,  url:dp('B07PXLDFF3') },
+    { emoji:'🩺', title:'Pretend Play Doctor\'s Kit (19 pieces)',    price:'~£21', age:'preschool', best:true,  url:dp('B0CKPPXB1S') },
+    { emoji:'🧩', title:'Wooden Jigsaw Puzzles (4 pack)',            price:'~£17', age:'preschool', best:true,  url:dp('B0DJ7K2FDM') },
+    { emoji:'🦖', title:'Dinosaur Figures Tub (60 pieces)',         price:'~£10', age:'preschool', best:true,  url:dp('B00TYO5XR8') },
+    // Age 6+
+    { emoji:'🏆', title:'World Cup 2026 Sticker Starter Pack',       price:'~£8',  age:'older',     best:false, url:'https://amzn.to/4uC4pul' },
+    { emoji:'🃏', title:'Dobble — Fast-Matching Card Game',          price:'~£12', age:'older',     best:true,  url:dp('B00KIQ3X4Q') },
+    { emoji:'🏎️', title:'LEGO Ferrari F1 Pit Stop Set',              price:'~£20', age:'older',     best:true,  url:dp('B0DHSHH218') },
+    { emoji:'🔬', title:'Science Experiments Kit (50+ activities)',  price:'~£18', age:'older',     best:true,  url:dp('B0FJ1PRWY7') },
+    { emoji:'🖊️', title:'Colour Screen Drawing Tablets (twin pack)', price:'~£14', age:'older',     best:true,  url:dp('B0BJ6M9ZYW') },
+    { emoji:'🦁', title:'LEGO 3-in-1 Wild Animals Building Set',     price:'~£25', age:'older',     best:true,  url:dp('B0DHSF89CQ') },
+    { emoji:'🦜', title:'LEGO Creator 3-in-1 Tropical Toucan',       price:'~£13', age:'older',     best:true,  url:dp('B0DWDZ44TK') },
+    { emoji:'💣', title:'Exploding Kittens Card Game',              price:'~£20', age:'older',     best:true,  url:dp('B010TQY7A8') },
+    { emoji:'⌚', title:'Kids Fitness Tracker Smart Watch',         price:'~£36', age:'older',     best:true,  url:dp('B0DC9NRKXN') },
   ];
 
   function parseAge(raw) {
@@ -1049,26 +1035,33 @@
     const brackets = bracketsForAge(age);
     const inBracket = (item) => !brackets || brackets.includes(item.age);
 
-    // Pick 3 random bestsellers from the matching age bracket(s), topping up
-    // from other brackets only if a bracket doesn't have enough items.
-    const sameBracket  = shuffle(GIFT_CATALOG.filter(inBracket));
-    const otherBracket = shuffle(GIFT_CATALOG.filter(i => !inBracket(i)));
-    const picks = sameBracket.concat(otherBracket).slice(0, 3);
+    // 1. One pick from our shop (randomised)
+    const picks = shuffle(GIFT_CATALOG.filter(inBracket)).slice(0, 1);
+    const picked = new Set(picks.map(p => p.url));
+
+    // 2. Two random Amazon bestsellers — same age group first, then top up
+    const bestSame  = shuffle(GIFT_CATALOG.filter(i => i.best && inBracket(i) && !picked.has(i.url)));
+    const bestOther = shuffle(GIFT_CATALOG.filter(i => i.best && !inBracket(i) && !picked.has(i.url)));
+    const bestsellers = bestSame.concat(bestOther).slice(0, 2);
 
     const name     = childName && childName !== 'our little one' ? escapeHtml(String(childName)) : '';
     const headline = name ? `Gift ideas for ${name}` : 'Not sure what to bring?';
+    const allUrl   = 'https://www.amazon.co.uk/s?' + new URLSearchParams({
+      k: isNaN(age) ? 'children birthday gift ideas uk' : `birthday gifts ${age} year old uk`,
+      tag: TAG,
+    }).toString();
+    const shopUrl  = 'https://tinyinvites.org/#gifts';
 
-    // "Browse more bestsellers" points straight at the top pick's own page —
-    // no search results, just a direct product link.
-    const moreUrl = picks[0] ? picks[0].url : dp('B01IWX5EVQ');
+    const allCards = picks.concat(bestsellers);
 
     el.innerHTML = `
       <p class="gift-section-label">Gift inspiration 🎁</p>
       <p class="gift-section-title">${headline}</p>
-      <div class="gift-cards">${picks.map(giftCard).join('')}</div>
+      <div class="gift-cards">${allCards.map(giftCard).join('')}</div>
       <p class="gift-randomize-note">Suggestions are randomised — every guest sees a different pick!</p>
       <div class="gift-btn-row">
-        <a href="${moreUrl}" target="_blank" rel="noopener sponsored" class="gift-btn-amazon">Browse Bestsellers on Amazon ↗</a>
+        <a href="${allUrl}" target="_blank" rel="noopener sponsored" class="gift-btn-amazon">Shop Bestsellers on Amazon ↗</a>
+        <a href="${shopUrl}" target="_blank" rel="noopener" class="gift-btn-shop">Browse Our Gift Shop ↗</a>
       </div>
       <p class="gift-aff-note">Amazon affiliate links — we may earn a small commission at no cost to you.</p>
     `;
@@ -1079,14 +1072,102 @@
   }
 
   // ── VENUE DISCOVERY ───────────────────────────────────────────────────────
-  // Simple hardcoded link to our own party venue finder.
+  // Detects postcode or region from the party venue string and deep-links
+  // into the partyfinder with auto-search results (10-mile radius).
+
+  // Try to extract a UK postcode from a venue/address string.
+  // Matches patterns like "CV37 6YX", "SW6 2PY", "M1 1AE", etc.
+  const UK_PC_RE = /\b([A-Z]{1,2}\d[A-Z\d]?)\s*(\d[A-Z]{2})\b/i;
+
+  function extractPostcode(str) {
+    if (!str) return null;
+    const m = str.match(UK_PC_RE);
+    if (m) return (m[1] + ' ' + m[2]).toUpperCase();
+    return null;
+  }
+
+  // Fallback: match city/area names to a representative postcode
+  const REGION_MAP = [
+    { kw:['london','hackney','camden','islington','brixton','croydon','greenwich','lewisham','southwark','lambeth','wandsworth','westminster','kensington','chelsea','hammersmith','fulham','tower hamlets','newham','barking','walthamstow','enfield','barnet','harrow','ealing','brent','haringey','docklands','canary wharf','woolwich','eltham','catford','peckham','dulwich','clapham','battersea','putney','wimbledon','richmond','kingston','sutton','bromley','ilford','romford','dagenham','tottenham','finchley','hampstead','shoreditch','deptford','bermondsey','twickenham','hounslow','wembley','chiswick','acton','streatham','tooting','balham','mitcham','crystal palace','camberwell','brockley'],
+      pc:'SW6 2PY', label:'London' },
+    { kw:['birmingham','solihull','edgbaston','erdington','sutton coldfield','moseley','selly oak','harborne','handsworth','aston','small heath','kings heath','northfield','ladywood'],
+      pc:'B1 1AA', label:'Birmingham' },
+    { kw:['manchester','salford','stockport','oldham','bolton','bury','rochdale','wigan','trafford','tameside','altrincham','sale','stretford','didsbury','chorlton'],
+      pc:'M1 1AE', label:'Manchester' },
+    { kw:['leeds','bradford','wakefield','huddersfield','halifax','dewsbury','headingley','roundhay','horsforth'],
+      pc:'LS1 1BA', label:'Leeds' },
+    { kw:['sheffield','rotherham','doncaster','barnsley','chesterfield','meadowhall'],
+      pc:'S1 2BJ', label:'Sheffield' },
+    { kw:['liverpool','wirral','birkenhead','crosby','kirkby','knowsley','southport'],
+      pc:'L1 1JD', label:'Liverpool' },
+    { kw:['bristol','bath','weston-super-mare','keynsham','filton','clifton','bedminster'],
+      pc:'BS1 5TR', label:'Bristol' },
+    { kw:['nottingham','derby','leicester','loughborough','mansfield','beeston','west bridgford'],
+      pc:'NG1 5FW', label:'Nottingham' },
+    { kw:['newcastle','gateshead','sunderland','durham','south shields','tynemouth','darlington','middlesbrough'],
+      pc:'NE1 4ST', label:'Newcastle' },
+    { kw:['edinburgh','glasgow','dundee','aberdeen','stirling','perth','inverness','falkirk'],
+      pc:'EH1 1RE', label:'Edinburgh' },
+    { kw:['cardiff','swansea','newport','bridgend','pontypridd','caerphilly','barry'],
+      pc:'CF10 1EP', label:'Cardiff' },
+    { kw:['coventry','warwick','leamington','stratford','rugby','nuneaton','kenilworth'],
+      pc:'CV1 1FT', label:'Coventry & Warwickshire' },
+    { kw:['cambridge','ely','huntingdon','newmarket'],
+      pc:'CB1 1DT', label:'Cambridge' },
+    { kw:['oxford','abingdon','witney','bicester','banbury','didcot'],
+      pc:'OX1 1BX', label:'Oxford' },
+    { kw:['brighton','hove','worthing','eastbourne','crawley','horsham'],
+      pc:'BN1 1AE', label:'Brighton' },
+    { kw:['southampton','portsmouth','winchester','fareham','basingstoke'],
+      pc:'SO14 7DW', label:'Southampton' },
+    { kw:['exeter','plymouth','torquay','paignton','newton abbot','barnstaple'],
+      pc:'EX1 1HS', label:'Exeter' },
+  ];
+
+  function detectRegion(venueStr) {
+    if (!venueStr) return null;
+    const lower = venueStr.toLowerCase();
+    for (const r of REGION_MAP) {
+      for (const kw of r.kw) {
+        if (lower.includes(kw)) return r;
+      }
+    }
+    return null;
+  }
+
   function buildVenueSection() {
     const el = document.getElementById('venue-section');
     if (!el) return;
 
+    const pd = window._partyData || {};
+    const venue = pd.location || '';
+
+    // Priority 1: actual postcode in the venue string (most accurate)
+    // Priority 2: city/area keyword match → representative postcode
+    // Priority 3: generic link (no search)
+    const extractedPC = extractPostcode(venue);
+    const region      = detectRegion(venue);
+
+    const baseUrl = 'https://tinyinvites.org/partyfinder';
+    let venueUrl, label;
+
+    if (extractedPC) {
+      // Best case: we have the actual postcode, search within 10 miles
+      venueUrl = baseUrl + '?pc=' + encodeURIComponent(extractedPC) + '&r=10';
+      label = region ? `Party Venues near ${region.label}` : `Party Venues near ${extractedPC}`;
+    } else if (region) {
+      // Good case: we matched a city name, use its representative postcode
+      venueUrl = baseUrl + '?pc=' + encodeURIComponent(region.pc) + '&r=10';
+      label = `Party Venues near ${region.label}`;
+    } else {
+      // Fallback: generic link
+      venueUrl = baseUrl;
+      label = 'Browse Party Venues near you';
+    }
+
     el.innerHTML = `
       <p class="venue-section-title">Planning a party yourself?</p>
-      <a href="https://tinyinvites.org/partyfinder.html" target="_blank" rel="noopener" class="venue-btn">🎈 Browse Party Venues near you ↗</a>
+      <a href="https://tinyinvites.org/partyfinder.html" target="_blank" rel="noopener" class="venue-btn">🎈 ${label} ↗</a>
     `;
     el.style.display = 'block';
   }

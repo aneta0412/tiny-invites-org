@@ -324,6 +324,21 @@
       </div>
 
       <div class="field" style="margin-bottom:14px;">
+        <label class="consent-wrap" id="phone-consent-wrap" style="margin-bottom:0;">
+          <input type="checkbox" id="host-phone-optin" onchange="togglePhoneField()">
+          <span>Happy to be contacted by phone? <span class="pill-optional">Optional</span> — we'll show your number on the invite so guests can call or text you.</span>
+        </label>
+        <div id="host-phone-field-wrap" style="display:none;margin-top:10px;">
+          <label for="host-phone" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Your phone number</label>
+          <input type="tel" id="host-phone" placeholder="e.g. 07123 456789" autocomplete="tel" inputmode="tel"
+            style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'"
+            oninput="document.getElementById('phone-consent-wrap').style.borderColor=''">
+          <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">Shown on your invite so guests can reach you directly.</p>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:14px;">
         <label style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Close RSVPs</label>
         <div style="display:flex;align-items:center;gap:10px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;padding:8px 13px;" id="cutoff-row">
           <input type="number" id="host-rsvp-days" value="2" min="1" max="60"
@@ -544,8 +559,18 @@
     }
   }
 
+  function togglePhoneField() {
+    const optin = document.getElementById('host-phone-optin').checked;
+    const wrap  = document.getElementById('host-phone-field-wrap');
+    wrap.style.display = optin ? 'block' : 'none';
+    document.getElementById('phone-consent-wrap').style.borderColor = '';
+    if (optin) document.getElementById('host-phone').focus();
+  }
+
   async function goLive() {
     const email   = document.getElementById('host-email').value.trim();
+    const phoneOptin = document.getElementById('host-phone-optin').checked;
+    const phone   = document.getElementById('host-phone').value.trim();
     const consent = document.getElementById('host-consent').checked;
     const partyDate = document.getElementById('host-party-date').value || null;
 
@@ -553,6 +578,7 @@
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address 📧'); return; }
     if (!partyDate) { alert('Please pick the party date so guests know when to come 📅'); document.getElementById('host-party-date').focus(); return; }
     if (!consent) { document.getElementById('consent-wrap').style.borderColor='#c9a84c'; alert('Please tick the consent box to continue ✉️'); return; }
+    if (phoneOptin && !phone) { document.getElementById('phone-consent-wrap').style.borderColor='#c9a84c'; alert('Please enter a phone number, or untick the contact option 📞'); document.getElementById('host-phone').focus(); return; }
 
     // Soft-warn (don't block) if the date is in the past — still required, just unusual
     {
@@ -585,6 +611,7 @@
           special_note: previewNote   || null,
           count_adults:  countAdults,
           count_babies:  countBabies,
+          phone_number:  phoneOptin ? phone : null,
           rsvp_cutoff:   document.getElementById('host-rsvp-cutoff').value || null,
         })
       }, 12000);

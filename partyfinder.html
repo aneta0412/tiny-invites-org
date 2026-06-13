@@ -94,9 +94,22 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 .view-toggle{margin-left:auto;display:flex;gap:6px}
 .vt{padding:7px 16px;border-radius:2px;border:1px solid var(--line);font-size:12px;font-weight:400;letter-spacing:.05em;cursor:pointer;background:var(--cream);color:var(--ink2);transition:all .15s}
 .vt.on{background:var(--ink);border-color:var(--ink);color:var(--cream)}
-#mapWrap{margin-bottom:24px}
-#map{height:540px;border-radius:6px;border:1px solid var(--line);box-shadow:var(--shadow);z-index:1}
-@media(max-width:640px){#map{height:420px}}
+/* ── SPLIT VIEW ── */
+.split-wrap{display:flex;gap:20px;align-items:flex-start;margin-bottom:24px}
+.list-panel{flex:0 0 380px;max-height:680px;overflow-y:auto;padding-right:4px}
+.list-panel::-webkit-scrollbar{width:4px}
+.list-panel::-webkit-scrollbar-track{background:var(--cream)}
+.list-panel::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+.map-panel{flex:1;min-width:0;position:sticky;top:20px}
+#map{height:660px;border-radius:6px;border:1px solid var(--line);box-shadow:var(--shadow);z-index:1}
+@media(max-width:900px){
+  .split-wrap{flex-direction:column}
+  .list-panel{flex:none;width:100%;max-height:none;overflow-y:visible;padding-right:0}
+  .map-panel{position:static;width:100%}
+  #map{height:400px}
+}
+/* list-only grid (National Providers, no map) */
+#listOnly .grid{margin-bottom:24px}
 .map-pop{font-family:'DM Sans',sans-serif;min-width:180px}
 .map-pop .mp-name{font-weight:600;color:var(--ink);font-size:14px;margin-bottom:2px}
 .map-pop .mp-meta{font-size:12px;color:var(--ink2);margin-bottom:4px}
@@ -156,6 +169,8 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 
 /* ── VENUE GRID ── */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:20px}
+.list-panel .grid{grid-template-columns:1fr;gap:12px} /* single column in side panel */
+@media(max-width:900px){.list-panel .grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}}
 @media(max-width:500px){.grid{grid-template-columns:1fr}}
 
 /* ── VENUE CARD ── */
@@ -495,7 +510,6 @@ a.card{text-decoration:none;color:inherit}
       <button class="vt" id="vtMap" onclick="setView('map')">🗺️ Map</button>
     </div>
   </div>
-  <div id="mapWrap" style="display:none"><div id="map"></div></div>
   <div id="inviteBanner" class="invite-banner" style="display:none">
     <div class="ib-copy"><span class="ib-kicker">✉️ Tiny Invites</span><span id="ibText">Found your venue? Spin up a matching digital invite in 60 seconds.</span></div>
     <a id="ibLink" class="ib-btn" href="https://tinyinvites.org/?utm_source=littlepartyfinder&utm_medium=referral" target="_blank" rel="noopener">Create invite →</a>
@@ -504,7 +518,19 @@ a.card{text-decoration:none;color:inherit}
     <a class="pl-item" href="https://tinyinvites.org/invite?utm_source=littlepartyfinder&utm_medium=venue_cta" target="_blank" rel="noopener">🎉 Hosting a party? <span>Get your digital party invite →</span></a>
     <a class="pl-item" href="https://tinyinvites.org/#contact" target="_blank" rel="noopener">📝 Spotted an error or know a venue we should add? <span>Get in touch →</span></a>
   </div>
-  <div id="grid" class="grid"></div>
+  <!-- split view: list panel + map side by side -->
+  <div id="splitWrap" class="split-wrap" style="display:none">
+    <div id="listPanel" class="list-panel">
+      <div id="grid" class="grid"></div>
+    </div>
+    <div id="mapPanel" class="map-panel" style="display:none">
+      <div id="map"></div>
+    </div>
+  </div>
+  <!-- list-only view (when map is hidden, e.g. National Providers) -->
+  <div id="listOnly" style="display:none">
+    <div id="gridOnly" class="grid"></div>
+  </div>
   <div id="heroState" class="hero-state">
 
     <h2 class="hs-title">Where's the party?</h2>
@@ -523,25 +549,21 @@ a.card{text-decoration:none;color:inherit}
           <span class="cc-emoji">🚜</span>
           <div class="cc-name">Beautiful Barns &amp; Farms</div>
           <div class="cc-sub">Animal encounters, tractor rides and hay-bale charm.</div>
-          <div class="cc-count" id="ccFarm"></div>
         </button>
         <button class="col-card" onclick="openCollection('inc')">
           <span class="cc-emoji">🍕</span>
           <div class="cc-name">Stress-Free All-Inclusive</div>
           <div class="cc-sub">Food, host and setup all handled — you just bring the cake.</div>
-          <div class="cc-count" id="ccInc"></div>
         </button>
         <button class="col-card" onclick="openCollection('unique')">
           <span class="cc-emoji">🌟</span>
           <div class="cc-name">Something Different</div>
           <div class="cc-sub">Museums, mail-rail rides and make-believe worlds.</div>
-          <div class="cc-count" id="ccUnique"></div>
         </button>
         <button class="col-card" onclick="openCollection('mobile')">
           <span class="cc-emoji">🚐</span>
           <div class="cc-name">The Party Comes to You</div>
           <div class="cc-sub">Entertainers and soft play delivered to your home or hall.</div>
-          <div class="cc-count" id="ccMobile"></div>
         </button>
       </div>
     </div>
@@ -3730,48 +3752,68 @@ function render(){
   const [ux,uy]=userCoords;
   const anyVibe=vibes.u3||vibes.inc||vibes.exc;
   const anywhere=isAnywhereFilter(activeFilter);
+  const listOnly=activeFilter==="national"; // national providers: no map, just list
   const effRadius=(anyVibe||anywhere)?9999:radius;
   let venues=DB.map(v=>({...v,dist:hav(ux,uy,v.lat,v.lng)}))
-    .filter(v=>isNational(v)||v.dist<=effRadius) // UK-wide providers go anywhere — never cut by radius
+    .filter(v=>isNational(v)||v.dist<=effRadius)
     .filter(v=>matchCat(v,activeFilter))
     .filter(vibePass)
     .filter(searchPass)
-    .sort((a,b)=>(isNational(a)?1e9:a.dist)-(isNational(b)?1e9:b.dist)); // locals nearest-first, UK-wide listed after
+    .sort((a,b)=>(isNational(a)?1e9:a.dist)-(isNational(b)?1e9:b.dist));
   const n=venues.length;
   const nNat=venues.filter(isNational).length, nLoc=n-nNat;
-  document.getElementById("resNum").textContent=n;
+  // counts + label
+  document.getElementById("resNum").textContent=(!anyVibe&&!anywhere)?nLoc:n;
   document.getElementById("resTxt").textContent=
-    anyVibe?`venue${n!==1?"s":""} across the UK${hasPC()?" · nearest to "+userPC+" shown first":""}`
-    :anywhere?`venue${n!==1?"s":""} available anywhere in the UK`
-    :`venue${nLoc!==1?"s":""} within ${effRadius===9999?"any distance":effRadius+" miles"} of ${userPC}${nNat?` · plus ${nNat} UK-wide provider${nNat!==1?"s":""} (listed after, not pinned on map)`:""}`;
-  if(!anyVibe&&!anywhere)document.getElementById("resNum").textContent=nLoc;
-  const g=document.getElementById("grid");
-  if(n===0){
-    g.innerHTML=`<div class="empty"><span class="empty-icon">🔍</span><div class="empty-title">No venues in range</div><div class="empty-sub">Try increasing the radius or changing the filter.</div></div>`;
-    lastResults=[];
-    updateMap(); // clear stale pins
-    updateInviteBanner(0);
-    if(curView==="map")setView("list"); // show the empty message instead of a blank map
-    return;
-  }
-  g.innerHTML=venues.map(v=>card(v)).join("");
+    anyVibe?("venue"+(n!==1?"s":"")+" across the UK"+(hasPC()?" · nearest to "+userPC+" shown first":""))
+    :anywhere?("venue"+(n!==1?"s":"")+" available anywhere in the UK")
+    :("venue"+(nLoc!==1?"s":"")+" within "+(effRadius===9999?"any distance":effRadius+" miles")+" of "+userPC+(nNat?" · plus "+nNat+" UK-wide provider"+(nNat!==1?"s":"")+" (listed below, not pinned on map)":""));
+  // curated collections: hide once results are showing
+  var hero=document.getElementById("heroState");
+  if(hero)hero.style.display="none";
+  // choose grid target
+  var html=n===0
+    ?'<div class="empty"><span class="empty-icon">🔍</span><div class="empty-title">No venues found</div><div class="empty-sub">Try a wider radius or a different filter.</div></div>'
+    :venues.map(v=>card(v)).join("");
   lastResults=venues;
-  updateMap();
+  // show/hide split vs list-only
+  var split=document.getElementById("splitWrap");
+  var lo=document.getElementById("listOnly");
+  if(listOnly){
+    if(split)split.style.display="none";
+    if(lo)lo.style.display="block";
+    var g=document.getElementById("gridOnly");
+    if(g)g.innerHTML=html;
+  }else{
+    if(lo)lo.style.display="none";
+    if(split)split.style.display="flex";
+    var g=document.getElementById("grid");
+    if(g)g.innerHTML=html;
+    var mp=document.getElementById("mapPanel");
+    if(mp)mp.style.display="block";
+    updateMap();
+  }
+  if(n===0){lastResults=[];updateMap();updateInviteBanner(0);return;}
   updateInviteBanner(n);
 }
 
 // ── MAP VIEW (Leaflet + OpenStreetMap) ───────────────────────────────────────
-let lastResults=[],lpfMap=null,markerLayer=null,curView="list";
+let lastResults=[],lpfMap=null,markerLayer=null,curView="map";
 function setView(view){
+  // in split layout setView is a no-op for map (always shown) — only used externally by national/special
   curView=view;
-  document.getElementById("vtList").classList.toggle("on",view==="list");
-  document.getElementById("vtMap").classList.toggle("on",view==="map");
-  document.getElementById("grid").style.display=view==="list"?"grid":"none";
-  document.getElementById("mapWrap").style.display=view==="map"?"block":"none";
-  if(view==="map") updateMap();
+  var vt=document.getElementById("viewToggle");
+  if(vt){
+    document.getElementById("vtList").classList.toggle("on",view==="list");
+    document.getElementById("vtMap").classList.toggle("on",view==="map");
+  }
+  // for national providers, split is already hidden; nothing else to toggle
 }
 function updateMap(){
-  if(curView!=="map"||!userCoords||typeof L==="undefined") return;
+  // map is always visible in the split (no curView gate needed), just check it exists
+  if(!userCoords||typeof L==="undefined") return;
+  var mp=document.getElementById("mapPanel");
+  if(!mp||mp.style.display==="none") return;
   if(!lpfMap){
     lpfMap=L.map("map",{scrollWheelZoom:false});
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"}).addTo(lpfMap);

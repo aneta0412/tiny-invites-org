@@ -105,8 +105,8 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 @media(max-width:900px){
   .split-wrap{flex-direction:column}
   .list-panel{flex:none;width:100%;max-height:none;overflow-y:visible;padding-right:0}
-  .map-panel{position:static;width:100%}
-  #map{height:400px}
+  .map-panel{position:static;width:100%;display:block!important} /* always show map on tablet stacked layout */
+  #map{height:420px}
 }
 /* list-only grid (National Providers, no map) */
 #listOnly .grid{margin-bottom:24px}
@@ -532,7 +532,6 @@ a.card{text-decoration:none;color:inherit}
     <div id="gridOnly" class="grid"></div>
   </div>
   <div id="heroState" class="hero-state">
-
     <h2 class="hs-title">Where's the party?</h2>
     <p class="hs-sub">Enter your postcode above to find the nearest toddler birthday party venues, sorted by distance. Every venue shows full package details and prices.</p>
     <div class="sample-grid">
@@ -542,6 +541,9 @@ a.card{text-decoration:none;color:inherit}
       <button class="sg" onclick="qs('M1 1AE')">🐝 Manchester</button>
       <button class="sg" onclick="qs('G1 1AB')">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Glasgow</button>
     </div>
+  </div>
+
+  <div id="curatedSection">
     <div class="collections">
       <div class="col-title">✦ Curated collections ✦</div>
       <div class="col-grid">
@@ -567,7 +569,8 @@ a.card{text-decoration:none;color:inherit}
         </button>
       </div>
     </div>
-    <div class="tc-title">When should I book?</div>
+    <div class="timeline-calc">
+      <div class="tc-title">When should I book?</div>
       <div class="tc-sub">Pick your party date and we'll work the timeline backwards.</div>
       <div class="tc-row">
         <label for="tcDate">Party date</label>
@@ -3591,12 +3594,12 @@ function openCollection(kind){
   document.querySelectorAll(".rc").forEach(b=>b.classList.toggle("on",b.dataset.r==="9999"));
   if(!userCoords){userCoords=[52.4862,-1.8904];userPC="";}
   document.getElementById("heroState").style.display="none";
+  var cs=document.getElementById("curatedSection");if(cs)cs.style.display="none";
   document.getElementById("filterBar").style.display="flex";document.getElementById("specialBar").style.display="flex";
   document.getElementById("resultsBar").style.display="flex";
   updateScopeUI();
   render();
-  if(kind==="inc")setView("map"); // special collections open on the map
-  window.scrollTo({top:0,behavior:"smooth"});
+  scrollToResults();
 }
 function fillCollectionCounts(){
   const set=(id,n)=>{const e=document.getElementById(id);if(e)e.textContent=n+" venues →";};
@@ -3734,6 +3737,10 @@ function setF(btn){
 function qs(pc){document.getElementById("pc").value=pc; doSearch();}
 document.getElementById("pc").addEventListener("keydown",e=>{if(e.key==="Enter")doSearch();});
 
+function scrollToResults(){
+  var el=document.getElementById("filterBar")||document.getElementById("resultsBar");
+  if(el)setTimeout(function(){el.scrollIntoView({behavior:"smooth",block:"start"});},120);
+}
 function doSearch(){
   const raw=document.getElementById("pc").value.trim();
   if(!raw) return;
@@ -3741,10 +3748,11 @@ function doSearch(){
   if(!coords){alert("Postcode not recognised — please check and try again.\nExamples: OX1 1AA, CV37 6YX, SW6 2PY, M1 1AE, EH1 1YZ, BT1 1AA");return;}
   userCoords=coords; userPC=raw.toUpperCase();
   document.getElementById("heroState").style.display="none";
+  var cs=document.getElementById("curatedSection");if(cs)cs.style.display="none";
   document.getElementById("filterBar").style.display="flex";document.getElementById("specialBar").style.display="flex";
   document.getElementById("resultsBar").style.display="flex";
   render();
-  setView('map');
+  scrollToResults();
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
@@ -3768,9 +3776,11 @@ function render(){
     anyVibe?("venue"+(n!==1?"s":"")+" across the UK"+(hasPC()?" · nearest to "+userPC+" shown first":""))
     :anywhere?("venue"+(n!==1?"s":"")+" available anywhere in the UK")
     :("venue"+(nLoc!==1?"s":"")+" within "+(effRadius===9999?"any distance":effRadius+" miles")+" of "+userPC+(nNat?" · plus "+nNat+" UK-wide provider"+(nNat!==1?"s":"")+" (listed below, not pinned on map)":""));
-  // curated collections: hide once results are showing
+  // hide hero + curated once results are showing
   var hero=document.getElementById("heroState");
   if(hero)hero.style.display="none";
+  var curated=document.getElementById("curatedSection");
+  if(curated)curated.style.display="none";
   // choose grid target
   var html=n===0
     ?'<div class="empty"><span class="empty-icon">🔍</span><div class="empty-title">No venues found</div><div class="empty-sub">Try a wider radius or a different filter.</div></div>'

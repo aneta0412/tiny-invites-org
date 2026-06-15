@@ -109,7 +109,7 @@ function finalListHtml({ party, yes, no, responses, dashUrl }) {
       <tr><td style="padding:32px 40px 28px;">
         <p style="font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin:0 0 12px;">RSVPs closed 🔒</p>
         <h1 style="font-family:Georgia,serif;font-size:1.8rem;font-weight:400;color:#2a2218;margin:0 0 10px;line-height:1.3;">Your final guest list for ${childName}'s ${ageStr}</h1>
-        ${partyDate ? `<p style="font-size:0.85rem;color:#6b5c45;margin:0 0 18px;">📅 <strong>${partyDate}</strong></p>` : ''}
+        ${partyDate ? `<p style="font-size:0.85rem;color:#6b5c45;margin:0 0 18px;">🗓️ <strong>${partyDate}</strong></p>` : ''}
         <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5edda;border-radius:10px;margin-bottom:24px;">
           <tr>
             <td style="padding:12px 16px;text-align:center;">
@@ -230,7 +230,7 @@ export default async function handler(req, res) {
           <strong>Final guest list cron completed</strong><br/><br/>
           ✅ <strong>Emails sent:</strong> ${sent}<br/>
           ❌ <strong>Failed:</strong> ${failed}<br/>
-          📅 <strong>Cutoff date:</strong> ${cutoffDate}<br/>
+          🗓️ <strong>Cutoff date:</strong> ${cutoffDate}<br/>
           🕓 <strong>Ran at:</strong> ${new Date().toUTCString()}
         </p>`,
       });

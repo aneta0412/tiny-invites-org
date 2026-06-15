@@ -1,6 +1,6 @@
 // Updated: 2026-06-13
 // api/cron/send-reminders.js
-// Runs daily at 16:00 UTC via vercel.json cron.
+// Runs daily at 08:00 UTC via vercel.json cron.
 // Finds parties in exactly 3 days and emails confirmed guests.
 // All attending guests now have an email and reminder_optin=true by default,
 // so the query naturally catches everyone. The filter is kept for safety
@@ -190,7 +190,7 @@ function buildReminderHtml({ party, guest, note, hostCopy = false }) {
               <tr><td style="padding:20px 24px;">
                 <table cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding:6px 0;font-size:13px;width:28px;">📅</td>
+                    <td style="padding:6px 0;font-size:13px;width:28px;">🗓️</td>
                     <td style="padding:6px 0;font-size:13px;">${partyDate}</td>
                   </tr>
                   ${partyTime ? `<tr>
@@ -371,7 +371,7 @@ export default async function handler(req, res) {
           <strong>Daily reminder cron completed</strong><br/><br/>
           ✅ <strong>Sent:</strong> ${sent}<br/>
           ❌ <strong>Failed (after retry):</strong> ${skipped}<br/>
-          📅 <strong>Target party date:</strong> ${targetDate}<br/>
+          🗓️ <strong>Target party date:</strong> ${targetDate}<br/>
           🎉 <strong>Parties processed:</strong> ${parties.length}<br/>
           📝 <strong>Parties with host note:</strong> ${partiesWithNotes}<br/>
           🕓 <strong>Ran at:</strong> ${new Date().toUTCString()}

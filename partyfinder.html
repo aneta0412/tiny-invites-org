@@ -259,6 +259,19 @@ a.card{text-decoration:none;color:inherit}
 
 /* ── HAVE A VENUE CTA ── */
 .have-venue{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.coverage-note{margin-top:14px;padding:11px 14px;background:var(--gold-pale);border:1px solid var(--gold-light, #e8d5a3);border-radius:6px;font-size:12.5px;line-height:1.55;color:var(--ink2)}
+.coverage-note strong{color:var(--ink)}
+/* ── Numbered steps ── */
+.step-head{display:flex;align-items:center;gap:9px;font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;color:var(--ink);margin-bottom:14px}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;flex-shrink:0}
+.step-num.sm{width:18px;height:18px;font-size:11px;margin-right:5px}
+/* ── Available anywhere section ── */
+#anywhereSection{margin-top:36px;padding-top:28px;border-top:2px dashed var(--line)}
+.anywhere-head{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.anywhere-head span{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;color:var(--muted)}
+.anywhere-block{margin-top:20px}
+.anywhere-sublabel{font-size:13px;font-weight:600;letter-spacing:.03em;color:var(--ink);margin-bottom:12px}
+.anywhere-sublabel span{font-weight:400;color:var(--muted);font-size:12px;margin-left:4px}
 .have-venue a{color:var(--gold);text-decoration:none;font-weight:500}
 .have-venue a:hover{text-decoration:underline}
 
@@ -351,22 +364,20 @@ a.card{text-decoration:none;color:inherit}
       <div class="stat-row">
         <div class="stat"><strong>150</strong> verified venues</div>
         <div class="stat"><strong>9</strong> activity types</div>
-        <div class="stat"><strong>UK-wide</strong> coverage</div>
+        <div class="stat"><strong>New</strong> venues weekly</div>
       </div>
     </div>
     <div class="search-card">
+      <div class="step-head"><span class="step-num">1</span> Where's the party?</div>
       <div class="sc-label">Your postcode</div>
       <div class="postcode-wrap">
         <input class="pc" id="pc" type="text" placeholder="e.g. SW1, M1, B1, LS1, EH1" maxlength="8" autocomplete="off">
         <button class="btn-search" onclick="doSearch()">Search →</button>
       </div>
       <div class="radius-chips">
-        <span class="rc-lbl">Radius:</span>
+        <span class="rc-lbl">Within:</span>
         <button class="rc on" data-r="10" onclick="setR(this)">10 mi</button>
         <button class="rc" data-r="25" onclick="setR(this)">25 mi</button>
-        <button class="rc" data-r="50" onclick="setR(this)">50 mi</button>
-        <button class="rc" data-r="100" onclick="setR(this)">100 mi</button>
-        <button class="rc" data-r="9999" onclick="setRNation(this)">Any</button>
       </div>
       <div class="quick-searches">
         <div class="qs-lbl">Quick searches</div>
@@ -386,6 +397,9 @@ a.card{text-decoration:none;color:inherit}
           <button class="qc" onclick="qs('SO14 1AA')">Southampton</button>
           <button class="qc" onclick="qs('BT1 1AA')">Belfast</button>
         </div>
+      </div>
+      <div class="coverage-note">
+        📍 <strong>We're growing!</strong> Right now <strong>Stratford-upon-Avon</strong> and <strong>Birmingham</strong> have the best choice of venues. Searching elsewhere? You'll still see nearby options — and we're adding <strong>new venues every week</strong>. 🎈
       </div>
       <div class="have-venue">
         🎉 Hosting here? <a href="https://tinyinvites.org/invite?utm_source=littlepartyfinder&utm_medium=venue_cta" target="_blank" rel="noopener">Get your digital party invite →</a>
@@ -459,7 +473,7 @@ a.card{text-decoration:none;color:inherit}
 
 <main class="main">
   <div id="filterBar" class="filter-bar" style="display:none">
-    <span class="fb-lbl">Type:</span>
+    <span class="fb-lbl"><span class="step-num sm">2</span> Activity</span>
     <button class="fp on" data-c="all" onclick="setF(this)">All</button>
     <button class="fp" data-c="soft" onclick="setF(this)"><span class="dot" style="background:#ff6b47"></span>Soft Play</button>
     <button class="fp" data-c="gym" onclick="setF(this)"><span class="dot" style="background:#2d8f8b"></span>Gymnastics</button>
@@ -469,9 +483,8 @@ a.card{text-decoration:none;color:inherit}
     <button class="fp" data-c="club" onclick="setF(this)"><span class="dot" style="background:#7c3aed"></span>Health Club</button>
     <button class="fp" data-c="unique" onclick="setF(this)"><span class="dot" style="background:#d4a843"></span>Unique</button>
     <button class="fp" data-c="leisure" onclick="setF(this)"><span class="dot" style="background:#e0762d"></span>Leisure Centre</button>
-    <button class="fp" data-c="mobile" onclick="setF(this)"><span class="dot" style="background:#c0392b"></span>Comes to You</button>
     <span class="fb-sep" style="margin-left:auto"></span>
-    <span class="fb-lbl">Vibe:</span>
+    <span class="fb-lbl"><span class="step-num sm">3</span> Good for</span>
     <button class="vp" data-v="u3" onclick="setV(this)">👶 Under 3s</button>
     <button class="vp" data-v="inc" onclick="setV(this)">🍕 All-Inclusive</button>
     <button class="vp" data-v="exc" onclick="setV(this)">🔒 Exclusive Hire</button>
@@ -490,6 +503,20 @@ a.card{text-decoration:none;color:inherit}
     <a id="ibLink" class="ib-btn" href="https://tinyinvites.org/?utm_source=littlepartyfinder&utm_medium=referral" target="_blank" rel="noopener">Create invite →</a>
   </div>
   <div id="grid" class="grid"></div>
+
+  <!-- ── AVAILABLE ANYWHERE — not distance-based (mobile + nationwide chains) ── -->
+  <div id="anywhereSection" style="display:none">
+    <div class="anywhere-head">🌍 Available anywhere <span>— these don't depend on your distance</span></div>
+    <div class="anywhere-block" id="anywhereMobileWrap">
+      <div class="anywhere-sublabel">🚐 Comes to you <span>entertainers &amp; parties that travel to your home</span></div>
+      <div class="grid" id="anywhereMobileGrid"></div>
+    </div>
+    <div class="anywhere-block" id="anywhereNationWrap">
+      <div class="anywhere-sublabel">🏢 Nationwide chains <span>venues with locations across the UK</span></div>
+      <div class="grid" id="anywhereNationGrid"></div>
+    </div>
+  </div>
+
   <div id="heroState" class="hero-state">
 
     <h2 class="hs-title">Where's the party?</h2>
@@ -3445,19 +3472,29 @@ function updateRadiusChips(){
 function openCollection(kind){
   vibes={u3:false,inc:false,exc:false};
   document.querySelectorAll(".vp").forEach(b=>b.classList.remove("on"));
+  const isMobile=kind==="mobile";
   if(kind==="inc"){
     activeFilter="all";vibes.inc=true;
     const b=document.querySelector('.vp[data-v="inc"]');if(b)b.classList.add("on");
+  }else if(isMobile){
+    activeFilter="all";          // mobile venues live in the Available-anywhere section
   }else{activeFilter=kind;}
-  document.querySelectorAll(".fp").forEach(b=>b.classList.toggle("on",b.dataset.c===(kind==="inc"?"all":kind)));
+  const fpKey=(kind==="inc"||isMobile)?"all":kind;
+  document.querySelectorAll(".fp").forEach(b=>b.classList.toggle("on",b.dataset.c===fpKey));
   radius=9999;
-  document.querySelectorAll(".rc").forEach(b=>b.classList.toggle("on",b.dataset.r==="9999"));
+  document.querySelectorAll(".rc").forEach(b=>b.classList.remove("on"));
   if(!userCoords){userCoords=[52.4862,-1.8904];userPC="the UK";}
   document.getElementById("heroState").style.display="none";
   document.getElementById("filterBar").style.display="flex";
   document.getElementById("resultsBar").style.display="flex";
+  setView('list');               // the anywhere section is list-only
   render();
-  window.scrollTo({top:0,behavior:"smooth"});
+  if(isMobile){
+    const t=document.getElementById("anywhereMobileWrap");
+    if(t) t.scrollIntoView({behavior:"smooth",block:"start"});
+  }else{
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
 }
 function fillCollectionCounts(){
   const set=(id,n)=>{const e=document.getElementById(id);if(e)e.textContent=n+" venues →";};
@@ -3602,27 +3639,60 @@ function doSearch(){
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
+// A venue is "available anywhere" if it travels to you (mobile) or is a
+// nationwide chain (postcode === "UK-wide"). These have no meaningful distance,
+// so they live in their own section instead of the distance-sorted grid.
+function isAnywhere(v){return v.cat==="mobile"||v.postcode==="UK-wide";}
+
 function render(){
   const [ux,uy]=userCoords;
   const anyVibe=vibes.u3||vibes.inc||vibes.exc;
   const effRadius=anyVibe?9999:radius;
-  let venues=DB.map(v=>({...v,dist:hav(ux,uy,v.lat,v.lng)}))
+  // ── Distance-based local venues (excludes mobile + nationwide) ──
+  let venues=DB.filter(v=>!isAnywhere(v))
+    .map(v=>({...v,dist:hav(ux,uy,v.lat,v.lng)}))
     .filter(v=>v.dist<=effRadius)
     .filter(v=>activeFilter==="all"||v.cat===activeFilter)
     .filter(vibePass)
     .sort((a,b)=>a.dist-b.dist);
   const n=venues.length;
   document.getElementById("resNum").textContent=n;
-  document.getElementById("resTxt").textContent=`venue${n!==1?"s":""} ${anyVibe?"across the UK":"within "+(effRadius===9999?"any distance":effRadius+" miles")+" of "+userPC}`;
+  document.getElementById("resTxt").textContent=`venue${n!==1?"s":""} ${anyVibe?"across the UK":"within "+effRadius+" miles of "+userPC}`;
   const g=document.getElementById("grid");
   if(n===0){
-    g.innerHTML=`<div class="empty"><span class="empty-icon">🔍</span><div class="empty-title">No venues in range</div><div class="empty-sub">Try increasing the radius or changing the filter.</div></div>`;
-    return;
+    g.innerHTML=`<div class="empty"><span class="empty-icon">🌱</span><div class="empty-title">New venues coming soon to your area</div><div class="empty-sub">We're adding venues every week. Right now <strong>Stratford-upon-Avon</strong> and <strong>Birmingham</strong> have the best choice — try one of those, or widen your radius. You can also check the <strong>Available anywhere</strong> options below.</div><div style="margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;"><button class="qc" onclick="qs('CV37 6YX')">📍 Stratford-upon-Avon</button><button class="qc" onclick="qs('B1 1AA')">🏙️ Birmingham</button></div></div>`;
+  } else {
+    g.innerHTML=venues.map(v=>card(v)).join("");
   }
-  g.innerHTML=venues.map(v=>card(v)).join("");
   lastResults=venues;
+  renderAnywhere();
   updateMap();
   updateInviteBanner(n);
+}
+
+// ── AVAILABLE ANYWHERE (not distance-based) ──────────────────────────────────
+// Shows mobile ("comes to you") and nationwide chains, filtered by Activity
+// (where it applies) and Good-for, but never by distance.
+function renderAnywhere(){
+  const section=document.getElementById("anywhereSection");
+  if(!section) return;
+  // Mobile: their own category, so only show when no specific Activity is chosen.
+  const mobiles=(activeFilter==="all")
+    ? DB.filter(v=>v.cat==="mobile").filter(vibePass)
+    : [];
+  // Nationwide chains keep their real activity category, so respect the filter.
+  const nation=DB.filter(v=>v.postcode==="UK-wide")
+    .filter(v=>activeFilter==="all"||v.cat===activeFilter)
+    .filter(vibePass);
+  const mWrap=document.getElementById("anywhereMobileWrap");
+  const nWrap=document.getElementById("anywhereNationWrap");
+  document.getElementById("anywhereMobileGrid").innerHTML=mobiles.map(v=>card({...v,dist:null})).join("");
+  document.getElementById("anywhereNationGrid").innerHTML=nation.map(v=>card({...v,dist:null})).join("");
+  mWrap.style.display=mobiles.length?"block":"none";
+  nWrap.style.display=nation.length?"block":"none";
+  // Only show in list view, and only if there's something to show.
+  const hasAny=(mobiles.length||nation.length);
+  section.style.display=(hasAny&&curView!=="map")?"block":"none";
 }
 
 // ── MAP VIEW (Leaflet + OpenStreetMap) ───────────────────────────────────────
@@ -3633,6 +3703,8 @@ function setView(view){
   document.getElementById("vtMap").classList.toggle("on",view==="map");
   document.getElementById("grid").style.display=view==="list"?"grid":"none";
   document.getElementById("mapWrap").style.display=view==="map"?"block":"none";
+  // The "Available anywhere" section is list-only (distance-less venues).
+  if(userCoords) renderAnywhere();
   if(view==="map") updateMap();
 }
 function updateMap(){
@@ -3737,7 +3809,7 @@ mobile:`<rect width="330" height="88" fill="${pale}"/>
 
 function card(v){
   const c=CAT_CFG[v.cat];
-  const d=v.postcode==="UK-wide"?"🌐 UK-Wide":v.dist<0.5?"under half a mile":v.dist.toFixed(1)+" mi";
+  const d=v.cat==="mobile"?"🚐 Comes to you":v.postcode==="UK-wide"?"🌐 UK-Wide":(v.dist==null?"":v.dist<0.5?"under half a mile":v.dist.toFixed(1)+" mi");
   const fp=v.food==="yes"?`<div class="ii yes" title="Food included">🍕</div>`:v.food==="opt"?`<div class="ii opt" title="Food optional">🍕</div>`:`<div class="ii no" title="Self-catered">🍕</div>`;
   const bp=v.bags==="yes"?`<div class="ii yes" title="Gift bags included">🎁</div>`:v.bags==="opt"?`<div class="ii opt" title="Bags available">🎁</div>`:`<div class="ii no" title="No gift bags">🎁</div>`;
   const bestPrice=v.packages[0]?.price||"Contact venue";

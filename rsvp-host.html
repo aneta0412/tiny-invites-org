@@ -332,6 +332,20 @@
       </div>
 
       <div class="field" style="margin-bottom:14px;">
+        <label for="host-duration" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">How long is the party?</label>
+        <select id="host-duration" onchange="renderInvitePreview()"
+          style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
+          <option value="60">1 hour</option>
+          <option value="90" selected>1½ hours</option>
+          <option value="120">2 hours</option>
+          <option value="150">2½ hours</option>
+          <option value="180">3 hours</option>
+        </select>
+        <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">Sets the end time shown to guests and on the calendar invite. Default is 1½ hours.</p>
+      </div>
+
+      <div class="field" style="margin-bottom:14px;">
         <label for="host-special-note" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Special note for guests <span class="pill-optional" style="text-transform:none;">Optional</span></label>
         <textarea id="host-special-note" rows="3" maxlength="500" placeholder="e.g. Parking on the left, no nut products please."
           style="width:100%;box-sizing:border-box;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;resize:vertical;transition:border-color 0.2s;"
@@ -475,6 +489,37 @@
     let hh = h % 12; if (hh === 0) hh = 12;
     return m ? `${hh}:${String(m).padStart(2,'0')}${ampm}` : `${hh}${ampm}`;
   }
+  // Add minutes to "HH:MM", returning "HH:MM" (clamped within the same day).
+  function addMins(t, mins) {
+    const [h, m] = String(t).split(':').map(Number);
+    if (Number.isNaN(h)) return t;
+    const tot = Math.min(h * 60 + m + (mins || 0), 23 * 60 + 59);
+    return `${String(Math.floor(tot / 60)).padStart(2,'0')}:${String(tot % 60).padStart(2,'0')}`;
+  }
+  // "2pm–3:30pm" from a start time + duration in minutes.
+  function formatTimeRange(start, durMin) {
+    if (!start) return '';
+    const s = formatTime12(start);
+    return durMin ? `${s}–${formatTime12(addMins(start, durMin))}` : s;
+  }
+  // Re-render the invite's time line (start–end). Called by the time + duration inputs.
+  function updateTimePreview() {
+    const timeInput = document.getElementById('host-party-time');
+    const durEl = document.getElementById('host-duration');
+    if (!timeInput) return;
+    let line = document.getElementById('inv-time-line');
+    if (!timeInput.value) { if (line) line.remove(); return; }
+    if (!line) {
+      line = document.createElement('div');
+      line.className = 'info-item';
+      line.id = 'inv-time-line';
+      document.getElementById('inv-details').appendChild(line);
+    }
+    const dur = durEl ? parseInt(durEl.value, 10) : 0;
+    line.innerHTML = `<span class="icon">🕐</span><span>${escapeHtml(formatTimeRange(timeInput.value, dur))}</span>`;
+  }
+  // Alias used by the duration <select> onchange.
+  function renderInvitePreview() { updateTimePreview(); }
 
   const previewName     = getParam('name');
   const previewAge      = getParam('age');
@@ -549,22 +594,11 @@
       renderDate();
     }
 
-    // Time preview line — appears right after the date once a start time is set.
+    // Time preview line (start–end) — appears once a start time is set.
     const timeInput = document.getElementById('host-party-time');
     if (timeInput) {
-      const renderTime = () => {
-        let line = document.getElementById('inv-time-line');
-        if (!timeInput.value) { if (line) line.remove(); return; }
-        if (!line) {
-          line = document.createElement('div');
-          line.className = 'info-item';
-          line.id = 'inv-time-line';
-          document.getElementById('inv-details').appendChild(line);
-        }
-        line.innerHTML = `<span class="icon">🕐</span><span>${escapeHtml(formatTime12(timeInput.value))}</span>`;
-      };
-      timeInput.addEventListener('change', renderTime);
-      renderTime();
+      timeInput.addEventListener('change', updateTimePreview);
+      updateTimePreview();
     }
 
     // Phone preview line — appears in the invite details if the host has
@@ -657,6 +691,7 @@
     const consent = document.getElementById('host-consent').checked;
     const partyDate = document.getElementById('host-party-date').value || null;
     const partyTime = document.getElementById('host-party-time').value || null;
+    const partyDuration = parseInt(document.getElementById('host-duration').value, 10) || 90;
     const specialNote = document.getElementById('host-special-note').value.trim() || null;
 
     if (!email) { alert('Please enter your email so guest RSVPs can reach you 📬'); document.getElementById('host-email').focus(); return; }
@@ -693,6 +728,7 @@
           venue:        previewLocation,
           party_date:   partyDate,
           party_time:   partyTime,
+          party_duration_min: partyDuration,
           parent_email: email,
           photo_url:    previewPhoto  || null,
           special_note: specialNote,

@@ -541,6 +541,7 @@
     const location    = party.venue        || getParam('location')  || '';
     const date        = party.party_date   || '';
     const partyTime   = party.party_time   || '';
+    const partyDur    = party.party_duration_min || 0;
     const hostEmail   = party.parent_email || '';
     const specialNote = party.special_note || '';
     const phoneNumber = party.phone_number || '';
@@ -574,12 +575,12 @@
 
     if (date) {
       const el = document.createElement('div'); el.className = 'info-item';
-      const timeSuffix = partyTime ? ` · ${formatTime12(partyTime)}` : '';
+      const timeSuffix = partyTime ? ` · ${formatTimeRange12(partyTime, partyDur)}` : '';
       el.innerHTML = `<span class="icon">📅</span><span>${formatDate(date)}${timeSuffix}</span>`;
       document.getElementById('inv-details').prepend(el);
     } else if (partyTime) {
       const el = document.createElement('div'); el.className = 'info-item';
-      el.innerHTML = `<span class="icon">🕐</span><span>${formatTime12(partyTime)}</span>`;
+      el.innerHTML = `<span class="icon">🕐</span><span>${formatTimeRange12(partyTime, partyDur)}</span>`;
       document.getElementById('inv-details').prepend(el);
     }
     if (phoneNumber) {
@@ -631,6 +632,16 @@
     const ampm = h >= 12 ? 'pm' : 'am';
     let hh = h % 12; if (hh === 0) hh = 12;
     return m ? `${hh}:${String(m).padStart(2,'0')}${ampm}` : `${hh}${ampm}`;
+  }
+  // "2pm–3:30pm" from a start time + duration in minutes (start only if no duration).
+  function formatTimeRange12(start, durMin) {
+    if (!start) return '';
+    const s = formatTime12(start);
+    const [h, m] = String(start).split(':').map(Number);
+    if (!durMin || Number.isNaN(h)) return s;
+    const tot = Math.min(h * 60 + m + Number(durMin), 23 * 60 + 59);
+    const end = `${String(Math.floor(tot / 60)).padStart(2,'0')}:${String(tot % 60).padStart(2,'0')}`;
+    return `${s}–${formatTime12(end)}`;
   }
 
   async function submitRSVP() {

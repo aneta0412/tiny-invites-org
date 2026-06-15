@@ -453,6 +453,15 @@ body.dash-loading #statNo { min-width: 48px; }
         <label for="editPartyTime" style="display:block;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft,#a89880);margin-bottom:4px;">Start time</label>
         <input type="time" id="editPartyTime"
           style="width:100%;box-sizing:border-box;padding:9px 12px;background:var(--cream,#faf6ef);border:1px solid var(--gold-light,#e8d5a3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark,#2a2218);outline:none;margin-bottom:10px;">
+        <label for="editDuration" style="display:block;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft,#a89880);margin-bottom:4px;">How long</label>
+        <select id="editDuration"
+          style="width:100%;box-sizing:border-box;padding:9px 12px;background:var(--cream,#faf6ef);border:1px solid var(--gold-light,#e8d5a3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark,#2a2218);outline:none;margin-bottom:10px;">
+          <option value="60">1 hour</option>
+          <option value="90">1½ hours</option>
+          <option value="120">2 hours</option>
+          <option value="150">2½ hours</option>
+          <option value="180">3 hours</option>
+        </select>
         <label for="editVenue" style="display:block;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft,#a89880);margin-bottom:4px;">Venue</label>
         <input type="text" id="editVenue" maxlength="200" placeholder="e.g. The Jolly Giraffe Play Centre"
           style="width:100%;box-sizing:border-box;padding:9px 12px;background:var(--cream,#faf6ef);border:1px solid var(--gold-light,#e8d5a3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark,#2a2218);outline:none;">
@@ -813,7 +822,9 @@ function partyStartEnd(party) {
     const [h, m] = String(party.end_time).split(':').map(Number);
     end.setHours(h || 0, m || 0, 0, 0);
   } else {
-    end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+    // Use the host's chosen duration (minutes); default 90.
+    const dur = Number(party.party_duration_min) || 90;
+    end = new Date(start.getTime() + dur * 60 * 1000);
   }
   return { start, end };
 }
@@ -830,8 +841,7 @@ function partyTimeStr(party) {
   const se = partyStartEnd(party);
   const startTime = party.party_time || party.start_time;
   if (!se || !startTime) return '';
-  // With only a start time (no end_time), show just the start, e.g. "2pm".
-  if (!party.end_time) return fmtTime(se.start);
+  // Show start–end using the duration (or explicit end_time) computed above.
   const a = fmtTime(se.start), b = fmtTime(se.end);
   const sameMer = a.slice(-2) === b.slice(-2);
   return sameMer ? `${a.slice(0,-2)}–${b}` : `${a}–${b}`;
@@ -1427,8 +1437,10 @@ function toggleEditDetails() {
   // Prefill from the current party data.
   const t = document.getElementById('editPartyTime');
   const v = document.getElementById('editVenue');
+  const dur = document.getElementById('editDuration');
   if (t && _partyData) t.value = _partyData.party_time ? String(_partyData.party_time).slice(0, 5) : '';
   if (v && _partyData) v.value = _partyData.venue || '';
+  if (dur && _partyData) dur.value = String(_partyData.party_duration_min || 90);
   if (t) t.focus();
 }
 
@@ -1436,10 +1448,12 @@ async function savePartyDetails() {
   if (!_token) return;
   const t = document.getElementById('editPartyTime');
   const v = document.getElementById('editVenue');
+  const durEl = document.getElementById('editDuration');
   const fb = document.getElementById('editFeedback');
   const btn = document.getElementById('editSaveBtn');
   const party_time = t ? t.value : '';
   const venue      = v ? v.value.trim() : '';
+  const party_duration_min = durEl ? parseInt(durEl.value, 10) : 90;
 
   if (!party_time) { showToast('⚠️ Please set a start time'); if (t) t.focus(); return; }
 
@@ -1447,11 +1461,11 @@ async function savePartyDetails() {
   try {
     const res = await fetchWithTimeout('/api/dashboard-api?action=update-party', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ token:_token, party_time, venue }),
+      body: JSON.stringify({ token:_token, party_time, venue, party_duration_min }),
     }, 10000);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Could not update details');
-    if (_partyData) { _partyData.party_time = party_time; _partyData.venue = venue || null; }
+    if (_partyData) { _partyData.party_time = party_time; _partyData.venue = venue || null; _partyData.party_duration_min = party_duration_min; }
     if (fb) { fb.textContent = '✓ Saved — remember to Send update now so guests know. Reloading…'; fb.style.display = 'block'; }
     showToast('✓ Party details updated');
     setTimeout(() => window.location.reload(), 1400);

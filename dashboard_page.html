@@ -981,7 +981,7 @@ function sumCol(arr, key) {
 
 function getShowOptions() {
   const p = _partyData || {};
-  const flagFor = (...names) => { for (const n of names) { if (p[n] !== undefined && p[n] !== null) return p[n]; } return undefined; };
+  const flagFor = (...names) => {for (const n of names) { if (p[n] !== undefined && p[n] !== null) return p[n]; } return undefined; };
   const fAdults   = flagFor('show_adults',   'count_adults',   'track_adults',   'ask_adults',   'include_adults',   'has_adults');
   const fChildren = flagFor('show_children', 'count_children', 'track_children', 'ask_children', 'include_children', 'has_children');
   const fBabies   = flagFor('show_babies',   'count_babies',   'track_babies',   'ask_babies',   'include_babies',   'has_babies');

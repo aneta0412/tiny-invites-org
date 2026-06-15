@@ -30,6 +30,16 @@ function formatDate(dateStr) {
   } catch { return dateStr || ''; }
 }
 
+// "14:00" -> "2pm" / "14:30" -> "2:30pm". Returns '' for empty/invalid input.
+function formatTime(t) {
+  if (!t) return '';
+  const [h, m] = String(t).split(':').map(Number);
+  if (Number.isNaN(h)) return '';
+  const ampm = h >= 12 ? 'pm' : 'am';
+  let hh = h % 12; if (hh === 0) hh = 12;
+  return m ? `${hh}:${String(m).padStart(2, '0')}${ampm}` : `${hh}${ampm}`;
+}
+
 function ordSuffix(n) {
   const s = ['th','st','nd','rd'], v = n % 100;
   return n + (s[(v-20)%10] || s[v] || s[0]);
@@ -64,7 +74,10 @@ function buildCsv(responses) {
 function finalListHtml({ party, yes, no, responses, dashUrl }) {
   const childName = esc(party.child_name || 'your child');
   const ageStr    = party.age ? `${ordSuffix(party.age)} birthday` : 'party';
-  const partyDate = party.party_date ? formatDate(party.party_date) : '';
+  const partyTime = formatTime(party.party_time);
+  const partyDate = party.party_date
+    ? `${formatDate(party.party_date)}${partyTime ? ` · ${partyTime}` : ''}`
+    : '';
 
   const guestRows = responses
     .filter(r => r.attending === true || r.attending === 'true' || r.attending === 'yes')

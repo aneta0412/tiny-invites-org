@@ -46,6 +46,16 @@ function formatDate(dateStr) {
   } catch { return dateStr; }
 }
 
+// "14:00" -> "2pm" / "14:30" -> "2:30pm". Returns '' for empty/invalid input.
+function formatTime(t) {
+  if (!t) return '';
+  const [h, m] = String(t).split(':').map(Number);
+  if (Number.isNaN(h)) return '';
+  const ampm = h >= 12 ? 'pm' : 'am';
+  let hh = h % 12; if (hh === 0) hh = 12;
+  return m ? `${hh}:${String(m).padStart(2, '0')}${ampm}` : `${hh}${ampm}`;
+}
+
 function mapsUrl(venue) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue)}`;
 }
@@ -100,16 +110,50 @@ function hostNoteBlock(note) {
 
 // ── Reminder email template ───────────────────────────────
 
-function buildReminderHtml({ party, guest, note }) {
+function buildReminderHtml({ party, guest, note, hostCopy = false }) {
   const childName = party.child_name || 'the birthday child';
   const venue     = party.venue || '';
   const partyDate = party.party_date ? formatDate(party.party_date) : 'soon';
+  const partyTime = formatTime(party.party_time);
   const age       = party.age || '';
   const guestName = guest.guest_name || 'there';
   const ageLine   = age
     ? `${esc(childName)}'s ${esc(age)}${ordSuffix(Number(age))} birthday party`
     : `${esc(childName)}'s birthday party`;
   const unsubLink = unsubscribeUrl(guest.id);
+
+  // Host copy: a banner at the top + a host-appropriate footer (no unsubscribe).
+  const hostBanner = hostCopy ? `
+        <tr><td style="padding:20px 40px 0;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#eef4ef;border:1px solid #cfe0d4;border-radius:12px;">
+            <tr><td style="padding:14px 18px;font-size:13px;color:#3f6b50;line-height:1.6;">
+              📋 <strong>Your host copy.</strong> This is the reminder your confirmed guests received today, so you know exactly what landed in their inbox.
+            </td></tr>
+          </table>
+        </td></tr>` : '';
+
+  const footer = hostCopy ? `
+        <tr>
+          <td style="padding:20px 40px;border-top:1px solid #f5edda;text-align:center;">
+            <p style="margin:0;font-size:11px;color:#a89880;">
+              RSVPs made beautiful by
+              <a href="${BASE_URL}" style="color:#c9a84c;text-decoration:none;">Tiny Invites</a> ✨
+            </p>
+            <p style="margin:8px 0 0;font-size:10px;color:#c8bba8;">You're receiving this as the host of this party.</p>
+          </td>
+        </tr>` : `
+        <tr>
+          <td style="padding:20px 40px;border-top:1px solid #f5edda;text-align:center;">
+            <p style="margin:0;font-size:11px;color:#a89880;">
+              RSVPs made beautiful by
+              <a href="${BASE_URL}" style="color:#c9a84c;text-decoration:none;">Tiny Invites</a> ✨
+            </p>
+            <p style="margin:8px 0 0;font-size:10px;color:#c8bba8;">
+              You received this because you RSVPd yes to this party.<br/>
+              <a href="${unsubLink}" style="color:#c8bba8;text-decoration:underline;">Unsubscribe from reminders</a>
+            </p>
+          </td>
+        </tr>`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -130,6 +174,7 @@ function buildReminderHtml({ party, guest, note }) {
             </h1>
           </td>
         </tr>
+        ${hostBanner}
 
         <!-- Body -->
         <tr>
@@ -148,6 +193,10 @@ function buildReminderHtml({ party, guest, note }) {
                     <td style="padding:6px 0;font-size:13px;width:28px;">📅</td>
                     <td style="padding:6px 0;font-size:13px;">${partyDate}</td>
                   </tr>
+                  ${partyTime ? `<tr>
+                    <td style="padding:6px 0;font-size:13px;width:28px;">🕐</td>
+                    <td style="padding:6px 0;font-size:13px;">${partyTime}</td>
+                  </tr>` : ''}
                   ${venue ? `<tr>
                     <td style="padding:6px 0;font-size:13px;width:28px;">📍</td>
                     <td style="padding:6px 0;font-size:13px;">
@@ -172,18 +221,7 @@ function buildReminderHtml({ party, guest, note }) {
         ${hostNoteBlock(note)}
 
         <!-- Footer -->
-        <tr>
-          <td style="padding:20px 40px;border-top:1px solid #f5edda;text-align:center;">
-            <p style="margin:0;font-size:11px;color:#a89880;">
-              RSVPs made beautiful by
-              <a href="${BASE_URL}" style="color:#c9a84c;text-decoration:none;">Tiny Invites</a> ✨
-            </p>
-            <p style="margin:8px 0 0;font-size:10px;color:#c8bba8;">
-              You received this because you RSVPd yes to this party.<br/>
-              <a href="${unsubLink}" style="color:#c8bba8;text-decoration:underline;">Unsubscribe from reminders</a>
-            </p>
-          </td>
-        </tr>
+        ${footer}
 
       </table>
     </td></tr>
@@ -289,6 +327,29 @@ export default async function handler(req, res) {
           console.error(`  ✗ ${guest.guest_email} (gave up after retry):`, err.message);
           failures.push({ email: guest.guest_email, name: guest.guest_name, error: err.message });
           skipped++;
+        }
+      }
+
+      // ── Host copy ─────────────────────────────────────────
+      // Send the host the same reminder their guests received, so they have a
+      // record of it. Only when there were guests to remind. Best-effort: a
+      // failed host copy must not affect the guest sends or the cron result.
+      if (party.parent_email && guests.length > 0) {
+        try {
+          await withRetry(() => resend.emails.send({
+            from:    FROM_EMAIL,
+            to:      party.parent_email,
+            subject: `📋 Host copy — the 3-day reminder for ${party.child_name}'s party just went out`,
+            html:    buildReminderHtml({
+              party,
+              guest: { guest_name: 'there', id: 'host' },
+              note,
+              hostCopy: true,
+            }),
+          }));
+          console.log(`  ✓ host copy → ${party.parent_email}`);
+        } catch (err) {
+          console.error(`  ✗ host copy → ${party.parent_email}:`, err.message);
         }
       }
     }

@@ -332,6 +332,14 @@
       </div>
 
       <div class="field" style="margin-bottom:14px;">
+        <label for="host-special-note" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Special note for guests <span class="pill-optional" style="text-transform:none;">Optional</span></label>
+        <textarea id="host-special-note" rows="3" maxlength="500" placeholder="e.g. Parking on the left, no nut products please."
+          style="width:100%;box-sizing:border-box;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;resize:vertical;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'"></textarea>
+        <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">Shown on your invite — parking, what to bring, allergies, anything helpful.</p>
+      </div>
+
+      <div class="field" style="margin-bottom:14px;">
         <label class="consent-wrap" id="phone-consent-wrap" style="margin-bottom:0;">
           <input type="checkbox" id="host-phone-optin" onchange="togglePhoneField()">
           <span>Happy to be contacted by phone? <span class="pill-optional" style="text-transform:none;">Optional</span> — we'll show your number on the invite so guests can call or text you.</span>
@@ -487,7 +495,11 @@
       const t = new Date();
       dateEl.min = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
     }
-    renderInvite({ child_name:previewName, age:previewAge, venue:previewLocation, photo_url:previewPhoto, special_note:previewNote });
+    // The special note is now entered here (not on the landing page). Prefill
+    // from any legacy ?note= param so older invite links still work.
+    const snEl = document.getElementById('host-special-note');
+    if (snEl && previewNote) snEl.value = previewNote;
+    renderInvite({ child_name:previewName, age:previewAge, venue:previewLocation, photo_url:previewPhoto, special_note:(snEl ? snEl.value : previewNote) });
   });
 
   function renderInvite(party) {
@@ -576,7 +588,22 @@
       renderPhone();
     }
 
-    if (note) { const n=document.getElementById('inv-note-row'); n.textContent=note; n.style.display='block'; }
+    // Special-note preview — bound live to the textarea so it updates as the
+    // host types (the note is now entered on this page, not the landing page).
+    const noteInputEl = document.getElementById('host-special-note');
+    const noteRow     = document.getElementById('inv-note-row');
+    if (noteInputEl && noteRow) {
+      const renderNote = () => {
+        const v = noteInputEl.value.trim();
+        if (!v) { noteRow.style.display = 'none'; return; }
+        noteRow.textContent = v;
+        noteRow.style.display = 'block';
+      };
+      noteInputEl.addEventListener('input', renderNote);
+      renderNote();
+    } else if (note && noteRow) {
+      noteRow.textContent = note; noteRow.style.display = 'block';
+    }
 
     document.getElementById('loading-state').style.display='none';
     document.getElementById('invite-wrap').style.display='block';
@@ -630,6 +657,7 @@
     const consent = document.getElementById('host-consent').checked;
     const partyDate = document.getElementById('host-party-date').value || null;
     const partyTime = document.getElementById('host-party-time').value || null;
+    const specialNote = document.getElementById('host-special-note').value.trim() || null;
 
     if (!email) { alert('Please enter your email so guest RSVPs can reach you 📬'); document.getElementById('host-email').focus(); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address 📧'); return; }
@@ -667,7 +695,7 @@
           party_time:   partyTime,
           parent_email: email,
           photo_url:    previewPhoto  || null,
-          special_note: previewNote   || null,
+          special_note: specialNote,
           count_adults:  countAdults,
           count_babies:  countBabies,
           phone_number:  phoneOptin ? phone : null,

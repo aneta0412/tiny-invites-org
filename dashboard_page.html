@@ -377,9 +377,35 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
   .edit-fields input[type="text"] { min-width:100px; }
   .cutoff-card.show { padding:18px; }
 }
+
+/* ── Loading skeletons ───────────────────────────────────────────────────────
+   While body.dash-loading is set, the placeholder fields render as shimmering
+   bars instead of bare "—" dashes. Removed once the dashboard data arrives. */
+@keyframes skel-shimmer { 0% { background-position:-240px 0; } 100% { background-position:240px 0; } }
+body.dash-loading #heroMeta,
+body.dash-loading #textMeta,
+body.dash-loading #partyWhen,
+body.dash-loading #partyLocation,
+body.dash-loading #statYes,
+body.dash-loading #statNo,
+body.dash-loading #pctYes,
+body.dash-loading #pctNo,
+body.dash-loading #cateringTotal,
+body.dash-loading #lastUpdated {
+  color: transparent !important;
+  border-radius: 6px;
+  display: inline-block;
+  min-width: 72px;
+  background: linear-gradient(90deg, rgba(201,168,76,0.10) 25%, rgba(201,168,76,0.22) 37%, rgba(201,168,76,0.10) 63%);
+  background-size: 480px 100%;
+  animation: skel-shimmer 1.25s ease-in-out infinite;
+}
+body.dash-loading #statYes,
+body.dash-loading #statNo { min-width: 48px; }
+@media (prefers-reduced-motion: reduce) { body.dash-loading [id] { animation: none !important; } }
 </style>
 </head>
-<body>
+<body class="dash-loading">
 
 <nav>
   <a href="/" class="logo">
@@ -390,7 +416,7 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
 </nav>
 
 <div class="dash-hero" id="dashHero">
-  <img id="dashHeroImg" src="" alt="Party photo">
+  <img id="dashHeroImg" alt="Party photo">
   <div class="dash-hero-overlay"></div>
   <div class="dash-hero-text">
     <div class="dash-hero-eyebrow">Party Page</div>
@@ -417,6 +443,22 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
       <div class="cal-btns">
         <button class="cal-btn" id="calGoogle">📅 Google</button>
         <button class="cal-btn" id="calApple">🍎 Apple / Outlook</button>
+      </div>
+    </div>
+
+    <!-- ── Edit time / venue (date & photo stay locked) ─────────────────── -->
+    <div style="text-align:center;margin-top:14px;">
+      <button class="resend-btn" id="editDetailsToggle" type="button" onclick="toggleEditDetails()">✏️ Edit time or venue</button>
+      <div id="editDetailsPanel" style="display:none;margin-top:12px;text-align:left;background:var(--warm-white,#fff9f2);border:1px solid var(--gold-light,#e8d5a3);border-radius:10px;padding:14px 16px;">
+        <label for="editPartyTime" style="display:block;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft,#a89880);margin-bottom:4px;">Start time</label>
+        <input type="time" id="editPartyTime"
+          style="width:100%;box-sizing:border-box;padding:9px 12px;background:var(--cream,#faf6ef);border:1px solid var(--gold-light,#e8d5a3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark,#2a2218);outline:none;margin-bottom:10px;">
+        <label for="editVenue" style="display:block;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft,#a89880);margin-bottom:4px;">Venue</label>
+        <input type="text" id="editVenue" maxlength="200" placeholder="e.g. The Jolly Giraffe Play Centre"
+          style="width:100%;box-sizing:border-box;padding:9px 12px;background:var(--cream,#faf6ef);border:1px solid var(--gold-light,#e8d5a3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark,#2a2218);outline:none;">
+        <p style="font-size:0.72rem;color:var(--soft,#a89880);line-height:1.5;margin:8px 0 10px;">The date and photo can't be changed once invites are out. After saving, use <strong>Send update now</strong> below to tell your guests.</p>
+        <button class="msg-btn" id="editSaveBtn" type="button" onclick="savePartyDetails()">Save changes</button>
+        <p id="editFeedback" style="display:none;font-size:0.78rem;color:#5a8a6a;margin:10px 0 0;"></p>
       </div>
     </div>
   </div>
@@ -502,6 +544,20 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     <button class="locked-resend" id="lockedResendBtn" onclick="resendEmail()">
       📧 Resend guest list
     </button>
+  </div>
+
+  <!-- ── Extend / reopen RSVPs (shown whenever a cutoff exists) ─────────── -->
+  <div id="extendCard" style="display:none;text-align:center;margin:14px 0 4px;">
+    <button class="resend-btn" id="extendToggleBtn" type="button" onclick="toggleExtend()">🗓 Extend / reopen RSVPs</button>
+    <div id="extendPanel" style="display:none;margin-top:12px;background:var(--warm-white,#fff9f2);border:1px solid var(--gold-light,#e8d5a3);border-radius:10px;padding:14px 16px;">
+      <p style="font-size:0.78rem;color:var(--mid,#6b5c45);line-height:1.5;margin:0 0 10px;">Pick a new closing date — on or before the party. Reopening lets guests RSVP again.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;">
+        <input type="date" id="extendDateInput"
+          style="padding:9px 12px;background:var(--cream,#faf6ef);border:1px solid var(--gold-light,#e8d5a3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark,#2a2218);outline:none;">
+        <button class="msg-btn" id="extendSaveBtn" type="button" onclick="extendCutoff()">Save new deadline</button>
+      </div>
+      <p id="extendFeedback" style="display:none;font-size:0.78rem;color:#5a8a6a;margin:10px 0 0;"></p>
+    </div>
   </div>
 
   <!-- ── Today's count (hidden when locked) ───────────────────────────── -->
@@ -667,6 +723,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     showError(describeFetchError(err));
   } finally {
     showLoading(false);
+    document.body.classList.remove('dash-loading');  // reveal real values (skeletons off)
   }
 });
 
@@ -676,12 +733,22 @@ function getCutoffDate(party) {
   return party.rsvp_cutoff || party.rsvp_deadline || party.party_date || null;
 }
 
+// Today's calendar date in Europe/London as "YYYY-MM-DD" — UK party dates are
+// compared as London date strings so the dashboard agrees with the server.
+function londonTodayISO() {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(new Date());
+  const m = {};
+  for (const p of parts) m[p.type] = p.value;
+  return `${m.year}-${m.month}-${m.day}`;
+}
+
 function isPastCutoff(party) {
   const cutoff = getCutoffDate(party);
   if (!cutoff) return false;
-  const end = new Date(cutoff);
-  end.setHours(23, 59, 59, 999);
-  return new Date() > end;
+  // Closed once today (London) is past the cutoff day.
+  return londonTodayISO() > String(cutoff).slice(0, 10);
 }
 
 function handleCutoff(party) {
@@ -701,12 +768,19 @@ function handleCutoff(party) {
     if (elNext) elNext.textContent = nextStr;
     if (card) card.classList.add('show');
 
+    // The host can always push the deadline later (or reopen a closed party).
+    const extendCard = document.getElementById('extendCard');
+    if (extendCard) extendCard.style.display = 'block';
+
     if (isPastCutoff(party)) {
       const banner = document.getElementById('lockedBanner');
       if (banner) banner.classList.add('show');
       // Hide the live-count note — no longer relevant
       const digest = document.getElementById('digestNote');
       if (digest) digest.style.display = 'none';
+      // After cutoff, the button reopens rather than extends.
+      const tgl = document.getElementById('extendToggleBtn');
+      if (tgl) tgl.textContent = '🔓 Reopen RSVPs';
     }
   } catch (err) {
     console.error('Cutoff error:', err);
@@ -872,7 +946,7 @@ function populateHeader(party) {
   if (whenEl) whenEl.textContent = dateStr
     ? dateStr + (timeStr ? ' · ' + timeStr : '')
     : '—';
-  document.getElementById('partyLocation').textContent = party.venue || '—';
+  document.getElementById('partyLocation').textContent = party.venue || 'Location to be confirmed';
 
   initCalendarButtons(party);
 
@@ -1290,6 +1364,100 @@ async function resendEmail() {
       if (btn) { btn.classList.remove('sent'); btn.textContent = '📧 Export guest list with emails'; }
       if (lockedBtn && lockedBtn.textContent === '✓ Sent!') lockedBtn.textContent = '📧 Resend guest list';
     }, 4000);
+  }
+}
+
+// ── Extend / reopen RSVPs ──────────────────────────────────────────────────────
+
+function toggleExtend() {
+  const panel = document.getElementById('extendPanel');
+  if (!panel) return;
+  const showing = panel.style.display === 'block';
+  panel.style.display = showing ? 'none' : 'block';
+  if (showing) return;
+
+  const input = document.getElementById('extendDateInput');
+  if (input && _partyData) {
+    // Min = tomorrow; max = the party date (cutoff can't be after the party).
+    const t = new Date(); t.setDate(t.getDate() + 1);
+    const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    input.min = iso(t);
+    if (_partyData.party_date) input.max = String(_partyData.party_date).slice(0, 10);
+    // Prefill with the current cutoff if it's still in the future, else tomorrow.
+    const cur = _partyData.rsvp_cutoff ? String(_partyData.rsvp_cutoff).slice(0, 10) : '';
+    input.value = (cur && cur >= iso(t)) ? cur : iso(t);
+    input.focus();
+  }
+}
+
+async function extendCutoff() {
+  if (!_token) return;
+  const input = document.getElementById('extendDateInput');
+  const fb    = document.getElementById('extendFeedback');
+  const btn   = document.getElementById('extendSaveBtn');
+  const newCutoff = input ? input.value : '';
+  if (!newCutoff) { showToast('⚠️ Please pick a date'); return; }
+
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Saving…'; }
+  try {
+    const res  = await fetchWithTimeout('/api/dashboard-api?action=extend-cutoff', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token:_token, new_cutoff:newCutoff }),
+    }, 10000);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Could not update the deadline');
+    if (_partyData) _partyData.rsvp_cutoff = data.rsvp_cutoff || newCutoff;
+    if (fb) { fb.textContent = '✓ Deadline updated — reloading…'; fb.style.display = 'block'; }
+    showToast('🗓 RSVP deadline updated');
+    setTimeout(() => window.location.reload(), 1200);
+  } catch (err) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Save new deadline'; }
+    showToast('⚠️ ' + describeFetchError(err));
+  }
+}
+
+// ── Edit time / venue ──────────────────────────────────────────────────────────
+
+function toggleEditDetails() {
+  const panel = document.getElementById('editDetailsPanel');
+  if (!panel) return;
+  const showing = panel.style.display === 'block';
+  panel.style.display = showing ? 'none' : 'block';
+  if (showing) return;
+  // Prefill from the current party data.
+  const t = document.getElementById('editPartyTime');
+  const v = document.getElementById('editVenue');
+  if (t && _partyData) t.value = _partyData.party_time ? String(_partyData.party_time).slice(0, 5) : '';
+  if (v && _partyData) v.value = _partyData.venue || '';
+  if (t) t.focus();
+}
+
+async function savePartyDetails() {
+  if (!_token) return;
+  const t = document.getElementById('editPartyTime');
+  const v = document.getElementById('editVenue');
+  const fb = document.getElementById('editFeedback');
+  const btn = document.getElementById('editSaveBtn');
+  const party_time = t ? t.value : '';
+  const venue      = v ? v.value.trim() : '';
+
+  if (!party_time) { showToast('⚠️ Please set a start time'); if (t) t.focus(); return; }
+
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Saving…'; }
+  try {
+    const res = await fetchWithTimeout('/api/dashboard-api?action=update-party', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token:_token, party_time, venue }),
+    }, 10000);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Could not update details');
+    if (_partyData) { _partyData.party_time = party_time; _partyData.venue = venue || null; }
+    if (fb) { fb.textContent = '✓ Saved — remember to Send update now so guests know. Reloading…'; fb.style.display = 'block'; }
+    showToast('✓ Party details updated');
+    setTimeout(() => window.location.reload(), 1400);
+  } catch (err) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Save changes'; }
+    showToast('⚠️ ' + describeFetchError(err));
   }
 }
 

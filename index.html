@@ -565,7 +565,6 @@
           </div>
           <div class="photo-error" id="photo-error" role="alert"></div>
         </div>
-        <div class="invite-field"><label for="ci-note">Special note for guests <span style="color:var(--soft);font-weight:300;">optional</span></label><textarea id="ci-note" placeholder="e.g. Parking on the left, no nut products please." rows="4"></textarea></div>
       </div>
       <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" id="ci-honeypot">
       <button class="invite-submit" type="button" onclick="generateInvite()" id="ci-generate-btn">See my unique invite</button>
@@ -833,7 +832,6 @@
     const params = new URLSearchParams({
       name, age, location: loc,
       photo: document.getElementById('ci-photo-url').value.trim() || '',
-      note:  document.getElementById('ci-note').value.trim() || '',
     });
     window.location.href = `${base}rsvp-host.html?${params.toString()}`;
   }

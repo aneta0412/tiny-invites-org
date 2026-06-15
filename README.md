@@ -1,6 +1,9 @@
 Calendar correctness for non-UK guests. The .ics now uses floating local time, which is right for UK guests but shows the wrong hour for anyone in another timezone. A proper VTIMEZONE block pinned to Europe/London would be fully correct everywhere. Fine to leave if the audience is UK-only.
 
 
+party_time has no end time. Calendar events assume a 2-hour duration. If hosts want accurate end times, an optional "ends at" field would help (the code already has latent end_time hooks).
+
+
 
 
 # Tiny Invites — Backend

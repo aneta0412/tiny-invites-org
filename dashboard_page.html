@@ -8,22 +8,35 @@
 <style>
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
 :root {
-  --cream:#faf6ef; --warm-white:#fff9f2; --gold:#c9a84c;
-  --gold-light:#e8d5a3; --gold-pale:#f5edda; --dark:#2a2218;
-  --mid:#6b5c45; --soft:#a89880; --yes:#5a8a6a; --yes-lt:#eaf2ec;
-  --no:#a0907e; --no-lt:#f5f0e8;
+  --cream:#ede6da; --warm-white:#ffffff; --gold:#c49b3c;
+  --gold-light:#dfbf6a; --gold-pale:#f0e4c4; --dark:#1a1208;
+  --mid:#5a4a34; --soft:#96846c; --yes:#4a7a5a; --yes-lt:#e5f0e9;
+  --no:#9b8a72; --no-lt:#f0ece4;
 }
-body { background:var(--cream); color:var(--dark); font-family:"DM Sans",sans-serif; font-weight:300; min-height:100vh; overflow-x:hidden; }
-@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+body {
+  background:var(--cream);
+  background-image:radial-gradient(ellipse at 68% 0%, rgba(196,155,60,0.1) 0%, transparent 52%);
+  color:var(--dark); font-family:"DM Sans",sans-serif; font-weight:300;
+  min-height:100vh; overflow-x:hidden;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
 
-nav { display:flex; justify-content:space-between; align-items:center; padding:22px 40px; border-bottom:1px solid var(--gold-pale); background:var(--cream); position:relative; z-index:10; }
+nav {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:22px 40px;
+  border-bottom:1px solid rgba(196,155,60,0.22);
+  background:rgba(237,230,218,0.96);
+  backdrop-filter:blur(12px);
+  position:sticky; top:0; z-index:10;
+}
 .logo { font-family:"Cormorant Garamond",serif; font-size:1.4rem; font-weight:400; color:var(--dark); text-decoration:none; display:flex; align-items:center; gap:10px; }
 .nav-back { font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--soft); text-decoration:none; transition:color 0.2s; }
 .nav-back:hover { color:var(--gold); }
 
+/* Hero */
 .dash-hero { display:none; width:100%; overflow:hidden; position:relative; }
 .dash-hero img { width:100%; height:320px; object-fit:cover; display:block; }
-.dash-hero-overlay { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(42,34,24,0.05) 0%,rgba(42,34,24,0.65) 100%); }
+.dash-hero-overlay { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(26,18,8,0.05) 0%,rgba(26,18,8,0.72) 100%); }
 .dash-hero-text { position:absolute; bottom:0; left:0; right:0; padding:32px 40px; }
 .dash-hero-eyebrow { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(250,246,239,0.65); margin-bottom:8px; }
 .dash-hero-title { font-family:"Cormorant Garamond",serif; font-size:2.6rem; font-weight:400; line-height:1.15; color:#fff; margin-bottom:4px; }
@@ -39,16 +52,51 @@ nav { display:flex; justify-content:space-between; align-items:center; padding:2
 .dash-title em { font-style:italic; color:var(--gold); }
 .dash-sub { font-size:0.85rem; color:var(--mid); }
 
-.card { background:var(--warm-white); border:1px solid var(--gold-pale); border-radius:18px; padding:22px 24px; position:relative; box-shadow:0 4px 24px rgba(42,34,24,0.06); margin-bottom:14px; animation:fadeUp 0.5s ease both; }
-.card::before { content:''; position:absolute; inset:8px; border:1px solid var(--gold-pale); border-radius:12px; pointer-events:none; opacity:0.5; }
+/* Cards */
+.card {
+  background:var(--warm-white);
+  border:1px solid rgba(196,155,60,0.16);
+  border-radius:18px; padding:22px 24px; position:relative;
+  box-shadow:0 2px 16px rgba(26,18,8,0.08), 0 1px 3px rgba(26,18,8,0.04);
+  margin-bottom:14px; animation:fadeUp 0.5s ease both;
+}
+.card::before { content:''; position:absolute; inset:8px; border:1px solid rgba(196,155,60,0.1); border-radius:12px; pointer-events:none; }
 
 .party-strip { display:flex; flex-wrap:wrap; gap:14px; align-items:center; }
 .party-detail { display:flex; align-items:center; gap:6px; font-size:0.82rem; color:var(--mid); }
 .party-detail strong { color:var(--dark); font-weight:500; }
 
+/* Add-to-calendar row */
+.cal-row {
+  display:flex; align-items:center; flex-wrap:wrap; gap:10px;
+  margin-top:16px; padding-top:16px;
+  border-top:1px dashed rgba(196,155,60,0.25);
+}
+.cal-label {
+  font-size:0.62rem; font-weight:500; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--gold); margin-right:auto;
+}
+.cal-btns { display:flex; gap:8px; flex-wrap:wrap; }
+.cal-btn {
+  background:var(--gold-pale); border:1px solid rgba(196,155,60,0.28);
+  border-radius:99px; padding:7px 14px;
+  font-size:0.76rem; color:var(--mid); font-family:"DM Sans",sans-serif;
+  cursor:pointer; transition:all 0.15s; display:inline-flex; align-items:center; gap:5px;
+}
+.cal-btn:hover { background:var(--gold); color:#fff; border-color:var(--gold); }
+@media(max-width:520px) {
+  .cal-label { margin-right:0; width:100%; }
+}
+
+/* Stats */
 .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
-.stat-card { background:var(--warm-white); border:1px solid var(--gold-pale); border-radius:14px; padding:20px 12px; text-align:center; box-shadow:0 2px 12px rgba(42,34,24,0.05); position:relative; overflow:hidden; animation:fadeUp 0.5s ease both; }
-.stat-card::after { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.stat-card {
+  background:var(--warm-white); border:1px solid rgba(196,155,60,0.16);
+  border-radius:14px; padding:20px 12px; text-align:center;
+  box-shadow:0 2px 12px rgba(26,18,8,0.07); position:relative; overflow:hidden;
+  animation:fadeUp 0.5s ease both;
+}
+.stat-card::after { content:''; position:absolute; top:0; left:0; right:0; height:4px; }
 .stat-card.confirmed::after { background:var(--yes); }
 .stat-card.declined::after  { background:var(--soft); }
 .stat-card.total::after     { background:var(--gold); }
@@ -61,6 +109,7 @@ nav { display:flex; justify-content:space-between; align-items:center; padding:2
 
 .section-label { font-size:0.62rem; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
 
+/* Progress */
 .progress-track { height:8px; background:var(--gold-pale); border-radius:99px; overflow:hidden; display:flex; }
 .progress-yes  { background:var(--yes);  border-radius:99px 0 0 99px; transition:width .8s ease; }
 .progress-no   { background:var(--soft); transition:width .8s ease; }
@@ -69,136 +118,136 @@ nav { display:flex; justify-content:space-between; align-items:center; padding:2
 .legend-item { display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--mid); }
 .legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
 
+/* Catering */
 .catering-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px; }
-.catering-tile { background:var(--gold-pale); border-radius:12px; padding:14px 8px; text-align:center; border:1px solid var(--gold-light); }
+.catering-tile { background:var(--gold-pale); border-radius:12px; padding:14px 8px; text-align:center; border:1px solid rgba(196,155,60,0.18); }
 .catering-num { font-family:"Cormorant Garamond",serif; font-size:1.9rem; line-height:1; color:var(--gold); margin-bottom:6px; }
 .catering-label { font-size:0.65rem; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; color:var(--mid); }
 .catering-sub { font-size:0.62rem; color:var(--soft); margin-top:2px; font-style:italic; }
-.catering-total { text-align:center; font-size:0.78rem; color:var(--mid); padding-top:6px; border-top:1px dashed var(--gold-pale); }
+.catering-total { text-align:center; font-size:0.78rem; color:var(--mid); padding-top:8px; border-top:1px dashed rgba(196,155,60,0.25); }
 .catering-total strong { color:var(--dark); font-weight:500; }
 .breakdown-mini { display:block; font-size:0.7rem; color:var(--soft); margin-top:2px; }
+
+/* Dietary flags */
 .flags { display:flex; flex-wrap:wrap; gap:8px; }
-.flag { background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:99px; padding:5px 12px; font-size:0.75rem; color:var(--mid); display:flex; align-items:center; gap:6px; }
+.flag { background:var(--gold-pale); border:1px solid rgba(196,155,60,0.18); border-radius:99px; padding:5px 12px; font-size:0.75rem; color:var(--mid); display:flex; align-items:center; gap:6px; }
 .flag-count { background:var(--gold); color:#fff; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center; font-size:0.62rem; font-weight:600; }
 
-.resend-btn { width:100%; background:var(--dark); color:var(--cream); border:none; border-radius:2px; padding:14px; font-size:0.78rem; font-weight:400; font-family:"DM Sans",sans-serif; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:background 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:14px; }
+/* ── Cutoff card ───────────────────────────────────────── */
+.cutoff-card {
+  display:none; flex-direction:column; align-items:center; text-align:center; gap:4px;
+  background:var(--warm-white);
+  border:1px solid rgba(196,155,60,0.18);
+  border-radius:14px; padding:20px 22px; margin-bottom:14px;
+  box-shadow:0 2px 12px rgba(26,18,8,0.07);
+  animation:fadeUp 0.5s ease both;
+}
+.cutoff-card.show { display:flex; }
+.cutoff-chip {
+  font-size:0.58rem; font-weight:500; letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--gold); margin-bottom:2px;
+}
+.cutoff-date-val {
+  font-family:"Cormorant Garamond",serif; font-size:1.6rem;
+  font-weight:400; color:var(--dark); line-height:1.2;
+}
+.cutoff-note {
+  font-size:0.78rem; color:var(--soft); line-height:1.65; margin-top:6px;
+}
+.cutoff-note strong { color:var(--mid); font-weight:500; }
+
+/* ── Locked banner ─────────────────────────────────────── */
+.locked-banner {
+  display:none;
+  background:linear-gradient(135deg, #1a1208 0%, #2c1d0c 100%);
+  border:1px solid rgba(196,155,60,0.3);
+  border-radius:16px; padding:24px 24px 20px;
+  margin-bottom:14px; animation:fadeUp 0.5s ease both;
+}
+.locked-banner.show { display:block; }
+.locked-icon { font-size:1.4rem; margin-bottom:10px; line-height:1; }
+.locked-title {
+  font-family:"Cormorant Garamond",serif; font-size:1.4rem;
+  font-weight:400; color:var(--gold-light); margin-bottom:8px;
+}
+.locked-body {
+  font-size:0.8rem; color:rgba(250,246,239,0.6);
+  line-height:1.65; margin-bottom:6px;
+}
+.locked-body em { color:rgba(250,246,239,0.85); font-style:normal; }
+.locked-resend-hint {
+  font-size:0.74rem; color:rgba(250,246,239,0.4);
+  margin-bottom:16px; margin-top:10px;
+}
+.locked-resend-hint em { color:rgba(250,246,239,0.65); font-style:normal; }
+.locked-resend {
+  background:var(--gold); color:#fff; border:none; border-radius:2px;
+  padding:11px 22px; font-size:0.74rem; font-weight:400;
+  font-family:"DM Sans",sans-serif; letter-spacing:0.1em; text-transform:uppercase;
+  cursor:pointer; transition:opacity 0.2s;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.locked-resend:hover:not(:disabled) { opacity:0.85; }
+.locked-resend:disabled { opacity:0.6; cursor:default; }
+
+/* Digest note */
+.digest-note {
+  background:var(--warm-white); border:1px solid rgba(196,155,60,0.14);
+  border-radius:11px; padding:11px 16px; margin-bottom:14px;
+  font-size:0.77rem; color:var(--mid); line-height:1.5;
+  display:flex; gap:10px; align-items:center;
+  box-shadow:0 1px 6px rgba(26,18,8,0.05);
+}
+.digest-note-icon { font-size:0.95rem; flex-shrink:0; }
+
+/* Export area */
+.export-label {
+  font-size:0.74rem; color:var(--soft); text-align:center;
+  margin-bottom:8px; letter-spacing:0.01em;
+}
+.resend-btn {
+  width:100%; background:var(--dark); color:var(--cream); border:none;
+  border-radius:2px; padding:14px; font-size:0.78rem; font-weight:400;
+  font-family:"DM Sans",sans-serif; letter-spacing:0.1em; text-transform:uppercase;
+  cursor:pointer; transition:background 0.2s;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  margin-bottom:14px;
+}
 .resend-btn:hover { background:var(--gold); }
 .resend-btn.sent  { background:var(--yes); }
 .resend-btn:disabled { opacity:0.7; cursor:default; }
 
-.table-card { background:var(--warm-white); border:1px solid var(--gold-pale); border-radius:18px; overflow:hidden; box-shadow:0 4px 24px rgba(42,34,24,0.06); animation:fadeUp 0.5s ease both; }
-.table-header { background:var(--gold-pale); padding:13px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--gold-light); }
-.table-wrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; min-width:420px; }
-thead tr { background:var(--gold-pale); }
-th { padding:10px 16px; text-align:left; font-size:0.6rem; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; color:var(--soft); border-bottom:1px solid var(--gold-light); white-space:nowrap; }
-tbody tr { transition:background 0.15s; }
-tbody tr:hover { background:rgba(245,237,218,0.4); }
-tbody tr:not(:last-child) td { border-bottom:1px solid var(--gold-pale); }
-td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:middle; }
-.badge { display:inline-flex; align-items:center; gap:4px; border-radius:99px; padding:3px 10px; font-size:0.7rem; font-weight:500; }
-.badge.yes { background:var(--yes-lt); color:var(--yes); }
-.badge.no  { background:var(--no-lt);  color:var(--no); }
-.empty-state { text-align:center; padding:40px 20px; color:var(--soft); }
-.empty-icon { font-size:2rem; margin-bottom:10px; }
-.empty-state p { font-family:"Cormorant Garamond",serif; font-size:1.1rem; color:var(--mid); }
-
-/* ── Guest edit / delete controls ── */
-.row-actions { display:flex; gap:6px; align-items:center; }
-.btn-icon {
-  background:transparent; border:1px solid var(--gold-pale);
-  border-radius:6px; width:28px; height:28px;
-  display:inline-flex; align-items:center; justify-content:center;
-  cursor:pointer; font-size:0.75rem; color:var(--soft);
-  transition:all 0.15s; flex-shrink:0; line-height:1;
-}
-.btn-icon:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-pale); }
-.btn-icon.delete:hover { border-color:#c0392b; color:#c0392b; background:#fdf0ee; }
-
-.edit-row td { background:var(--gold-pale); padding:14px 16px; }
-.edit-fields { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
-.edit-fields select,
-.edit-fields input {
-  background:var(--warm-white); border:1px solid var(--gold-light);
-  border-radius:6px; padding:6px 10px; font-size:0.82rem;
-  font-family:"DM Sans",sans-serif; color:var(--dark); outline:none;
-}
-.edit-fields select:focus,
-.edit-fields input:focus { border-color:var(--gold); }
-.btn-save {
-  background:var(--dark); color:var(--cream); border:none;
-  border-radius:6px; padding:6px 16px; font-size:0.75rem;
-  letter-spacing:0.08em; text-transform:uppercase;
-  font-family:"DM Sans",sans-serif; cursor:pointer; transition:background 0.15s;
-}
-.btn-save:hover { background:var(--gold); }
-.btn-cancel {
-  background:transparent; color:var(--soft);
-  border:1px solid var(--gold-pale); border-radius:6px;
-  padding:6px 12px; font-size:0.75rem;
-  font-family:"DM Sans",sans-serif; cursor:pointer; transition:all 0.15s;
-}
-.btn-cancel:hover { border-color:var(--soft); color:var(--dark); }
-
-.today-badge { display:inline-flex; align-items:center; gap:5px; background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:99px; padding:3px 10px; font-size:0.7rem; color:var(--mid); margin-right:8px; }
-.today-badge strong { color:var(--gold); font-weight:600; }
-.digest-note { background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:12px; padding:12px 16px; margin-bottom:14px; font-size:0.78rem; color:var(--mid); line-height:1.5; display:flex; gap:10px; align-items:flex-start; }
-.digest-note-icon { font-size:1.05rem; flex-shrink:0; line-height:1.3; }
-.digest-note strong { color:var(--dark); font-weight:500; }
-
-.footer { text-align:center; padding:24px; font-size:0.72rem; color:var(--soft); letter-spacing:0.04em; }
-.footer em { color:var(--gold); font-style:normal; }
-.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--dark); color:var(--cream); border-radius:10px; padding:11px 20px; font-size:0.82rem; box-shadow:0 8px 32px rgba(42,34,24,0.18); transition:transform 0.3s cubic-bezier(.34,1.56,.64,1); z-index:999; white-space:nowrap; }
-.toast.show { transform:translateX(-50%) translateY(0); }
-@media(max-width:520px) {
-  nav { padding:18px 20px; }
-  .page { padding:32px 16px 60px; }
-  .dash-title,.dash-hero-title { font-size:2rem; }
-  .stat-number { font-size:2rem; }
-  .dash-hero img { height:240px; }
-  .dash-hero-text { padding:24px 20px; }
-  .edit-fields { gap:8px; }
-  .edit-fields input[type="text"] { min-width:100px; }
-}
-
-/* ── Message Guests card ───────────────────────────────────── */
+/* Message guests */
 .msg-card {
-  background:var(--warm-white); border:1px solid var(--gold-pale);
+  background:var(--warm-white); border:1px solid rgba(196,155,60,0.16);
   border-radius:18px; overflow:hidden;
-  box-shadow:0 4px 24px rgba(42,34,24,0.06);
+  box-shadow:0 2px 16px rgba(26,18,8,0.08);
   margin-bottom:14px; animation:fadeUp 0.5s ease both;
 }
 .msg-tabs { display:flex; border-bottom:1px solid var(--gold-pale); }
 .msg-tab {
-  flex:1; padding:13px 16px;
-  font-size:0.68rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase;
+  flex:1; padding:13px 16px; font-size:0.68rem; font-weight:500;
+  letter-spacing:0.1em; text-transform:uppercase;
   color:var(--soft); background:transparent; border:none; cursor:pointer;
   font-family:"DM Sans",sans-serif; transition:all 0.18s; position:relative;
 }
 .msg-tab:first-child { border-right:1px solid var(--gold-pale); }
 .msg-tab.active { color:var(--dark); background:var(--warm-white); }
-.msg-tab.active::after {
-  content:''; position:absolute; bottom:-1px; left:0; right:0;
-  height:2px; background:var(--gold);
-}
-.msg-tab:hover:not(.active) { color:var(--gold); background:rgba(245,237,218,0.35); }
+.msg-tab.active::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:2px; background:var(--gold); }
+.msg-tab:hover:not(.active) { color:var(--gold); background:rgba(240,228,196,0.22); }
 .msg-panel { display:none; padding:22px 24px 24px; }
 .msg-panel.active { display:block; }
 .msg-hint {
-  font-size:0.78rem; color:var(--soft); line-height:1.6; margin-bottom:18px;
-  padding:12px 14px; background:var(--cream); border-radius:10px;
-  border-left:3px solid var(--gold-light);
+  font-size:0.76rem; color:var(--soft); line-height:1.55; margin-bottom:16px;
+  padding:10px 13px; background:var(--cream); border-radius:9px;
+  border-left:3px solid rgba(196,155,60,0.3);
 }
 .msg-hint strong { color:var(--mid); }
-.msg-hint em { font-style:italic; color:var(--mid); }
-.msg-label {
-  font-size:0.62rem; font-weight:500; letter-spacing:0.12em;
-  text-transform:uppercase; color:var(--gold); margin-bottom:8px; display:block;
-}
+.msg-label { font-size:0.62rem; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; display:block; }
 .msg-field-wrap { margin-bottom:14px; }
 .msg-textarea {
   width:100%; min-height:90px; background:var(--cream);
-  border:1px solid var(--gold-light); border-radius:10px;
+  border:1px solid rgba(196,155,60,0.2); border-radius:10px;
   padding:12px 14px; font-size:0.84rem; font-family:"DM Sans",sans-serif;
   color:var(--dark); resize:vertical; outline:none; line-height:1.65;
   transition:border-color 0.15s;
@@ -206,7 +255,7 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
 .msg-textarea:focus { border-color:var(--gold); }
 .msg-textarea::placeholder { color:var(--soft); font-style:italic; }
 .msg-input {
-  width:100%; background:var(--cream); border:1px solid var(--gold-light);
+  width:100%; background:var(--cream); border:1px solid rgba(196,155,60,0.2);
   border-radius:10px; padding:10px 14px; font-size:0.84rem;
   font-family:"DM Sans",sans-serif; color:var(--dark); outline:none;
   transition:border-color 0.15s;
@@ -228,14 +277,80 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
   display:none; align-items:center; gap:6px; background:var(--yes-lt);
   color:var(--yes); border-radius:99px; padding:5px 12px;
   font-size:0.7rem; font-weight:500; letter-spacing:0.06em;
-  border:1px solid rgba(90,138,106,0.25);
+  border:1px solid rgba(74,122,90,0.22);
 }
 .msg-saved-pill.show { display:flex; }
-/* ──────────────────────────────────────────────────────────── */
+
+/* Table */
+.table-card {
+  background:var(--warm-white); border:1px solid rgba(196,155,60,0.16);
+  border-radius:18px; overflow:hidden;
+  box-shadow:0 4px 24px rgba(26,18,8,0.09);
+  animation:fadeUp 0.5s ease both;
+}
+.table-header {
+  background:var(--gold-pale); padding:13px 20px;
+  display:flex; justify-content:space-between; align-items:center;
+  border-bottom:1px solid rgba(196,155,60,0.2);
+}
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; min-width:420px; }
+thead tr { background:var(--gold-pale); }
+th { padding:10px 16px; text-align:left; font-size:0.6rem; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; color:var(--soft); border-bottom:1px solid rgba(196,155,60,0.18); white-space:nowrap; }
+tbody tr { transition:background 0.15s; }
+tbody tr:hover { background:rgba(240,228,196,0.2); }
+tbody tr:not(:last-child) td { border-bottom:1px solid var(--gold-pale); }
+td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:middle; }
+.badge { display:inline-flex; align-items:center; gap:4px; border-radius:99px; padding:3px 10px; font-size:0.7rem; font-weight:500; }
+.badge.yes { background:var(--yes-lt); color:var(--yes); }
+.badge.no  { background:var(--no-lt);  color:var(--no); }
+.empty-state { text-align:center; padding:40px 20px; color:var(--soft); }
+.empty-icon { font-size:2rem; margin-bottom:10px; }
+.empty-state p { font-family:"Cormorant Garamond",serif; font-size:1.1rem; color:var(--mid); }
+
+/* Edit / delete row */
+.row-actions { display:flex; gap:6px; align-items:center; }
+.btn-icon {
+  background:transparent; border:1px solid var(--gold-pale);
+  border-radius:6px; width:28px; height:28px;
+  display:inline-flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:0.75rem; color:var(--soft);
+  transition:all 0.15s; flex-shrink:0; line-height:1;
+}
+.btn-icon:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-pale); }
+.btn-icon.delete:hover { border-color:#c0392b; color:#c0392b; background:#fdf0ee; }
+.edit-row td { background:var(--gold-pale); padding:14px 16px; }
+.edit-fields { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+.edit-fields select,
+.edit-fields input {
+  background:var(--warm-white); border:1px solid rgba(196,155,60,0.22);
+  border-radius:6px; padding:6px 10px; font-size:0.82rem;
+  font-family:"DM Sans",sans-serif; color:var(--dark); outline:none;
+}
+.edit-fields select:focus,
+.edit-fields input:focus { border-color:var(--gold); }
+.btn-save {
+  background:var(--dark); color:var(--cream); border:none;
+  border-radius:6px; padding:6px 16px; font-size:0.75rem;
+  letter-spacing:0.08em; text-transform:uppercase;
+  font-family:"DM Sans",sans-serif; cursor:pointer; transition:background 0.15s;
+}
+.btn-save:hover { background:var(--gold); }
+.btn-cancel {
+  background:transparent; color:var(--soft);
+  border:1px solid var(--gold-pale); border-radius:6px;
+  padding:6px 12px; font-size:0.75rem;
+  font-family:"DM Sans",sans-serif; cursor:pointer; transition:all 0.15s;
+}
+.btn-cancel:hover { border-color:var(--soft); color:var(--dark); }
+
+.today-badge { display:inline-flex; align-items:center; gap:5px; background:var(--gold-pale); border:1px solid rgba(196,155,60,0.22); border-radius:99px; padding:3px 10px; font-size:0.7rem; color:var(--mid); margin-right:8px; }
+.today-badge strong { color:var(--gold); font-weight:600; }
+
 /* Confirm modal */
-.confirm-backdrop { position:fixed; inset:0; background:rgba(42,34,24,0.45); z-index:1000; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.2s; }
+.confirm-backdrop { position:fixed; inset:0; background:rgba(26,18,8,0.5); z-index:1000; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.2s; }
 .confirm-backdrop.show { opacity:1; pointer-events:auto; }
-.confirm-modal { background:var(--warm-white); border-radius:16px; padding:28px 28px 22px; max-width:340px; width:calc(100% - 40px); box-shadow:0 12px 48px rgba(42,34,24,0.22); transform:translateY(12px) scale(0.97); transition:transform 0.22s cubic-bezier(.34,1.56,.64,1); text-align:center; }
+.confirm-modal { background:var(--warm-white); border-radius:16px; padding:28px 28px 22px; max-width:340px; width:calc(100% - 40px); box-shadow:0 12px 48px rgba(26,18,8,0.22); transform:translateY(12px) scale(0.97); transition:transform 0.22s cubic-bezier(.34,1.56,.64,1); text-align:center; }
 .confirm-backdrop.show .confirm-modal { transform:translateY(0) scale(1); }
 .confirm-modal-icon { font-size:2rem; margin-bottom:10px; }
 .confirm-modal-title { font-family:"Cormorant Garamond",serif; font-size:1.25rem; font-weight:400; color:var(--dark); margin-bottom:6px; }
@@ -245,13 +360,30 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
 .confirm-modal-actions button:hover { opacity:0.85; }
 .confirm-cancel { background:var(--gold-pale); color:var(--mid); }
 .confirm-ok { background:#c0392b; color:#fff; }
+
+.footer { text-align:center; padding:24px; font-size:0.72rem; color:var(--soft); letter-spacing:0.04em; }
+.footer em { color:var(--gold); font-style:normal; }
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--dark); color:var(--cream); border-radius:10px; padding:11px 20px; font-size:0.82rem; box-shadow:0 8px 32px rgba(26,18,8,0.2); transition:transform 0.3s cubic-bezier(.34,1.56,.64,1); z-index:999; white-space:nowrap; }
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+@media(max-width:520px) {
+  nav { padding:18px 20px; }
+  .page { padding:32px 16px 60px; }
+  .dash-title,.dash-hero-title { font-size:2rem; }
+  .stat-number { font-size:2rem; }
+  .dash-hero img { height:240px; }
+  .dash-hero-text { padding:24px 20px; }
+  .edit-fields { gap:8px; }
+  .edit-fields input[type="text"] { min-width:100px; }
+  .cutoff-card.show { padding:18px; }
+}
 </style>
 </head>
 <body>
 
 <nav>
   <a href="/" class="logo">
-    <svg width="28" height="28" viewBox="0 0 100 100"><rect width="100" height="100" fill="#faf6ef" rx="12"/><text x="50" y="75" font-family="Cormorant Garamond,serif" font-size="80" font-style="italic" text-anchor="middle" fill="#c9a84c">T</text></svg>
+    <svg width="28" height="28" viewBox="0 0 100 100"><rect width="100" height="100" fill="#ede6da" rx="12"/><text x="50" y="75" font-family="Cormorant Garamond,serif" font-size="80" font-style="italic" text-anchor="middle" fill="#c49b3c">T</text></svg>
     Tiny Invites
   </a>
   <a href="/" class="nav-back">← Back to home</a>
@@ -277,7 +409,15 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
 
   <div class="card" style="animation-delay:0.05s">
     <div class="party-strip">
+      <div class="party-detail">📅 <strong id="partyWhen">—</strong></div>
       <div class="party-detail">📍 <strong id="partyLocation">—</strong></div>
+    </div>
+    <div class="cal-row" id="calRow">
+      <span class="cal-label">Add to calendar</span>
+      <div class="cal-btns">
+        <button class="cal-btn" id="calGoogle">📅 Google</button>
+        <button class="cal-btn" id="calApple">🍎 Apple / Outlook</button>
+      </div>
     </div>
   </div>
 
@@ -340,28 +480,43 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     </div>
   </div>
 
+  <!-- ── Cutoff date card (shown when rsvp_cutoff / party_date exists) ── -->
+  <div class="cutoff-card" id="cutoffCard">
+    <div class="cutoff-chip">🗓 RSVPs close</div>
+    <div class="cutoff-date-val" id="cutoffDateVal">—</div>
+    <div class="cutoff-note">
+      Auto-emailed on <strong id="cutoffNextDay">—</strong><br>
+      Your guest list is sent to you before 10am
+    </div>
+  </div>
+
+  <!-- ── Locked banner (shown only when past cutoff) ───────────────────── -->
+  <div class="locked-banner" id="lockedBanner">
+    <div class="locked-icon">🔒</div>
+    <div class="locked-title">RSVPs are now closed</div>
+    <div class="locked-body">
+      No further responses will be accepted — your party is all set.<br>
+      <em>Your final guest list has been sent to you automatically.</em>
+    </div>
+    <div class="locked-resend-hint">Haven't received it? <em>Resend below.</em></div>
+    <button class="locked-resend" id="lockedResendBtn" onclick="resendEmail()">
+      📧 Resend guest list
+    </button>
+  </div>
+
+  <!-- ── Today's count (hidden when locked) ───────────────────────────── -->
   <div class="digest-note" id="digestNote">
     <div class="digest-note-icon">✉️</div>
-    <div>
-      <strong id="todayResponsesLine">0 responses today.</strong>
-      You get an email for each RSVP. More than 15 in a day? We'll send one evening summary instead.
-    </div>
+    <div id="todayResponsesLine" style="color:var(--mid);">0 responses today — one email per RSVP, or an evening summary on busy days.</div>
   </div>
 
-  <div class="digest-note" style="margin-bottom:8px;border-left-color:var(--gold);">
-    <div class="digest-note-icon">💬</div>
-    <div>
-      <strong>Need to reach your guests?</strong> Use the panel below to message everyone who confirmed. Guest emails are always kept private.<br>
-      <span style="color:var(--soft);font-size:0.74rem;">In an emergency, use the button below to export the full guest list with contacts.</span>
-    </div>
-  </div>
-
+  <!-- ── Export ────────────────────────────────────────────────────────── -->
+  <p class="export-label">Want to contact a guest directly?</p>
   <button class="resend-btn" id="resendBtn" onclick="resendEmail()">
-    📋 Email me full guest list with contacts
+    📧 Export guest list with emails
   </button>
 
-
-  <!-- ── Message Guests card ─────────────────────────────────── -->
+  <!-- ── Message Guests ────────────────────────────────────────────────── -->
   <div class="msg-card" style="animation-delay:0.38s">
     <div class="msg-tabs">
       <button class="msg-tab active" id="tabNote" onclick="switchMsgTab('note')">
@@ -372,11 +527,9 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
       </button>
     </div>
 
-    <!-- Panel: Reminder note -->
     <div class="msg-panel active" id="panelNote">
       <div class="msg-hint">
-        <strong>Add a note to the 3-day reminder.</strong>
-        This appears as a highlighted block in the reminder sent to confirmed guests. Leave blank to skip.
+        <strong>Add a note</strong> shown highlighted in the 3-day reminder to confirmed guests. Leave blank to skip.
       </div>
       <div class="msg-field-wrap">
         <label class="msg-label" for="reminderNoteText">Note from you</label>
@@ -387,18 +540,14 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
         <div class="msg-charcount" id="noteCharCount">0 / 500</div>
       </div>
       <div class="msg-actions">
-        <button class="msg-btn" id="btnSaveNote" onclick="saveReminderNote()">
-          💾 Save note
-        </button>
+        <button class="msg-btn" id="btnSaveNote" onclick="saveReminderNote()">💾 Save note</button>
         <span class="msg-saved-pill" id="noteSavedPill">✓ Saved</span>
       </div>
     </div>
 
-    <!-- Panel: Send update now -->
     <div class="msg-panel" id="panelSend">
       <div class="msg-hint">
-        <strong>Send a message to all confirmed guests now.</strong>
-        Use for important updates only — venue changes, time changes, what to bring.
+        <strong>Send a one-off update</strong> to all confirmed guests — venue changes, timing, what to bring.
       </div>
       <div class="msg-field-wrap">
         <label class="msg-label" for="updateSubject">Subject <span style="color:var(--soft);font-style:italic;text-transform:none;letter-spacing:0">(optional)</span></label>
@@ -408,13 +557,13 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
       <div class="msg-field-wrap">
         <label class="msg-label" for="updateMessage">Your message <span style="color:#c0392b">*</span></label>
         <textarea class="msg-textarea" id="updateMessage" maxlength="2000"
-          placeholder="e.g. Just a heads up — we've moved the party to the garden. Same start time, just come round the back gate!"
+          placeholder="e.g. Just a heads up — we've moved the party to the garden. Same start time, come round the back gate!"
           oninput="updateCharCount('updateMessage','msgCharCount',2000)"
           rows="5"></textarea>
         <div class="msg-charcount" id="msgCharCount">0 / 2000</div>
       </div>
       <div class="msg-field-wrap">
-        <label class="msg-label" for="updateNote">Extra note <span style="color:var(--soft);font-style:italic;text-transform:none;letter-spacing:0">(optional — shown highlighted)</span></label>
+        <label class="msg-label" for="updateNote">Extra note <span style="color:var(--soft);font-style:italic;text-transform:none;letter-spacing:0">(optional)</span></label>
         <textarea class="msg-textarea" id="updateNote" maxlength="500"
           placeholder="e.g. Parking is on the left 🚗"
           oninput="updateCharCount('updateNote','updateNoteCharCount',500)"
@@ -422,14 +571,12 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
         <div class="msg-charcount" id="updateNoteCharCount">0 / 500</div>
       </div>
       <div class="msg-actions">
-        <button class="msg-btn" id="btnSendUpdate" onclick="sendPartyUpdate()">
-          📢 Send to all guests
-        </button>
+        <button class="msg-btn" id="btnSendUpdate" onclick="sendPartyUpdate()">📢 Send to all guests</button>
       </div>
     </div>
   </div>
-  <!-- ── end Message Guests card ─────────────────────────────── -->
 
+  <!-- ── Guest table ───────────────────────────────────────────────────── -->
   <div class="table-card" style="animation-delay:0.35s">
     <div class="table-header">
       <span class="section-label" style="margin:0;">Guest responses</span>
@@ -441,12 +588,10 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     <div class="table-wrap">
       <table>
         <thead>
-          <tr>
-            <th>Name</th><th>Attending</th><th>Guests</th><th>Dietary / Notes</th><th></th>
-          </tr>
+          <tr><th>Name</th><th>Attending</th><th>Guests</th><th>Dietary / Notes</th><th></th></tr>
         </thead>
         <tbody id="tableBody">
-          <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link or QR code!</p></div></td></tr>
+          <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link!</p></div></td></tr>
         </tbody>
       </table>
     </div>
@@ -457,7 +602,6 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
 <div class="footer">Made with ♥ by <em>Tiny Invites</em></div>
 <div class="toast" id="toast"></div>
 
-<!-- Confirm-remove modal -->
 <div class="confirm-backdrop" id="confirmBackdrop" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
   <div class="confirm-modal">
     <div class="confirm-modal-icon">🗑</div>
@@ -465,7 +609,7 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
     <div class="confirm-modal-body" id="confirmBody"></div>
     <div class="confirm-modal-actions">
       <button class="confirm-cancel" id="confirmCancelBtn">Cancel</button>
-      <button class="confirm-ok" id="confirmOkBtn">Remove</button>
+      <button class="confirm-ok"     id="confirmOkBtn">Remove</button>
     </div>
   </div>
 </div>
@@ -493,11 +637,8 @@ function describeFetchError(err) {
 
 function escapeHtml(str) {
   return String(str || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -516,8 +657,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (!res.ok) throw new Error(data.error || 'Failed to load dashboard');
     _partyData = data.party;
     populateHeader(data.party);
+    handleCutoff(data.party);
     renderDashboard(data.responses, data.stats);
-    // Pre-fill reminder note if already saved
     if (data.party && data.party.reminder_note) {
       const ta = document.getElementById('reminderNoteText');
       if (ta) { ta.value = data.party.reminder_note; updateCharCount('reminderNoteText','noteCharCount',500); }
@@ -529,26 +670,197 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-function populateHeader(party) {
-  const age   = party.age;
-  const title = age
+// ── Cutoff ────────────────────────────────────────────────────────────────────
+
+function getCutoffDate(party) {
+  return party.rsvp_cutoff || party.rsvp_deadline || party.party_date || null;
+}
+
+function isPastCutoff(party) {
+  const cutoff = getCutoffDate(party);
+  if (!cutoff) return false;
+  const end = new Date(cutoff);
+  end.setHours(23, 59, 59, 999);
+  return new Date() > end;
+}
+
+function handleCutoff(party) {
+  const cutoff = getCutoffDate(party);
+  if (!cutoff) return;
+  try {
+    const d = new Date(cutoff);
+    const cutoffStr = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
+    const next = new Date(d);
+    next.setDate(next.getDate() + 1);
+    const nextStr = next.toLocaleDateString('en-GB', { day:'numeric', month:'long' });
+
+    const el = document.getElementById('cutoffDateVal');
+    const elNext = document.getElementById('cutoffNextDay');
+    const card = document.getElementById('cutoffCard');
+    if (el) el.textContent = cutoffStr;
+    if (elNext) elNext.textContent = nextStr;
+    if (card) card.classList.add('show');
+
+    if (isPastCutoff(party)) {
+      const banner = document.getElementById('lockedBanner');
+      if (banner) banner.classList.add('show');
+      // Hide the live-count note — no longer relevant
+      const digest = document.getElementById('digestNote');
+      if (digest) digest.style.display = 'none';
+    }
+  } catch (err) {
+    console.error('Cutoff error:', err);
+  }
+}
+
+// ── Date / time helpers ───────────────────────────────────────────────────────
+
+function partyTitle(party) {
+  const age = party.age;
+  return age
     ? `${party.child_name}'s ${age}${ordSuffix(age)} Birthday`
     : `${party.child_name}'s Party`;
+}
 
-  let meta = party.venue || '';
-  if (party.party_date) {
-    try {
-      const d  = new Date(party.party_date);
-      const ds = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-      meta = ds + (party.venue ? ' · ' + party.venue : '');
-    } catch {}
+// Combine party_date with start_time / end_time into real Date objects.
+// Falls back to a 2-hour event if no end time is given.
+function partyStartEnd(party) {
+  if (!party.party_date) return null;
+  const start = new Date(party.party_date);
+  if (party.start_time) {
+    const [h, m] = String(party.start_time).split(':').map(Number);
+    start.setHours(h || 0, m || 0, 0, 0);
+  }
+  let end;
+  if (party.end_time) {
+    end = new Date(start);
+    const [h, m] = String(party.end_time).split(':').map(Number);
+    end.setHours(h || 0, m || 0, 0, 0);
+  } else {
+    end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+  }
+  return { start, end };
+}
+
+function fmtTime(d) {
+  let h = d.getHours(); const m = d.getMinutes();
+  const ampm = h >= 12 ? 'pm' : 'am';
+  h = h % 12; if (h === 0) h = 12;
+  return m ? `${h}:${String(m).padStart(2,'0')}${ampm}` : `${h}${ampm}`;
+}
+
+// "2–4pm" when both sides share a meridiem, otherwise "11am–1pm".
+function partyTimeStr(party) {
+  const se = partyStartEnd(party);
+  if (!se || !party.start_time) return '';
+  const a = fmtTime(se.start), b = fmtTime(se.end);
+  const sameMer = a.slice(-2) === b.slice(-2);
+  return sameMer ? `${a.slice(0,-2)}–${b}` : `${a}–${b}`;
+}
+
+function partyDateStr(party) {
+  if (!party.party_date) return '';
+  try {
+    return new Date(party.party_date).toLocaleDateString('en-GB',
+      { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  } catch { return ''; }
+}
+
+// ── Add-to-calendar ───────────────────────────────────────────────────────────
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+function calStamp(d) {
+  return d.getUTCFullYear() + pad2(d.getUTCMonth()+1) + pad2(d.getUTCDate())
+       + 'T' + pad2(d.getUTCHours()) + pad2(d.getUTCMinutes()) + '00Z';
+}
+function icsEsc(s) {
+  return String(s ?? '').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');
+}
+
+function googleCalendarUrl(party) {
+  const se = partyStartEnd(party);
+  if (!se) return '#';
+  const params = new URLSearchParams({
+    action:  'TEMPLATE',
+    text:    partyTitle(party),
+    dates:   `${calStamp(se.start)}/${calStamp(se.end)}`,
+    details: 'RSVP and party details: https://tinyinvites.org',
+    location: party.venue || '',
+  });
+  return 'https://calendar.google.com/calendar/render?' + params.toString();
+}
+
+function buildIcs(party) {
+  const se = partyStartEnd(party);
+  if (!se) return null;
+  const lines = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Tiny Invites//EN', 'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    'UID:tinyinvites-' + Date.now() + '@tinyinvites.org',
+    'DTSTAMP:' + calStamp(new Date()),
+    'DTSTART:' + calStamp(se.start),
+    'DTEND:'   + calStamp(se.end),
+    'SUMMARY:' + icsEsc(partyTitle(party)),
+    party.venue ? 'LOCATION:' + icsEsc(party.venue) : '',
+    'DESCRIPTION:' + icsEsc('RSVP and party details at tinyinvites.org'),
+    'END:VEVENT', 'END:VCALENDAR',
+  ].filter(Boolean);
+  return lines.join('\r\n');
+}
+
+function downloadIcs(party) {
+  const ics = buildIcs(party);
+  if (!ics) { showToast('⚠️ No party date set'); return; }
+  const blob = new Blob([ics], { type:'text/calendar;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = (party.child_name || 'party').toLowerCase().replace(/[^a-z0-9]+/g,'-') + '-party.ics';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast('📅 Calendar file downloaded');
+}
+
+function initCalendarButtons(party) {
+  const se = partyStartEnd(party);
+  const row = document.getElementById('calRow');
+  if (!se) { if (row) row.style.display = 'none'; return; }
+  const g = document.getElementById('calGoogle');
+  const a = document.getElementById('calApple');
+  if (g) g.onclick = () => { window.open(googleCalendarUrl(party), '_blank', 'noopener'); };
+  if (a) a.onclick = () => downloadIcs(party);
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+function populateHeader(party) {
+  const title = partyTitle(party);
+
+  // Title line now extended with the time: "Sun 28 June 2026 · 2–4pm · Venue"
+  const dateStr = partyDateStr(party);
+  const timeStr = partyTimeStr(party);
+  let meta = '';
+  if (dateStr) {
+    meta = dateStr
+      + (timeStr ? ' · ' + timeStr : '')
+      + (party.venue ? ' · ' + party.venue : '');
+  } else {
+    meta = party.venue || '';
   }
 
   document.getElementById('heroTitle').textContent = title;
   document.getElementById('heroMeta').textContent  = meta || '—';
   document.getElementById('textTitle').textContent = title;
   document.getElementById('textMeta').textContent  = meta || '—';
+
+  // Party card: date + time on one detail, venue on another
+  const whenEl = document.getElementById('partyWhen');
+  if (whenEl) whenEl.textContent = dateStr
+    ? dateStr + (timeStr ? ' · ' + timeStr : '')
+    : '—';
   document.getElementById('partyLocation').textContent = party.venue || '—';
+
+  initCalendarButtons(party);
 
   const photoUrl = party.photo_url || '';
   if (photoUrl) {
@@ -563,26 +875,21 @@ function populateHeader(party) {
   }
 }
 
+// ── Dashboard render ──────────────────────────────────────────────────────────
+
 function sumCol(arr, key) {
   return arr.reduce((s, r) => s + (parseInt(r[key]) || 0), 0);
 }
 
 function getShowOptions() {
   const p = _partyData || {};
-  const flagFor = (...names) => {
-    for (const n of names) {
-      if (p[n] !== undefined && p[n] !== null) return p[n];
-    }
-    return undefined;
-  };
+  const flagFor = (...names) => { for (const n of names) { if (p[n] !== undefined && p[n] !== null) return p[n]; } return undefined; };
   const fAdults   = flagFor('show_adults',   'count_adults',   'track_adults',   'ask_adults',   'include_adults',   'has_adults');
   const fChildren = flagFor('show_children', 'count_children', 'track_children', 'ask_children', 'include_children', 'has_children');
   const fBabies   = flagFor('show_babies',   'count_babies',   'track_babies',   'ask_babies',   'include_babies',   'has_babies');
-
   const yesResponses = (_responses || []).filter(r => r.attending === 'yes');
   const hasYesData = yesResponses.length > 0;
   const sumOf = (key) => yesResponses.reduce((s, r) => s + (parseInt(r[key]) || 0), 0);
-
   return {
     adults:   fAdults   !== undefined ? !!fAdults   : (!hasYesData || sumOf('guest_count_adults')   > 0),
     children: fChildren !== undefined ? !!fChildren : (!hasYesData || sumOf('guest_count_children') > 0),
@@ -595,7 +902,7 @@ function renderCatering(yes) {
   const adults   = sumCol(yes, 'guest_count_adults');
   const children = sumCol(yes, 'guest_count_children');
   const babies   = sumCol(yes, 'guest_count_babies');
-  const total = (show.adults ? adults : 0) + (show.children ? children : 0) + (show.babies ? babies : 0);
+  const total    = (show.adults ? adults : 0) + (show.children ? children : 0) + (show.babies ? babies : 0);
 
   document.getElementById('cateringAdults').textContent   = adults;
   document.getElementById('cateringChildren').textContent = children;
@@ -610,9 +917,7 @@ function renderCatering(yes) {
 
   const visibleCount = (show.adults ? 1 : 0) + (show.children ? 1 : 0) + (show.babies ? 1 : 0);
   const grid = document.querySelector('.catering-stats');
-  if (grid && visibleCount > 0) {
-    grid.style.gridTemplateColumns = `repeat(${visibleCount},1fr)`;
-  }
+  if (grid && visibleCount > 0) grid.style.gridTemplateColumns = `repeat(${visibleCount},1fr)`;
 
   const totalEl = document.getElementById('cateringTotal');
   if (total > 0) {
@@ -622,7 +927,7 @@ function renderCatering(yes) {
     if (show.babies   && babies)   parts.push(`${babies} ${babies===1?'baby':'babies'}`);
     totalEl.innerHTML = `<strong>${total}</strong> people &nbsp;·&nbsp; ${parts.join(' + ')}`;
   } else {
-    totalEl.innerHTML = '<span style="color:var(--soft)">Catering counts will appear here once guests RSVP</span>';
+    totalEl.innerHTML = '<span style="color:var(--soft)">Catering counts will appear once guests RSVP</span>';
   }
 }
 
@@ -634,7 +939,7 @@ function countResponsesToday(responses) {
     if (!ts) return n;
     const dt = new Date(ts);
     if (isNaN(dt.getTime())) return n;
-    return n + (dt.getFullYear() === y && dt.getMonth() === m && dt.getDate() === d ? 1 : 0);
+    return n + (dt.getFullYear()===y && dt.getMonth()===m && dt.getDate()===d ? 1 : 0);
   }, 0);
 }
 
@@ -646,15 +951,10 @@ function renderTodayCount(responses) {
   if (countEl) countEl.textContent = n;
   if (badge)   badge.style.display = n > 0 ? '' : 'none';
   if (line) {
-    if (n === 0) {
-      line.textContent = `No responses yet today.`;
-    } else if (n === 1) {
-      line.textContent = `1 response today.`;
-    } else if (n > 15) {
-      line.textContent = `${n} responses today — summary email coming after 8pm.`;
-    } else {
-      line.textContent = `${n} responses today.`;
-    }
+    if (n === 0)       line.textContent = 'No responses yet today — one email per RSVP, or an evening summary on busy days.';
+    else if (n === 1)  line.textContent = '1 response today — one email per RSVP, or an evening summary on busy days.';
+    else if (n > 15)   line.textContent = `${n} responses today — summary email coming after 8pm.`;
+    else               line.textContent = `${n} responses today — one email per RSVP, or an evening summary on busy days.`;
   }
 }
 
@@ -670,23 +970,17 @@ function breakdownText(r) {
   return parts.join(' · ');
 }
 
-function normalizeDiet(str) {
-  return str.trim().toLowerCase().replace(/[-_]/g, ' ');
-}
-function prettyDiet(str) {
-  return str.replace(/\b\w/g, c => c.toUpperCase());
-}
+function normalizeDiet(str) { return str.trim().toLowerCase().replace(/[-_]/g,' '); }
+function prettyDiet(str)    { return str.replace(/\b\w/g, c => c.toUpperCase()); }
 
 function renderDashboard(responses, stats) {
   _responses = responses;
-  const yes    = responses.filter(r => r.attending === 'yes');
-  const no     = responses.filter(r => r.attending === 'no');
-  const total  = responses.length;
+  const yes   = responses.filter(r => r.attending === 'yes');
+  const no    = responses.filter(r => r.attending === 'no');
+  const total = responses.length;
 
   const guests = yes.reduce((s, r) =>
-    s + (parseInt(r.guest_count_adults)   || 0)
-      + (parseInt(r.guest_count_children) || 0)
-      + (parseInt(r.guest_count_babies)   || 0), 0);
+    s + (parseInt(r.guest_count_adults)||0) + (parseInt(r.guest_count_children)||0) + (parseInt(r.guest_count_babies)||0), 0);
 
   const pctYes = total ? Math.round(yes.length / total * 100) : 0;
   const pctNo  = total ? Math.round(no.length  / total * 100) : 0;
@@ -696,7 +990,7 @@ function renderDashboard(responses, stats) {
   document.getElementById('statTotal').textContent  = total;
   document.getElementById('pctYes').textContent     = total ? `${pctYes}% of responses` : '—';
   document.getElementById('pctNo').textContent      = total ? `${pctNo}% of responses`  : '—';
-  document.getElementById('statGuests').textContent = guests > 0 ? `${guests} guest${guests !== 1 ? 's' : ''} total` : '—';
+  document.getElementById('statGuests').textContent = guests > 0 ? `${guests} guest${guests!==1?'s':''} total` : '—';
 
   renderCatering(yes);
   renderTodayCount(responses);
@@ -726,7 +1020,7 @@ function renderDashboard(responses, stats) {
 
   const tbody = document.getElementById('tableBody');
   if (!responses.length) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link or QR code!</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link!</p></div></td></tr>`;
     return;
   }
 
@@ -737,13 +1031,12 @@ function renderDashboard(responses, stats) {
     const bdown = breakdownText(r);
     const gc    = r.guest_count;
     const gsts  = gc
-      ? `<span style="font-size:0.78rem;color:var(--mid)">${gc} guest${gc > 1 ? 's' : ''}</span>${bdown ? `<span class="breakdown-mini">${escapeHtml(bdown)}</span>` : ''}`
+      ? `<span style="font-size:0.78rem;color:var(--mid)">${gc} guest${gc>1?'s':''}</span>${bdown?`<span class="breakdown-mini">${escapeHtml(bdown)}</span>`:''}`
       : '<span style="color:var(--soft)">—</span>';
     const safeNameDisplay    = escapeHtml(r.guest_name || '—');
     const safeAllergyDisplay = r.allergies && r.allergies.toLowerCase() !== 'none'
       ? `<span style="color:var(--mid);font-weight:500">⚠️ ${escapeHtml(r.allergies)}</span>`
       : '<span style="color:var(--soft)">—</span>';
-
     const adults   = parseInt(r.guest_count_adults)   || 0;
     const children = parseInt(r.guest_count_children) || 0;
     const babies   = parseInt(r.guest_count_babies)   || 0;
@@ -772,106 +1065,66 @@ function renderDashboard(responses, stats) {
   document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
 }
 
+// ── Guest edit / delete ───────────────────────────────────────────────────────
+
 function openEditFromBtn(btn) {
-  openEdit(
-    btn.dataset.id,
-    btn.dataset.att,
-    parseInt(btn.dataset.adults)   || 0,
-    parseInt(btn.dataset.children) || 0,
-    parseInt(btn.dataset.babies)   || 0,
-    btn.dataset.allergy || ''
-  );
+  openEdit(btn.dataset.id, btn.dataset.att,
+    parseInt(btn.dataset.adults)||0, parseInt(btn.dataset.children)||0,
+    parseInt(btn.dataset.babies)||0, btn.dataset.allergy||'');
 }
-function deleteGuestFromBtn(btn) {
-  deleteGuest(btn.dataset.id, btn.dataset.name);
-}
+function deleteGuestFromBtn(btn) { deleteGuest(btn.dataset.id, btn.dataset.name); }
 
 function openEdit(id, attending, adults, children, babies, allergies) {
   document.querySelectorAll('.edit-row').forEach(r => r.remove());
-
   const mainRow = document.getElementById('guest-row-' + id);
   if (!mainRow) return;
-
   const editRow = document.createElement('tr');
-  editRow.className = 'edit-row';
-  editRow.id = 'edit-row-' + id;
-
+  editRow.className = 'edit-row'; editRow.id = 'edit-row-' + id;
   const isNo = attending === 'no';
   const show = getShowOptions();
-  const adultsField = show.adults ? `
-        <label style="font-size:0.72rem;color:var(--soft);display:flex;align-items:center;gap:4px;">Adults
-          <input type="number" id="edit-adults-${id}" min="0" max="30" value="${adults}" style="width:60px" ${isNo ? 'disabled' : ''} />
-        </label>` : '';
-  const childrenField = show.children ? `
-        <label style="font-size:0.72rem;color:var(--soft);display:flex;align-items:center;gap:4px;">Children
-          <input type="number" id="edit-children-${id}" min="0" max="30" value="${children}" style="width:60px" ${isNo ? 'disabled' : ''} />
-        </label>` : '';
-  const babiesField = show.babies ? `
-        <label style="font-size:0.72rem;color:var(--soft);display:flex;align-items:center;gap:4px;">Babies
-          <input type="number" id="edit-babies-${id}" min="0" max="30" value="${babies}" style="width:60px" ${isNo ? 'disabled' : ''} />
-        </label>` : '';
+  const adultsField   = show.adults   ? `<label style="font-size:0.72rem;color:var(--soft);display:flex;align-items:center;gap:4px;">Adults<input type="number" id="edit-adults-${id}" min="0" max="30" value="${adults}" style="width:60px" ${isNo?'disabled':''}/></label>` : '';
+  const childrenField = show.children ? `<label style="font-size:0.72rem;color:var(--soft);display:flex;align-items:center;gap:4px;">Children<input type="number" id="edit-children-${id}" min="0" max="30" value="${children}" style="width:60px" ${isNo?'disabled':''}/></label>` : '';
+  const babiesField   = show.babies   ? `<label style="font-size:0.72rem;color:var(--soft);display:flex;align-items:center;gap:4px;">Babies<input type="number" id="edit-babies-${id}" min="0" max="30" value="${babies}" style="width:60px" ${isNo?'disabled':''}/></label>` : '';
   editRow.innerHTML = `
     <td colspan="6">
       <div class="edit-fields">
         <select id="edit-att-${id}" onchange="toggleCountInputs('${id}', this.value)">
-          <option value="yes" ${!isNo ? 'selected' : ''}>✓ Coming</option>
-          <option value="no"  ${isNo  ? 'selected' : ''}>✗ Declined</option>
+          <option value="yes" ${!isNo?'selected':''}>✓ Coming</option>
+          <option value="no"  ${isNo ?'selected':''}>✗ Declined</option>
         </select>
-        ${adultsField}
-        ${childrenField}
-        ${babiesField}
-        <input type="text" id="edit-allergy-${id}"
-          value="${allergies}" placeholder="Dietary notes" style="flex:1;min-width:120px" />
+        ${adultsField}${childrenField}${babiesField}
+        <input type="text" id="edit-allergy-${id}" value="${allergies}" placeholder="Dietary notes" style="flex:1;min-width:120px"/>
         <button class="btn-save"   onclick="saveEdit('${id}')">Save</button>
         <button class="btn-cancel" onclick="cancelEdit('${id}')">Cancel</button>
       </div>
     </td>`;
-
   mainRow.insertAdjacentElement('afterend', editRow);
 }
 
 function toggleCountInputs(id, value) {
   const disabled = value === 'no';
-  ['adults','children','babies'].forEach(f => {
-    const el = document.getElementById(`edit-${f}-${id}`);
-    if (el) el.disabled = disabled;
-  });
+  ['adults','children','babies'].forEach(f => { const el = document.getElementById(`edit-${f}-${id}`); if (el) el.disabled = disabled; });
 }
-
-function cancelEdit(id) {
-  const row = document.getElementById('edit-row-' + id);
-  if (row) row.remove();
-}
+function cancelEdit(id) { const row = document.getElementById('edit-row-'+id); if (row) row.remove(); }
 
 async function saveEdit(id) {
-  const attending = document.getElementById('edit-att-' + id)?.value;
-
-  let adults   = attending === 'no' ? 0 : (parseInt(document.getElementById('edit-adults-'   + id)?.value) || 0);
-  let children = attending === 'no' ? 0 : (parseInt(document.getElementById('edit-children-' + id)?.value) || 0);
-  let babies   = attending === 'no' ? 0 : (parseInt(document.getElementById('edit-babies-'   + id)?.value) || 0);
+  const attending = document.getElementById('edit-att-'+id)?.value;
+  let adults   = attending === 'no' ? 0 : (parseInt(document.getElementById('edit-adults-'  +id)?.value)||0);
+  let children = attending === 'no' ? 0 : (parseInt(document.getElementById('edit-children-'+id)?.value)||0);
+  let babies   = attending === 'no' ? 0 : (parseInt(document.getElementById('edit-babies-'  +id)?.value)||0);
   const guest_count = adults + children + babies;
-  const allergies   = document.getElementById('edit-allergy-' + id)?.value || '';
-
+  const allergies   = document.getElementById('edit-allergy-'+id)?.value || '';
   const saveBtn = document.querySelector(`#edit-row-${id} .btn-save`);
   if (saveBtn) { saveBtn.textContent = 'Saving…'; saveBtn.disabled = true; }
-
   try {
     const res  = await fetchWithTimeout('/api/dashboard-api?action=update-guest', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({
-        token:_token, guest_id:id, action:'edit',
-        attending, guest_count,
-        guest_count_adults:   adults,
-        guest_count_children: children,
-        guest_count_babies:   babies,
-        allergies,
-      }),
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token:_token, guest_id:id, action:'edit', attending, guest_count,
+        guest_count_adults:adults, guest_count_children:children, guest_count_babies:babies, allergies }),
     }, 10000);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to update');
-
-    const mainRow = document.getElementById('guest-row-' + id);
+    const mainRow = document.getElementById('guest-row-'+id);
     if (mainRow) {
       const cells = mainRow.querySelectorAll('td');
       cells[1].innerHTML = attending === 'yes'
@@ -881,33 +1134,27 @@ async function saveEdit(id) {
       if (adults)   partsMini.push(`${adults} adult${adults!==1?'s':''}`);
       if (children) partsMini.push(`${children} ${children===1?'child':'children'}`);
       if (babies)   partsMini.push(`${babies} ${babies===1?'baby':'babies'}`);
-      const bdownMini = partsMini.join(' · ');
       if (attending === 'no') {
         cells[2].innerHTML = '<span style="color:var(--soft)">—</span>';
       } else {
         cells[2].innerHTML = guest_count
-          ? `<span style="font-size:0.78rem;color:var(--mid)">${guest_count} guest${guest_count > 1 ? 's' : ''}</span>${bdownMini ? `<span class="breakdown-mini">${escapeHtml(bdownMini)}</span>` : ''}`
+          ? `<span style="font-size:0.78rem;color:var(--mid)">${guest_count} guest${guest_count>1?'s':''}</span>${partsMini.length?`<span class="breakdown-mini">${escapeHtml(partsMini.join(' · '))}</span>`:''}`
           : '<span style="color:var(--soft)">—</span>';
       }
       const cleanAllergy = allergies.trim();
       cells[3].innerHTML = cleanAllergy && cleanAllergy.toLowerCase() !== 'none'
         ? `<span style="color:var(--mid);font-weight:500">⚠️ ${escapeHtml(cleanAllergy)}</span>`
         : '<span style="color:var(--soft)">—</span>';
-      // cells[4] = email — not editable, leave as-is
       const editBtn = mainRow.querySelector('.btn-icon[title="Edit"]');
       if (editBtn) {
-        editBtn.dataset.att      = attending;
-        editBtn.dataset.adults   = adults;
-        editBtn.dataset.children = children;
-        editBtn.dataset.babies   = babies;
-        editBtn.dataset.allergy  = escapeHtml(cleanAllergy);
+        editBtn.dataset.att = attending; editBtn.dataset.adults = adults;
+        editBtn.dataset.children = children; editBtn.dataset.babies = babies;
+        editBtn.dataset.allergy = escapeHtml(cleanAllergy);
       }
     }
-
     cancelEdit(id);
     await refreshStats();
     showToast('✓ Guest updated');
-
   } catch (err) {
     showToast('⚠️ ' + describeFetchError(err));
     if (saveBtn) { saveBtn.textContent = 'Save'; saveBtn.disabled = false; }
@@ -919,7 +1166,6 @@ function showConfirmModal(message) {
     const backdrop = document.getElementById('confirmBackdrop');
     document.getElementById('confirmBody').textContent = message;
     backdrop.classList.add('show');
-
     function cleanup(result) {
       backdrop.classList.remove('show');
       document.getElementById('confirmOkBtn').removeEventListener('click', onOk);
@@ -927,10 +1173,9 @@ function showConfirmModal(message) {
       backdrop.removeEventListener('click', onBackdrop);
       resolve(result);
     }
-    function onOk()      { cleanup(true);  }
-    function onCancel()  { cleanup(false); }
-    function onBackdrop(e) { if (e.target === backdrop) cleanup(false); }
-
+    const onOk      = () => cleanup(true);
+    const onCancel  = () => cleanup(false);
+    const onBackdrop = e => { if (e.target === backdrop) cleanup(false); };
     document.getElementById('confirmOkBtn').addEventListener('click', onOk);
     document.getElementById('confirmCancelBtn').addEventListener('click', onCancel);
     backdrop.addEventListener('click', onBackdrop);
@@ -940,27 +1185,21 @@ function showConfirmModal(message) {
 async function deleteGuest(id, name) {
   const confirmed = await showConfirmModal(`Remove ${name} from the guest list? This cannot be undone.`);
   if (!confirmed) return;
-
   try {
     const res  = await fetchWithTimeout('/api/dashboard-api?action=update-guest', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ token:_token, guest_id:id, action:'delete' }),
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token:_token, guest_id:id, action:'delete' }),
     }, 10000);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to delete');
-
     cancelEdit(id);
-    document.getElementById('guest-row-' + id)?.remove();
-
+    document.getElementById('guest-row-'+id)?.remove();
     const tbody = document.getElementById('tableBody');
     if (!tbody.querySelector('tr[id^="guest-row-"]')) {
-      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link or QR code!</p></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link!</p></div></td></tr>`;
     }
-
     await refreshStats();
     showToast(`🗑 ${name} removed`);
-
   } catch (err) {
     showToast('⚠️ ' + describeFetchError(err));
   }
@@ -971,94 +1210,76 @@ async function refreshStats() {
     const res  = await fetchWithTimeout(`/api/dashboard-api?action=load&token=${encodeURIComponent(_token)}`, {}, 8000);
     const data = await res.json();
     if (!res.ok) return;
-
     const responses = data.responses;
     _responses = responses;
-    const yes    = responses.filter(r => r.attending === 'yes');
-    const no     = responses.filter(r => r.attending === 'no');
-    const total  = responses.length;
-
-    const guests = yes.reduce((s, r) =>
-      s + (parseInt(r.guest_count_adults)   || 0)
-        + (parseInt(r.guest_count_children) || 0)
-        + (parseInt(r.guest_count_babies)   || 0), 0);
-
-    const pctYes = total ? Math.round(yes.length / total * 100) : 0;
-    const pctNo  = total ? Math.round(no.length  / total * 100) : 0;
-
+    const yes   = responses.filter(r => r.attending === 'yes');
+    const no    = responses.filter(r => r.attending === 'no');
+    const total = responses.length;
+    const guests = yes.reduce((s,r) => s+(parseInt(r.guest_count_adults)||0)+(parseInt(r.guest_count_children)||0)+(parseInt(r.guest_count_babies)||0), 0);
+    const pctYes = total ? Math.round(yes.length/total*100) : 0;
+    const pctNo  = total ? Math.round(no.length /total*100) : 0;
     document.getElementById('statYes').textContent    = yes.length;
     document.getElementById('statNo').textContent     = no.length;
     document.getElementById('statTotal').textContent  = total;
     document.getElementById('pctYes').textContent     = total ? `${pctYes}% of responses` : '—';
     document.getElementById('pctNo').textContent      = total ? `${pctNo}% of responses`  : '—';
-    document.getElementById('statGuests').textContent = guests > 0 ? `${guests} guest${guests !== 1 ? 's' : ''} total` : '—';
-
+    document.getElementById('statGuests').textContent = guests > 0 ? `${guests} guest${guests!==1?'s':''} total` : '—';
     renderCatering(yes);
     renderTodayCount(responses);
-
-    const yesPct  = total ? (yes.length / total * 100) : 0;
-    const noPct   = total ? (no.length  / total * 100) : 0;
-    const restPct = Math.max(0, 100 - yesPct - noPct);
-    document.getElementById('barYes').style.width  = yesPct.toFixed(1)  + '%';
-    document.getElementById('barNo').style.width   = noPct.toFixed(1)   + '%';
-    document.getElementById('barRest').style.width = restPct.toFixed(1) + '%';
-
+    const yesPct  = total ? (yes.length/total*100) : 0;
+    const noPct   = total ? (no.length /total*100) : 0;
+    document.getElementById('barYes').style.width  = yesPct.toFixed(1)+'%';
+    document.getElementById('barNo').style.width   = noPct.toFixed(1)+'%';
+    document.getElementById('barRest').style.width = Math.max(0,100-yesPct-noPct).toFixed(1)+'%';
     const dietCount = {};
     yes.forEach(r => {
       if (r.allergies && r.allergies.trim() && r.allergies.toLowerCase() !== 'none') {
         const k = normalizeDiet(r.allergies);
-        dietCount[k] = (dietCount[k] || 0) + 1;
+        dietCount[k] = (dietCount[k]||0) + 1;
       }
     });
     const flagsEl = document.getElementById('dietaryFlags');
     flagsEl.innerHTML = Object.keys(dietCount).length
-      ? Object.entries(dietCount).map(([k,v]) =>
-          `<div class="flag">⚠️ ${escapeHtml(prettyDiet(k))}<span class="flag-count">${v}</span></div>`
-        ).join('')
+      ? Object.entries(dietCount).map(([k,v]) => `<div class="flag">⚠️ ${escapeHtml(prettyDiet(k))}<span class="flag-count">${v}</span></div>`).join('')
       : '<div style="color:var(--soft);font-size:0.84rem;">No dietary requirements yet</div>';
-
   } catch (err) {
     console.error('refreshStats error:', err.message);
   }
 }
 
+// ── Export / resend ───────────────────────────────────────────────────────────
+
 async function resendEmail() {
   if (!_partyData || !_token) return;
-  const btn = document.getElementById('resendBtn');
-  btn.textContent = '⏳ Sending…';
-  btn.disabled = true;
+  const btn       = document.getElementById('resendBtn');
+  const lockedBtn = document.getElementById('lockedResendBtn');
+
+  [btn, lockedBtn].forEach(b => { if (b) { b.textContent = '⏳ Sending…'; b.disabled = true; } });
+
   try {
     const res  = await fetchWithTimeout('/api/dashboard-api?action=send-email', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ token:_token, include_emails: true })
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token:_token, include_emails: true })
     }, 15000);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to send');
-    btn.classList.add('sent');
-    btn.textContent = '✓ Sent to your inbox!';
-    showToast(`✉️ Guest list with contacts sent to your email`);
+    if (btn) { btn.classList.add('sent'); btn.textContent = '✓ Sent to your inbox!'; }
+    if (lockedBtn) lockedBtn.textContent = '✓ Sent!';
+    showToast('✉️ Guest list with contacts sent to your email');
   } catch (err) {
-    btn.textContent = '📋 Email me full guest list with contacts';
+    if (btn) btn.textContent = '📧 Export guest list with emails';
+    if (lockedBtn) lockedBtn.textContent = '📧 Resend guest list';
     showToast('⚠️ ' + describeFetchError(err));
   } finally {
-    btn.disabled = false;
-    setTimeout(() => { btn.classList.remove('sent'); btn.textContent = '📋 Email me full guest list with contacts'; }, 4000);
+    [btn, lockedBtn].forEach(b => { if (b) b.disabled = false; });
+    setTimeout(() => {
+      if (btn) { btn.classList.remove('sent'); btn.textContent = '📧 Export guest list with emails'; }
+      if (lockedBtn && lockedBtn.textContent === '✓ Sent!') lockedBtn.textContent = '📧 Resend guest list';
+    }, 4000);
   }
 }
 
-function ordSuffix(n) { const s=['th','st','nd','rd'],v=n%100; return s[(v-20)%10]||s[v]||s[0]; }
-function showLoading(on) { document.querySelector('.page').style.opacity = on ? '0.4' : '1'; }
-function showError(msg) {
-  document.querySelector('.page').innerHTML = `<div style="text-align:center;padding:80px 20px"><p style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--mid);margin-bottom:16px;">Couldn't load your party page</p><p style="font-size:0.85rem;color:var(--soft);">${msg}</p><a href="/" style="display:inline-block;margin-top:32px;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);text-decoration:none;">← Back to home</a></div>`;
-}
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
-}
-
-// ── MESSAGE GUESTS ────────────────────────────────────────────────────────────
+// ── Message guests ────────────────────────────────────────────────────────────
 
 function switchMsgTab(tab) {
   document.getElementById('tabNote').classList.toggle('active', tab === 'note');
@@ -1105,17 +1326,10 @@ async function sendPartyUpdate() {
   const message = (document.getElementById('updateMessage')?.value || '').trim();
   const subject = (document.getElementById('updateSubject')?.value || '').trim();
   const note    = (document.getElementById('updateNote')?.value    || '').trim();
-
-  if (!message) {
-    showToast('⚠️ Please add a message before sending');
-    document.getElementById('updateMessage')?.focus();
-    return;
-  }
-
+  if (!message) { showToast('⚠️ Please add a message before sending'); document.getElementById('updateMessage')?.focus(); return; }
   const btn = document.getElementById('btnSendUpdate');
   const origText = btn.textContent;
   btn.textContent = '⏳ Sending…'; btn.disabled = true;
-
   try {
     const res  = await fetchWithTimeout('/api/dashboard-api?action=send-update', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -1124,12 +1338,9 @@ async function sendPartyUpdate() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to send');
     btn.classList.add('success');
-    btn.textContent = `✓ Sent to ${data.sent || 'all'} guests`;
-    showToast(`📢 Update sent to ${data.sent || 'guests'}`);
-    ['updateMessage','updateSubject','updateNote'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-    });
+    btn.textContent = `✓ Sent to ${data.sent||'all'} guests`;
+    showToast(`📢 Update sent to ${data.sent||'guests'}`);
+    ['updateMessage','updateSubject','updateNote'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     updateCharCount('updateMessage','msgCharCount',2000);
     updateCharCount('updateNote','updateNoteCharCount',500);
     setTimeout(() => { btn.classList.remove('success'); btn.textContent = origText; btn.disabled = false; }, 5000);
@@ -1139,6 +1350,18 @@ async function sendPartyUpdate() {
   }
 }
 
+// ── Utils ─────────────────────────────────────────────────────────────────────
+
+function ordSuffix(n) { const s=['th','st','nd','rd'],v=n%100; return s[(v-20)%10]||s[v]||s[0]; }
+function showLoading(on) { document.querySelector('.page').style.opacity = on ? '0.4' : '1'; }
+function showError(msg) {
+  document.querySelector('.page').innerHTML = `<div style="text-align:center;padding:80px 20px"><p style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--mid);margin-bottom:16px;">Couldn't load your party page</p><p style="font-size:0.85rem;color:var(--soft);">${msg}</p><a href="/" style="display:inline-block;margin-top:32px;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);text-decoration:none;">← Back to home</a></div>`;
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
 </script>
 </body>
 </html>

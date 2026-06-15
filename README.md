@@ -4,7 +4,7 @@ Calendar correctness for non-UK guests. The .ics now uses floating local time, w
 party_time has no end time. Calendar events assume a 2-hour duration. If hosts want accurate end times, an optional "ends at" field would help (the code already has latent end_time hooks).
 
 
-
+One small note: this aligns everything to UK time by design (it's a UK app, and the reminder cron already worked this way). If you ever launch in another region, the timezone would need to become per-party rather than hard-coded to Europe/London.
 
 # Tiny Invites — Backend
 

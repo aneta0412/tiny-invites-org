@@ -833,8 +833,11 @@ function hav(a,b,c,d){
 // All strings use double quotes to avoid apostrophe conflicts
 // Little Party Finder — Complete Venue Database
 // All strings use double quotes to avoid apostrophe conflicts
-// Last updated: May 2026 — 85 venues, ids 1–85
-const DB=[
+// NOTE: This inline list is now an OFFLINE FALLBACK. At runtime the page loads
+// venues from Supabase via GET /api/venues (see the bootstrap at the end of
+// this script). If that request fails, this built-in list is used instead.
+// Once the API is confirmed working in production, this array can be removed.
+let DB=[
 
 // ═══════════════════════════════════════════════
 // ORIGINAL 29 VENUES (ids 1–29)
@@ -3460,12 +3463,9 @@ function setV(btn){
   if(userCoords)render();
 }
 function updateRadiusChips(){
-  const anyVibe=vibes.u3||vibes.inc||vibes.exc;
+  // Radius now applies alongside "Good for" filters, so the chips stay active.
   const wrap=document.querySelector(".radius-chips");
-  if(wrap){
-    wrap.style.opacity=anyVibe?"0.4":"";
-    wrap.style.pointerEvents=anyVibe?"none":"";
-  }
+  if(wrap){ wrap.style.opacity=""; wrap.style.pointerEvents=""; }
 }
 
 // ── CURATED COLLECTIONS ──────────────────────────────────────────────────────
@@ -3646,8 +3646,10 @@ function isAnywhere(v){return v.cat==="mobile"||v.postcode==="UK-wide";}
 
 function render(){
   const [ux,uy]=userCoords;
-  const anyVibe=vibes.u3||vibes.inc||vibes.exc;
-  const effRadius=anyVibe?9999:radius;
+  // Always respect the chosen radius. A "Good for" filter should NARROW results
+  // within your area — not silently switch to a UK-wide search (which made a
+  // Manchester search return venues all over the country).
+  const effRadius=radius;
   // ── Distance-based local venues (excludes mobile + nationwide) ──
   let venues=DB.filter(v=>!isAnywhere(v))
     .map(v=>({...v,dist:hav(ux,uy,v.lat,v.lng)}))
@@ -3657,7 +3659,7 @@ function render(){
     .sort((a,b)=>a.dist-b.dist);
   const n=venues.length;
   document.getElementById("resNum").textContent=n;
-  document.getElementById("resTxt").textContent=`venue${n!==1?"s":""} ${anyVibe?"across the UK":"within "+effRadius+" miles of "+userPC}`;
+  document.getElementById("resTxt").textContent=`venue${n!==1?"s":""} ${effRadius>=9999?"across the UK":"within "+effRadius+" miles of "+userPC}`;
   const g=document.getElementById("grid");
   if(n===0){
     g.innerHTML=`<div class="empty"><span class="empty-icon">🌱</span><div class="empty-title">New venues coming soon to your area</div><div class="empty-sub">We're adding venues every week. Right now <strong>Stratford-upon-Avon</strong> and <strong>Birmingham</strong> have the best choice — try one of those, or widen your radius. You can also check the <strong>Available anywhere</strong> options below.</div><div style="margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;"><button class="qc" onclick="qs('CV37 6YX')">📍 Stratford-upon-Avon</button><button class="qc" onclick="qs('B1 1AA')">🏙️ Birmingham</button></div></div>`;
@@ -3899,27 +3901,45 @@ function openM(id){
 function closeM(){document.getElementById("overlay").classList.remove("open");document.body.style.overflow="";}
 function closeMO(e){if(e.target===document.getElementById("overlay"))closeM();}
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeM();});
-showLandingVenues();
-fillCollectionCounts();
-(function(){const d=document.getElementById("tcDate");if(d){const min=new Date();d.min=min.toISOString().slice(0,10);}})();
+// ── INIT (runs after venues are loaded) ─────────────────────────────────────
+function initPartyFinder(){
+  showLandingVenues();
+  fillCollectionCounts();
+  const d=document.getElementById("tcDate");
+  if(d){ d.min=new Date().toISOString().slice(0,10); }
 
-// ── AUTO-SEARCH FROM URL PARAMS ─────────────────────────────────────────────
-// Supports ?pc=CV37+6YX (postcode) and optionally &r=10 (radius in miles).
-// Used by RSVP page "Browse party venues" link to deep-link into results.
-(function(){
-  const params = new URLSearchParams(window.location.search);
-  const pc = params.get('pc');
-  if (pc) {
-    const r = parseInt(params.get('r'));
-    if (r && !isNaN(r)) {
-      radius = r;
-      document.querySelectorAll('.rc').forEach(b => {
-        b.classList.toggle('on', parseInt(b.dataset.r) === r);
-      });
+  // Auto-search from URL params: ?pc=CV37+6YX and optional &r=10 (miles).
+  // Used by the RSVP page "Browse party venues" deep-link.
+  const params=new URLSearchParams(window.location.search);
+  const pc=params.get('pc');
+  if(pc){
+    const r=parseInt(params.get('r'));
+    if(r && !isNaN(r)){
+      radius=r;
+      document.querySelectorAll('.rc').forEach(b=>b.classList.toggle('on',parseInt(b.dataset.r)===r));
     }
-    document.getElementById('pc').value = pc;
+    document.getElementById('pc').value=pc;
     doSearch();
   }
+}
+
+// ── LOAD VENUES FROM SUPABASE ───────────────────────────────────────────────
+// Source of truth is the `venues` table (GET /api/venues). If the request fails
+// the built-in DB array above is used as an offline fallback, so the page never
+// breaks while the database/env is being set up.
+(async function(){
+  try{
+    const res=await fetch('/api/venues');
+    if(res.ok){
+      const data=await res.json().catch(()=>null);
+      if(data && Array.isArray(data.venues) && data.venues.length){
+        DB=data.venues;
+      }
+    }
+  }catch(e){
+    console.warn('[venues] API unavailable — using built-in list:', e && e.message);
+  }
+  initPartyFinder();
 })();
 </script>
 <footer class="site-footer">

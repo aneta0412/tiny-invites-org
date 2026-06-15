@@ -227,6 +227,18 @@ function buildReminderHtml({ party, guest, note, hostCopy = false }) {
           </td>
         </tr>
 
+        <!-- Plan your own party -->
+        <tr>
+          <td style="padding:24px 40px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr><td style="border-top:1px solid #f5edda;padding-top:22px;text-align:center;">
+                <p style="margin:0 0 12px;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#c9a84c;">Planning a party yourself?</p>
+                <a href="${BASE_URL}/partyfinder.html" style="display:inline-block;font-size:13px;letter-spacing:0.02em;color:#8a6d2f;text-decoration:none;border:1px solid #e3d3a8;border-radius:999px;padding:11px 24px;">🎈 Browse party venues near you &rarr;</a>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+
         <!-- Host note (conditional) -->
         ${hostNoteBlock(note)}
 

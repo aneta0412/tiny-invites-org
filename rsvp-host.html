@@ -324,10 +324,20 @@
       </div>
 
       <div class="field" style="margin-bottom:14px;">
-        <label for="host-party-time" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Party time <span class="pill-required-soft">Required</span></label>
-        <input type="time" id="host-party-time"
-          style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
-          onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
+        <label for="host-party-hour" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Party time <span class="pill-required-soft">Required</span></label>
+        <div style="display:flex;gap:8px;">
+          <select id="host-party-hour" onchange="syncPartyTime()"
+            style="flex:1;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
+            <option value="">Hour</option>
+          </select>
+          <select id="host-party-minute" onchange="syncPartyTime()"
+            style="flex:1;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
+          </select>
+        </div>
+        <!-- Hidden field keeps the exact "HH:MM" 24-hour value the rest of the page + Supabase expect -->
+        <input type="hidden" id="host-party-time">
         <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">The start time guests will see — also added to the calendar invite.</p>
       </div>
 
@@ -521,6 +531,42 @@
   // Alias used by the duration <select> onchange.
   function renderInvitePreview() { updateTimePreview(); }
 
+  // Populate the hour (24h value / 12h label) + minute (5-min step) dropdowns.
+  function initPartyTimeSelects() {
+    const hourSel = document.getElementById('host-party-hour');
+    const minSel  = document.getElementById('host-party-minute');
+    if (!hourSel || !minSel) return;
+    if (hourSel.options.length <= 1) {
+      for (let h = 0; h < 24; h++) {
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        let hh = h % 12; if (hh === 0) hh = 12;
+        const opt = document.createElement('option');
+        opt.value = String(h).padStart(2, '0');
+        opt.textContent = `${hh} ${ampm}`;
+        hourSel.appendChild(opt);
+      }
+    }
+    if (minSel.options.length === 0) {
+      for (let m = 0; m < 60; m += 15) {
+        const opt = document.createElement('option');
+        opt.value = String(m).padStart(2, '0');
+        opt.textContent = ':' + String(m).padStart(2, '0');
+        minSel.appendChild(opt);
+      }
+    }
+  }
+
+  // Compose the hidden "HH:MM" value from the two dropdowns, then refresh the
+  // invite time preview. Empty hour => empty value (keeps "Required" working).
+  function syncPartyTime() {
+    const hourSel = document.getElementById('host-party-hour');
+    const minSel  = document.getElementById('host-party-minute');
+    const hidden  = document.getElementById('host-party-time');
+    if (!hourSel || !minSel || !hidden) return;
+    hidden.value = hourSel.value ? `${hourSel.value}:${minSel.value || '00'}` : '';
+    updateTimePreview();
+  }
+
   const previewName     = getParam('name');
   const previewAge      = getParam('age');
   const previewLocation = getParam('location');
@@ -594,12 +640,11 @@
       renderDate();
     }
 
-    // Time preview line (start–end) — appears once a start time is set.
-    const timeInput = document.getElementById('host-party-time');
-    if (timeInput) {
-      timeInput.addEventListener('change', updateTimePreview);
-      updateTimePreview();
-    }
+    // Time dropdowns — populate, then render the start–end preview line
+    // (which only appears once an hour is picked). The selects call
+    // syncPartyTime() via their inline onchange.
+    initPartyTimeSelects();
+    syncPartyTime();
 
     // Phone preview line — appears in the invite details if the host has
     // opted in to phone contact and entered a number.
@@ -697,7 +742,7 @@
     if (!email) { alert('Please enter your email so guest RSVPs can reach you 📬'); document.getElementById('host-email').focus(); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address 📧'); return; }
     if (!partyDate) { alert('Please pick the party date so guests know when to come 📅'); document.getElementById('host-party-date').focus(); return; }
-    if (!partyTime) { alert('Please pick the party start time so guests know when to arrive 🕐'); document.getElementById('host-party-time').focus(); return; }
+    if (!partyTime) { alert('Please pick the party start time so guests know when to arrive 🕐'); document.getElementById('host-party-hour').focus(); return; }
     if (!consent) { document.getElementById('consent-wrap').style.borderColor='#c9a84c'; alert('Please tick the consent box to continue ✉️'); return; }
     if (phoneOptin && !phone) { document.getElementById('phone-consent-wrap').style.borderColor='#c9a84c'; alert('Please enter a phone number, or untick the contact option 📞'); document.getElementById('host-phone').focus(); return; }
 

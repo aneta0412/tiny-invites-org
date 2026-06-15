@@ -188,9 +188,33 @@
     <div class="brand">Tiny Invites</div>
     <div class="ornament">🔒</div>
     <h2 id="closed-heading" style="margin-bottom:12px;">RSVPs are now closed</h2>
-    <p id="closed-body" style="font-size:0.9rem;color:var(--mid);line-height:1.7;margin-bottom:0;">
-      The host has locked the guest list to finalise their plans. If you need to make a change, please contact the host directly.
+    <p id="closed-body" style="font-size:0.9rem;color:var(--mid);line-height:1.7;margin-bottom:18px;">
+      The host has locked the guest list to finalise their plans. If you need to make a change, please get in touch with the host directly.
     </p>
+
+    <!-- Host phone — shown only if the host opted in and provided a number -->
+    <div id="closed-phone-line" class="info-item host-phone" style="display:none;justify-content:center;margin-bottom:16px;">
+      <span class="icon">📱</span><span>Call or text the host: <a id="closed-phone-link" href="#"></a></span>
+    </div>
+
+    <!-- Message the host (relayed server-side; host email stays private) -->
+    <button id="closed-contact-host-btn" type="button"
+      onclick="document.getElementById('closed-contact-form').style.display='block';this.style.display='none';"
+      style="display:block;width:100%;text-align:center;padding:11px;border:1px solid var(--gold-light);border-radius:8px;font-size:0.82rem;color:var(--mid);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;">
+      ✉️ Message the host
+    </button>
+    <div id="closed-contact-form" style="display:none;text-align:left;margin-top:12px;">
+      <input type="text" id="closed-contact-name" placeholder="Your name"
+        style="width:100%;box-sizing:border-box;border:1px solid var(--gold-light);border-radius:8px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:0.83rem;color:var(--dark);background:#fff;margin-bottom:8px;">
+      <textarea id="closed-contact-message" rows="3" placeholder="Type your message to the host…"
+        style="width:100%;box-sizing:border-box;border:1px solid var(--gold-light);border-radius:8px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:0.83rem;color:var(--dark);background:#fff;resize:vertical;margin-bottom:8px;"></textarea>
+      <button id="closed-contact-send-btn" type="button" onclick="closedContactHost()"
+        style="width:100%;padding:11px;border:none;border-radius:8px;font-size:0.82rem;color:#fff;background:var(--gold,#c9a84c);cursor:pointer;font-family:'DM Sans',sans-serif;">
+        ✉️ Send message
+      </button>
+      <p id="closed-contact-feedback" style="display:none;font-size:0.78rem;color:#5a8a6a;margin-top:8px;">✓ Message sent! The host will be in touch.</p>
+      <p id="closed-contact-error" style="display:none;font-size:0.78rem;color:#c0392b;margin-top:8px;"></p>
+    </div>
   </div>
 </div>
 
@@ -467,8 +491,7 @@
           const today  = new Date(); today.setHours(0, 0, 0, 0);
           const cutoff = parseLocalDate(d.rsvp_cutoff);
           if (today > cutoff) {
-            const name = d.child_name ? `RSVPs for ${d.child_name}'s party are now closed` : 'RSVPs are now closed';
-            document.getElementById('closed-heading').textContent = name;
+            renderClosedPage(d);
             showPage('page-closed'); return;
           }
         }
@@ -516,6 +539,7 @@
     const age         = party.age          || getParam('age')       || '';
     const location    = party.venue        || getParam('location')  || '';
     const date        = party.party_date   || '';
+    const partyTime   = party.party_time   || '';
     const hostEmail   = party.parent_email || '';
     const specialNote = party.special_note || '';
     const phoneNumber = party.phone_number || '';
@@ -526,6 +550,7 @@
     applyCountingPrefs();
 
     window._partyData = { partyId: party.party_id || window._partyId, childName, age, location, hostEmail };
+    window._partyFull = party;
 
     if (photoUrl) {
       const img = document.getElementById('invite-hero-img');
@@ -548,7 +573,12 @@
 
     if (date) {
       const el = document.createElement('div'); el.className = 'info-item';
-      el.innerHTML = `<span class="icon">📅</span><span>${formatDate(date)}</span>`;
+      const timeSuffix = partyTime ? ` · ${formatTime12(partyTime)}` : '';
+      el.innerHTML = `<span class="icon">📅</span><span>${formatDate(date)}${timeSuffix}</span>`;
+      document.getElementById('inv-details').prepend(el);
+    } else if (partyTime) {
+      const el = document.createElement('div'); el.className = 'info-item';
+      el.innerHTML = `<span class="icon">🕐</span><span>${formatTime12(partyTime)}</span>`;
       document.getElementById('inv-details').prepend(el);
     }
     if (phoneNumber) {
@@ -581,6 +611,15 @@
     return new Date(d);
   }
   function formatDate(d) { try { return parseLocalDate(d).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); } catch { return d; } }
+  // "14:00" -> "2pm" / "14:30" -> "2:30pm"
+  function formatTime12(t) {
+    if (!t) return '';
+    const [h, m] = String(t).split(':').map(Number);
+    if (Number.isNaN(h)) return t;
+    const ampm = h >= 12 ? 'pm' : 'am';
+    let hh = h % 12; if (hh === 0) hh = 12;
+    return m ? `${hh}:${String(m).padStart(2,'0')}${ampm}` : `${hh}${ampm}`;
+  }
 
   async function submitRSVP() {
     const guestName = document.getElementById('guest-name').value.trim();
@@ -619,7 +658,7 @@
     try {
       const res  = await fetchWithTimeout(RSVP_API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }, 12000);
       if (res.status === 429) { const data = await res.json().catch(() => ({})); throw new Error(data.error || 'Too many requests — please wait a moment and try again.'); }
-      if (res.status === 423) { showPage('page-closed'); return; }
+      if (res.status === 423) { renderClosedPage(window._partyFull); showPage('page-closed'); return; }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
 
@@ -834,6 +873,65 @@
       btn.disabled = false; btn.textContent = 'Resend';
       if (input) { input.style.borderColor = '#c0392b'; setTimeout(() => { input.style.borderColor = ''; }, 2000); }
       console.error('guestFixAndResend:', err.message);
+    }
+  }
+
+  // Populate the "RSVPs closed" page with the host's phone (if provided) and
+  // wire up the message-host relay. `d` is the public party payload.
+  function renderClosedPage(d) {
+    d = d || window._partyFull || {};
+    window._closedParty = d;
+    const heading = document.getElementById('closed-heading');
+    if (heading) heading.textContent = d.child_name
+      ? `RSVPs for ${d.child_name}'s party are now closed`
+      : 'RSVPs are now closed';
+
+    const phone     = d.phone_number || '';
+    const phoneLine = document.getElementById('closed-phone-line');
+    if (phoneLine) {
+      if (phone) {
+        const link = document.getElementById('closed-phone-link');
+        link.href = 'tel:' + String(phone).replace(/[^+\d]/g, '');
+        link.textContent = String(phone);
+        phoneLine.style.display = 'flex';
+      } else {
+        phoneLine.style.display = 'none';
+      }
+    }
+  }
+
+  async function closedContactHost() {
+    const cp  = window._closedParty || window._partyFull || {};
+    const pid = cp.party_id || window._partyId || '';
+    const nameEl = document.getElementById('closed-contact-name');
+    const msgEl  = document.getElementById('closed-contact-message');
+    const name    = nameEl ? nameEl.value.trim() : '';
+    const message = msgEl  ? msgEl.value.trim()  : '';
+    const errEl = document.getElementById('closed-contact-error');
+    const fb    = document.getElementById('closed-contact-feedback');
+
+    if (!name)    { if (nameEl) { nameEl.style.borderColor = '#c0392b'; setTimeout(() => { nameEl.style.borderColor = ''; }, 2000); } return; }
+    if (!message) { if (msgEl)  { msgEl.style.borderColor  = '#c0392b'; setTimeout(() => { msgEl.style.borderColor  = ''; }, 2000); } return; }
+
+    const btn = document.getElementById('closed-contact-send-btn');
+    btn.disabled = true; btn.textContent = '…';
+    if (errEl) errEl.style.display = 'none';
+
+    try {
+      const res = await fetchWithTimeout('/api/rsvp?action=contact-host', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ party_id: pid, guest_name: name, message }),
+      }, 12000);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not send message');
+      if (fb) fb.style.display = 'block';
+      btn.textContent = '✓ Sent';
+      if (msgEl)  msgEl.disabled  = true;
+      if (nameEl) nameEl.disabled = true;
+    } catch (err) {
+      btn.disabled = false; btn.textContent = '✉️ Send message';
+      if (errEl) { errEl.textContent = 'Could not send — please try again.'; errEl.style.display = 'block'; }
+      console.error('closedContactHost:', err.message);
     }
   }
 

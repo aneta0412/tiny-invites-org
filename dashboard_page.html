@@ -529,7 +529,7 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
 
     <div class="msg-panel active" id="panelNote">
       <div class="msg-hint">
-        <strong>Add a note</strong> shown highlighted in the 3-day reminder to confirmed guests. Leave blank to skip.
+        <strong>Add a note</strong> shown highlighted in the 3-day reminder to confirmed guests. Leave blank to skip. We'll also email you a copy of the reminder when it goes out, so you can see exactly what your guests received.
       </div>
       <div class="msg-field-wrap">
         <label class="msg-label" for="reminderNoteText">Note from you</label>
@@ -547,7 +547,7 @@ td { padding:12px 16px; font-size:0.84rem; color:var(--dark); vertical-align:mid
 
     <div class="msg-panel" id="panelSend">
       <div class="msg-hint">
-        <strong>Send a one-off update</strong> to all confirmed guests — venue changes, timing, what to bring.
+        <strong>Send a one-off update</strong> to all confirmed guests — venue changes, timing, what to bring. A copy is sent to you too, so you have a record of what went out.
       </div>
       <div class="msg-field-wrap">
         <label class="msg-label" for="updateSubject">Subject <span style="color:var(--soft);font-style:italic;text-transform:none;letter-spacing:0">(optional)</span></label>
@@ -727,8 +727,10 @@ function partyTitle(party) {
 function partyStartEnd(party) {
   if (!party.party_date) return null;
   const start = new Date(party.party_date);
-  if (party.start_time) {
-    const [h, m] = String(party.start_time).split(':').map(Number);
+  // party_time is the canonical start column; start_time kept as a fallback.
+  const startTime = party.party_time || party.start_time;
+  if (startTime) {
+    const [h, m] = String(startTime).split(':').map(Number);
     start.setHours(h || 0, m || 0, 0, 0);
   }
   let end;
@@ -752,7 +754,10 @@ function fmtTime(d) {
 // "2–4pm" when both sides share a meridiem, otherwise "11am–1pm".
 function partyTimeStr(party) {
   const se = partyStartEnd(party);
-  if (!se || !party.start_time) return '';
+  const startTime = party.party_time || party.start_time;
+  if (!se || !startTime) return '';
+  // With only a start time (no end_time), show just the start, e.g. "2pm".
+  if (!party.end_time) return fmtTime(se.start);
   const a = fmtTime(se.start), b = fmtTime(se.end);
   const sameMer = a.slice(-2) === b.slice(-2);
   return sameMer ? `${a.slice(0,-2)}–${b}` : `${a}–${b}`;
@@ -769,7 +774,15 @@ function partyDateStr(party) {
 // ── Add-to-calendar ───────────────────────────────────────────────────────────
 
 function pad2(n) { return String(n).padStart(2, '0'); }
+// Floating wall-clock stamp (no Z) so the entered start time shows as-is in
+// calendar apps instead of being shifted by the UTC offset (BST turned 2pm
+// into 3pm). Google gets ctz=Europe/London to pin it to UK time.
 function calStamp(d) {
+  return d.getFullYear() + pad2(d.getMonth()+1) + pad2(d.getDate())
+       + 'T' + pad2(d.getHours()) + pad2(d.getMinutes()) + '00';
+}
+// True UTC stamp (with Z) — used only for DTSTAMP.
+function utcStamp(d) {
   return d.getUTCFullYear() + pad2(d.getUTCMonth()+1) + pad2(d.getUTCDate())
        + 'T' + pad2(d.getUTCHours()) + pad2(d.getUTCMinutes()) + '00Z';
 }
@@ -784,6 +797,7 @@ function googleCalendarUrl(party) {
     action:  'TEMPLATE',
     text:    partyTitle(party),
     dates:   `${calStamp(se.start)}/${calStamp(se.end)}`,
+    ctz:     'Europe/London',
     details: 'RSVP and party details: https://tinyinvites.org',
     location: party.venue || '',
   });
@@ -797,7 +811,7 @@ function buildIcs(party) {
     'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Tiny Invites//EN', 'CALSCALE:GREGORIAN',
     'BEGIN:VEVENT',
     'UID:tinyinvites-' + Date.now() + '@tinyinvites.org',
-    'DTSTAMP:' + calStamp(new Date()),
+    'DTSTAMP:' + utcStamp(new Date()),
     'DTSTART:' + calStamp(se.start),
     'DTEND:'   + calStamp(se.end),
     'SUMMARY:' + icsEsc(partyTitle(party)),

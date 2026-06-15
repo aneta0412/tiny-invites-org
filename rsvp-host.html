@@ -324,9 +324,17 @@
       </div>
 
       <div class="field" style="margin-bottom:14px;">
+        <label for="host-party-time" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Party time <span class="pill-required-soft">Required</span></label>
+        <input type="time" id="host-party-time"
+          style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
+        <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">The start time guests will see — also added to the calendar invite.</p>
+      </div>
+
+      <div class="field" style="margin-bottom:14px;">
         <label class="consent-wrap" id="phone-consent-wrap" style="margin-bottom:0;">
           <input type="checkbox" id="host-phone-optin" onchange="togglePhoneField()">
-          <span>Happy to be contacted by phone? <span class="pill-optional">Optional</span> — we'll show your number on the invite so guests can call or text you.</span>
+          <span>Happy to be contacted by phone? <span class="pill-optional" style="text-transform:none;">Optional</span> — we'll show your number on the invite so guests can call or text you.</span>
         </label>
         <div id="host-phone-field-wrap" style="display:none;margin-top:10px;">
           <label for="host-phone" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:none;color:var(--soft);margin-bottom:5px;">Your phone number</label>
@@ -450,6 +458,15 @@
     return new Date(d);
   }
   function formatDate(d) { try{ return parseLocalDate(d).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); } catch{ return d; } }
+  // "14:00" -> "2pm" / "14:30" -> "2:30pm"
+  function formatTime12(t) {
+    if (!t) return '';
+    const [h, m] = String(t).split(':').map(Number);
+    if (Number.isNaN(h)) return t;
+    const ampm = h >= 12 ? 'pm' : 'am';
+    let hh = h % 12; if (hh === 0) hh = 12;
+    return m ? `${hh}:${String(m).padStart(2,'0')}${ampm}` : `${hh}${ampm}`;
+  }
 
   const previewName     = getParam('name');
   const previewAge      = getParam('age');
@@ -518,6 +535,24 @@
       };
       dateInput.addEventListener('change', renderDate);
       renderDate();
+    }
+
+    // Time preview line — appears right after the date once a start time is set.
+    const timeInput = document.getElementById('host-party-time');
+    if (timeInput) {
+      const renderTime = () => {
+        let line = document.getElementById('inv-time-line');
+        if (!timeInput.value) { if (line) line.remove(); return; }
+        if (!line) {
+          line = document.createElement('div');
+          line.className = 'info-item';
+          line.id = 'inv-time-line';
+          document.getElementById('inv-details').appendChild(line);
+        }
+        line.innerHTML = `<span class="icon">🕐</span><span>${escapeHtml(formatTime12(timeInput.value))}</span>`;
+      };
+      timeInput.addEventListener('change', renderTime);
+      renderTime();
     }
 
     // Phone preview line — appears in the invite details if the host has
@@ -594,10 +629,12 @@
     const phone   = document.getElementById('host-phone').value.trim();
     const consent = document.getElementById('host-consent').checked;
     const partyDate = document.getElementById('host-party-date').value || null;
+    const partyTime = document.getElementById('host-party-time').value || null;
 
     if (!email) { alert('Please enter your email so guest RSVPs can reach you 📬'); document.getElementById('host-email').focus(); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address 📧'); return; }
     if (!partyDate) { alert('Please pick the party date so guests know when to come 📅'); document.getElementById('host-party-date').focus(); return; }
+    if (!partyTime) { alert('Please pick the party start time so guests know when to arrive 🕐'); document.getElementById('host-party-time').focus(); return; }
     if (!consent) { document.getElementById('consent-wrap').style.borderColor='#c9a84c'; alert('Please tick the consent box to continue ✉️'); return; }
     if (phoneOptin && !phone) { document.getElementById('phone-consent-wrap').style.borderColor='#c9a84c'; alert('Please enter a phone number, or untick the contact option 📞'); document.getElementById('host-phone').focus(); return; }
 
@@ -627,6 +664,7 @@
           age:          previewAge,
           venue:        previewLocation,
           party_date:   partyDate,
+          party_time:   partyTime,
           parent_email: email,
           photo_url:    previewPhoto  || null,
           special_note: previewNote   || null,

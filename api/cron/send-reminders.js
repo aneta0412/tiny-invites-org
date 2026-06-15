@@ -114,7 +114,17 @@ function buildReminderHtml({ party, guest, note, hostCopy = false }) {
   const childName = party.child_name || 'the birthday child';
   const venue     = party.venue || '';
   const partyDate = party.party_date ? formatDate(party.party_date) : 'soon';
-  const partyTime = formatTime(party.party_time);
+  const partyTime = (() => {
+    const s = party.party_time;
+    if (!s) return '';
+    const start = formatTime(s);
+    const dur = Number(party.party_duration_min);
+    const [h, m] = String(s).split(':').map(Number);
+    if (!dur || Number.isNaN(h)) return start;
+    const tot = Math.min(h * 60 + m + dur, 23 * 60 + 59);
+    const end = `${String(Math.floor(tot / 60)).padStart(2, '0')}:${String(tot % 60).padStart(2, '0')}`;
+    return `${start}–${formatTime(end)}`;
+  })();
   const age       = party.age || '';
   const guestName = guest.guest_name || 'there';
   const ageLine   = age

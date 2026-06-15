@@ -74,7 +74,17 @@ function buildCsv(responses) {
 function finalListHtml({ party, yes, no, responses, dashUrl }) {
   const childName = esc(party.child_name || 'your child');
   const ageStr    = party.age ? `${ordSuffix(party.age)} birthday` : 'party';
-  const partyTime = formatTime(party.party_time);
+  const partyTime = (() => {
+    const s = party.party_time;
+    if (!s) return '';
+    const start = formatTime(s);
+    const dur = Number(party.party_duration_min);
+    const [h, m] = String(s).split(':').map(Number);
+    if (!dur || Number.isNaN(h)) return start;
+    const tot = Math.min(h * 60 + m + dur, 23 * 60 + 59);
+    const end = `${String(Math.floor(tot / 60)).padStart(2, '0')}:${String(tot % 60).padStart(2, '0')}`;
+    return `${start}–${formatTime(end)}`;
+  })();
   const partyDate = party.party_date
     ? `${formatDate(party.party_date)}${partyTime ? ` · ${partyTime}` : ''}`
     : '';

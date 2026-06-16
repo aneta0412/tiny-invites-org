@@ -22,6 +22,17 @@ function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
+// Today's calendar date in Europe/London as "YYYY-MM-DD", matching the
+// timezone-stable comparison used in submit-rsvp.js / get-party.js / extend-cutoff.js.
+function londonTodayISO() {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(new Date());
+  const m = {};
+  for (const p of parts) m[p.type] = p.value;
+  return `${m.year}-${m.month}-${m.day}`;
+}
+
 function formatDate(dateStr) {
   try {
     return new Date(dateStr).toLocaleDateString('en-GB', {
@@ -170,10 +181,13 @@ export default async function handler(req, res) {
 
   try {
    
-    // Find parties whose RSVP cutoff is today
-    const yesterday = new Date();
-    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
-    const cutoffDate = yesterday.toISOString().slice(0, 10); // YYYY-MM-DD UTC
+    // RSVPs stay open *through* the cutoff day and close the day after, so the
+    // morning after a party's cutoff is when its guest list is final. We look
+    // for parties whose rsvp_cutoff was *yesterday* in the Europe/London
+    // calendar — same timezone basis as submit-rsvp.js, so a party near the
+    // midnight/BST boundary is matched on exactly the right day.
+    const [ly, lm, ld] = londonTodayISO().split('-').map(Number);
+    const cutoffDate = new Date(Date.UTC(ly, lm - 1, ld - 1)).toISOString().slice(0, 10);
 
     // Find parties whose RSVP cutoff was yesterday (cutoff day has now passed)
     const { data: parties, error: partyErr } = await supabase

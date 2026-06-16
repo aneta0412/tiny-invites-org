@@ -417,7 +417,7 @@ function renderVenue(v){
   const catEmoji = CAT_EMOJI[v.cat] || "🎉";
 
   const pkgsHtml = v.packages.map(p => `
-    <div class="pkg${p.featured ? " featured" : ""}">
+    <div class="pkg${(p.featured && v.packages.length > 1) ? " featured" : ""}">
       <div class="pkg-top">
         <div class="pkg-name">${p.name}</div>
         <div class="pkg-price-box">

@@ -88,7 +88,7 @@ Routing is via query-string actions on consolidated endpoints, e.g. `POST /api/r
 
 Run SQL in the Supabase SQL editor. Migrations live in `migrations/`:
 
-- **`migrations/2026-06-15-add-party-time.sql`** — adds the obligatory `party_time` column (backfills existing rows to `14:00`, sets `NOT NULL`, adds an `HH:MM` format check). **Run this before deploying** the party-time changes.
+- **`migrations/2026-06-15-combined-party-time-and-duration.sql`** — adds the obligatory `party_time` column (backfills existing rows to `14:00`, `NOT NULL`, `HH:MM` format check) **and** `party_duration_min` (party length in minutes, `NOT NULL DEFAULT 90`, 15–480 range check). Idempotent — safe to run even if a prior version was already applied. **Run this before deploying** the party-time / duration changes.
 
 ## Environment variables
 

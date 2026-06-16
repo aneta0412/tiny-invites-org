@@ -137,6 +137,7 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 .fp.on[data-c="club"]{background:var(--ink);border-color:var(--ink);color:var(--cream)}
 .fp.on[data-c="unique"]{background:var(--gold);border-color:var(--gold);color:var(--cream)}
 .fp.on[data-c="leisure"]{background:var(--ink2);border-color:var(--ink2);color:var(--cream)}
+.fp.on[data-c="nationwide"]{background:#5a6b7a;border-color:#5a6b7a;color:var(--cream)}
 
 /* ── RESULTS BAR ── */
 .results-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:24px}
@@ -3734,10 +3735,14 @@ function setF(btn){
   document.querySelectorAll(".fp").forEach(b=>b.classList.remove("on"));
   btn.classList.add("on");
   activeFilter=btn.dataset.c;
-  // Comes-to-you / Nationwide aren't distance-based, so dim the radius chips.
+  // Comes-to-you / Nationwide aren't distance-based, so dim the radius chips
+  // and hide the Map view (their pins would scatter across the UK).
   const noDist=(activeFilter==="mobile"||activeFilter==="nationwide");
   const wrap=document.querySelector(".radius-chips");
   if(wrap){ wrap.style.opacity=noDist?"0.4":""; wrap.style.pointerEvents=noDist?"none":""; }
+  const mapBtn=document.getElementById("vtMap");
+  if(mapBtn) mapBtn.style.display=noDist?"none":"";
+  if(noDist && curView==="map") setView("list");
   render();
 }
 function qs(pc){document.getElementById("pc").value=pc; doSearch();}
@@ -3820,6 +3825,7 @@ function resetSearch(){
   curView="list";
   document.getElementById("vtList").classList.add("on");
   document.getElementById("vtMap").classList.remove("on");
+  document.getElementById("vtMap").style.display="";
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function setView(view){
@@ -3967,7 +3973,7 @@ function openM(id){
   const c=CAT_CFG[v.cat];
   const dist=userCoords?hav(userCoords[0],userCoords[1],v.lat,v.lng).toFixed(1)+" miles from you":"";
   const pkgs=v.packages.map(p=>`
-    <div class="pkg${p.featured?" featured":""}">
+    <div class="pkg${(p.featured && v.packages.length>1)?" featured":""}">
       <div class="pkg-header">
         <div class="pkg-name">${p.name}</div>
         <div class="pkg-price"><div class="pkg-price-main">${p.price}</div><div class="pkg-price-sub">${p.priceNote}</div></div>

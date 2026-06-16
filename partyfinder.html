@@ -504,6 +504,7 @@ a.card{text-decoration:none;color:inherit}
   <div id="resultsBar" class="results-bar" style="display:none">
     <span class="res-num" id="resNum">0</span>
     <span class="res-txt" id="resTxt">venues found</span>
+    <button class="vt" id="resetBtn" onclick="resetSearch()" title="Clear your search and filters" style="margin-left:14px;">↺ Start over</button>
     <div class="view-toggle">
       <button class="vt on" id="vtList" onclick="setView('list')">☰ List</button>
       <button class="vt" id="vtMap" onclick="setView('map')">🗺️ Map</button>
@@ -565,7 +566,7 @@ a.card{text-decoration:none;color:inherit}
       </div>
       <div class="tc-out" id="tcOut"></div>
     </div>
-    <div class="landing-preview">
+    <div class="landing-preview" id="landingPreview">
       <div class="lp-title"><span style="color:var(--gold)">✦</span>&nbsp;Venues to inspire you — new selection every visit&nbsp;<span style="color:var(--gold)">✦</span></div>
       <div class="landing-cards" id="landingCards"></div>
     </div>
@@ -3580,9 +3581,11 @@ function setV(btn){
   if(userCoords)render();
 }
 function updateRadiusChips(){
-  // Radius now applies alongside "Good for" filters, so the chips stay active.
+  // Radius applies alongside "Good for" filters, but is irrelevant for the
+  // distance-less Comes-to-You / Nationwide categories — keep it dimmed there.
+  const noDist=(activeFilter==="mobile"||activeFilter==="nationwide");
   const wrap=document.querySelector(".radius-chips");
-  if(wrap){ wrap.style.opacity=""; wrap.style.pointerEvents=""; }
+  if(wrap){ wrap.style.opacity=noDist?"0.4":""; wrap.style.pointerEvents=noDist?"none":""; }
 }
 
 // ── CURATED COLLECTIONS ──────────────────────────────────────────────────────
@@ -3600,7 +3603,7 @@ function openCollection(kind){
   radius=9999;
   document.querySelectorAll(".rc").forEach(b=>b.classList.remove("on"));
   if(!userCoords){userCoords=[52.4862,-1.8904];userPC="the UK";}
-  document.getElementById("heroState").style.display="none";
+  document.getElementById("heroState").style.display="none"; if(document.getElementById("landingPreview"))document.getElementById("landingPreview").style.display="none";
   document.getElementById("filterBar").style.display="flex";
   document.getElementById("resultsBar").style.display="flex";
   setView('list');
@@ -3653,7 +3656,7 @@ function updateInviteBanner(n){
 // ═══════════════════════════════════════════════════
 function showNationwideVenues(){
   const venues=DB.filter(v=>v.postcode==="UK-wide");
-  document.getElementById("heroState").style.display="none";
+  document.getElementById("heroState").style.display="none"; if(document.getElementById("landingPreview"))document.getElementById("landingPreview").style.display="none";
   document.getElementById("filterBar").style.display="none";
   document.getElementById("resultsBar").style.display="flex";
   document.getElementById("resNum").textContent=venues.length;
@@ -3676,7 +3679,7 @@ function setRNation(btn){
   if(coords){
     userCoords=coords;
     userPC=raw.toUpperCase();
-    document.getElementById("heroState").style.display="none";
+    document.getElementById("heroState").style.display="none"; if(document.getElementById("landingPreview"))document.getElementById("landingPreview").style.display="none";
     document.getElementById("filterBar").style.display="flex";
     document.getElementById("resultsBar").style.display="flex";
     render();
@@ -3746,7 +3749,7 @@ function doSearch(){
   const coords=getCoords(raw);
   if(!coords){alert("Postcode not recognised — please check and try again.\nExamples: OX1 1AA, CV37 6YX, SW6 2PY, M1 1AE, EH1 1YZ, BT1 1AA");return;}
   userCoords=coords; userPC=raw.toUpperCase();
-  document.getElementById("heroState").style.display="none";
+  document.getElementById("heroState").style.display="none"; if(document.getElementById("landingPreview"))document.getElementById("landingPreview").style.display="none";
   document.getElementById("filterBar").style.display="flex";
   document.getElementById("resultsBar").style.display="flex";
   render();
@@ -3799,6 +3802,26 @@ function render(){
 
 // ── MAP VIEW (Leaflet + OpenStreetMap) ───────────────────────────────────────
 let lastResults=[],lpfMap=null,markerLayer=null,curView="list";
+// Clear the whole search + filters and return to the landing screen.
+function resetSearch(){
+  document.getElementById("pc").value="";
+  activeFilter="all"; radius=10; vibes={u3:false,inc:false,exc:false};
+  userCoords=null; userPC="";
+  document.querySelectorAll(".fp").forEach(b=>b.classList.toggle("on",b.dataset.c==="all"));
+  document.querySelectorAll(".vp").forEach(b=>b.classList.remove("on"));
+  document.querySelectorAll(".rc").forEach(b=>b.classList.toggle("on",b.dataset.r==="10"));
+  const wrap=document.querySelector(".radius-chips"); if(wrap){ wrap.style.opacity=""; wrap.style.pointerEvents=""; }
+  document.getElementById("filterBar").style.display="none";
+  document.getElementById("resultsBar").style.display="none";
+  document.getElementById("mapWrap").style.display="none";
+  document.getElementById("grid").innerHTML="";
+  const ib=document.getElementById("inviteBanner"); if(ib) ib.style.display="none";
+  document.getElementById("heroState").style.display=""; if(document.getElementById("landingPreview"))document.getElementById("landingPreview").style.display="";
+  curView="list";
+  document.getElementById("vtList").classList.add("on");
+  document.getElementById("vtMap").classList.remove("on");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
 function setView(view){
   curView=view;
   document.getElementById("vtList").classList.toggle("on",view==="list");

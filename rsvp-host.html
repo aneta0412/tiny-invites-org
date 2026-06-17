@@ -427,7 +427,7 @@
         Your RSVP page won't be visible to guests until you confirm.
       </p>
       <p class="check-note" style="margin-bottom:16px;">
-        Can't find it? Check your spam folder first. Entered the wrong email address? Please go back and complete the form again, as this party cannot be confirmed.
+        Can't find it? Check your spam folder first. Entered the wrong email address? No problem — fix it and resend below.
       </p>
       <button class="btn-resend" id="resend-btn" onclick="resendConfirmation()">
         Resend confirmation email
@@ -479,6 +479,21 @@
 
   function getParam(n) { return new URLSearchParams(location.search).get(n) || ''; }
   function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+  // Lightweight, non-blocking toast — replaces native alert() for validation.
+  function showToast(msg) {
+    let t = document.getElementById('_toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = '_toast';
+      t.style.cssText = "position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#2a2218;color:#faf6ef;padding:13px 22px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.86rem;line-height:1.4;box-shadow:0 8px 30px rgba(42,34,24,0.25);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99999;max-width:88vw;text-align:center;";
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 3200);
+  }
   // Parse a "YYYY-MM-DD" value as a LOCAL date. Using `new Date("YYYY-MM-DD")`
   // parses as UTC midnight, which renders as the *previous* day for hosts west
   // of UTC — shifting both the shown party date and the computed RSVP cut-off.
@@ -739,12 +754,12 @@
     const partyDuration = parseInt(document.getElementById('host-duration').value, 10) || 90;
     const specialNote = document.getElementById('host-special-note').value.trim() || null;
 
-    if (!email) { alert('Please enter your email so guest RSVPs can reach you 📬'); document.getElementById('host-email').focus(); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address 📧'); return; }
-    if (!partyDate) { alert('Please pick the party date so guests know when to come 📅'); document.getElementById('host-party-date').focus(); return; }
-    if (!partyTime) { alert('Please pick the party start time so guests know when to arrive 🕐'); document.getElementById('host-party-hour').focus(); return; }
-    if (!consent) { document.getElementById('consent-wrap').style.borderColor='#c9a84c'; alert('Please tick the consent box to continue ✉️'); return; }
-    if (phoneOptin && !phone) { document.getElementById('phone-consent-wrap').style.borderColor='#c9a84c'; alert('Please enter a phone number, or untick the contact option 📞'); document.getElementById('host-phone').focus(); return; }
+    if (!email) { showToast('Please enter your email so guest RSVPs can reach you 📬'); document.getElementById('host-email').focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email address 📧'); document.getElementById('host-email').focus(); return; }
+    if (!partyDate) { showToast('Please pick the party date so guests know when to come 📅'); document.getElementById('host-party-date').focus(); return; }
+    if (!partyTime) { showToast('Please pick the party start time so guests know when to arrive 🕐'); document.getElementById('host-party-hour').focus(); return; }
+    if (!consent) { document.getElementById('consent-wrap').style.borderColor='#c9a84c'; showToast('Please tick the consent box to continue ✉️'); return; }
+    if (phoneOptin && !phone) { document.getElementById('phone-consent-wrap').style.borderColor='#c9a84c'; showToast('Please enter a phone number, or untick the contact option 📞'); document.getElementById('host-phone').focus(); return; }
 
     // Soft-warn (don't block) if the date is in the past — still required, just unusual
     {
@@ -794,7 +809,7 @@
       showCheckEmail(email);
 
     } catch (err) {
-      alert('Something went wrong: ' + describeFetchError(err));
+      showToast('⚠️ ' + describeFetchError(err));
       btn.disabled=false; btn.innerHTML='✨ Send confirmation email';
     }
   }

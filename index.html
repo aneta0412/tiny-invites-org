@@ -817,13 +817,27 @@
     const s = ['th','st','nd','rd'], v = n % 100;
     return s[(v - 20) % 10] || s[v] || s[0];
   }
+  function showToast(msg) {
+    let t = document.getElementById('_toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = '_toast';
+      t.style.cssText = "position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#2a2218;color:#faf6ef;padding:13px 22px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.86rem;line-height:1.4;box-shadow:0 8px 30px rgba(42,34,24,0.25);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99999;max-width:88vw;text-align:center;";
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 3200);
+  }
+
   function generateInvite() {
     const name = document.getElementById('ci-name').value.trim();
     const age  = document.getElementById('ci-age').value.trim();
     const loc  = document.getElementById('ci-location').value.trim();
-    if (!name) return alert("Please enter the child's name.");
-    if (!age)  return alert('Please enter their turning age.');
-    if (!loc)  return alert('Please enter the party location.');
+    if (!name) { showToast("Please enter the child's name 😊"); document.getElementById('ci-name').focus(); return; }
+    if (!age)  { showToast('Please enter their turning age 🎂'); document.getElementById('ci-age').focus(); return; }
+    if (!loc)  { showToast('Please enter the party location 📍'); document.getElementById('ci-location').focus(); return; }
     // Honeypot — if filled, silently do nothing (bot)
     if (document.getElementById('ci-honeypot')?.value) return;
     const btn = document.getElementById('ci-generate-btn');

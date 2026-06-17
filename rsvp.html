@@ -233,6 +233,22 @@
   </div>
 </div>
 
+<!-- PAGE: LOAD ERROR (network / timeout) -->
+<div class="page" id="page-error">
+  <div class="card" style="text-align:center;max-width:460px;">
+    <div class="brand">Tiny Invites</div>
+    <div class="ornament">📡</div>
+    <h2 style="margin-bottom:12px;">We couldn't load this invite</h2>
+    <p style="font-size:0.9rem;color:var(--mid);line-height:1.7;margin-bottom:18px;">
+      Your connection dropped while loading the party details. Please check your internet and try again — your invite is safe.
+    </p>
+    <button id="retry-load-btn" type="button" onclick="loadParty()"
+      style="background:var(--gold);color:var(--warm-white);border:none;border-radius:12px;padding:13px 28px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;">
+      ↻ Try again
+    </button>
+  </div>
+</div>
+
 <!-- PAGE 1: INVITATION -->
 <div class="page active" id="page-invite">
   <div id="invite-wrap" style="width:calc(100% - 40px);max-width:540px;animation:fadeUp 0.55s cubic-bezier(.22,.61,.36,1) both;border-radius:24px;overflow:hidden;box-shadow:0 8px 40px rgba(42,34,24,0.07);">
@@ -420,6 +436,22 @@
 <script>
   const RSVP_API_ENDPOINT = '/api/rsvp?action=submit-rsvp';
 
+  // Lightweight, non-blocking toast — replaces native alert() for validation so
+  // a guest isn't interrupted by an OS pop-up (especially clumsy on mobile).
+  function showToast(msg) {
+    let t = document.getElementById('_toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = '_toast';
+      t.style.cssText = "position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#2a2218;color:#faf6ef;padding:13px 22px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.86rem;line-height:1.4;box-shadow:0 8px 30px rgba(42,34,24,0.25);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99999;max-width:88vw;text-align:center;";
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 3200);
+  }
+
   const DEFAULT_FETCH_TIMEOUT_MS = 12000;
   async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_FETCH_TIMEOUT_MS) {
     const ctrl = new AbortController();
@@ -460,6 +492,11 @@
     applyCountingPrefs();
     const nameInput = document.getElementById('landing-guest-name');
     if (nameInput) nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') proceedYes(); });
+    loadParty();
+  });
+
+  // Retriable so the "Try again" button on the error page can re-run it.
+  function loadParty() {
     const partyId  = getParam('party') || getParam('partyId') || '';
     const photoUrl = getParam('photo') || '';
     window._partyId = partyId;
@@ -468,6 +505,8 @@
       if (img) { img.src = photoUrl; img.onerror = () => { img.src = 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80'; }; }
     }
     if (!partyId) { renderInvite({}); return; }
+    const retryBtn = document.getElementById('retry-load-btn');
+    if (retryBtn) { retryBtn.disabled = true; retryBtn.textContent = '↻ Loading…'; }
     fetchWithTimeout('/api/rsvp?action=get-party&id=' + partyId, {}, 6000)
       .then(async r => {
         const d = await r.json().catch(() => ({}));
@@ -498,8 +537,15 @@
         }
         renderInvite(d || {});
       })
-      .catch(err => { console.warn('get-party fetch failed:', describeFetchError(err)); renderInvite({}); });
-  });
+      .catch(err => {
+        console.warn('get-party fetch failed:', describeFetchError(err));
+        // Don't silently render a half-empty invite (missing date/time) — show a
+        // clear, retriable error so the guest knows the details didn't load.
+        const retry = document.getElementById('retry-load-btn');
+        if (retry) { retry.disabled = false; retry.textContent = '↻ Try again'; }
+        showPage('page-error');
+      });
+  }
 
   let _submitted = false;
   let _declineResponseId = null;
@@ -646,18 +692,18 @@
 
   async function submitRSVP() {
     const guestName = document.getElementById('guest-name').value.trim();
-    if (!guestName) { alert('Please enter a name 😊'); return; }
+    if (!guestName) { showToast('Please enter a name 😊'); return; }
 
     // Email is now required for everyone — it's how the host reaches guests.
     const guestEmail = document.getElementById('guest-email').value.trim();
-    if (!guestEmail) { alert('Please enter your email so the host can send reminders and updates 📬'); document.getElementById('guest-email').focus(); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) { alert('Please enter a valid email address 📧'); document.getElementById('guest-email').focus(); return; }
+    if (!guestEmail) { showToast('Please enter your email so the host can send reminders and updates 📬'); document.getElementById('guest-email').focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) { showToast('Please enter a valid email address 📧'); document.getElementById('guest-email').focus(); return; }
 
     const childrenCount = counts.children;
     const babiesCount   = ASK_BABIES ? counts.babies : null;
     const adultsCount   = ASK_ADULTS ? counts.adults : null;
     const totalGuests   = childrenCount + (ASK_BABIES ? counts.babies : 0) + (ASK_ADULTS ? counts.adults : 0);
-    if (totalGuests < 1) { alert('Please add at least one guest 😊'); return; }
+    if (totalGuests < 1) { showToast('Please add at least one guest 😊'); return; }
 
     const pd  = window._partyData || {};
     const pid = pd.partyId || window._partyId || '';

@@ -449,6 +449,7 @@ body.dash-loading #statNo { min-width: 48px; }
     <!-- ── Edit time / venue (date & photo stay locked) ─────────────────── -->
     <div style="text-align:center;margin-top:14px;">
       <button class="resend-btn" id="editDetailsToggle" type="button" onclick="toggleEditDetails()">✏️ Edit time or venue</button>
+      <p id="editLockedNote" style="display:none;font-size:0.78rem;color:var(--soft,#a89880);line-height:1.6;margin:6px auto 0;max-width:320px;">🔒 Time &amp; venue are locked now that RSVPs have closed. Need a genuine last-minute change? <strong>Reopen RSVPs</strong> above first, then edit.</p>
       <div id="editDetailsPanel" style="display:none;margin-top:12px;text-align:left;background:var(--warm-white,#fff9f2);border:1px solid var(--gold-light,#e8d5a3);border-radius:10px;padding:14px 16px;">
         <label for="editPartyTime" style="display:block;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft,#a89880);margin-bottom:4px;">Start time</label>
         <input type="time" id="editPartyTime"
@@ -790,6 +791,15 @@ function handleCutoff(party) {
       // After cutoff, the button reopens rather than extends.
       const tgl = document.getElementById('extendToggleBtn');
       if (tgl) tgl.textContent = '🔓 Reopen RSVPs';
+      // Time/venue are locked once RSVPs close — invites + reminders are all out
+      // and the guest list is final. Collapse the edit panel, hide its toggle,
+      // and explain how to make a genuine late change.
+      const editPanel = document.getElementById('editDetailsPanel');
+      if (editPanel) editPanel.style.display = 'none';
+      const editToggle = document.getElementById('editDetailsToggle');
+      if (editToggle) editToggle.style.display = 'none';
+      const editLocked = document.getElementById('editLockedNote');
+      if (editLocked) editLocked.style.display = 'block';
     }
   } catch (err) {
     console.error('Cutoff error:', err);
@@ -1429,6 +1439,10 @@ async function extendCutoff() {
 // ── Edit time / venue ──────────────────────────────────────────────────────────
 
 function toggleEditDetails() {
+  if (_partyData && isPastCutoff(_partyData)) {
+    showToast('🔒 RSVPs are closed — reopen the party first to change the time or venue');
+    return;
+  }
   const panel = document.getElementById('editDetailsPanel');
   if (!panel) return;
   const showing = panel.style.display === 'block';
@@ -1446,6 +1460,10 @@ function toggleEditDetails() {
 
 async function savePartyDetails() {
   if (!_token) return;
+  if (_partyData && isPastCutoff(_partyData)) {
+    showToast('🔒 RSVPs are closed — reopen the party first to change the time or venue');
+    return;
+  }
   const t = document.getElementById('editPartyTime');
   const v = document.getElementById('editVenue');
   const durEl = document.getElementById('editDuration');

@@ -301,8 +301,17 @@
   <div id="right-panel">
 
     <!-- Go live form -->
+    <style>
+      .more-options{margin:4px 0 16px;border-top:1px solid var(--gold-pale);}
+      .more-options>summary{list-style:none;cursor:pointer;padding:12px 2px 4px;font-size:0.78rem;letter-spacing:0.04em;color:var(--gold);font-weight:500;display:flex;align-items:center;gap:6px;}
+      .more-options>summary::-webkit-details-marker{display:none;}
+      .more-options>summary::before{content:"+";font-size:1rem;line-height:1;}
+      .more-options[open]>summary::before{content:"–";}
+      .more-options>summary .mo-sub{color:var(--soft);font-weight:400;font-size:0.72rem;letter-spacing:0;}
+      .more-options-body{padding-top:8px;}
+    </style>
     <div id="golive-card">
-      <p class="golive-label">Almost there</p>
+      <p class="golive-label">Step 2 of 2 · Almost there</p>
       <h3 class="golive-heading">Happy with your preview?<br>Let's make it live.</h3>
       <p class="golive-sub">Enter your email — we'll send you a quick confirmation link, then your party goes live. Guests can't RSVP until you confirm.</p>
 
@@ -342,6 +351,27 @@
         <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">The start time guests will see — also added to the calendar invite.</p>
       </div>
 
+      <!-- Phone — optional, but kept in the simple form so it's easy to add. -->
+      <div class="field" style="margin-bottom:14px;">
+        <label class="consent-wrap" id="phone-consent-wrap" style="margin-bottom:0;">
+          <input type="checkbox" id="host-phone-optin" onchange="togglePhoneField()">
+          <span>Happy to be contacted by phone? <span class="pill-optional" style="text-transform:none;">Optional</span> — we'll show your number on the invite so guests can call or text you.</span>
+        </label>
+        <div id="host-phone-field-wrap" style="display:none;margin-top:10px;">
+          <label for="host-phone" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:none;color:var(--soft);margin-bottom:5px;">Your phone number</label>
+          <input type="tel" id="host-phone" placeholder="e.g. 07123 456789" autocomplete="tel" inputmode="tel"
+            style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'"
+            oninput="document.getElementById('phone-consent-wrap').style.borderColor=''">
+          <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">Shown on your invite so guests can reach you directly.</p>
+        </div>
+      </div>
+
+      <!-- Optional fine-tuning, tucked away to keep the form simple. -->
+      <details class="more-options">
+        <summary>More options <span class="mo-sub">— length, a note, RSVP cut-off &amp; who to count</span></summary>
+        <div class="more-options-body">
+
       <div class="field" style="margin-bottom:14px;">
         <label for="host-duration" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">How long is the party?</label>
         <select id="host-duration" onchange="renderInvitePreview()"
@@ -362,21 +392,6 @@
           style="width:100%;box-sizing:border-box;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;resize:vertical;transition:border-color 0.2s;"
           onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'"></textarea>
         <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">Shown on your invite — parking, what to bring, allergies, anything helpful.</p>
-      </div>
-
-      <div class="field" style="margin-bottom:14px;">
-        <label class="consent-wrap" id="phone-consent-wrap" style="margin-bottom:0;">
-          <input type="checkbox" id="host-phone-optin" onchange="togglePhoneField()">
-          <span>Happy to be contacted by phone? <span class="pill-optional" style="text-transform:none;">Optional</span> — we'll show your number on the invite so guests can call or text you.</span>
-        </label>
-        <div id="host-phone-field-wrap" style="display:none;margin-top:10px;">
-          <label for="host-phone" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:none;color:var(--soft);margin-bottom:5px;">Your phone number</label>
-          <input type="tel" id="host-phone" placeholder="e.g. 07123 456789" autocomplete="tel" inputmode="tel"
-            style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
-            onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'"
-            oninput="document.getElementById('phone-consent-wrap').style.borderColor=''">
-          <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">Shown on your invite so guests can reach you directly.</p>
-        </div>
       </div>
 
       <div class="field" style="margin-bottom:14px;">
@@ -406,6 +421,9 @@
       </div>
       <p class="count-chip-hint">Children (age 1+) are always counted.</p>
 
+        </div>
+      </details>
+
       <label class="consent-wrap" id="consent-wrap">
         <input type="checkbox" id="host-consent" onchange="if(this.checked)document.getElementById('consent-wrap').style.borderColor=''">
         <span>I agree to receive guest RSVPs by email, and understand guests give their email so I can send them reminders and important party updates. No marketing, never shared.</span>
@@ -427,6 +445,10 @@
         Click the link in that email to make your party live.<br>
         Your RSVP page won't be visible to guests until you confirm.
       </p>
+      <a href="https://tinyinvites.org/designs.html" target="_blank" rel="noopener"
+        style="display:block;margin:4px auto 16px;max-width:340px;background:var(--gold-pale);border:1px solid var(--gold-light);border-radius:10px;padding:12px 16px;text-decoration:none;color:var(--dark);font-size:0.85rem;line-height:1.5;">
+        ✨ <strong>Got 2 seconds?</strong> Check out our free invite designs while that email lands →
+      </a>
       <p class="check-note" style="margin-bottom:16px;">
         Can't find it? Check your spam folder first. Entered the wrong email address? No problem — fix it and resend below.
       </p>

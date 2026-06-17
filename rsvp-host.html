@@ -7,12 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --cream: #faf6ef; --warm-white: #fff9f2; --gold: #c9a84c;
-    --gold-light: #e8d5a3; --gold-pale: #f5edda; --dark: #2a2218;
+    --cream: #f7f2e9; --warm-white: #fffaf3; --gold: #b29463;
+    --gold-light: #ddcba4; --gold-pale: #f1e9d6; --dark: #2a2218;
     --mid: #6b5c45; --soft: #a89880;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html { scroll-behavior:smooth; }
+  body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:9999; opacity:0.04; mix-blend-mode:multiply; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
   body {
     background: var(--cream); color: var(--dark);
     font-family: "DM Sans", sans-serif; font-weight: 300;
@@ -84,7 +85,7 @@
     border:1px solid transparent; transition:border-color 0.2s;
   }
   .consent-wrap input[type="checkbox"] { accent-color:var(--gold); width:15px; height:15px; flex-shrink:0; margin-top:2px; cursor:pointer; }
-  .consent-wrap span { font-size:0.75rem; color:var(--mid); line-height:1.6; }
+  .consent-wrap span { font-size:0.75rem; color:var(--mid); line-height:1.6; text-transform:none; letter-spacing:normal; }
 
   .pill-required-soft, .pill-optional {
     display: inline-block; font-size: 0.55rem; letter-spacing: 0.12em;
@@ -201,7 +202,7 @@
   #invite-wrap {
     border-radius:24px; overflow:hidden;
     box-shadow:0 8px 40px rgba(42,34,24,0.08);
-    animation:fadeUp 0.5s 0.1s cubic-bezier(.22,.61,.36,1) both;
+    animation:fadeUp 0.9s 0.1s cubic-bezier(.22,.61,.36,1) both;
   }
   @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
@@ -552,7 +553,7 @@
     const minSel  = document.getElementById('host-party-minute');
     if (!hourSel || !minSel) return;
     if (hourSel.options.length <= 1) {
-      for (let h = 0; h < 24; h++) {
+      for (let h = 9; h <= 17; h++) {
         const ampm = h >= 12 ? 'PM' : 'AM';
         let hh = h % 12; if (hh === 0) hh = 12;
         const opt = document.createElement('option');
@@ -758,8 +759,8 @@
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email address 📧'); document.getElementById('host-email').focus(); return; }
     if (!partyDate) { showToast('Please pick the party date so guests know when to come 📅'); document.getElementById('host-party-date').focus(); return; }
     if (!partyTime) { showToast('Please pick the party start time so guests know when to arrive 🕐'); document.getElementById('host-party-hour').focus(); return; }
-    if (!consent) { document.getElementById('consent-wrap').style.borderColor='#c9a84c'; showToast('Please tick the consent box to continue ✉️'); return; }
-    if (phoneOptin && !phone) { document.getElementById('phone-consent-wrap').style.borderColor='#c9a84c'; showToast('Please enter a phone number, or untick the contact option 📞'); document.getElementById('host-phone').focus(); return; }
+    if (!consent) { document.getElementById('consent-wrap').style.borderColor='#b29463'; showToast('Please tick the consent box to continue ✉️'); return; }
+    if (phoneOptin && !phone) { document.getElementById('phone-consent-wrap').style.borderColor='#b29463'; showToast('Please enter a phone number, or untick the contact option 📞'); document.getElementById('host-phone').focus(); return; }
 
     // Soft-warn (don't block) if the date is in the past — still required, just unusual
     {

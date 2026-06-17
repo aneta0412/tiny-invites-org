@@ -1120,6 +1120,9 @@ function doSearch(){
   render();
   applyView('list');
   enterResultsHistory();
+  // Bring the results into view so it's obvious the search worked (they render
+  // below the search card, which otherwise looks like "nothing happened").
+  requestAnimationFrame(()=>{ const rb=document.getElementById("resultsBar"); if(rb) rb.scrollIntoView({behavior:"smooth",block:"start"}); });
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────

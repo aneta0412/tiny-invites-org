@@ -630,6 +630,16 @@
       el.innerHTML = `<span class="icon">🕐</span><span>${formatTimeRange12(partyTime, partyDur)}</span>`;
       document.getElementById('inv-details').prepend(el);
     }
+    // "Please respond by" — one day before the host's RSVP cut-off, as a gentle nudge.
+    if (party.rsvp_cutoff) {
+      const cut = parseLocalDate(String(party.rsvp_cutoff).slice(0, 10));
+      if (!isNaN(cut)) {
+        cut.setDate(cut.getDate() - 1);
+        const el = document.createElement('div'); el.className = 'info-item respond-by';
+        el.innerHTML = `<span class="icon">⏳</span><span>Please respond by <strong>${cut.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</strong></span>`;
+        document.getElementById('inv-details').appendChild(el);
+      }
+    }
     if (phoneNumber) {
       const el = document.createElement('div'); el.className = 'info-item host-phone';
       const telHref = 'tel:' + String(phoneNumber).replace(/[^+\d]/g, '');

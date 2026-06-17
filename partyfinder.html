@@ -34,8 +34,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 /* ── HEADER ── */
 .site-header{background:var(--white);position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
 .hdr-mesh{position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,.06) 0%,transparent 60%)}
-.hdr-inner{position:relative;max-width:1180px;margin:0 auto;padding:52px 28px 56px;display:grid;grid-template-columns:1fr 360px;gap:48px;align-items:end}
-@media(max-width:760px){.hdr-inner{grid-template-columns:1fr;gap:32px;padding:36px 20px 40px}}
+.hdr-inner{position:relative;max-width:1180px;margin:0 auto;padding:36px 28px 40px;display:grid;grid-template-columns:1fr 360px;gap:48px;align-items:center}
+@media(max-width:760px){.hdr-inner{grid-template-columns:1fr;gap:28px;padding:28px 20px 34px}}
 .hdr-pill{display:inline-flex;align-items:center;gap:8px;background:var(--gold-pale);border:1px solid var(--gold-light, #e8d5a3);color:var(--gold);padding:5px 14px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px}
 .hdr-pill span{width:6px;height:6px;border-radius:50%;background:var(--gold)}
 h1.hero{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:300;color:var(--ink);line-height:1.1;letter-spacing:-.01em}
@@ -54,6 +54,7 @@ input.pc::placeholder{text-transform:none;color:var(--muted);font-weight:300}
 input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 .btn-search{padding:12px 22px;background:var(--ink);color:var(--cream);border:none;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:background .2s;white-space:nowrap}
 .btn-search:hover{background:var(--gold)}
+.pc-error{margin-top:8px;font-size:12.5px;line-height:1.5;color:#a05030;background:rgba(200,122,90,.1);border:1px solid rgba(200,122,90,.3);border-radius:4px;padding:8px 12px}
 .radius-chips{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center}
 .rc-lbl{font-size:11px;font-weight:400;color:var(--muted);margin-right:2px;letter-spacing:.06em;text-transform:uppercase}
 .rc{padding:5px 14px;border-radius:2px;border:1px solid var(--line);font-size:12px;font-weight:400;cursor:pointer;background:var(--cream);color:var(--ink2);transition:all .15s;letter-spacing:.04em}
@@ -98,6 +99,16 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 .fb-sep{width:1px;height:18px;background:var(--pop2);margin:0 6px}
 .vp{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:2px;border:1px dashed var(--pop2);font-size:12px;font-weight:400;letter-spacing:.05em;cursor:pointer;background:var(--cream);color:var(--ink2);transition:all .15s;white-space:nowrap}
 .vp.on{background:var(--gold);border:1px solid var(--gold);color:var(--cream)}
+
+/* ── CLEARER FILTER BUTTON STATES ── */
+/* Hover affordance so buttons clearly read as clickable */
+.fp:hover:not(.on),.vp:hover:not(.on){border-color:var(--ink2);color:var(--ink);background:var(--white);transform:translateY(-1px)}
+/* Stronger "selected" cue: bolder text + a soft ring around active pills */
+.fp.on,.vp.on{font-weight:600;box-shadow:0 0 0 2px var(--gold-pale)}
+/* Activity = pick one → show a ✓ on the active choice */
+.fp.on::after{content:"✓";margin-left:5px;font-size:11px;font-weight:700;opacity:.9}
+/* Good-for = toggle on/off → show a ✕ to signal "click again to remove" */
+.vp.on::after{content:"✕";margin-left:5px;font-size:11px;font-weight:700;opacity:.9}
 
 /* ── TINY INVITES BRIDGE ── */
 .invite-banner{display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:wrap;background:var(--white);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:6px;padding:14px 20px;margin-bottom:24px;box-shadow:var(--shadow)}
@@ -381,6 +392,7 @@ a.card{text-decoration:none;color:inherit}
         <input class="pc" id="pc" type="text" placeholder="e.g. SW1, M1, B1, LS1, EH1" maxlength="8" autocomplete="off">
         <button class="btn-search" onclick="doSearch()">Search →</button>
       </div>
+      <div class="pc-error" id="pcError" role="alert" style="display:none"></div>
       <div class="radius-chips">
         <span class="rc-lbl">Within:</span>
         <button class="rc on" data-r="10" onclick="setR(this)">10 mi</button>
@@ -3580,6 +3592,7 @@ function setV(btn){
   btn.classList.toggle("on",vibes[k]);
   updateRadiusChips();
   if(userCoords)render();
+  syncState();
 }
 function updateRadiusChips(){
   // Radius applies alongside "Good for" filters, but is irrelevant for the
@@ -3607,8 +3620,9 @@ function openCollection(kind){
   document.getElementById("heroState").style.display="none"; if(document.getElementById("landingPreview"))document.getElementById("landingPreview").style.display="none";
   document.getElementById("filterBar").style.display="flex";
   document.getElementById("resultsBar").style.display="flex";
-  setView('list');
+  applyView('list');
   render();
+  enterResultsHistory();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function fillCollectionCounts(){
@@ -3663,6 +3677,7 @@ function showNationwideVenues(){
   document.getElementById("resNum").textContent=venues.length;
   document.getElementById("resTxt").textContent="nationwide venues — available anywhere in the UK (no postcode needed)";
   document.getElementById("grid").innerHTML=venues.map(v=>card({...v,dist:0})).join("");
+  enterResultsHistory();
 }
 
 function setRNation(btn){
@@ -3678,15 +3693,17 @@ function setRNation(btn){
   // Postcode present — do a normal full-UK search
   const coords=getCoords(raw);
   if(coords){
+    hidePcError();
     userCoords=coords;
     userPC=raw.toUpperCase();
     document.getElementById("heroState").style.display="none"; if(document.getElementById("landingPreview"))document.getElementById("landingPreview").style.display="none";
     document.getElementById("filterBar").style.display="flex";
     document.getElementById("resultsBar").style.display="flex";
     render();
-    setView('map');
+    applyView('list');
+    enterResultsHistory();
   } else {
-    alert("Postcode not recognised — please check and try again.");
+    showPcError(`We don't recognise <strong>${raw.toUpperCase().replace(/[<>&]/g,"")}</strong> yet — double-check the postcode, or tap one of the cities below to explore.`);
   }
 }
 
@@ -3697,7 +3714,21 @@ function setRNation(btn){
 function showLandingVenues(){
   const el=document.getElementById("landingCards");
   if(!el) return;
-  const picks=[...DB].sort(()=>Math.random()-.5).slice(0,6);
+  // Keep the same 6 venues for the whole browser session, so reloading the page
+  // doesn't make a venue the visitor just spotted disappear. A fresh tab/session
+  // still gets a new selection.
+  let picks;
+  try{
+    const saved=JSON.parse(sessionStorage.getItem("lpf_landing_ids")||"null");
+    if(Array.isArray(saved)&&saved.length){
+      const byId=new Map(DB.map(v=>[v.id,v]));
+      picks=saved.map(id=>byId.get(id)).filter(Boolean);
+    }
+  }catch(e){}
+  if(!picks||picks.length<6){
+    picks=[...DB].sort(()=>Math.random()-.5).slice(0,6);
+    try{sessionStorage.setItem("lpf_landing_ids",JSON.stringify(picks.map(v=>v.id)));}catch(e){}
+  }
   el.innerHTML=picks.map(v=>{
     const c=CAT_CFG[v.cat];
     return `<div class="card" onclick="openM(${v.id})" style="cursor:pointer">
@@ -3730,6 +3761,7 @@ function setR(btn){
   btn.classList.add("on");
   radius=parseInt(btn.dataset.r);
   if(userCoords) render();
+  syncState();
 }
 function setF(btn){
   document.querySelectorAll(".fp").forEach(b=>b.classList.remove("on"));
@@ -3742,23 +3774,41 @@ function setF(btn){
   if(wrap){ wrap.style.opacity=noDist?"0.4":""; wrap.style.pointerEvents=noDist?"none":""; }
   const mapBtn=document.getElementById("vtMap");
   if(mapBtn) mapBtn.style.display=noDist?"none":"";
-  if(noDist && curView==="map") setView("list");
+  if(noDist && curView==="map") applyView("list");
   render();
+  syncState();
 }
 function qs(pc){document.getElementById("pc").value=pc; doSearch();}
 document.getElementById("pc").addEventListener("keydown",e=>{if(e.key==="Enter")doSearch();});
+document.getElementById("pc").addEventListener("input",hidePcError);
 
+// Friendly inline postcode error (replaces the old blocking alert popup).
+function showPcError(msg){
+  const e=document.getElementById("pcError");
+  if(!e) return;
+  e.innerHTML=msg;
+  e.style.display="";
+}
+function hidePcError(){
+  const e=document.getElementById("pcError");
+  if(e) e.style.display="none";
+}
 function doSearch(){
   const raw=document.getElementById("pc").value.trim();
-  if(!raw) return;
+  if(!raw){ showPcError("Pop your postcode in the box above to find venues near you."); return; }
   const coords=getCoords(raw);
-  if(!coords){alert("Postcode not recognised — please check and try again.\nExamples: OX1 1AA, CV37 6YX, SW6 2PY, M1 1AE, EH1 1YZ, BT1 1AA");return;}
+  if(!coords){
+    showPcError(`We don't recognise <strong>${raw.toUpperCase().replace(/[<>&]/g,"")}</strong> yet — double-check the postcode, or tap one of the cities below to explore.`);
+    return;
+  }
+  hidePcError();
   userCoords=coords; userPC=raw.toUpperCase();
   document.getElementById("heroState").style.display="none"; if(document.getElementById("landingPreview"))document.getElementById("landingPreview").style.display="none";
   document.getElementById("filterBar").style.display="flex";
   document.getElementById("resultsBar").style.display="flex";
   render();
-  setView('map');
+  applyView('list');
+  enterResultsHistory();
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
@@ -3807,8 +3857,46 @@ function render(){
 
 // ── MAP VIEW (Leaflet + OpenStreetMap) ───────────────────────────────────────
 let lastResults=[],lpfMap=null,markerLayer=null,curView="list";
+
+// ── BROWSER HISTORY (back / forward) ─────────────────────────────────────────
+// Makes the browser Back button return from results to the landing screen and
+// restore the exact filters, instead of leaving the page. Forward re-applies.
+// historyReady is false on the landing screen, true once results are showing,
+// so filter tweaks only *update* the current history entry (replaceState) and
+// Back jumps straight back to the landing in one press.
+let historyReady=false;
+function lpfState(){return {lpf:1,pc:document.getElementById("pc").value,af:activeFilter,r:radius,vibes:{...vibes},view:curView};}
+function syncState(){ if(historyReady){ try{history.replaceState(lpfState(),"");}catch(e){} } }
+function enterResultsHistory(){ historyReady=true; try{history.pushState(lpfState(),"");}catch(e){} }
+function landingHistory(){ historyReady=false; try{history.pushState({lpf:0},"");}catch(e){} }
+function applyLpfState(s){
+  activeFilter=s.af||"all"; radius=s.r||10; vibes=Object.assign({u3:false,inc:false,exc:false},s.vibes||{});
+  const pc=s.pc||""; document.getElementById("pc").value=pc;
+  if(pc){ const c=getCoords(pc); userCoords=c||[52.4862,-1.8904]; userPC=pc.toUpperCase(); }
+  else { userCoords=[52.4862,-1.8904]; userPC="the UK"; }
+  document.querySelectorAll(".fp").forEach(b=>b.classList.toggle("on",b.dataset.c===activeFilter));
+  document.querySelectorAll(".vp").forEach(b=>b.classList.toggle("on",!!vibes[b.dataset.v]));
+  document.querySelectorAll(".rc").forEach(b=>b.classList.toggle("on",parseInt(b.dataset.r)===radius));
+  const noDist=(activeFilter==="mobile"||activeFilter==="nationwide");
+  const wrap=document.querySelector(".radius-chips"); if(wrap){ wrap.style.opacity=noDist?"0.4":""; wrap.style.pointerEvents=noDist?"none":""; }
+  const mapBtn=document.getElementById("vtMap"); if(mapBtn) mapBtn.style.display=noDist?"none":"";
+  document.getElementById("heroState").style.display="none"; const lp=document.getElementById("landingPreview"); if(lp) lp.style.display="none";
+  document.getElementById("filterBar").style.display="flex";
+  document.getElementById("resultsBar").style.display="flex";
+  historyReady=true;
+  render();
+  applyView((noDist && s.view==="map")?"list":(s.view||"list"));
+}
+window.addEventListener("popstate",function(e){
+  const s=e.state;
+  if(s && s.lpf===1){ applyLpfState(s); }
+  else { goLanding(); }
+});
+
 // Clear the whole search + filters and return to the landing screen.
-function resetSearch(){
+// goLanding() does the UI work only; resetSearch() also records it in history.
+function goLanding(){
+  historyReady=false;
   document.getElementById("pc").value="";
   activeFilter="all"; radius=10; vibes={u3:false,inc:false,exc:false};
   userCoords=null; userPC="";
@@ -3828,7 +3916,11 @@ function resetSearch(){
   document.getElementById("vtMap").style.display="";
   window.scrollTo({top:0,behavior:"smooth"});
 }
-function setView(view){
+// User-facing "Start over": return to landing AND add a history entry so
+// the browser's forward button can return to the results.
+function resetSearch(){ goLanding(); landingHistory(); }
+// applyView only changes the UI; setView also records the change in browser history.
+function applyView(view){
   curView=view;
   document.getElementById("vtList").classList.toggle("on",view==="list");
   document.getElementById("vtMap").classList.toggle("on",view==="map");
@@ -3836,6 +3928,7 @@ function setView(view){
   document.getElementById("mapWrap").style.display=view==="map"?"block":"none";
   if(view==="map") updateMap();
 }
+function setView(view){ applyView(view); syncState(); }
 function updateMap(){
   if(curView!=="map"||!userCoords||typeof L==="undefined") return;
   if(!lpfMap){
@@ -4036,6 +4129,9 @@ function closeMO(e){if(e.target===document.getElementById("overlay"))closeM();}
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeM();});
 // ── INIT (runs after venues are loaded) ─────────────────────────────────────
 function initPartyFinder(){
+  // Mark the very first page state as "landing" so Back from the first search
+  // lands here rather than leaving the site.
+  try{history.replaceState({lpf:0},"");}catch(e){}
   showLandingVenues();
   fillCollectionCounts();
   const d=document.getElementById("tcDate");

@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow"/>
+<meta name="referrer" content="strict-origin-when-cross-origin"/>
 <title>Your Party Page | Tiny Invites</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -87,6 +89,34 @@ nav {
 @media(max-width:520px) {
   .cal-label { margin-right:0; width:100%; }
 }
+
+/* Share invitation link */
+.share-link-row {
+  display:flex; align-items:center; gap:8px;
+  background:var(--cream); border:1px solid var(--gold-light);
+  border-radius:10px; padding:10px 12px; margin-top:4px;
+}
+.share-link-url {
+  flex:1; min-width:0; font-size:0.82rem; color:var(--mid);
+  font-family:"DM Sans",sans-serif; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; user-select:all;
+}
+.share-copy-btn {
+  flex:none; background:var(--gold); color:#fff; border:none;
+  border-radius:8px; padding:8px 14px; font-size:0.76rem; font-weight:500;
+  font-family:"DM Sans",sans-serif; cursor:pointer; transition:all 0.15s;
+}
+.share-copy-btn:hover { background:var(--dark); }
+.share-copy-btn.copied { background:var(--yes); }
+.share-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.share-action-btn {
+  flex:1; min-width:120px; text-align:center;
+  background:var(--gold-pale); border:1px solid rgba(196,155,60,0.28);
+  border-radius:99px; padding:9px 14px; font-size:0.78rem; color:var(--mid);
+  font-family:"DM Sans",sans-serif; cursor:pointer; text-decoration:none;
+  transition:all 0.15s; display:inline-flex; align-items:center; justify-content:center; gap:6px;
+}
+.share-action-btn:hover { background:var(--gold); color:#fff; border-color:var(--gold); }
 
 /* Stats */
 .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
@@ -403,6 +433,23 @@ body.dash-loading #lastUpdated {
 body.dash-loading #statYes,
 body.dash-loading #statNo { min-width: 48px; }
 @media (prefers-reduced-motion: reduce) { body.dash-loading [id] { animation: none !important; } }
+
+/* ── Print: a clean guest list to take to the venue ──────────────────────── */
+@media print {
+  body { background:#fff !important; background-image:none !important; color:#000; }
+  .nav-bar, .dash-hero, .cal-row, #editDetailsToggle, #editDetailsPanel,
+  #shareCard, .msg-card, .export-label, #resendBtn, #extendCard, #lockedBanner,
+  #digest-note, #digestNote, .btn-icon, .footer, .toast, #postPartyCard,
+  #refreshBtn, #printBtn,
+  thead th:last-child, tbody td:last-child { display:none !important; }
+  .page { opacity:1 !important; max-width:100% !important; padding:0 !important; }
+  .card, .table-card, .msg-card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; animation:none !important; opacity:1 !important; transform:none !important; }
+  .table-wrap { overflow:visible !important; }
+  table { width:100% !important; border-collapse:collapse; }
+  th, td { border-bottom:1px solid #ddd; }
+  a { color:#000 !important; text-decoration:none; }
+  .dash-header { display:block !important; text-align:left; }
+}
 </style>
 </head>
 <body class="dash-loading">
@@ -470,6 +517,21 @@ body.dash-loading #statNo { min-width: 48px; }
         <button class="msg-btn" id="editSaveBtn" type="button" onclick="savePartyDetails()">Save changes</button>
         <p id="editFeedback" style="display:none;font-size:0.78rem;color:#5a8a6a;margin:10px 0 0;"></p>
       </div>
+    </div>
+  </div>
+
+  <!-- ── Share your invitation (guest RSVP link) ──────────────────────── -->
+  <div class="card" id="shareCard" style="animation-delay:0.08s;display:none;">
+    <div class="section-label">🔗 Share your invitation</div>
+    <p style="font-size:0.84rem;color:var(--mid);line-height:1.6;margin:0 0 12px;">This is your guest RSVP link — send it via WhatsApp, text, email, or print the QR code. Every response lands on this page and in your inbox.</p>
+    <div class="share-link-row">
+      <span class="share-link-url" id="shareLinkUrl">—</span>
+      <button class="share-copy-btn" id="shareCopyBtn" type="button" onclick="copyRsvpLink()">Copy</button>
+    </div>
+    <div class="share-actions">
+      <a class="share-action-btn" id="shareWhatsApp" target="_blank" rel="noopener">💬 WhatsApp</a>
+      <a class="share-action-btn" id="shareEmail">✉️ Email</a>
+      <button class="share-action-btn" id="shareNative" type="button" onclick="nativeShareRsvp()" style="display:none;">📲 Share…</button>
     </div>
   </div>
 
@@ -570,6 +632,13 @@ body.dash-loading #statNo { min-width: 48px; }
     </div>
   </div>
 
+  <!-- ── Post-party message (shown once the party date has passed) ──────── -->
+  <div id="postPartyCard" style="display:none;text-align:center;margin:14px 0 4px;background:var(--gold-pale);border:1px solid var(--gold-light);border-radius:14px;padding:24px 22px;">
+    <div style="font-size:2rem;line-height:1;margin-bottom:10px;">🎉</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--gold);margin-bottom:8px;">Happy party!</div>
+    <p style="font-size:0.9rem;color:var(--mid);line-height:1.7;margin:0;">We hope you all had a wonderful time. Thank you for using Tiny Invites — your guest list stays here whenever you need it. 💛</p>
+  </div>
+
   <!-- ── Today's count (hidden when locked) ───────────────────────────── -->
   <div class="digest-note" id="digestNote">
     <div class="digest-note-icon">✉️</div>
@@ -646,8 +715,12 @@ body.dash-loading #statNo { min-width: 48px; }
   <div class="table-card" style="animation-delay:0.35s">
     <div class="table-header">
       <span class="section-label" style="margin:0;">Guest responses</span>
-      <span style="display:flex;align-items:center;">
+      <span style="display:flex;align-items:center;gap:10px;">
         <span class="today-badge" id="todayBadge" style="display:none;">📬 <strong id="todayCount">0</strong> today</span>
+        <button id="refreshBtn" type="button" onclick="refreshDashboard()" title="Check for new responses"
+          style="background:none;border:none;color:var(--gold);font-family:'DM Sans',sans-serif;font-size:0.72rem;cursor:pointer;padding:2px 4px;">↻ Refresh</button>
+        <button id="printBtn" type="button" onclick="window.print()" title="Print or save the guest list as a PDF"
+          style="background:none;border:none;color:var(--gold);font-family:'DM Sans',sans-serif;font-size:0.72rem;cursor:pointer;padding:2px 4px;">🖨 Print</button>
         <span style="font-size:0.7rem;color:var(--soft);" id="lastUpdated">—</span>
       </span>
     </div>
@@ -657,7 +730,7 @@ body.dash-loading #statNo { min-width: 48px; }
           <tr><th>Name</th><th>Attending</th><th>Guests</th><th>Dietary / Notes</th><th></th></tr>
         </thead>
         <tbody id="tableBody">
-          <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link!</p></div></td></tr>
+          <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — <a href="#shareCard" onclick="event.preventDefault();var c=document.getElementById('shareCard');if(c){c.scrollIntoView({behavior:'smooth',block:'center'});}" style="color:var(--gold);font-weight:500;text-decoration:underline;cursor:pointer;">share your invitation link</a>!</p></div></td></tr>
         </tbody>
       </table>
     </div>
@@ -684,6 +757,8 @@ body.dash-loading #statNo { min-width: 48px; }
 let _partyData = null;
 let _responses = [];
 let _token     = null;
+let _rsvpLink  = null;
+let _noteInitialised = false;
 
 const DEFAULT_FETCH_TIMEOUT_MS = 10000;
 async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_FETCH_TIMEOUT_MS) {
@@ -707,17 +782,16 @@ function escapeHtml(str) {
     .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
-  const params = new URLSearchParams(location.search);
-  _token = params.get('token');
+async function loadDashboard({ silent = false } = {}) {
   if (!_token) { showError('No party page token found. Please use the link from your invitation email.'); return; }
-  showLoading(true);
+  if (!silent) showLoading(true);
+  const refreshBtn = document.getElementById('refreshBtn');
+  if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.textContent = 'Refreshing…'; }
   try {
     const res  = await fetchWithTimeout(`/api/dashboard-api?action=load&token=${encodeURIComponent(_token)}`, {}, 8000);
     const data = await res.json();
     if (res.status === 404) {
       showError('This party page no longer exists — the party may have been deleted, or the link is out of date. If you think this is a mistake, contact hello@tinyinvites.org.');
-      showLoading(false);
       return;
     }
     if (!res.ok) throw new Error(data.error || 'Failed to load dashboard');
@@ -725,16 +799,31 @@ window.addEventListener('DOMContentLoaded', async () => {
     populateHeader(data.party);
     handleCutoff(data.party);
     renderDashboard(data.responses, data.stats);
-    if (data.party && data.party.reminder_note) {
-      const ta = document.getElementById('reminderNoteText');
-      if (ta) { ta.value = data.party.reminder_note; updateCharCount('reminderNoteText','noteCharCount',500); }
+    // Load the saved reminder note into the box only once, so a refresh never
+    // clobbers text the host is part-way through typing.
+    if (!_noteInitialised) {
+      _noteInitialised = true;
+      if (data.party && data.party.reminder_note) {
+        const ta = document.getElementById('reminderNoteText');
+        if (ta) { ta.value = data.party.reminder_note; updateCharCount('reminderNoteText','noteCharCount',500); }
+      }
     }
+    if (silent) showToast('↻ Up to date');
   } catch (err) {
-    showError(describeFetchError(err));
+    if (silent) showToast('⚠️ Couldn\'t refresh — check your connection');
+    else showError(describeFetchError(err));
   } finally {
-    showLoading(false);
+    if (!silent) showLoading(false);
     document.body.classList.remove('dash-loading');  // reveal real values (skeletons off)
+    if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.textContent = '↻ Refresh'; }
   }
+}
+
+function refreshDashboard() { loadDashboard({ silent: true }); }
+
+window.addEventListener('DOMContentLoaded', () => {
+  _token = new URLSearchParams(location.search).get('token');
+  loadDashboard();
 });
 
 // ── Cutoff ────────────────────────────────────────────────────────────────────
@@ -759,6 +848,14 @@ function isPastCutoff(party) {
   if (!cutoff) return false;
   // Closed once today (London) is past the cutoff day.
   return londonTodayISO() > String(cutoff).slice(0, 10);
+}
+
+// True once the party day itself has passed (London date). Used to switch the
+// dashboard into a friendly "after the party" state — no more extending RSVPs
+// or editing the date/time, since the party has already happened.
+function isPastParty(party) {
+  if (!party.party_date) return false;
+  return londonTodayISO() > String(party.party_date).slice(0, 10);
 }
 
 function handleCutoff(party) {
@@ -800,6 +897,23 @@ function handleCutoff(party) {
       if (editToggle) editToggle.style.display = 'none';
       const editLocked = document.getElementById('editLockedNote');
       if (editLocked) editLocked.style.display = 'block';
+    }
+
+    // ── After the party itself ────────────────────────────────────────────
+    // Once the party date has passed, there's nothing left to extend or edit.
+    // Hide the extend/reopen and edit-time/venue controls (and the now-stale
+    // cutoff/locked cards) and show a warm "hope you had fun" message instead.
+    if (isPastParty(party)) {
+      ['extendCard','cutoffCard','lockedBanner'].forEach(id => {
+        const node = document.getElementById(id);
+        if (node) { node.style.display = 'none'; node.classList.remove('show'); }
+      });
+      ['editDetailsPanel','editDetailsToggle','editLockedNote'].forEach(id => {
+        const node = document.getElementById(id);
+        if (node) node.style.display = 'none';
+      });
+      const postParty = document.getElementById('postPartyCard');
+      if (postParty) postParty.style.display = 'block';
     }
   } catch (err) {
     console.error('Cutoff error:', err);
@@ -969,6 +1083,7 @@ function populateHeader(party) {
   document.getElementById('partyLocation').textContent = party.venue || 'Location to be confirmed';
 
   initCalendarButtons(party);
+  initShareCard(party);
 
   const photoUrl = party.photo_url || '';
   if (photoUrl) {
@@ -981,6 +1096,86 @@ function populateHeader(party) {
     document.getElementById('dashHero').style.display = 'none';
     document.getElementById('dashHeaderText').style.display = '';
   }
+}
+
+// ── Share invitation link ─────────────────────────────────────────────────────
+
+// The guest RSVP link the host shares. Mirrors the URL built server-side in
+// confirm-party.js: https://tinyinvites.org/rsvp.html?party=<party_id>
+function rsvpLinkFor(party) {
+  const id = party.party_id || party.id || party.partyId;
+  if (!id) return null;
+  return `https://tinyinvites.org/rsvp.html?party=${encodeURIComponent(id)}`;
+}
+
+function initShareCard(party) {
+  const url  = rsvpLinkFor(party);
+  const card = document.getElementById('shareCard');
+  if (!url || !card) { if (card) card.style.display = 'none'; return; }
+
+  _rsvpLink = url;
+  card.style.display = '';
+
+  const urlEl = document.getElementById('shareLinkUrl');
+  if (urlEl) urlEl.textContent = url;
+
+  // Pre-fill a friendly message for WhatsApp / email shares.
+  const childName = party.child_name || 'our little one';
+  const dateStr   = partyDateStr(party);
+  const msg = `You're invited to ${childName}'s party!${dateStr ? ' ' + dateStr + '.' : ''} Please RSVP here: ${url}`;
+
+  const wa = document.getElementById('shareWhatsApp');
+  if (wa) wa.href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+
+  const em = document.getElementById('shareEmail');
+  if (em) {
+    const subject = `You're invited to ${childName}'s party`;
+    em.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(msg)}`;
+  }
+
+  // Offer the OS share sheet on devices that support it (great on mobile).
+  const nativeBtn = document.getElementById('shareNative');
+  if (nativeBtn && navigator.share) nativeBtn.style.display = '';
+}
+
+function copyRsvpLink() {
+  if (!_rsvpLink) return;
+  const btn = document.getElementById('shareCopyBtn');
+  const done = () => {
+    if (btn) { btn.textContent = 'Copied ✓'; btn.classList.add('copied'); }
+    showToast('🔗 Invitation link copied');
+    setTimeout(() => { if (btn) { btn.textContent = 'Copy'; btn.classList.remove('copied'); } }, 2200);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(_rsvpLink).then(done).catch(() => fallbackCopy(_rsvpLink, done));
+  } else {
+    fallbackCopy(_rsvpLink, done);
+  }
+}
+
+// Clipboard fallback for older / non-secure contexts.
+function fallbackCopy(text, onDone) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (onDone) onDone();
+  } catch (e) {
+    showToast('⚠️ Could not copy — please copy the link manually');
+  }
+}
+
+function nativeShareRsvp() {
+  if (!_rsvpLink || !navigator.share) return;
+  const name = (_partyData && _partyData.child_name) || 'our little one';
+  navigator.share({
+    title: `${name}'s party`,
+    text:  `You're invited to ${name}'s party! Please RSVP:`,
+    url:   _rsvpLink,
+  }).catch(() => {});
 }
 
 // ── Dashboard render ──────────────────────────────────────────────────────────
@@ -1128,7 +1323,7 @@ function renderDashboard(responses, stats) {
 
   const tbody = document.getElementById('tableBody');
   if (!responses.length) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link!</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — <a href="#shareCard" onclick="event.preventDefault();var c=document.getElementById('shareCard');if(c){c.scrollIntoView({behavior:'smooth',block:'center'});}" style="color:var(--gold);font-weight:500;text-decoration:underline;cursor:pointer;">share your invitation link</a>!</p></div></td></tr>`;
     return;
   }
 
@@ -1194,7 +1389,7 @@ function openEdit(id, attending, adults, children, babies, allergies) {
   const childrenField = show.children ? `<label style="font-size:0.72rem;color:var(--soft);display:flex;align-items:center;gap:4px;">Children<input type="number" id="edit-children-${id}" min="0" max="30" value="${children}" style="width:60px" ${isNo?'disabled':''}/></label>` : '';
   const babiesField   = show.babies   ? `<label style="font-size:0.72rem;color:var(--soft);display:flex;align-items:center;gap:4px;">Babies<input type="number" id="edit-babies-${id}" min="0" max="30" value="${babies}" style="width:60px" ${isNo?'disabled':''}/></label>` : '';
   editRow.innerHTML = `
-    <td colspan="6">
+    <td colspan="5">
       <div class="edit-fields">
         <select id="edit-att-${id}" onchange="toggleCountInputs('${id}', this.value)">
           <option value="yes" ${!isNo?'selected':''}>✓ Coming</option>
@@ -1304,7 +1499,7 @@ async function deleteGuest(id, name) {
     document.getElementById('guest-row-'+id)?.remove();
     const tbody = document.getElementById('tableBody');
     if (!tbody.querySelector('tr[id^="guest-row-"]')) {
-      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — share your invitation link!</p></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎈</div><p>No responses yet — <a href="#shareCard" onclick="event.preventDefault();var c=document.getElementById('shareCard');if(c){c.scrollIntoView({behavior:'smooth',block:'center'});}" style="color:var(--gold);font-weight:500;text-decoration:underline;cursor:pointer;">share your invitation link</a>!</p></div></td></tr>`;
     }
     await refreshStats();
     showToast(`🗑 ${name} removed`);

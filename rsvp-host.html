@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Preview your child's party invite and go live with free online RSVPs — guests reply in one tap, and every response lands in your inbox. No account needed.">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Your Invite Preview — Tiny Invites</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -337,12 +339,12 @@
       <div class="field" style="margin-bottom:14px;">
         <label for="host-party-hour" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Party time <span class="pill-required-soft">Required</span></label>
         <div style="display:flex;gap:8px;">
-          <select id="host-party-hour" onchange="syncPartyTime()"
+          <select id="host-party-hour" onchange="syncPartyTime()" aria-label="Party start hour"
             style="flex:1;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
             onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
             <option value="">Hour</option>
           </select>
-          <select id="host-party-minute" onchange="syncPartyTime()"
+          <select id="host-party-minute" onchange="syncPartyTime()" aria-label="Party start minutes"
             style="flex:1;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
             onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'">
           </select>
@@ -424,12 +426,6 @@
 
         </div>
       </details>
-
-      <!-- Honeypot — hidden from humans; bots fill it and get a fake success.
-           Named "hp_field" (not "website"/"url") so mobile autofill won't
-           populate it for real users. Sent to the server as `website`, which
-           go-live.js checks. -->
-      <input type="text" name="hp_field" style="display:none" tabindex="-1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-hidden="true" id="golive-honeypot">
 
       <label class="consent-wrap" id="consent-wrap">
         <input type="checkbox" id="host-consent" onchange="if(this.checked)document.getElementById('consent-wrap').style.borderColor=''">
@@ -582,7 +578,7 @@
     const minSel  = document.getElementById('host-party-minute');
     if (!hourSel || !minSel) return;
     if (hourSel.options.length <= 1) {
-      for (let h = 8; h <= 21; h++) {
+      for (let h = 9; h <= 19; h++) {   // 9am – 7pm
         const ampm = h >= 12 ? 'PM' : 'AM';
         let hh = h % 12; if (hh === 0) hh = 12;
         const opt = document.createElement('option');
@@ -636,6 +632,20 @@
     const snEl = document.getElementById('host-special-note');
     if (snEl && previewNote) snEl.value = previewNote;
     renderInvite({ child_name:previewName, age:previewAge, venue:previewLocation, photo_url:previewPhoto, special_note:(snEl ? snEl.value : previewNote) });
+
+    // Enter in a single-line field submits the form (skips textareas, where
+    // Enter should add a new line). Mirrors what people expect from a form.
+    const goLiveCard = document.getElementById('golive-card');
+    if (goLiveCard) {
+      goLiveCard.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        const tag = (e.target.tagName || '').toLowerCase();
+        if (tag === 'textarea') return;
+        if (e.target.type === 'checkbox') return;
+        e.preventDefault();
+        goLive();
+      });
+    }
   });
 
   function renderInvite(party) {
@@ -840,7 +850,6 @@
           count_babies:  countBabies,
           phone_number:  phoneOptin ? phone : null,
           rsvp_cutoff:   document.getElementById('host-rsvp-cutoff').value || null,
-          website:       document.getElementById('golive-honeypot')?.value || undefined,
         })
       }, 12000);
       if (res.status === 429) {

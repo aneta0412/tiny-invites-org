@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -326,10 +326,11 @@
 
       <div class="field" style="margin-bottom:14px;">
         <label for="host-party-date" style="display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;">Party date <span class="pill-required-soft">Required</span></label>
-        <input type="date" id="host-party-date"
+        <input type="date" id="host-party-date" lang="en-GB"
           style="width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--gold-light);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--dark);outline:none;transition:border-color 0.2s;"
           onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-light)'"
-          oninput="updateCutoffFromPartyDate()">
+          oninput="updateCutoffFromPartyDate(); updatePartyDateEcho();">
+        <p id="party-date-echo" style="display:none;font-size:0.78rem;color:var(--dark);font-weight:500;margin-top:6px;"></p>
         <p class="hint" style="font-size:0.72rem;color:var(--soft);margin-top:4px;line-height:1.5;">Shown to guests, and keeps your party out of the 60-day auto-archive.</p>
       </div>
 
@@ -423,6 +424,12 @@
 
         </div>
       </details>
+
+      <!-- Honeypot — hidden from humans; bots fill it and get a fake success.
+           Named "hp_field" (not "website"/"url") so mobile autofill won't
+           populate it for real users. Sent to the server as `website`, which
+           go-live.js checks. -->
+      <input type="text" name="hp_field" style="display:none" tabindex="-1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-hidden="true" id="golive-honeypot">
 
       <label class="consent-wrap" id="consent-wrap">
         <input type="checkbox" id="host-consent" onchange="if(this.checked)document.getElementById('consent-wrap').style.borderColor=''">
@@ -575,7 +582,7 @@
     const minSel  = document.getElementById('host-party-minute');
     if (!hourSel || !minSel) return;
     if (hourSel.options.length <= 1) {
-      for (let h = 9; h <= 17; h++) {
+      for (let h = 8; h <= 21; h++) {
         const ampm = h >= 12 ? 'PM' : 'AM';
         let hh = h % 12; if (hh === 0) hh = 12;
         const opt = document.createElement('option');
@@ -675,7 +682,9 @@
         line.innerHTML = `<span class="icon">📅</span><span>${formatDate(dateInput.value)}</span>`;
       };
       dateInput.addEventListener('change', renderDate);
+      dateInput.addEventListener('change', updatePartyDateEcho);
       renderDate();
+      updatePartyDateEcho();
     }
 
     // Time dropdowns — populate, then render the start–end preview line
@@ -731,6 +740,18 @@
       countAdults: document.getElementById('count-adults-chk')?.checked === true,
       countBabies: document.getElementById('count-babies-chk')?.checked === true,
     };
+  }
+
+  // Show the chosen party date back in UK format (e.g. "Sunday, 28 June 2026"),
+  // so it always reads correctly regardless of how the browser's native date
+  // picker is localised.
+  function updatePartyDateEcho() {
+    const input = document.getElementById('host-party-date');
+    const echo  = document.getElementById('party-date-echo');
+    if (!input || !echo) return;
+    if (!input.value) { echo.style.display = 'none'; echo.textContent = ''; return; }
+    echo.textContent = '📅 ' + formatDate(input.value);
+    echo.style.display = 'block';
   }
 
   function updateCutoffFromPartyDate() {
@@ -819,6 +840,7 @@
           count_babies:  countBabies,
           phone_number:  phoneOptin ? phone : null,
           rsvp_cutoff:   document.getElementById('host-rsvp-cutoff').value || null,
+          website:       document.getElementById('golive-honeypot')?.value || undefined,
         })
       }, 12000);
       if (res.status === 429) {

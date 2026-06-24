@@ -652,8 +652,9 @@ body.dash-loading #statNo { min-width: 48px; }
   </button>
 
   <!-- ── Message Guests ────────────────────────────────────────────────── -->
-  <div class="msg-card" style="animation-delay:0.38s">
-    <div class="msg-tabs">
+  <div class="msg-card" id="msgCard" style="animation-delay:0.38s">
+    <div class="section-label" id="partyPostLabel" style="display:none;">📨 Party post — message everyone</div>
+    <div class="msg-tabs" id="msgTabs">
       <button class="msg-tab active" id="tabNote" onclick="switchMsgTab('note')">
         📝 Reminder note
       </button>
@@ -914,6 +915,8 @@ function handleCutoff(party) {
       });
       const postParty = document.getElementById('postPartyCard');
       if (postParty) postParty.style.display = 'block';
+
+      applyPostPartyMessaging();
     }
   } catch (err) {
     console.error('Cutoff error:', err);
@@ -1695,6 +1698,35 @@ function switchMsgTab(tab) {
   document.getElementById('tabSend').classList.toggle('active', tab === 'send');
   document.getElementById('panelNote').classList.toggle('active', tab === 'note');
   document.getElementById('panelSend').classList.toggle('active', tab === 'send');
+}
+
+// Once the party has passed, recast the messaging area for the "after" state:
+// drop the share card, the response-count note and the (now pointless) reminder
+// note, and turn the broadcast into a single "Party post" composer so the host
+// can message everyone — e.g. a thank-you or a link to the photos.
+function applyPostPartyMessaging() {
+  const hide = id => { const n = document.getElementById(id); if (n) n.style.display = 'none'; };
+  hide('shareCard');     // sharing the invite is no longer relevant
+  hide('digestNote');    // "X responses today" note no longer meaningful
+  hide('msgTabs');       // collapse the two-tab switcher
+  hide('panelNote');     // drop the reminder-note option entirely
+
+  const label = document.getElementById('partyPostLabel');
+  if (label) label.style.display = 'block';
+
+  switchMsgTab('send');  // force the broadcast panel on
+  const panelSend = document.getElementById('panelSend');
+  if (panelSend) panelSend.classList.add('active');
+
+  const hint = document.querySelector('#panelSend .msg-hint');
+  if (hint) hint.innerHTML = "<strong>Post a message to everyone who came</strong> — say thank you, or share a link to your photos or a party page. Everyone who RSVP'd yes gets it by email, and you get a copy too.";
+
+  const subj = document.getElementById('updateSubject');
+  if (subj) subj.placeholder = 'e.g. Thank you for celebrating with us! 🎉';
+  const msg = document.getElementById('updateMessage');
+  if (msg) msg.placeholder = 'e.g. Thank you all so much for coming! Here are the photos from the day: <paste your link>';
+  const sendBtn = document.getElementById('btnSendUpdate');
+  if (sendBtn) sendBtn.textContent = '📢 Send party post';
 }
 
 function updateCharCount(textareaId, counterId, max) {

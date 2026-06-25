@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Keep API JSON and UTM-tagged duplicates out of the index
+Disallow: /api/
+Disallow: /*?*utm_
+
+Sitemap: https://tinyinvites.org/sitemap.xml

@@ -411,7 +411,7 @@ function renderVenue(v){
   document.getElementById("ogTitle").setAttribute("content", v.metaTitle || v.name);
   document.getElementById("ogDesc").setAttribute("content", v.metaDesc || "");
   const slug = slugify(v.name);
-  document.getElementById("pageCanonical").setAttribute("href", "https://tinyinvites.org/venue/?venue=" + (v.slug||v.id));
+  document.getElementById("pageCanonical").setAttribute("href", "https://tinyinvites.org/venue.html?venue=" + (v.slug||v.id));
 
   const catLabel = CAT_LABELS[v.cat] || v.cat;
   const catEmoji = CAT_EMOJI[v.cat] || "🎉";

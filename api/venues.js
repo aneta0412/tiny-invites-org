@@ -55,6 +55,7 @@ export default async function handler(req, res) {
     const { data, error } = await supabase
       .from('venues')
       .select('*')
+      .eq('is_open', true)
       .order('id', { ascending: true });
 
     if (error) {

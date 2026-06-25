@@ -7,6 +7,75 @@ Serverless API for **tinyinvites.org**: free RSVP pages for children's birthday 
 > For the full history of changes (including this session's work), see **[CHANGES.md](./CHANGES.md)**.
 
 ---
+HOW IT WORKS — ADDING VENUES & SUPPLIERS
+========================================
+(Drop this into your README, or keep alongside it.)
+
+There are two finder pages, and they store their data in DIFFERENT ways:
+
+  partyfinder.html       = VENUES (national)        -> data lives in SUPABASE
+  supplies_warwick.html  = WARWICKSHIRE SUPPLIERS    -> data is HARDCODED in the file
+
+
+1) ADDING / EDITING A VENUE  (the easy one — Supabase)
+------------------------------------------------------
+Source of truth = the `venues` table in Supabase.
+
+- Add a new row in the Supabase `venues` table. Make sure `is_open = true`.
+- That's it for the live site: partyfinder.html calls GET /api/venues on every
+  load (which returns only open venues), so the new venue appears automatically.
+  No code change, no re-upload needed.
+- To CLOSE/HIDE a venue, set its `is_open = false` (don't delete it). It will
+  drop off the site on the next load.
+
+Notes:
+- The big `DB = [...]` list inside partyfinder.html is only an OFFLINE FALLBACK
+  used if /api/venues ever fails. You don't need to keep it in sync day-to-day.
+- /api/venues.js maps the Supabase snake_case columns to what the page expects —
+  if you add a NEW column you want shown, it has to be added there too.
+
+
+2) ADDING / EDITING A SUPPLIER  (hardcoded — edit the file)
+-----------------------------------------------------------
+There is NO Supabase table and NO API for suppliers. The 75 suppliers are a
+`SUPPLIERS = [ ... ]` list written directly inside supplies_warwick.html.
+
+To add one, add an object to that list with these fields:
+  cat         (one of: balloons, cakes, entertainer, facepaint, disco, hire,
+               planner, photobooth, photography)
+  name, service, area, city, price_from, short_desc,
+  highlights  (array of up to ~3 short phrases),
+  rating      (e.g. "4.9"), phone, website, mobile (true/false)
+
+Then re-upload supplies_warwick.html.
+
+
+3) THE SEO SNAPSHOTS (important — these don't auto-update)
+----------------------------------------------------------
+Two things are "frozen snapshots" and do NOT update on their own when you add a
+venue or supplier:
+
+  a) The structured data (JSON-LD) baked into each page
+       - partyfinder.html       holds a 315-venue list
+       - supplies_warwick.html  holds a 75-supplier list
+  b) sitemap-venues.xml          holds 315 individual venue URLs
+
+A new venue/supplier will SHOW UP for visitors immediately (venues via Supabase,
+suppliers once you edit the file), but Google's structured data + sitemap won't
+include it until these snapshots are regenerated.
+
+What to do: after adding a batch of venues/suppliers, regenerate
+the JSON-LD blocks and sitemap-venues.xml from the latest data, re-upload, and in
+Google Search Console resubmit sitemap.xml. (Ask Claude to regenerate these from
+a fresh Supabase export / the updated supplier list — it's a quick re-run.)
+
+
+QUICK ANSWERS
+-------------
+"I got a new venue — where does it go?"      -> Supabase `venues` table (is_open=true). Live automatically.
+"I got a new Warwickshire supplier?"          -> Edit the SUPPLIERS list in supplies_warwick.html, re-upload.
+"Why isn't my new venue in Google yet?"       -> Structured data + sitemap are snapshots; regenerate + resubmit sitemap.xml.
+"How do I hide a venue?"                       -> Set is_open=false in Supabase (don't delete).
 
 ## How it fits together
 

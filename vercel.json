@@ -16,9 +16,7 @@
       "path": "/api/cron/send-final-list",
       "schedule": "0 6 * * *"
     }
-  ]
-}
-{
+  ],
   "redirects": [
     {
       "source": "/venue.html",

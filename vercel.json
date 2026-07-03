@@ -18,3 +18,13 @@
     }
   ]
 }
+{
+  "redirects": [
+    {
+      "source": "/venue.html",
+      "has": [{ "type": "query", "key": "venue", "value": "(?<slug>.+)" }],
+      "destination": "/venue/:slug/",
+      "permanent": true
+    }
+  ]
+}

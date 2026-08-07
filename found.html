@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You found us | Tiny Invites</title>
+<meta name="description" content="You scanned the shirt. Here's what your child's next party invitation could look like — free, beautiful, in 30 seconds.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://tinyinvites.org/found.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --champagne:#F5EDDF; --cream:#FBF7EF; --gold:#B99755;
+    --gold-deep:#8A6F3E; --ink:#2B2620;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--champagne); color:var(--ink);
+    font-family:'Jost',sans-serif; font-weight:300;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh; display:flex; flex-direction:column; align-items:center;
+    padding:48px 22px 64px; text-align:center;
+  }
+  .brand{
+    font-family:'Cormorant Garamond',serif; font-style:italic;
+    color:var(--gold-deep); font-size:20px; letter-spacing:.02em;
+  }
+  h1{
+    font-family:'Cormorant Garamond',serif; font-weight:600;
+    font-size:clamp(42px,10vw,64px); line-height:1.02; margin-top:22px;
+  }
+  h1 em{font-style:italic; font-weight:500; color:var(--gold-deep)}
+  .rule{
+    display:flex; align-items:center; gap:14px; margin:26px auto 30px; width:min(320px,80%);
+  }
+  .rule::before,.rule::after{content:""; flex:1; height:1px; background:var(--gold)}
+  .rule span{width:10px;height:10px;background:var(--gold);transform:rotate(45deg)}
+  .lede{
+    max-width:34ch; font-size:17px; line-height:1.65; color:#544b3d;
+  }
+  .invite-frame{
+    margin:36px 0 10px; width:min(340px,88vw);
+    border:1px solid var(--gold); background:var(--cream);
+    padding:10px; box-shadow:0 24px 60px -30px rgba(74,60,36,.45);
+    border-radius:18px;
+  }
+  .invite-frame img{width:100%; display:block; border-radius:10px}
+  .caption{
+    font-family:'Cormorant Garamond',serif; font-style:italic;
+    font-size:19px; color:var(--gold-deep); margin-top:16px;
+  }
+  .cta{
+    display:inline-block; margin-top:34px;
+    background:var(--ink); color:var(--cream); text-decoration:none;
+    font-size:14px; letter-spacing:.22em; text-transform:uppercase; font-weight:400;
+    padding:18px 34px; border-radius:2px;
+    transition:background .2s ease;
+  }
+  .cta:hover{background:#463f34}
+  .secondary{
+    display:block; margin-top:20px; color:#6b5f4c; font-size:14px;
+    text-decoration:underline; text-underline-offset:3px;
+  }
+  .footnote{
+    margin-top:44px; font-size:11px; letter-spacing:.24em;
+    text-transform:uppercase; color:#9b8c70;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .invite-frame{animation:rise .7s ease both .15s}
+    @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  }
+</style>
+</head>
+<body>
+
+  <div class="brand">Tiny Invites</div>
+
+  <h1>You found <em>us.</em></h1>
+
+  <div class="rule"><span></span></div>
+
+  <p class="lede">That shirt you just scanned? Good eye. Below is a picture of your child's <strong>future party invitation</strong> — yes, it can really look like this, and yes, it's free.</p>
+
+  <div class="invite-frame">
+    <img src="/images/invite-screenshot.jpg" alt="A real Tiny Invites invitation — champagne and gold design with the birthday child's photo, a live RSVP page and a QR code for guests" width="1010" height="1668" loading="eager">
+  </div>
+  <div class="caption">— a real invite, made in 30 seconds —</div>
+
+  <a class="cta" href="/?utm_source=tshirt&utm_medium=found-page">Make one for your child</a>
+  <a class="secondary" href="/partyfinder.html?utm_source=tshirt">or browse 300+ UK party venues first</a>
+
+  <div class="footnote">Free forever · No app · Guests RSVP with one tap</div>
+
+</body>
+</html>

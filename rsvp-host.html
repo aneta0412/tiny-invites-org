@@ -664,7 +664,7 @@
     const safeName = escapeHtml(name);
     const safeAge  = escapeHtml(age);
     document.getElementById('inv-greeting').innerHTML = `You're invited to <em>${safeName}'s party</em>!`;
-    document.getElementById('inv-subtitle').innerHTML = `We'd love to celebrate with you`;
+    document.getElementById('inv-subtitle').innerHTML = `We'd love to celebrate with you.`;
     document.getElementById('inv-age-line').innerHTML = age
       ? `Celebrating <strong>${safeName}</strong> turning <strong>${safeAge}</strong>!`
       : `Celebrating <strong>${safeName}</strong>!`;

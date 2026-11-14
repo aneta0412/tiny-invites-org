@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>iPad Selfie Photo Booth Hire | Stratford-upon-Avon + 50 miles | Tiny Invites</title>
 <meta name="description" content="iPad selfie photo booth hire for kids' birthday parties, weddings, christenings and celebrations. Based in Stratford-upon-Avon, covering 50 miles – Warwick, Leamington Spa, Birmingham, Coventry, Cheltenham and more.">
-<link rel="canonical" href="https://booth.tinyinvites.org">
+<link rel="canonical" href="https://photos.tinyinvites.org">
 <meta property="og:title" content="iPad Selfie Photo Booth Hire – Stratford-upon-Avon + 50 miles">
 <meta property="og:description" content="Capture every guest and every smile. Selfie booth hire for kids' parties, weddings and celebrations across Warwickshire and beyond.">
 <meta property="og:type" content="website">
@@ -21,7 +21,7 @@
   "description": "iPad selfie photo booth hire for kids' birthday parties, weddings and celebrations.",
   "telephone": "+447925749815",
   "email": "hello@tinyinvites.org",
-  "url": "https://booth.tinyinvites.org",
+  "url": "https://photos.tinyinvites.org",
   "areaServed": [
     {"@type": "GeoCircle", "geoMidpoint": {"@type": "GeoCoordinates", "latitude": 52.1917, "longitude": -1.7073}, "geoRadius": "80000"}
   ],
@@ -206,6 +206,12 @@
   .ti-promo .btn{background:#e9cf9f;color:var(--ink) !important}
   .ti-promo .btn:hover{background:#fff}
 
+  .form-status{margin-top:14px;font-size:.95rem;text-align:center}
+  .form-status.ok{color:#3d6a3a;font-weight:600}
+  .form-status.err{color:#a3402e}
+  .thanks{text-align:center;padding:30px 10px}
+  .thanks h3{font-size:2rem;margin-bottom:8px}
+  .thanks p{color:var(--muted)}
   footer{padding:30px 0;font-size:.85rem;color:var(--muted);text-align:center}
 </style>
 </head>
@@ -427,15 +433,17 @@
       <div class="line">📍 <span>Stratford-upon-Avon, covering 50 miles</span></div>
     </div>
 
-    <form id="enquiry">
+    <form id="enquiry" action="https://formspree.io/f/maqvdkoj" method="POST">
+      <input type="hidden" name="_subject" id="subjectField" value="Photo booth enquiry">
+      <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
       <div class="row">
-        <div><label for="name">Your name</label><input id="name" required></div>
-        <div><label for="email">Email</label><input id="email" type="email" required></div>
+        <div><label for="name">Your name</label><input id="name" name="name" required></div>
+        <div><label for="email">Email</label><input id="email" name="email" type="email" required></div>
       </div>
       <div class="row">
-        <div><label for="date">Event date</label><input id="date" type="date"></div>
+        <div><label for="date">Event date</label><input id="date" name="event_date" type="date"></div>
         <div><label for="type">Type of event</label>
-          <select id="type">
+          <select id="type" name="event_type">
             <option>Kids' birthday party</option><option>Wedding</option><option>Christening / naming day</option>
             <option>Baby shower</option><option>Milestone birthday</option><option>Work / Christmas party</option>
             <option>School / PTA event</option><option>Other</option>
@@ -443,12 +451,13 @@
         </div>
       </div>
       <div class="row">
-        <div><label for="venue">Venue / town</label><input id="venue" placeholder="e.g. Leamington Spa"></div>
-        <div><label for="guests">Approx. guests</label><input id="guests" type="number" min="1" placeholder="e.g. 30"></div>
+        <div><label for="venue">Venue / town</label><input id="venue" name="venue" placeholder="e.g. Leamington Spa"></div>
+        <div><label for="guests">Approx. guests</label><input id="guests" name="guests" type="number" min="1" placeholder="e.g. 30"></div>
       </div>
       <label for="msg">Anything else?</label>
-      <textarea id="msg" placeholder="Times, theme, questions…"></textarea>
-      <button class="btn" type="submit">Send enquiry</button>
+      <textarea id="msg" name="message" placeholder="Times, theme, questions…"></textarea>
+      <button class="btn" type="submit" id="sendBtn">Send enquiry</button>
+      <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
     </form>
   </div>
 </section>
@@ -469,20 +478,40 @@
 </footer>
 
 <script>
-  // EDIT: the email address enquiries are sent to
-  const CONTACT_EMAIL = "hello@tinyinvites.org";
+  // Enquiries are sent through Formspree (formspree.io).
 
   document.getElementById("yr").textContent = new Date().getFullYear();
 
-  // Opens the visitor's email app with the enquiry filled in (no server needed).
-  document.getElementById("enquiry").addEventListener("submit", function (e) {
+  const form = document.getElementById("enquiry");
+  const statusEl = document.getElementById("formStatus");
+  const btn = document.getElementById("sendBtn");
+
+  form.addEventListener("submit", async function (e) {
     e.preventDefault();
-    const v = id => document.getElementById(id).value.trim();
-    const subject = `Photo booth enquiry – ${v("type")}${v("date") ? " – " + v("date") : ""}`;
-    const body =
-      `Name: ${v("name")}\nEmail: ${v("email")}\nEvent: ${v("type")}\nDate: ${v("date")}\n` +
-      `Venue / town: ${v("venue")}\nGuests: ${v("guests")}\n\n${v("msg")}`;
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const type = document.getElementById("type").value;
+    const date = document.getElementById("date").value;
+    document.getElementById("subjectField").value =
+      "Photo booth enquiry – " + type + (date ? " – " + date : "");
+
+    btn.disabled = true; btn.textContent = "Sending…";
+    statusEl.className = "form-status"; statusEl.textContent = "";
+
+    try {
+      const res = await fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: { "Accept": "application/json" }
+      });
+      if (res.ok) {
+        form.innerHTML = '<div class="thanks"><h3>Thank you! 🎉</h3><p>Your enquiry is on its way. I\'ll get back to you with availability and a price, usually the same day.</p></div>';
+      } else {
+        throw new Error("Formspree error");
+      }
+    } catch (err) {
+      statusEl.className = "form-status err";
+      statusEl.innerHTML = 'Sorry, that didn\'t send. Please email <a href="mailto:hello@tinyinvites.org">hello@tinyinvites.org</a> or call 07925 749815.';
+      btn.disabled = false; btn.textContent = "Send enquiry";
+    }
   });
 </script>
 </body>

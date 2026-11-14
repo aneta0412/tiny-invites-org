@@ -23,13 +23,12 @@
       "has": [{ "type": "query", "key": "venue", "value": "(?<slug>.+)" }],
       "destination": "/venue/:slug/",
       "permanent": true
-    }
-  ],
-  "rewrites": [
+    },
     {
       "source": "/",
       "has": [{ "type": "host", "value": "photos.tinyinvites.org" }],
-      "destination": "/photos.html"
+      "destination": "/photos.html",
+      "permanent": false
     }
   ]
 }

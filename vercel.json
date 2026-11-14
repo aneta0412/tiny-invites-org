@@ -24,5 +24,12 @@
       "destination": "/venue/:slug/",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "photos.tinyinvites.org" }],
+      "destination": "/photos.html"
+    }
   ]
 }

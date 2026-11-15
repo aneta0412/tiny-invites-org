@@ -129,6 +129,20 @@ input.pc:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
 .ib-kicker{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .ib-btn{padding:9px 18px;background:var(--ink);color:var(--cream);border-radius:3px;font-size:12px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;white-space:nowrap;transition:background .2s}
 .ib-btn:hover{background:var(--gold)}
+.hero-booth-btn{display:inline-flex;align-items:center;gap:10px;margin-top:12px;padding:12px 22px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;letter-spacing:.02em;background:var(--white);color:var(--ink);border:1px solid var(--gold);border-radius:10px;text-decoration:none;transition:transform .2s,box-shadow .2s,background .2s}
+.hero-booth-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow2);background:var(--gold-pale)}
+.hero-booth-btn .hsb-count{background:var(--gold);color:#fff;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.04em}
+.booth-promo{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:22px;max-width:900px;margin:36px auto 0;background:var(--white);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:6px;padding:22px 26px;box-shadow:var(--shadow);text-align:left;font-family:'DM Sans',sans-serif}
+.booth-promo .bp-emoji{font-size:38px;line-height:1}
+.booth-promo .bp-kicker{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.booth-promo .bp-title{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--ink);margin-bottom:6px;line-height:1.2}
+.booth-promo .bp-text{font-size:13px;font-weight:300;color:var(--ink2,#5a4e3e);line-height:1.6}
+.booth-promo .bp-text strong{font-weight:600;color:var(--ink)}
+.booth-promo .bp-actions{display:flex;flex-direction:column;gap:8px}
+.booth-promo .ib-btn{text-align:center}
+.booth-promo .bp-ghost{background:transparent;color:var(--ink);border:1px solid var(--gold)}
+.booth-promo .bp-ghost:hover{background:var(--gold-pale);color:var(--ink)}
+@media(max-width:640px){.booth-promo{grid-template-columns:1fr;gap:12px;padding:20px}.booth-promo .bp-emoji{font-size:30px}}
 .modal-invite{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:var(--gold-pale);border:1px solid var(--pop2);border-radius:6px;padding:14px 18px;margin:18px 0 4px;font-size:13px;color:var(--ink2);font-weight:300}
 .modal-invite strong{color:var(--ink);font-weight:600}
 .modal-invite a{color:var(--gold);font-weight:600;text-decoration:none;white-space:nowrap}
@@ -482,6 +496,7 @@ a.card{text-decoration:none;color:inherit}
         <div class="stat"><strong>New</strong> venues weekly</div>
       </div>
       <a class="hero-supplier-btn" href="/supplies_warwick.html">🎂 Doing it DIY? Browse Warwickshire party suppliers <span class="hsb-count">75</span> <span class="hsb-arrow">→</span></a>
+      <br><a class="hero-booth-btn" href="https://photos.tinyinvites.org/?utm_source=littlepartyfinder&utm_medium=hero" target="_blank" rel="noopener">📸 Add a selfie photo booth <span class="hsb-count">from £220</span> <span class="hsb-arrow">→</span></a>
     </div>
     <div class="search-card">
       <div class="step-head"><span class="step-num">1</span> Where's the party?</div>
@@ -679,6 +694,18 @@ a.card{text-decoration:none;color:inherit}
     <div class="landing-preview" id="landingPreview">
       <div class="lp-title"><span style="color:var(--gold)">✦</span>&nbsp;Venues to inspire you — new selection every visit&nbsp;<span style="color:var(--gold)">✦</span></div>
       <div class="landing-cards" id="landingCards"><div class="lp-loading" id="lpLoading"><span class="lp-spinner" aria-hidden="true"></span> Loading venues…</div></div>
+    </div>
+  </div>
+  <div class="booth-promo" id="photoBooth">
+    <div class="bp-emoji" aria-hidden="true">📸</div>
+    <div>
+      <div class="bp-kicker">From the Tiny Invites team · Stratford-upon-Avon + 50 miles</div>
+      <div class="bp-title">Booked your venue? Add a selfie photo booth</div>
+      <div class="bp-text">An iPad booth with a ring light that guests use themselves, so you get a photo of every child and grown-up. <strong>3-hour hire from £220</strong> (Mon–Thu £180), with set-up, a sequin backdrop and a digital gallery included. Add-on: 30 instant prints, <strong>£230 total</strong> (Mon–Thu £200). Balloon arch on request. Fully insured with £5m public liability cover.</div>
+    </div>
+    <div class="bp-actions">
+      <a class="ib-btn" href="https://photos.tinyinvites.org/?utm_source=littlepartyfinder&utm_medium=promo" target="_blank" rel="noopener">See the booth →</a>
+      <a class="ib-btn bp-ghost" href="https://photos.tinyinvites.org/?utm_source=littlepartyfinder&utm_medium=promo#contact" target="_blank" rel="noopener">Check my date</a>
     </div>
   </div>
 </main>
@@ -1584,6 +1611,8 @@ function initPartyFinder(){
       <span>Little Party Finder</span>
       <span class="footer-sep">·</span>
       <span>Powered by <a href="https://tinyinvites.org?utm_source=littlepartyfinder&utm_medium=footer" target="_blank" rel="noopener">Tiny Invites</a></span>
+      <span class="footer-sep">·</span>
+      <span><a href="https://photos.tinyinvites.org/?utm_source=littlepartyfinder&utm_medium=footer" target="_blank" rel="noopener">📸 Photo booth hire</a></span>
     </div>
     <div class="footer-cta">
       Found your venue? <a href="https://tinyinvites.org/invite?utm_source=littlepartyfinder&utm_medium=footer_cta" target="_blank" rel="noopener">✉️ Create a matching invite at tinyinvites.org/invite</a>

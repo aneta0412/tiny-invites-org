@@ -120,7 +120,8 @@
   .qrlbl { margin-top:1vmin; font-size:1.9vmin; color:#2b2520; }
 
   /* guest book */
-  #padwrap { position:relative; width:86vmin; max-width:900px; aspect-ratio:2.4; margin:4vmin 0; background:var(--card); border:1px solid var(--soft); box-shadow:0 1.6vmin 4vmin rgba(90,70,40,.08); }
+  #book { overflow:auto; }
+  #padwrap { position:relative; width:86vmin; max-width:900px; aspect-ratio:3.1; margin:4vmin 0; background:var(--card); border:1px solid var(--soft); box-shadow:0 1.6vmin 4vmin rgba(90,70,40,.08); }
   #padwrap::after { content:''; position:absolute; left:8%; right:8%; bottom:26%; border-bottom:1px dashed var(--soft); pointer-events:none; }
   #pad { position:absolute; inset:0; width:100%; height:100%; touch-action:none; }
 
@@ -148,6 +149,10 @@
   #toast.on { opacity:1; transform:translate(-50%, 0); }
   #err { position:absolute; top:3vmin; left:0; right:0; text-align:center; color:#fff; font-size:2.3vmin; z-index:90; padding:0 5vmin; pointer-events:none; }
   #err:not(:empty) { background:#8c2f2f; padding:1.6vmin 5vmin; }
+  #gear::after { content:''; position:absolute; top:15px; right:15px; width:11px; height:11px; border-radius:50%; background:rgba(255,255,255,.45); box-shadow:0 0 0 1px rgba(0,0,0,.28); }
+  #rescue { display:none; position:absolute; left:50%; top:12vmin; transform:translateX(-50%); z-index:86; background:var(--card); color:var(--ink); border:1px solid var(--gold); border-radius:999px; padding:1.6vmin 5vmin; font-size:2.4vmin; }
+  #bookText { width:86vmin; max-width:900px; margin-top:3vmin; background:var(--card); border:1px solid var(--soft); border-radius:.8vmin; padding:2vmin 2.4vmin; font-family:var(--fd); font-size:3.4vmin; color:var(--ink); resize:none; line-height:1.45; }
+  #bookText:focus { outline:2px solid var(--gold); outline-offset:2px; }
   #galCard { position:absolute; right:4vmin; bottom:4vmin; width:17vmin; padding:1.2vmin 1.2vmin .8vmin; background:#fff; border:1px solid var(--soft); box-shadow:0 1vmin 3vmin rgba(90,70,40,.12); display:flex; flex-direction:column; align-items:center; }
   #galCard span { font-family:var(--fd); font-style:italic; font-size:2.1vmin; color:#2b2520; margin-top:.6vmin; line-height:1.2; }
   #galQR img, #galQR canvas, .qr img, .qr canvas { width:100% !important; height:auto !important; display:block; }
@@ -260,7 +265,8 @@
 
   <div id="book" class="screen paper">
     <div class="title" id="bookTitle">Leave a note in the guest book</div>
-    <div class="lede">Write with your finger. Your note is kept with your photo.</div>
+    <div class="lede">Type a message, draw with your finger, or do both.</div>
+    <textarea id="bookText" rows="2" placeholder="Type your message" maxlength="240"></textarea>
     <div id="padwrap"><canvas id="pad"></canvas></div>
     <div class="actions">
       <button class="btn line" id="bookClear" type="button">Clear</button>
@@ -319,6 +325,7 @@
     </div>
   </div>
 
+  <button id="rescue" type="button">Booth settings</button>
   <div id="toast"></div>
   <div id="err"></div>
 </div>
@@ -390,10 +397,11 @@
   }
 
   /* ---------- settings ---------- */
-  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', gallery:false, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, cloud:'dlkwbg59c', preset:'xe9vrl1r qv7cgevf gamvkohk' };
+  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', gallery:true, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, cloud:'dlkwbg59c', preset:'xe9vrl1r qv7cgevf gamvkohk' };
   let cfg = Object.assign({}, DEF);
   try { Object.assign(cfg, JSON.parse(localStorage.getItem('ti_cfg') || '{}')); } catch (e) {}
   try { if (!cfg.cloud) cfg.cloud = localStorage.getItem('ti_cloud') || ''; if (!cfg.preset) cfg.preset = localStorage.getItem('ti_preset') || ''; } catch (e) {}
+  if (!cfg.cloud) cfg.cloud = DEF.cloud; if (!cfg.preset) cfg.preset = DEF.preset;
   function save() { try { localStorage.setItem('ti_cfg', JSON.stringify(cfg)); } catch (e) {} }
   const theme = () => THEMES[cfg.theme] || THEMES.ivory;
   const fx = () => FILTERS[cfg.filter] || FILTERS.glow;
@@ -436,9 +444,9 @@
       if (stream) stream.getTracks().forEach(t => t.stop());
       const v = deviceId ? { deviceId:{ exact:deviceId }, width:{ ideal:2560 }, height:{ ideal:1920 } } : { facingMode:'user', width:{ ideal:2560 }, height:{ ideal:1920 } };
       stream = await navigator.mediaDevices.getUserMedia({ audio:false, video:v });
-      video.srcObject = stream; await video.play(); err.textContent = '';
+      video.srcObject = stream; await video.play(); err.textContent = ''; $('#rescue').style.display = 'none';
       await listCameras();
-    } catch (e) { err.textContent = 'The camera is blocked. Open this page over https:// in Safari and allow the camera.'; }
+    } catch (e) { err.textContent = 'The camera is blocked. Open this page over https:// in Safari and allow the camera.'; $('#rescue').style.display = ''; }
   }
   async function listCameras() {
     const sel = $('#camSel'); const devs = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'videoinput');
@@ -541,14 +549,28 @@
     return c;
   }
   // photo + handwritten note, for the couple's guest book
-  function buildGuestCard(img, ink) {
+  function wrapLines(o, text, maxW) {
+    const out = [];
+    String(text).split(/\n/).forEach(para => {
+      let cur = '';
+      para.split(/\s+/).filter(Boolean).forEach(w => { const t = cur ? cur + ' ' + w : w; if (cur && o.measureText(t).width > maxW) { out.push(cur); cur = w; } else cur = t; });
+      out.push(cur);
+    });
+    return out.slice(0, 8);
+  }
+  function buildGuestCard(img, ink, text) {
     const T = theme(), W = 1400, m = 90, boxW = W - m * 2, maxPh = 1500;
     const sc = Math.min(boxW / img.width, maxPh / img.height), pw = Math.round(img.width * sc), ph = Math.round(img.height * sc);
-    const ih = Math.round(boxW * ink.height / ink.width), footH = 150, H = m + ph + 50 + ih + footH;
+    const meas = document.createElement('canvas').getContext('2d'); meas.font = 'italic 500 56px ' + FD;
+    const lines = text ? wrapLines(meas, text, boxW) : [], lh = 76, th = lines.length ? lines.length * lh + 40 : 0;
+    const ih = ink ? Math.round(boxW * ink.height / ink.width) + 40 : 0, footH = 150;
+    const H = m + ph + th + ih + 30 + footH;
     const c = document.createElement('canvas'); c.width = W; c.height = H; const o = c.getContext('2d');
     o.fillStyle = T.card; o.fillRect(0, 0, W, H);
     o.drawImage(img, (W - pw) / 2, m, pw, ph);
-    o.drawImage(ink, m, m + ph + 50, boxW, ih);
+    let y = m + ph + 30;
+    if (lines.length) { o.fillStyle = T.ink; o.font = 'italic 500 56px ' + FD; o.textAlign = 'center'; o.textBaseline = 'alphabetic'; lines.forEach((ln, i) => o.fillText(ln, W / 2, y + 44 + i * lh)); y += th; }
+    if (ink) { o.drawImage(ink, m, y + 20, boxW, ih - 40); y += ih; }
     o.strokeStyle = T.soft; o.lineWidth = 1.5; o.beginPath(); o.moveTo(m + boxW * 0.3, H - footH + 18); o.lineTo(m + boxW * 0.7, H - footH + 18); o.stroke();
     o.textAlign = 'center'; o.textBaseline = 'alphabetic';
     o.fillStyle = T.ink; o.font = 'italic 500 46px ' + FD; o.fillText(cfg.names ? ('For ' + cfg.names) : 'From the guest book', W / 2, H - footH + 82);
@@ -711,18 +733,21 @@
 
   /* ---------- guest book ---------- */
   const pad = $('#pad'), pctx = pad.getContext('2d'); let hasInk = false, drawing = false, lx = 0, ly = 0;
-  function padReset() { const r = pad.getBoundingClientRect(), k = Math.min(window.devicePixelRatio || 1, 2); pad.width = Math.round(r.width * k); pad.height = Math.round(r.height * k); pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.lineWidth = 3.4 * k; pctx.strokeStyle = theme().ink; hasInk = false; $('#bookSave').classList.add('off'); }
+  function padReset() { const r = pad.getBoundingClientRect(), k = Math.min(window.devicePixelRatio || 1, 2); pad.width = Math.round(r.width * k); pad.height = Math.round(r.height * k); pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.lineWidth = 3.4 * k; pctx.strokeStyle = theme().ink; hasInk = false; bookDirty(); }
   function padPt(e) { const r = pad.getBoundingClientRect(); return [(e.clientX - r.left) * pad.width / r.width, (e.clientY - r.top) * pad.height / r.height]; }
-  pad.addEventListener('pointerdown', e => { e.preventDefault(); drawing = true; try { pad.setPointerCapture(e.pointerId); } catch (_) {} const p = padPt(e); lx = p[0]; ly = p[1]; pctx.beginPath(); pctx.arc(lx, ly, pctx.lineWidth / 2, 0, 7); pctx.fillStyle = pctx.strokeStyle; pctx.fill(); hasInk = true; $('#bookSave').classList.remove('off'); });
+  pad.addEventListener('pointerdown', e => { e.preventDefault(); drawing = true; try { pad.setPointerCapture(e.pointerId); } catch (_) {} const p = padPt(e); lx = p[0]; ly = p[1]; pctx.beginPath(); pctx.arc(lx, ly, pctx.lineWidth / 2, 0, 7); pctx.fillStyle = pctx.strokeStyle; pctx.fill(); hasInk = true; bookDirty(); });
   pad.addEventListener('pointermove', e => { if (!drawing) return; e.preventDefault(); const p = padPt(e); pctx.beginPath(); pctx.moveTo(lx, ly); pctx.lineTo(p[0], p[1]); pctx.stroke(); lx = p[0]; ly = p[1]; });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => pad.addEventListener(ev, () => { drawing = false; }));
-  function openBook() { $('#bookTitle').textContent = cfg.names ? ('Leave a note for ' + cfg.names) : 'Leave a note in the guest book'; show('book'); requestAnimationFrame(padReset); }
+  function openBook() { $('#bookText').value = ''; $('#bookTitle').textContent = cfg.names ? ('Leave a note for ' + cfg.names) : 'Leave a note in the guest book'; show('book'); requestAnimationFrame(padReset); }
+  function bookDirty() { const d = hasInk || $('#bookText').value.trim().length > 0; $('#bookSave').classList.toggle('off', !d); return d; }
+  $('#bookText').addEventListener('input', bookDirty);
   async function saveBook() {
-    if (!hasInk) { toast('Write a few words first'); return; }
+    const txt = $('#bookText').value.trim();
+    if (!hasInk && !txt) { toast('Type a message or draw something first'); return; }
     $('#pmsg').textContent = 'Adding your note'; show('proc'); await sleep(40);
     try {
       let img; if (bookSrc) img = await loadImg(bookSrc); else { const u = URL.createObjectURL(currentShots[0]); img = await loadImg(u); URL.revokeObjectURL(u); }
-      const card = await canvasBlob(buildGuestCard(img, pad), 'image/jpeg', 0.95);
+      const card = await canvasBlob(buildGuestCard(img, hasInk ? pad : null, txt), 'image/jpeg', 0.95);
       keep(card, true); currentShots.push(card); signed = true; showReview(); toast('Added to the guest book');
     } catch (e) { showReview(); toast('The note could not be saved. Try again.'); }
   }
@@ -781,10 +806,11 @@
   $('#shareBtn').addEventListener('click', () => shareBlobs(currentShots, 'tinyinvites'));
   $('#signBtn').addEventListener('click', openBook);
   $('#doneBtn').addEventListener('click', goHome);
-  $('#bookClear').addEventListener('click', padReset);
+  $('#bookClear').addEventListener('click', () => { $('#bookText').value = ''; padReset(); });
   $('#bookSkip').addEventListener('click', showReview);
   $('#bookSave').addEventListener('click', saveBook);
   $('#galTestBtn').addEventListener('click', testCloud);
+  $('#rescue').addEventListener('click', () => { renderGallery(); show('settings'); });
   $('#camSel').addEventListener('change', e => startCamera(e.target.value));
   $('#closeSet').addEventListener('click', goHome);
   let taps = 0, tapT; $('#gear').addEventListener('click', () => { taps++; clearTimeout(tapT); tapT = setTimeout(() => { taps = 0; }, 700); if (taps >= 3 && !busy) { taps = 0; renderGallery(); show('settings'); } });

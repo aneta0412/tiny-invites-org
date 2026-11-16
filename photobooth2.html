@@ -153,8 +153,8 @@
   #galQR img, #galQR canvas, .qr img, .qr canvas { width:100% !important; height:auto !important; display:block; }
   #galQR canvas + img, .qr canvas + img { }
   .qr { width:22vmin; }
-  #galLink, #galState { font-size:14px; color:var(--muted); padding:12px 0; word-break:break-all; -webkit-user-select:text; user-select:text; line-height:1.5; }
-  #galState:empty { display:none; }
+  #galLink, #galState, #galTest { font-size:14px; color:var(--muted); padding:12px 0; word-break:break-all; -webkit-user-select:text; user-select:text; line-height:1.5; }
+  #galState:empty, #galTest:empty { display:none; }
 
   /* the online gallery, on guests' phones */
   #galpage { display:none; }
@@ -298,8 +298,10 @@
 
       <h3>Online gallery and download codes</h3>
       <div class="row"><label>Cloudinary cloud name</label><input type="text" data-k="cloud" placeholder="Leave empty to turn off" autocapitalize="off" autocorrect="off"></div>
-      <div class="row"><label>Upload preset</label><input type="text" data-k="preset" placeholder="Unsigned preset name" autocapitalize="off" autocorrect="off"></div>
+      <div class="row"><label>Upload preset</label><input type="text" data-k="preset" placeholder="Paste one or more" autocapitalize="off" autocorrect="off"></div>
 
+      <div class="row"><label>Check it works<small>Uploads one tiny test image and reports back</small></label><button class="btn line small" id="galTestBtn" type="button">Test the connection</button></div>
+      <div id="galTest"></div>
       <div class="row"><label>Online gallery<small>Guests scan a code on the start screen to see every photo. Guest book notes stay private.</small></label><div class="toggle" data-k="gallery"></div></div>
       <div class="row"><label>Gallery name<small>Use a new name for each event</small></label><input type="text" data-k="event" placeholder="emma-and-james" autocapitalize="off" autocorrect="off"></div>
       <div id="galLink"></div>
@@ -388,7 +390,7 @@
   }
 
   /* ---------- settings ---------- */
-  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', gallery:false, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, cloud:'', preset:'' };
+  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', gallery:false, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, cloud:'dlkwbg59c', preset:'xe9vrl1r qv7cgevf gamvkohk' };
   let cfg = Object.assign({}, DEF);
   try { Object.assign(cfg, JSON.parse(localStorage.getItem('ti_cfg') || '{}')); } catch (e) {}
   try { if (!cfg.cloud) cfg.cloud = localStorage.getItem('ti_cloud') || ''; if (!cfg.preset) cfg.preset = localStorage.getItem('ti_preset') || ''; } catch (e) {}
@@ -406,6 +408,8 @@
   const books = new WeakSet(), keys = new Map(), uploads = new Map(), pending = new Set();
   const slug = s => String(s || '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
   const galTag = () => 'ti-' + (slug(cfg.event || cfg.names) || 'event');
+  const presets = () => String(cfg.preset || '').split(/[\s,]+/).filter(Boolean);
+  const preset1 = () => presets()[0] || '';
   const galleryOn = () => !!(cfg.gallery && cfg.cloud && cfg.preset);
   const galURL = () => location.origin + location.pathname + '?g=' + galTag() + '&c=' + encodeURIComponent(cfg.cloud) + '&t=' + cfg.theme + (cfg.names ? '&n=' + encodeURIComponent(cfg.names) : '') + (cfg.date ? '&d=' + encodeURIComponent(cfg.date) : '');
 
@@ -641,7 +645,7 @@
   function upload(blob) {
     if (uploads.has(blob)) return uploads.get(blob);
     const p = (async () => {
-      const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', cfg.preset);
+      const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', preset1());
       if (galleryOn() && !books.has(blob)) fd.append('tags', galTag());
       const r = await fetch('https://api.cloudinary.com/v1_1/' + encodeURIComponent(cfg.cloud) + '/image/upload', { method:'POST', body:fd });
       const j = await r.json(); if (!j.secure_url) throw new Error((j.error && j.error.message) || 'upload failed'); return j.secure_url;
@@ -650,6 +654,34 @@
   }
   function push(blob) { pending.add(blob); upload(blob).then(() => { pending.delete(blob); const kp = keys.get(blob); if (kp) kp.then(idbMark); }).catch(() => {}); }
   setInterval(() => { if (!busy && galleryOn()) pending.forEach(push); }, 45000);
+  async function testCloud() {
+    const out = $('#galTest'), cloud = String(cfg.cloud || '').trim(), list = presets();
+    if (!cloud) { out.textContent = 'Add the cloud name first.'; return; }
+    if (!list.length) { out.textContent = 'Add at least one upload preset.'; return; }
+    out.textContent = 'Testing the connection…';
+    const c = document.createElement('canvas'); c.width = c.height = 8; const x = c.getContext('2d'); x.fillStyle = '#b4955c'; x.fillRect(0, 0, 8, 8);
+    const blob = await canvasBlob(c, 'image/jpeg', 0.6);
+    let good = '', last = '';
+    for (const p of list) {
+      try {
+        const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', p); fd.append('tags', 'ti-test');
+        const r = await fetch('https://api.cloudinary.com/v1_1/' + encodeURIComponent(cloud) + '/image/upload', { method:'POST', body:fd });
+        const j = await r.json();
+        if (j.secure_url) { good = p; break; }
+        last = (j.error && j.error.message) || ('refused with code ' + r.status);
+      } catch (e) { last = 'could not reach Cloudinary. Check the iPad is online.'; }
+    }
+    if (!good) { out.textContent = 'None of those presets worked. Cloudinary said: ' + last + ' — open the preset in Cloudinary and set Signing Mode to Unsigned.'; return; }
+    cfg.preset = good; save(); applyCfg();
+    let msg = 'Uploading works, using preset ' + good + '. ';
+    try {
+      const r = await fetch('https://res.cloudinary.com/' + encodeURIComponent(cloud) + '/image/list/ti-test.json', { cache:'no-store' });
+      msg += (r.status === 401 || r.status === 403)
+        ? 'The gallery list is still blocked. In Cloudinary open Settings, then Security, and untick Resource list.'
+        : 'The gallery list is switched on, so the gallery page will fill up.';
+    } catch (e) { msg += 'The gallery list could not be checked from here.'; }
+    out.textContent = msg + ' A small test image was put in your Cloudinary account, tagged ti-test; delete it when you like.';
+  }
   function renderQR(el, url) { el.innerHTML = ''; if (typeof QRCode === 'undefined') return false; new QRCode(el, { text:url, width:260, height:260, colorDark:'#2b2520', colorLight:'#ffffff' }); return true; }
   function keep(blob, isBook) { sessionShots.push(blob); if (isBook) books.add(blob); keys.set(blob, idbAdd({ blob:blob, t:Date.now(), book:!!isBook, up:false, tag:(!isBook && galleryOn()) ? galTag() : '' })); if (!isBook && galleryOn()) push(blob); if ((blob.type || '').indexOf('gif') < 0) { recent.push(URL.createObjectURL(blob)); if (recent.length > 8) URL.revokeObjectURL(recent.shift()); } }
   function finish(blobs) { currentShots = blobs.slice(); blobs.forEach(b => keep(b, false)); signed = false; showReview(); }
@@ -752,6 +784,7 @@
   $('#bookClear').addEventListener('click', padReset);
   $('#bookSkip').addEventListener('click', showReview);
   $('#bookSave').addEventListener('click', saveBook);
+  $('#galTestBtn').addEventListener('click', testCloud);
   $('#camSel').addEventListener('change', e => startCamera(e.target.value));
   $('#closeSet').addEventListener('click', goHome);
   let taps = 0, tapT; $('#gear').addEventListener('click', () => { taps++; clearTimeout(tapT); tapT = setTimeout(() => { taps = 0; }, 700); if (taps >= 3 && !busy) { taps = 0; renderGallery(); show('settings'); } });

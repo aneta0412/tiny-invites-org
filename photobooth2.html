@@ -148,10 +148,42 @@
   #toast.on { opacity:1; transform:translate(-50%, 0); }
   #err { position:absolute; top:3vmin; left:0; right:0; text-align:center; color:#fff; font-size:2.3vmin; z-index:90; padding:0 5vmin; pointer-events:none; }
   #err:not(:empty) { background:#8c2f2f; padding:1.6vmin 5vmin; }
+  #galCard { position:absolute; right:4vmin; bottom:4vmin; width:17vmin; padding:1.2vmin 1.2vmin .8vmin; background:#fff; border:1px solid var(--soft); box-shadow:0 1vmin 3vmin rgba(90,70,40,.12); display:flex; flex-direction:column; align-items:center; }
+  #galCard span { font-family:var(--fd); font-style:italic; font-size:2.1vmin; color:#2b2520; margin-top:.6vmin; line-height:1.2; }
+  #galQR img, #galQR canvas, .qr img, .qr canvas { width:100% !important; height:auto !important; display:block; }
+  #galQR canvas + img, .qr canvas + img { }
+  .qr { width:22vmin; }
+  #galLink, #galState { font-size:14px; color:var(--muted); padding:12px 0; word-break:break-all; -webkit-user-select:text; user-select:text; line-height:1.5; }
+  #galState:empty { display:none; }
+
+  /* the online gallery, on guests' phones */
+  #galpage { display:none; }
+  html.gal, html.gal body { height:auto; overflow:auto; background:var(--paper); }
+  html.gal #app { display:none; }
+  html.gal #galpage { display:block; max-width:1100px; margin:0 auto; padding:36px 16px 48px; color:var(--ink); }
+  #galpage header { text-align:center; margin-bottom:28px; }
+  #galpage h1 { font-family:var(--fd); font-weight:500; font-style:italic; font-size:clamp(40px, 9vw, 72px); line-height:1.05; }
+  #gDate { font-size:13px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold); margin-top:10px; }
+  #gDate:empty { display:none; }
+  #gStat { font-size:15px; font-weight:300; color:var(--muted); margin-top:14px; }
+  #gWall { columns:2; column-gap:10px; }
+  @media (min-width:700px) { #gWall { columns:3; column-gap:14px; } }
+  #gWall a { display:block; margin-bottom:10px; break-inside:avoid; background:var(--card); border:1px solid var(--soft); }
+  #gWall a.new { animation:arrive .8s ease; }
+  @keyframes arrive { from { opacity:0; transform:translateY(-8px); } }
+  #gWall img { width:100%; display:block; }
+  #galpage footer { text-align:center; font-size:14px; font-weight:300; color:var(--muted); margin-top:32px; line-height:1.7; }
+  #galpage footer em { font-family:var(--fd); font-size:17px; }
+
   @media (prefers-reduced-motion:reduce) { #attract .startpill, .dots i { animation:none; } }
 </style>
 </head>
 <body data-theme="ivory">
+<div id="galpage">
+  <header><h1 id="gTitle"></h1><p id="gDate"></p><p id="gStat"></p></header>
+  <div id="gWall"></div>
+  <footer>Tap a photo to open it, then press and hold to save it.<br><em>provided to you by Tiny Invites</em></footer>
+</div>
 <div id="app">
   <div id="stage">
     <video id="video" playsinline autoplay muted></video>
@@ -171,6 +203,7 @@
     <div class="startpill">TOUCH TO START</div>
     <div class="tag" id="aTag"></div>
     <div class="by" id="aBy">by Tiny Invites</div>
+    <div id="galCard"><div id="galQR"></div><span>See all the photos</span></div>
   </div>
 
   <div id="choose" class="screen paper">
@@ -222,7 +255,7 @@
       <button class="btn line" id="signBtn" type="button">Sign the guest book</button>
       <button class="btn line" id="doneBtn" type="button">Finish</button>
     </div>
-    <div class="lede">Tap AirDrop or save, then choose your phone.</div>
+    <div class="lede">Tap AirDrop or save, then choose your phone.<span id="galNote"> Your photos are also in the online gallery; the code is on the start screen.</span></div>
   </div>
 
   <div id="book" class="screen paper">
@@ -251,7 +284,9 @@
       <h3>Camera and finish</h3>
       <div class="row"><label>Camera</label><select id="camSel"></select></div>
       <div class="row"><label>Finish</label>
-        <select data-k="filter"><option value="glow">Soft glow</option><option value="airy">Bright and airy</option><option value="golden">Golden hour</option><option value="classic">Natural</option><option value="bw">Black and white</option></select></div>
+        <select data-k="filter"><option value="portra">Film portrait</option><option value="editorial">Editorial</option><option value="glow">Soft glow</option><option value="airy">Bright and airy</option><option value="golden">Golden hour</option><option value="classic">Natural</option><option value="bw">Black and white</option></select></div>
+      <div class="row"><label>Skin retouch<small>Softens skin on the finished photos; eyes and hair stay sharp</small></label>
+        <select data-k="retouch"><option value="off">Off</option><option value="light">Light</option><option value="medium">Medium</option></select></div>
       <div class="row"><label>Mirror the picture</label><div class="toggle" data-k="mirror"></div></div>
 
       <h3>Keepsakes</h3>
@@ -261,12 +296,17 @@
       <div class="row"><label>Sounds</label><div class="toggle" data-k="sounds"></div></div>
       <div class="row"><label>Show recent photos on the start screen</label><div class="toggle" data-k="recent"></div></div>
 
-      <h3>Download codes</h3>
+      <h3>Online gallery and download codes</h3>
       <div class="row"><label>Cloudinary cloud name</label><input type="text" data-k="cloud" placeholder="Leave empty to turn off" autocapitalize="off" autocorrect="off"></div>
       <div class="row"><label>Upload preset</label><input type="text" data-k="preset" placeholder="Unsigned preset name" autocapitalize="off" autocorrect="off"></div>
 
+      <div class="row"><label>Online gallery<small>Guests scan a code on the start screen to see every photo. Guest book notes stay private.</small></label><div class="toggle" data-k="gallery"></div></div>
+      <div class="row"><label>Gallery name<small>Use a new name for each event</small></label><input type="text" data-k="event" placeholder="emma-and-james" autocapitalize="off" autocorrect="off"></div>
+      <div id="galLink"></div>
+
       <h3>Saved photos</h3>
       <div id="galCount"></div>
+      <div id="galState"></div>
       <div id="batches"></div>
       <div id="gallery"></div>
 
@@ -305,6 +345,8 @@
     glow:    { css:'brightness(1.05) contrast(1.03) saturate(1.08) sepia(0.05)', b:1.05, c:1.03, s:1.08, warm:0.03, bloom:0.30, vig:0.16 },
     airy:    { css:'brightness(1.12) contrast(0.96) saturate(1.04)',             b:1.12, c:0.96, s:1.04, warm:0.01, bloom:0.18, vig:0.06 },
     golden:  { css:'brightness(1.06) contrast(1.02) saturate(1.14) sepia(0.18)', b:1.06, c:1.02, s:1.12, warm:0.08, bloom:0.24, vig:0.18 },
+    editorial:{ css:'contrast(1.07) saturate(0.94) brightness(1.03)',            b:1.02, c:1.00, s:0.94, warm:0.02, bloom:0.12, vig:0.14, lift:0.035, sc:0.38, sh:[-4,2,9],  hi:[8,4,-5] },
+    portra:  { css:'contrast(0.99) saturate(1.02) brightness(1.06) sepia(0.10)', b:1.05, c:1.00, s:1.00, warm:0.05, bloom:0.16, vig:0.10, lift:0.050, sc:0.22, sh:[2,5,3],   hi:[9,3,-7] },
     classic: { css:'contrast(1.03) saturate(1.05)',                              b:1.00, c:1.03, s:1.05, warm:0.00, bloom:0.00, vig:0.10 },
     bw:      { css:'grayscale(1) contrast(1.12) brightness(1.05)',               b:1.05, c:1.12, s:0.00, warm:0.00, bloom:0.14, vig:0.20 }
   };
@@ -316,8 +358,37 @@
   };
   const CUES = ['Get ready', 'Lovely', 'Now a silly one', 'Closer together', 'Gorgeous', 'Last one, big smile'];
 
+  /* ---------- online gallery page (opened on guests' phones) ---------- */
+  const QS = new URLSearchParams(location.search);
+  if (QS.get('g') && QS.get('c')) {
+    const tag = QS.get('g').replace(/[^a-z0-9-]/gi, ''), cloud = QS.get('c').replace(/[^a-z0-9_-]/gi, '');
+    document.documentElement.classList.add('gal'); document.body.dataset.theme = THEMES[QS.get('t')] ? QS.get('t') : 'ivory';
+    $('#gTitle').textContent = QS.get('n') || 'Tiny Invites'; $('#gDate').textContent = QS.get('d') || '';
+    const seen = new Set(), wall = $('#gWall'), stat = $('#gStat'); let first = true;
+    const base = 'https://res.cloudinary.com/' + cloud + '/image/upload/';
+    async function load() {
+      try {
+        const r = await fetch('https://res.cloudinary.com/' + cloud + '/image/list/' + tag + '.json', { cache:'no-store' });
+        if (!r.ok) throw new Error('none');
+        const items = ((await r.json()).resources || []).sort((a, b) => String(a.created_at || '').localeCompare(String(b.created_at || '')));
+        items.forEach(it => {
+          if (seen.has(it.public_id)) return; seen.add(it.public_id);
+          const full = base + 'v' + it.version + '/' + it.public_id + '.' + it.format;
+          const a = document.createElement('a'); a.href = full; a.target = '_blank'; a.rel = 'noopener';
+          const img = new Image(); img.loading = 'lazy'; img.alt = 'Photo from the booth';
+          img.src = it.format === 'gif' ? full : base + 'c_limit,w_700,q_auto/v' + it.version + '/' + it.public_id + '.jpg';
+          if (!first) a.className = 'new'; a.appendChild(img); wall.insertBefore(a, wall.firstChild);
+        });
+        first = false;
+      } catch (e) {}
+      stat.textContent = seen.size ? (seen.size + (seen.size === 1 ? ' photo' : ' photos') + '. New ones appear here within a minute or so.') : 'No photos yet. They appear here within a minute or so of being taken.';
+    }
+    load(); setInterval(load, 30000);
+    return;
+  }
+
   /* ---------- settings ---------- */
-  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'glow', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, cloud:'', preset:'' };
+  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', gallery:false, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, cloud:'', preset:'' };
   let cfg = Object.assign({}, DEF);
   try { Object.assign(cfg, JSON.parse(localStorage.getItem('ti_cfg') || '{}')); } catch (e) {}
   try { if (!cfg.cloud) cfg.cloud = localStorage.getItem('ti_cloud') || ''; if (!cfg.preset) cfg.preset = localStorage.getItem('ti_preset') || ''; } catch (e) {}
@@ -332,6 +403,11 @@
   let recent = [];              // object URLs for the start-screen slideshow
   let currentShots = [], six = [], selected = [], signed = false, bookSrc = null;
   let stream = null, gifWorkerURL = null, db = null;
+  const books = new WeakSet(), keys = new Map(), uploads = new Map(), pending = new Set();
+  const slug = s => String(s || '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+  const galTag = () => 'ti-' + (slug(cfg.event || cfg.names) || 'event');
+  const galleryOn = () => !!(cfg.gallery && cfg.cloud && cfg.preset);
+  const galURL = () => location.origin + location.pathname + '?g=' + galTag() + '&c=' + encodeURIComponent(cfg.cloud) + '&t=' + cfg.theme + (cfg.names ? '&n=' + encodeURIComponent(cfg.names) : '') + (cfg.date ? '&d=' + encodeURIComponent(cfg.date) : '');
 
   function show(name) { cur = name; Object.keys(screens).forEach(k => screens[k].classList.toggle('active', k === name)); }
   function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 2600); }
@@ -339,8 +415,9 @@
 
   /* ---------- storage that survives a reload ---------- */
   function idbOpen() { return new Promise(res => { try { const r = indexedDB.open('ti_booth', 1); r.onupgradeneeded = () => r.result.createObjectStore('shots', { autoIncrement:true }); r.onsuccess = () => res(r.result); r.onerror = () => res(null); } catch (e) { res(null); } }); }
-  function idbAdd(blob) { if (!db) return; try { db.transaction('shots', 'readwrite').objectStore('shots').add({ blob:blob, t:Date.now() }); } catch (e) {} }
-  function idbAll() { return new Promise(res => { if (!db) return res([]); try { const q = db.transaction('shots').objectStore('shots').getAll(); q.onsuccess = () => res(q.result || []); q.onerror = () => res([]); } catch (e) { res([]); } }); }
+  function idbAdd(rec) { return new Promise(res => { if (!db) return res(null); try { const q = db.transaction('shots', 'readwrite').objectStore('shots').add(rec); q.onsuccess = () => res(q.result); q.onerror = () => res(null); } catch (e) { res(null); } }); }
+  function idbMark(key) { if (!db || key == null) return; try { const st = db.transaction('shots', 'readwrite').objectStore('shots'), q = st.get(key); q.onsuccess = () => { const r = q.result; if (r) { r.up = true; st.put(r, key); } }; } catch (e) {} }
+  function idbAll() { return new Promise(res => { if (!db) return res([]); const out = []; try { const q = db.transaction('shots').objectStore('shots').openCursor(); q.onsuccess = () => { const c = q.result; if (c) { out.push({ key:c.key, rec:c.value }); c.continue(); } else res(out); }; q.onerror = () => res(out); } catch (e) { res(out); } }); }
   function idbClear() { if (!db) return; try { db.transaction('shots', 'readwrite').objectStore('shots').clear(); } catch (e) {} }
 
   /* ---------- sound ---------- */
@@ -380,12 +457,35 @@
       const l = 0.299 * r + 0.587 * g + 0.114 * bl;
       d[i] = (l + (r - l) * s) * wr; d[i + 1] = l + (g - l) * s; d[i + 2] = (l + (bl - l) * s) * wb;
     }
+    if (p.sc || p.lift) {
+      const lut = new Uint8ClampedArray(256), lift = p.lift || 0, sc = p.sc || 0, sh = p.sh || [0, 0, 0], hi = p.hi || [0, 0, 0];
+      for (let i = 0; i < 256; i++) { const v = i / 255, sm = v * v * (3 - 2 * v); lut[i] = 255 * (lift + (1 - lift) * (v + (sm - v) * sc)); }
+      for (let i = 0; i < d.length; i += 4) {
+        const r = lut[d[i]], g = lut[d[i + 1]], bl = lut[d[i + 2]], l = (0.299 * r + 0.587 * g + 0.114 * bl) / 255, k = 1 - l;
+        d[i] = r + sh[0] * k + hi[0] * l; d[i + 1] = g + sh[1] * k + hi[1] * l; d[i + 2] = bl + sh[2] * k + hi[2] * l;
+      }
+    }
+    o.putImageData(im, 0, 0);
+  }
+  // gentle retouch: smooths skin-toned areas only, leaves eyes, hair and clothes sharp
+  function skinSmooth(o, W, H, amt) {
+    const sw = Math.max(8, Math.round(W / 9)), sh = Math.max(8, Math.round(H / 9));
+    const small = document.createElement('canvas'); small.width = sw; small.height = sh; const sx = small.getContext('2d'); sx.imageSmoothingQuality = 'high'; sx.drawImage(o.canvas, 0, 0, sw, sh);
+    const big = document.createElement('canvas'); big.width = W; big.height = H; const bx = big.getContext('2d', { willReadFrequently:true }); bx.imageSmoothingEnabled = true; bx.imageSmoothingQuality = 'high'; bx.drawImage(small, 0, 0, W, H);
+    const im = o.getImageData(0, 0, W, H), d = im.data, b = bx.getImageData(0, 0, W, H).data;
+    for (let i = 0; i < d.length; i += 4) {
+      const r = d[i], g = d[i + 1], bl = d[i + 2];
+      const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * bl, cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * bl;
+      let m = Math.min(cb - 77, 127 - cb, cr - 133, 173 - cr) / 8; if (m <= 0) continue; if (m > 1) m = 1;
+      const k = amt * m; d[i] = r + (b[i] - r) * k; d[i + 1] = g + (b[i + 1] - g) * k; d[i + 2] = bl + (b[i + 2] - bl) * k;
+    }
     o.putImageData(im, 0, 0);
   }
   function drawComposite(o, W, H, credit) {
     const f = fx(), vw = video.videoWidth || W, vh = video.videoHeight || H;
     const sc = Math.max(W / vw, H / vh), dw = vw * sc, dh = vh * sc;
     o.save(); if (cfg.mirror) { o.translate(W, 0); o.scale(-1, 1); } o.drawImage(video, (W - dw) / 2, (H - dh) / 2, dw, dh); o.restore();
+    if (cfg.retouch !== 'off' && W >= 700) skinSmooth(o, W, H, cfg.retouch === 'medium' ? 0.58 : 0.36);
     gradePixels(o, W, H, f);
     if (f.bloom > 0) {   // soft, flattering glow: a blurred copy screened back over the photo
       const sw = Math.max(8, Math.round(W / 14)), sh = Math.max(8, Math.round(H / 14));
@@ -538,8 +638,21 @@
   }
 
   /* ---------- finished: keep, share, sign ---------- */
-  function keep(blob) { sessionShots.push(blob); idbAdd(blob); if ((blob.type || '').indexOf('gif') < 0) { recent.push(URL.createObjectURL(blob)); if (recent.length > 8) URL.revokeObjectURL(recent.shift()); } }
-  function finish(blobs) { currentShots = blobs.slice(); blobs.forEach(keep); signed = false; showReview(); }
+  function upload(blob) {
+    if (uploads.has(blob)) return uploads.get(blob);
+    const p = (async () => {
+      const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', cfg.preset);
+      if (galleryOn() && !books.has(blob)) fd.append('tags', galTag());
+      const r = await fetch('https://api.cloudinary.com/v1_1/' + encodeURIComponent(cfg.cloud) + '/image/upload', { method:'POST', body:fd });
+      const j = await r.json(); if (!j.secure_url) throw new Error((j.error && j.error.message) || 'upload failed'); return j.secure_url;
+    })();
+    uploads.set(blob, p); p.catch(() => uploads.delete(blob)); return p;
+  }
+  function push(blob) { pending.add(blob); upload(blob).then(() => { pending.delete(blob); const kp = keys.get(blob); if (kp) kp.then(idbMark); }).catch(() => {}); }
+  setInterval(() => { if (!busy && galleryOn()) pending.forEach(push); }, 45000);
+  function renderQR(el, url) { el.innerHTML = ''; if (typeof QRCode === 'undefined') return false; new QRCode(el, { text:url, width:260, height:260, colorDark:'#2b2520', colorLight:'#ffffff' }); return true; }
+  function keep(blob, isBook) { sessionShots.push(blob); if (isBook) books.add(blob); keys.set(blob, idbAdd({ blob:blob, t:Date.now(), book:!!isBook, up:false, tag:(!isBook && galleryOn()) ? galTag() : '' })); if (!isBook && galleryOn()) push(blob); if ((blob.type || '').indexOf('gif') < 0) { recent.push(URL.createObjectURL(blob)); if (recent.length > 8) URL.revokeObjectURL(recent.shift()); } }
+  function finish(blobs) { currentShots = blobs.slice(); blobs.forEach(b => keep(b, false)); signed = false; showReview(); }
   function showReview() {
     const t = $('#thumbs'); t.innerHTML = ''; t.classList.toggle('many', currentShots.length > 2);
     currentShots.forEach((b, i) => {
@@ -547,14 +660,13 @@
       if (cfg.cloud && cfg.preset) { const box = document.createElement('div'); box.className = 'qr'; box.textContent = 'Preparing your code'; wrap.appendChild(box); uploadAndQR(b, box); }
     });
     $('#signBtn').style.display = (cfg.guestbook && !signed) ? '' : 'none';
+    $('#galNote').style.display = galleryOn() ? '' : 'none';
     show('review');
   }
   async function uploadAndQR(blob, box) {
     try {
-      const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', cfg.preset);
-      const r = await fetch('https://api.cloudinary.com/v1_1/' + encodeURIComponent(cfg.cloud) + '/image/upload', { method:'POST', body:fd });
-      const j = await r.json(); if (!j.secure_url) throw new Error((j.error && j.error.message) || 'upload failed');
-      box.textContent = ''; new QRCode(box, { text:j.secure_url, width:132, height:132, colorDark:'#2b2520', colorLight:'#ffffff' });
+      const url = await upload(blob);
+      if (!renderQR(box, url)) throw new Error('no qr');
       const l = document.createElement('div'); l.className = 'qrlbl'; l.textContent = 'Scan to download'; box.appendChild(l);
     } catch (e) { box.textContent = 'The code could not be made. Use AirDrop instead.'; }
   }
@@ -579,7 +691,7 @@
     try {
       let img; if (bookSrc) img = await loadImg(bookSrc); else { const u = URL.createObjectURL(currentShots[0]); img = await loadImg(u); URL.revokeObjectURL(u); }
       const card = await canvasBlob(buildGuestCard(img, pad), 'image/jpeg', 0.95);
-      keep(card); currentShots.push(card); signed = true; showReview(); toast('Added to the guest book');
+      keep(card, true); currentShots.push(card); signed = true; showReview(); toast('Added to the guest book');
     } catch (e) { showReview(); toast('The note could not be saved. Try again.'); }
   }
 
@@ -601,6 +713,9 @@
     $('#aTag').textContent = TAGS[cfg.type] || TAGS.party;
     $('#aBy').style.display = cfg.names ? '' : 'none';
     $('#attract').classList.toggle('personal', !!cfg.names);
+    const on = galleryOn(), u = on ? galURL() : ''; $('#galCard').style.display = on ? '' : 'none';
+    if (u !== applyCfg.u) { applyCfg.u = u; if (on) renderQR($('#galQR'), u); }
+    $('#galLink').textContent = on ? u : (cfg.gallery ? 'Add the cloud name and upload preset above to switch the gallery on.' : 'The gallery is off.');
     $$('[data-k]').forEach(el => { const k = el.dataset.k; if (el.classList.contains('toggle')) el.classList.toggle('on', !!cfg[k]); else if (document.activeElement !== el) el.value = cfg[k]; });
   }
   $$('[data-k]').forEach(el => {
@@ -614,6 +729,7 @@
     for (let a = 0; a < n; a += 10) { const z = Math.min(a + 10, n); const b = document.createElement('button'); b.className = 'btn line small'; b.textContent = 'Send ' + (a + 1) + ' to ' + z; b.addEventListener('click', () => shareBlobs(sessionShots.slice(a, z), 'tinyinvites-' + (a + 1))); bt.appendChild(b); }
     const g = $('#gallery'); g.innerHTML = ''; sessionShots.slice(-12).forEach(b => { const img = new Image(); img.src = URL.createObjectURL(b); g.appendChild(img); });
     $('#clearAll').style.display = n ? '' : 'none';
+    $('#galState').textContent = galleryOn() ? (pending.size ? pending.size + ' waiting to upload to the gallery. They retry automatically.' : 'Everything is in the online gallery.') : '';
   }
   let clearArmed = false;
   $('#clearAll').addEventListener('click', () => {
@@ -647,9 +763,9 @@
   if (document.fonts && document.fonts.load) { ['italic 500 40px "Cormorant Garamond"', 'italic 400 40px "Cormorant Garamond"', '400 20px "Jost"'].forEach(f => document.fonts.load(f).catch(() => {})); }
 
   applyCfg();
-  (async () => { db = await idbOpen(); const all = await idbAll(); all.forEach(r => { if (r && r.blob) { sessionShots.push(r.blob); if ((r.blob.type || '').indexOf('gif') < 0) recent.push(URL.createObjectURL(r.blob)); } }); recent = recent.slice(-8); })();
+  (async () => { db = await idbOpen(); const all = await idbAll(); all.forEach(e => { const r = e.rec; if (r && r.blob) { sessionShots.push(r.blob); keys.set(r.blob, Promise.resolve(e.key)); if (r.book) books.add(r.blob); if ((r.blob.type || '').indexOf('gif') < 0) recent.push(URL.createObjectURL(r.blob)); if (r.up === false && !r.book && r.tag && galleryOn() && r.tag === galTag()) push(r.blob); } }); recent = recent.slice(-8); })();
   startCamera().then(renderGrade);
-  window.__booth = { cfg:cfg, state:() => ({ cur:cur, busy:busy, six:six.length, shots:sessionShots.length }) };
+  window.__booth = { cfg:cfg, apply:applyCfg, state:() => ({ cur:cur, busy:busy, six:six.length, shots:sessionShots.length, pending:pending.size }) };
 })();
 
 </script>

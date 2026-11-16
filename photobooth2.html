@@ -100,6 +100,23 @@
   .cell b { position:absolute; top:1.2vmin; right:1.2vmin; width:4.6vmin; height:4.6vmin; border-radius:50%; background:var(--gold); color:#fff; font-family:var(--fd); font-weight:600; font-size:3vmin; line-height:4.6vmin; opacity:0; transform:scale(.6); transition:.15s; }
   .cell.sel b { opacity:1; transform:scale(1); }
 
+  /* try a different filter */
+  #look { overflow:auto; justify-content:flex-start; padding-top:5vmin; }
+  #look > .title { margin-top:auto; }
+  #look > .link { margin-bottom:auto; }
+  #lookPrev { display:flex; gap:3vmin; justify-content:center; align-items:center; flex-wrap:wrap; margin:3vmin 0; }
+  #lookPrev canvas { max-width:42vw; max-height:42vh; display:block; box-shadow:0 .3vmin .8vmin rgba(60,45,25,.14), 0 2vmin 4vmin rgba(60,45,25,.16); }
+  #lookPrev.many canvas { max-width:21vw; max-height:30vh; }
+  #lookRow { display:none; flex-wrap:wrap; gap:1.8vmin; justify-content:center; max-width:96vmin; margin:0 0 3.4vmin; }
+  @media (orientation:landscape) { #lookRow { max-width:170vmin; } #lookPrev canvas { max-height:36vh; } }
+  #look.open #lookPrev canvas { max-height:32vh; }
+  @media (orientation:portrait) { #look.open .chip { width:11.4vmin; font-size:1.7vmin; } #look.open .chip.fun span { font-size:2vmin; } }
+  .chip { width:15vmin; display:flex; flex-direction:column; align-items:center; gap:.9vmin; font-size:1.9vmin; color:var(--muted); line-height:1.2; }
+  .chip canvas { width:100%; display:block; border-radius:.8vmin; outline:1px solid var(--soft); transition:outline-color .15s, transform .15s; }
+  .chip.sel { color:var(--ink); }
+  .chip.sel canvas { outline:.5vmin solid var(--gold); transform:scale(.95); }
+  .chip.fun span { font-family:var(--fd); font-style:italic; font-size:2.3vmin; }
+
   /* working */
   #proc { z-index:30; }
   #pmsg { font-family:var(--fd); font-style:italic; font-size:5.6vmin; color:var(--ink); }
@@ -158,8 +175,11 @@
   #galQR img, #galQR canvas, .qr img, .qr canvas { width:100% !important; height:auto !important; display:block; }
   #galQR canvas + img, .qr canvas + img { }
   .qr { width:22vmin; }
-  #galLink, #galState, #galTest { font-size:14px; color:var(--muted); padding:12px 0; word-break:break-all; -webkit-user-select:text; user-select:text; line-height:1.5; }
-  #galState:empty, #galTest:empty { display:none; }
+  #ver { font-size:13px; color:var(--muted); padding:22px 0 0; letter-spacing:.04em; }
+  #bookCount { font-size:16px; color:var(--muted); padding:12px 0; }
+  .rowbtns { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:6px; }
+  #galLink, #galState, #galTest, #bookOut { font-size:14px; color:var(--muted); padding:12px 0; word-break:break-all; -webkit-user-select:text; user-select:text; line-height:1.5; }
+  #galState:empty, #galTest:empty, #bookOut:empty { display:none; }
 
   /* the online gallery, on guests' phones */
   #galpage { display:none; }
@@ -247,6 +267,18 @@
     <button class="link" id="retake" type="button">Take them again</button>
   </div>
 
+  <div id="look" class="screen paper">
+    <div class="title">How does this look?</div>
+    <div class="lede" id="lookHint"></div>
+    <div id="lookPrev"></div>
+    <div id="lookRow"></div>
+    <div class="actions">
+      <button class="btn fill" id="lookOk" type="button">Perfect as it is</button>
+      <button class="btn line" id="lookTry" type="button">Try a different filter</button>
+    </div>
+    <button class="link" id="lookBack" type="button">Choose different photos</button>
+  </div>
+
   <div id="proc" class="screen paper">
     <div id="pmsg">One moment</div>
     <div class="dots"><i></i><i></i><i></i></div>
@@ -289,10 +321,12 @@
 
       <h3>Camera and finish</h3>
       <div class="row"><label>Camera</label><select id="camSel"></select></div>
-      <div class="row"><label>Finish</label>
+      <div class="row"><label>Finish<small>The finish every photo starts with</small></label>
         <select data-k="filter"><option value="portra">Film portrait</option><option value="editorial">Editorial</option><option value="glow">Soft glow</option><option value="airy">Bright and airy</option><option value="golden">Golden hour</option><option value="classic">Natural</option><option value="bw">Black and white</option></select></div>
       <div class="row"><label>Skin retouch<small>Softens skin on the finished photos; eyes and hair stay sharp</small></label>
         <select data-k="retouch"><option value="off">Off</option><option value="light">Light</option><option value="medium">Medium</option></select></div>
+      <div class="row"><label>Let guests try other filters<small>After choosing their photos, guests can keep them as they are or try every finish</small></label><div class="toggle" data-k="looks"></div></div>
+      <div class="row"><label>Include the silly filters<small>Big heads, Wobbly mirror and Pop art</small></label><div class="toggle" data-k="silly"></div></div>
       <div class="row"><label>Mirror the picture</label><div class="toggle" data-k="mirror"></div></div>
 
       <h3>Keepsakes</h3>
@@ -312,13 +346,24 @@
       <div class="row"><label>Gallery name<small>Use a new name for each event</small></label><input type="text" data-k="event" placeholder="emma-and-james" autocapitalize="off" autocorrect="off"></div>
       <div id="galLink"></div>
 
+      <h3>Guest book</h3>
+      <div id="bookCount"></div>
+      <div class="rowbtns">
+        <button class="btn fill small" id="bookPdf" type="button">Make the guest book PDF</button>
+        <button class="btn line small" id="bookShare" type="button">Send the notes as photos</button>
+      </div>
+      <div id="bookOut"></div>
+
       <h3>Saved photos</h3>
       <div id="galCount"></div>
       <div id="galState"></div>
       <div id="batches"></div>
       <div id="gallery"></div>
 
+      <div id="ver">Booth version 9 &middot; 16 November 2026</div>
+
       <div class="foot">
+        <button class="btn line" id="newEvent" type="button">Start a new event</button>
         <button class="btn line" id="clearAll" type="button">Delete all saved photos</button>
         <button class="btn fill" id="closeSet" type="button">Done</button>
       </div>
@@ -332,6 +377,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 (() => {
   const $ = s => document.querySelector(s);
@@ -357,8 +403,14 @@
     editorial:{ css:'contrast(1.07) saturate(0.94) brightness(1.03)',            b:1.02, c:1.00, s:0.94, warm:0.02, bloom:0.12, vig:0.14, lift:0.035, sc:0.38, sh:[-4,2,9],  hi:[8,4,-5] },
     portra:  { css:'contrast(0.99) saturate(1.02) brightness(1.06) sepia(0.10)', b:1.05, c:1.00, s:1.00, warm:0.05, bloom:0.16, vig:0.10, lift:0.050, sc:0.22, sh:[2,5,3],   hi:[9,3,-7] },
     classic: { css:'contrast(1.03) saturate(1.05)',                              b:1.00, c:1.03, s:1.05, warm:0.00, bloom:0.00, vig:0.10 },
-    bw:      { css:'grayscale(1) contrast(1.12) brightness(1.05)',               b:1.05, c:1.12, s:0.00, warm:0.00, bloom:0.14, vig:0.20 }
+    bw:      { css:'grayscale(1) contrast(1.12) brightness(1.05)',               b:1.05, c:1.12, s:0.00, warm:0.00, bloom:0.14, vig:0.20 },
+    // just for fun: only offered on the "try a different filter" screen
+    bighead: { silly:true, b:1.03, c:1.04, s:1.10, warm:0.00, warp:'bulge' },
+    wobble:  { silly:true, b:1.03, c:1.04, s:1.10, warm:0.00, warp:'wave' },
+    pop:     { silly:true, b:1.04, c:1.18, s:1.00, warm:0.00, map:[[30,22,104],[214,0,122],[255,112,46],[255,210,10],[255,247,220]] }
   };
+  const LOOKS = [['portra','Film portrait'], ['editorial','Editorial'], ['glow','Soft glow'], ['airy','Bright and airy'], ['golden','Golden hour'], ['classic','Natural'], ['bw','Black and white']];
+  const SILLY = [['bighead','Big heads'], ['wobble','Wobbly mirror'], ['pop','Pop art']];
   const TAGS = {
     wedding:'a keepsake from a beautiful day',
     birthday:'smile — your photos are ready in seconds',
@@ -397,14 +449,14 @@
   }
 
   /* ---------- settings ---------- */
-  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', gallery:true, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, cloud:'dlkwbg59c', preset:'xe9vrl1r qv7cgevf gamvkohk' };
+  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', looks:true, silly:true, gallery:true, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, cloud:'dlkwbg59c', preset:'xe9vrl1r' };
   let cfg = Object.assign({}, DEF);
   try { Object.assign(cfg, JSON.parse(localStorage.getItem('ti_cfg') || '{}')); } catch (e) {}
   try { if (!cfg.cloud) cfg.cloud = localStorage.getItem('ti_cloud') || ''; if (!cfg.preset) cfg.preset = localStorage.getItem('ti_preset') || ''; } catch (e) {}
   if (!cfg.cloud) cfg.cloud = DEF.cloud; if (!cfg.preset) cfg.preset = DEF.preset;
   function save() { try { localStorage.setItem('ti_cfg', JSON.stringify(cfg)); } catch (e) {} }
   const theme = () => THEMES[cfg.theme] || THEMES.ivory;
-  const fx = () => FILTERS[cfg.filter] || FILTERS.glow;
+  const fx = () => { const f = FILTERS[cfg.filter]; return f && !f.silly ? f : FILTERS.glow; };
 
   /* ---------- state ---------- */
   const screens = {}; $$('.screen').forEach(s => { screens[s.id] = s; });
@@ -412,6 +464,7 @@
   const sessionShots = [];      // every finished keepsake this event (blobs)
   let recent = [];              // object URLs for the start-screen slideshow
   let currentShots = [], six = [], selected = [], signed = false, bookSrc = null;
+  let lookMode = 'photos', lookKey = 'portra', lookSrc = [];
   let stream = null, gifWorkerURL = null, db = null;
   const books = new WeakSet(), keys = new Map(), uploads = new Map(), pending = new Set();
   const slug = s => String(s || '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
@@ -423,7 +476,8 @@
 
   function show(name) { cur = name; Object.keys(screens).forEach(k => screens[k].classList.toggle('active', k === name)); }
   function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 2600); }
-  function goHome() { six.forEach(s => URL.revokeObjectURL(s.url)); six = []; selected = []; currentShots = []; signed = false; $('#prog').classList.remove('on'); show('attract'); }
+  function dropSix() { six.forEach(s => { URL.revokeObjectURL(s.url); URL.revokeObjectURL(s.rawUrl); }); six = []; lookSrc = []; }
+  function goHome() { dropSix(); selected = []; currentShots = []; signed = false; $('#prog').classList.remove('on'); show('attract'); }
 
   /* ---------- storage that survives a reload ---------- */
   function idbOpen() { return new Promise(res => { try { const r = indexedDB.open('ti_booth', 1); r.onupgradeneeded = () => r.result.createObjectStore('shots', { autoIncrement:true }); r.onsuccess = () => res(r.result); r.onerror = () => res(null); } catch (e) { res(null); } }); }
@@ -493,10 +547,43 @@
     }
     o.putImageData(im, 0, 0);
   }
-  function drawComposite(o, W, H, credit) {
-    const f = fx(), vw = video.videoWidth || W, vh = video.videoHeight || H;
+  // silly filters: bend the picture (big heads, fun-house mirror)
+  function warp(o, W, H, kind) {
+    const src = o.getImageData(0, 0, W, H), sd = src.data, out = o.createImageData(W, H), d = out.data;
+    const cx = W / 2, cy = H * 0.44, R = Math.min(W, H) * 0.62, TAU = Math.PI * 2;
+    for (let y = 0; y < H; y++) {
+      const band = 0.80 + 0.20 * Math.sin(TAU * 1.5 * y / H + 0.6);
+      for (let x = 0; x < W; x++) {
+        let sx = x, sy = y;
+        if (kind === 'bulge') { const dx = x - cx, dy = y - cy, r = Math.sqrt(dx * dx + dy * dy); if (r < R && r > 0) { const k = Math.pow(r / R, 0.75); sx = cx + dx * k; sy = cy + dy * k; } }
+        else { sx = cx + (x - cx) * band; sy = y + H * 0.022 * Math.sin(TAU * 2 * x / W); }
+        if (sx < 0) sx = 0; else if (sx > W - 1.001) sx = W - 1.001; if (sy < 0) sy = 0; else if (sy > H - 1.001) sy = H - 1.001;
+        const x0 = sx | 0, y0 = sy | 0, fx2 = sx - x0, fy2 = sy - y0, a = (y0 * W + x0) * 4, b2 = a + 4, c2 = a + W * 4, e2 = c2 + 4, i = (y * W + x) * 4;
+        const w00 = (1 - fx2) * (1 - fy2), w10 = fx2 * (1 - fy2), w01 = (1 - fx2) * fy2, w11 = fx2 * fy2;
+        d[i] = sd[a] * w00 + sd[b2] * w10 + sd[c2] * w01 + sd[e2] * w11;
+        d[i + 1] = sd[a + 1] * w00 + sd[b2 + 1] * w10 + sd[c2 + 1] * w01 + sd[e2 + 1] * w11;
+        d[i + 2] = sd[a + 2] * w00 + sd[b2 + 2] * w10 + sd[c2 + 2] * w01 + sd[e2 + 2] * w11;
+        d[i + 3] = 255;
+      }
+    }
+    o.putImageData(out, 0, 0);
+  }
+  // silly filters: repaint the picture in a run of bright colours
+  function colourMap(o, W, H, stops) {
+    const lut = new Uint8ClampedArray(768), n = stops.length - 1;
+    for (let i = 0; i < 256; i++) { const t = i / 255 * n, k = Math.min(n - 1, t | 0), f = t - k, a = stops[k], b = stops[k + 1]; lut[i * 3] = a[0] + (b[0] - a[0]) * f; lut[i * 3 + 1] = a[1] + (b[1] - a[1]) * f; lut[i * 3 + 2] = a[2] + (b[2] - a[2]) * f; }
+    const im = o.getImageData(0, 0, W, H), d = im.data;
+    for (let i = 0; i < d.length; i += 4) { const l = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]) * 3; d[i] = lut[l]; d[i + 1] = lut[l + 1]; d[i + 2] = lut[l + 2]; }
+    o.putImageData(im, 0, 0);
+  }
+  function drawRaw(o, W, H) {
+    const vw = video.videoWidth || W, vh = video.videoHeight || H;
     const sc = Math.max(W / vw, H / vh), dw = vw * sc, dh = vh * sc;
     o.save(); if (cfg.mirror) { o.translate(W, 0); o.scale(-1, 1); } o.drawImage(video, (W - dw) / 2, (H - dh) / 2, dw, dh); o.restore();
+  }
+  // turns an untouched camera picture into a finished one, in the given finish
+  function applyLook(o, W, H, f) {
+    if (f.silly) { gradePixels(o, W, H, f); if (f.warp) warp(o, W, H, f.warp); if (f.map) colourMap(o, W, H, f.map); return; }
     if (cfg.retouch !== 'off' && W >= 700) skinSmooth(o, W, H, cfg.retouch === 'medium' ? 0.58 : 0.36);
     gradePixels(o, W, H, f);
     if (f.bloom > 0) {   // soft, flattering glow: a blurred copy screened back over the photo
@@ -505,14 +592,21 @@
       o.save(); o.globalCompositeOperation = 'screen'; o.globalAlpha = f.bloom; o.imageSmoothingEnabled = true; o.imageSmoothingQuality = 'high'; o.drawImage(small, 0, 0, W, H); o.restore();
     }
     if (f.vig > 0) { const g = o.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.45, W / 2, H / 2, Math.max(W, H) * 0.78); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,' + f.vig + ')'); o.fillStyle = g; o.fillRect(0, 0, W, H); }
-    if (credit) stamp(o, W, H);
+  }
+  function drawComposite(o, W, H, credit) { drawRaw(o, W, H); applyLook(o, W, H, fx()); if (credit) stamp(o, W, H); }
+  // a copy of a picture at a chosen width, optionally finished in a look
+  function copyAt(img, maxW, f) {
+    const k = Math.min(1, maxW / img.width), c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    const o = c.getContext('2d', { willReadFrequently:true }); o.imageSmoothingQuality = 'high'; o.drawImage(img, 0, 0, c.width, c.height);
+    if (f) applyLook(o, c.width, c.height, f); return c;
   }
   function stamp(o, W, H) { const fs = Math.round(Math.min(W, H) * 0.036); o.save(); o.font = 'italic 500 ' + fs + 'px ' + FD; o.textAlign = 'center'; o.textBaseline = 'alphabetic'; o.shadowColor = 'rgba(0,0,0,0.45)'; o.shadowBlur = fs * 0.5; o.fillStyle = 'rgba(250,244,232,0.95)'; o.fillText(CREDIT, W / 2, H - fs * 1.1); o.restore(); }
-  function captureCanvas() {
+  function captureCanvas(raw) {
     const cw = grade.clientWidth, ch = grade.clientHeight;
     const k = Math.min(window.devicePixelRatio || 1, 2, 2400 / Math.max(cw, ch));
     const c = document.createElement('canvas'); c.width = Math.round(cw * k); c.height = Math.round(ch * k);
-    drawComposite(c.getContext('2d', { willReadFrequently:true }), c.width, c.height, false); return c;
+    const o = c.getContext('2d', { willReadFrequently:true });
+    if (raw) drawRaw(o, c.width, c.height); else drawComposite(o, c.width, c.height, false); return c;
   }
   function loadImg(url) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; }); }
   const track = s => String(s).toUpperCase().split('').join(' ');
@@ -593,13 +687,14 @@
 
   /* ---------- portraits: six frames, then choose ---------- */
   async function runPhotos() {
-    if (busy) return; busy = true; six.forEach(s => URL.revokeObjectURL(s.url)); six = []; selected = [];
+    if (busy) return; busy = true; dropSix(); selected = [];
     try {
       for (let i = 0; i < 6; i++) {
         setProg(i, 6); cue.textContent = CUES[i];
         await countdown(i === 0 ? 3 : 2);
-        const blob = await canvasBlob(captureCanvas(), 'image/jpeg', 0.92);
-        six.push({ blob:blob, url:URL.createObjectURL(blob) });
+        const rawC = captureCanvas(true);   // kept untouched, so the guest can change the filter afterwards
+        const raw = await canvasBlob(rawC, 'image/jpeg', 0.95), thumb = await canvasBlob(copyAt(rawC, 720, fx()), 'image/jpeg', 0.88);
+        six.push({ rawUrl:URL.createObjectURL(raw), url:URL.createObjectURL(thumb) });
         await sleep(200);
       }
     } finally { busy = false; $('#prog').classList.remove('on'); }
@@ -624,24 +719,54 @@
       : n <= 2 ? (n === 1 ? 'One chosen. Keep it as a photo, or add more.' : 'Two chosen. Keep them as photos, or pick four for a strip.')
       : n === 3 ? 'One more makes a photo strip.' : 'Four chosen, ready for a photo strip.';
   }
-  async function outPhotos() {
-    const n = selected.length; if (n < 1 || n > 2) { toast('Choose one or two photos'); return; }
-    $('#pmsg').textContent = 'Finishing your photos'; show('proc'); await sleep(40);
-    bookSrc = six[selected[0]].url; const blobs = []; for (const i of selected) { const img = await loadImg(six[i].url); blobs.push(await canvasBlob(framePhoto(img), 'image/jpeg', 0.95)); }
-    finish(blobs);
+  /* ---------- "perfect as it is" or "try a different filter" ---------- */
+  async function openLook(mode) {
+    const n = selected.length;
+    if (mode === 'strip' ? n !== 4 : (n < 1 || n > 2)) { toast(mode === 'strip' ? 'Choose four photos for a strip' : 'Choose one or two photos'); return; }
+    lookMode = mode; lookKey = FILTERS[cfg.filter] && !FILTERS[cfg.filter].silly ? cfg.filter : 'glow';
+    if (!cfg.looks) return finalize();
+    $('#pmsg').textContent = 'One moment'; show('proc'); await sleep(40);
+    lookSrc = []; for (const i of selected) lookSrc.push(copyAt(await loadImg(six[i].rawUrl), 900));
+    const row = $('#lookRow'); row.innerHTML = ''; row.style.display = 'none'; $('#look').classList.remove('open');
+    $('#lookTry').style.display = ''; $('#lookOk').textContent = 'Perfect as it is';
+    $('#lookHint').textContent = 'Keep ' + (n === 1 ? 'it' : 'them') + ' as ' + (n === 1 ? 'it is' : 'they are') + ', or try a different filter.';
+    paintLook(); show('look');
   }
-  async function outStrip() {
-    if (selected.length !== 4) { toast('Choose four photos for a strip'); return; }
-    $('#pmsg').textContent = 'Making your photo strip'; show('proc'); await sleep(40);
-    bookSrc = six[selected[0]].url; const imgs = []; for (const i of selected) imgs.push(await loadImg(six[i].url));
-    finish([await canvasBlob(buildStrip(imgs), 'image/jpeg', 0.95)]);
+  function paintLook() {
+    const p = $('#lookPrev'); p.innerHTML = ''; p.classList.toggle('many', lookSrc.length > 2);
+    lookSrc.forEach(c => p.appendChild(copyAt(c, 900, FILTERS[lookKey])));
+    $$('#lookRow .chip').forEach(b => b.classList.toggle('sel', b.dataset.k === lookKey));
+  }
+  function showLooks() {
+    const row = $('#lookRow'); row.innerHTML = '';
+    LOOKS.concat(cfg.silly ? SILLY : []).forEach(e => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip' + (FILTERS[e[0]].silly ? ' fun' : ''); b.dataset.k = e[0];
+      b.appendChild(copyAt(lookSrc[0], 260, FILTERS[e[0]])); const l = document.createElement('span'); l.textContent = e[1]; b.appendChild(l);
+      b.addEventListener('click', () => { lookKey = e[0]; paintLook(); });
+      row.appendChild(b);
+    });
+    $('#look').classList.add('open'); row.style.display = 'flex'; $('#lookTry').style.display = 'none'; $('#lookOk').textContent = 'Use this one';
+    $('#lookHint').textContent = 'Tap a filter to see it on your ' + (lookSrc.length === 1 ? 'photo' : 'photos') + '.';
+    paintLook();
+  }
+  async function finalize() {
+    const strip = lookMode === 'strip', f = FILTERS[lookKey] || fx();
+    $('#pmsg').textContent = strip ? 'Making your photo strip' : 'Finishing your photos'; show('proc'); await sleep(40);
+    try {
+      const outs = []; for (const i of selected) outs.push(copyAt(await loadImg(six[i].rawUrl), strip ? 1300 : 4000, f));
+      if (bookSrc) URL.revokeObjectURL(bookSrc);
+      bookSrc = URL.createObjectURL(await canvasBlob(outs[0], 'image/jpeg', 0.92));
+      if (strip) return finish([await canvasBlob(buildStrip(outs), 'image/jpeg', 0.95)]);
+      const blobs = []; for (const c of outs) blobs.push(await canvasBlob(framePhoto(c), 'image/jpeg', 0.95));
+      finish(blobs);
+    } catch (e) { show('select'); toast('Something went wrong. Please try again.'); }
   }
 
   /* ---------- boomerang ---------- */
   async function runBoomerang() {
     if (busy) return; busy = true;
     try {
-      bookSrc = null; cue.textContent = 'Get ready to move'; await countdown(3);
+      if (bookSrc) URL.revokeObjectURL(bookSrc); bookSrc = null; cue.textContent = 'Get ready to move'; await countdown(3);
       const gw = 480, gh = Math.round(480 * grade.clientHeight / grade.clientWidth);
       const tmp = document.createElement('canvas'); tmp.width = gw; tmp.height = gh; const tctx = tmp.getContext('2d', { willReadFrequently:true });
       show('count'); countN.textContent = ''; cue.textContent = 'Keep moving'; spin(1.1);
@@ -668,7 +793,7 @@
     if (uploads.has(blob)) return uploads.get(blob);
     const p = (async () => {
       const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', preset1());
-      if (galleryOn() && !books.has(blob)) fd.append('tags', galTag());
+      if (galleryOn()) fd.append('tags', books.has(blob) ? galTag() + '-notes' : galTag());
       const r = await fetch('https://api.cloudinary.com/v1_1/' + encodeURIComponent(cfg.cloud) + '/image/upload', { method:'POST', body:fd });
       const j = await r.json(); if (!j.secure_url) throw new Error((j.error && j.error.message) || 'upload failed'); return j.secure_url;
     })();
@@ -676,6 +801,45 @@
   }
   function push(blob) { pending.add(blob); upload(blob).then(() => { pending.delete(blob); const kp = keys.get(blob); if (kp) kp.then(idbMark); }).catch(() => {}); }
   setInterval(() => { if (!busy && galleryOn()) pending.forEach(push); }, 45000);
+  const bookShots = () => sessionShots.filter(b => books.has(b));
+  function blobURLData(b) { return new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); }); }
+  async function shrink(blob, maxW) {
+    const u = URL.createObjectURL(blob); const im = await loadImg(u); URL.revokeObjectURL(u);
+    const k = Math.min(1, maxW / im.width); const c = document.createElement('canvas');
+    c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+    const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(im, 0, 0, c.width, c.height); return c;
+  }
+  async function makeBookPDF() {
+    const out = $('#bookOut'), list = bookShots();
+    if (!list.length) { out.textContent = 'There are no guest book notes yet.'; return; }
+    if (!window.jspdf || !window.jspdf.jsPDF) { out.textContent = 'The PDF tool could not load. Check the iPad is online, reload the page and try again.'; return; }
+    out.textContent = 'Building the PDF…';
+    try {
+      const doc = new window.jspdf.jsPDF({ unit:'pt', format:'a4' });
+      const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), m = 40;
+      doc.setFont('times', 'italic'); doc.setFontSize(34); doc.text(cfg.names || 'Tiny Invites', W / 2, H / 2 - 46, { align:'center' });
+      if (cfg.date) { doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.text(String(cfg.date).toUpperCase(), W / 2, H / 2 - 14, { align:'center' }); }
+      doc.setFont('times', 'italic'); doc.setFontSize(18); doc.text('Guest book', W / 2, H / 2 + 28, { align:'center' });
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+      doc.text(list.length + (list.length === 1 ? ' note' : ' notes'), W / 2, H / 2 + 56, { align:'center' });
+      doc.text('provided to you by Tiny Invites', W / 2, H - 46, { align:'center' });
+      for (let i = 0; i < list.length; i++) {
+        out.textContent = 'Building the PDF… page ' + (i + 1) + ' of ' + list.length;
+        const c = await shrink(list[i], 1100);
+        doc.addPage();
+        const k = Math.min((W - m * 2) / c.width, (H - m * 2) / c.height), w = c.width * k, h = c.height * k;
+        doc.addImage(c.toDataURL('image/jpeg', 0.86), 'JPEG', (W - w) / 2, (H - h) / 2, w, h);
+        await sleep(0);
+      }
+      const blob = doc.output('blob');
+      const name = (slug(cfg.names || cfg.event) || 'guest-book') + '-guest-book.pdf';
+      const file = new File([blob], name, { type:'application/pdf' });
+      const mb = Math.round(blob.size / 104857.6) / 10;
+      out.textContent = 'Ready: ' + list.length + (list.length === 1 ? ' note' : ' notes') + ', ' + mb + ' MB. Choose Save to Files, OneDrive or Mail.';
+      if (navigator.canShare && navigator.canShare({ files:[file] })) { try { await navigator.share({ files:[file] }); } catch (e) {} }
+      else { const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 20000); }
+    } catch (e) { out.textContent = 'The PDF could not be built: ' + (e.message || e) + '. Try sending the notes as photos instead.'; }
+  }
   async function testCloud() {
     const out = $('#galTest'), cloud = String(cfg.cloud || '').trim(), list = presets();
     if (!cloud) { out.textContent = 'Add the cloud name first.'; return; }
@@ -705,7 +869,7 @@
     out.textContent = msg + ' A small test image was put in your Cloudinary account, tagged ti-test; delete it when you like.';
   }
   function renderQR(el, url) { el.innerHTML = ''; if (typeof QRCode === 'undefined') return false; new QRCode(el, { text:url, width:260, height:260, colorDark:'#2b2520', colorLight:'#ffffff' }); return true; }
-  function keep(blob, isBook) { sessionShots.push(blob); if (isBook) books.add(blob); keys.set(blob, idbAdd({ blob:blob, t:Date.now(), book:!!isBook, up:false, tag:(!isBook && galleryOn()) ? galTag() : '' })); if (!isBook && galleryOn()) push(blob); if ((blob.type || '').indexOf('gif') < 0) { recent.push(URL.createObjectURL(blob)); if (recent.length > 8) URL.revokeObjectURL(recent.shift()); } }
+  function keep(blob, isBook) { sessionShots.push(blob); if (isBook) books.add(blob); keys.set(blob, idbAdd({ blob:blob, t:Date.now(), book:!!isBook, up:false, tag:galleryOn() ? (isBook ? galTag() + '-notes' : galTag()) : '' })); if (galleryOn()) push(blob); if ((blob.type || '').indexOf('gif') < 0) { recent.push(URL.createObjectURL(blob)); if (recent.length > 8) URL.revokeObjectURL(recent.shift()); } }
   function finish(blobs) { currentShots = blobs.slice(); blobs.forEach(b => keep(b, false)); signed = false; showReview(); }
   function showReview() {
     const t = $('#thumbs'); t.innerHTML = ''; t.classList.toggle('many', currentShots.length > 2);
@@ -786,6 +950,7 @@
     for (let a = 0; a < n; a += 10) { const z = Math.min(a + 10, n); const b = document.createElement('button'); b.className = 'btn line small'; b.textContent = 'Send ' + (a + 1) + ' to ' + z; b.addEventListener('click', () => shareBlobs(sessionShots.slice(a, z), 'tinyinvites-' + (a + 1))); bt.appendChild(b); }
     const g = $('#gallery'); g.innerHTML = ''; sessionShots.slice(-12).forEach(b => { const img = new Image(); img.src = URL.createObjectURL(b); g.appendChild(img); });
     $('#clearAll').style.display = n ? '' : 'none';
+    const nb = bookShots().length; $('#bookCount').textContent = nb ? (nb + (nb === 1 ? ' note' : ' notes') + ' in the guest book') : 'No guest book notes yet.';
     $('#galState').textContent = galleryOn() ? (pending.size ? pending.size + ' waiting to upload to the gallery. They retry automatically.' : 'Everything is in the online gallery.') : '';
   }
   let clearArmed = false;
@@ -800,8 +965,11 @@
   $('#attract').addEventListener('click', () => show('choose'));
   $$('.card').forEach(b => b.addEventListener('click', () => { if (b.dataset.mode === 'boomerang') runBoomerang(); else runPhotos(); }));
   $('#chooseBack').addEventListener('click', goHome);
-  $('#asPhotos').addEventListener('click', outPhotos);
-  $('#asStrip').addEventListener('click', outStrip);
+  $('#asPhotos').addEventListener('click', () => openLook('photos'));
+  $('#asStrip').addEventListener('click', () => openLook('strip'));
+  $('#lookOk').addEventListener('click', finalize);
+  $('#lookTry').addEventListener('click', showLooks);
+  $('#lookBack').addEventListener('click', () => show('select'));
   $('#retake').addEventListener('click', runPhotos);
   $('#shareBtn').addEventListener('click', () => shareBlobs(currentShots, 'tinyinvites'));
   $('#signBtn').addEventListener('click', openBook);
@@ -809,6 +977,18 @@
   $('#bookClear').addEventListener('click', () => { $('#bookText').value = ''; padReset(); });
   $('#bookSkip').addEventListener('click', showReview);
   $('#bookSave').addEventListener('click', saveBook);
+  $('#bookPdf').addEventListener('click', makeBookPDF);
+  $('#bookShare').addEventListener('click', () => { const l = bookShots(); if (l.length) shareBlobs(l, 'guest-book'); else $('#bookOut').textContent = 'There are no guest book notes yet.'; });
+  let newArmed = false;
+  $('#newEvent').addEventListener('click', () => {
+    const b = $('#newEvent');
+    if (!newArmed) { newArmed = true; b.textContent = 'Tap again: this deletes everything on the iPad'; setTimeout(() => { newArmed = false; b.textContent = 'Start a new event'; }, 4000); return; }
+    newArmed = false; b.textContent = 'Start a new event';
+    sessionShots.length = 0; recent.forEach(u => URL.revokeObjectURL(u)); recent = []; keys.clear(); pending.clear(); idbClear();
+    cfg.event = ''; cfg.names = ''; cfg.date = ''; save(); applyCfg(); renderGallery();
+    $('#bookOut').textContent = 'Cleared. Set the new names, date and gallery name above.';
+    toast('Ready for a new event');
+  });
   $('#galTestBtn').addEventListener('click', testCloud);
   $('#rescue').addEventListener('click', () => { renderGallery(); show('settings'); });
   $('#camSel').addEventListener('change', e => startCamera(e.target.value));
@@ -822,9 +1002,9 @@
   if (document.fonts && document.fonts.load) { ['italic 500 40px "Cormorant Garamond"', 'italic 400 40px "Cormorant Garamond"', '400 20px "Jost"'].forEach(f => document.fonts.load(f).catch(() => {})); }
 
   applyCfg();
-  (async () => { db = await idbOpen(); const all = await idbAll(); all.forEach(e => { const r = e.rec; if (r && r.blob) { sessionShots.push(r.blob); keys.set(r.blob, Promise.resolve(e.key)); if (r.book) books.add(r.blob); if ((r.blob.type || '').indexOf('gif') < 0) recent.push(URL.createObjectURL(r.blob)); if (r.up === false && !r.book && r.tag && galleryOn() && r.tag === galTag()) push(r.blob); } }); recent = recent.slice(-8); })();
+  (async () => { db = await idbOpen(); const all = await idbAll(); all.forEach(e => { const r = e.rec; if (r && r.blob) { sessionShots.push(r.blob); keys.set(r.blob, Promise.resolve(e.key)); if (r.book) books.add(r.blob); if ((r.blob.type || '').indexOf('gif') < 0) recent.push(URL.createObjectURL(r.blob)); if (r.up === false && r.tag && galleryOn()) push(r.blob); } }); recent = recent.slice(-8); })();
   startCamera().then(renderGrade);
-  window.__booth = { cfg:cfg, apply:applyCfg, state:() => ({ cur:cur, busy:busy, six:six.length, shots:sessionShots.length, pending:pending.size }) };
+  window.__booth = { cfg:cfg, apply:applyCfg, state:() => ({ cur:cur, busy:busy, look:lookKey, six:six.length, shots:sessionShots.length, pending:pending.size }) };
 })();
 
 </script>

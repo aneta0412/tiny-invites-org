@@ -14,8 +14,8 @@
 </script>
 <title id="pageTitle">Birthday Party Venue | Tiny Invites</title>
 <meta name="description" id="pageDesc" content="Find the perfect children's birthday party venue near you on Tiny Invites.">
-<meta name="robots" content="index, follow">
-<link rel="canonical" id="pageCanonical" href="https://tinyinvites.org/venue/">
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" id="pageCanonical" href="https://tinyinvites.org/partyfinder.html">
 <meta property="og:type" content="website">
 <meta property="og:title" id="ogTitle" content="Birthday Party Venue | Tiny Invites">
 <meta property="og:description" id="ogDesc" content="Find the perfect children's birthday party venue.">
@@ -136,255 +136,7 @@ footer a:hover{color:var(--gold)}
 </footer>
 
 <script>
-const CAT_CFG={
-  soft:{color:"#ff6b47",bg:"#fff1ed",text:"#c23d18",emoji:"🛝",label:"Soft Play"},
-  gym:{color:"#2d8f8b",bg:"#eaf6f6",text:"#1a5c5b",emoji:"🤸",label:"Gymnastics"},
-  swim:{color:"#3a6fa8",bg:"#dce8f5",text:"#1d4d84",emoji:"🏊",label:"Swimming"},
-  farm:{color:"#5a8f3c",bg:"#e8f5e0",text:"#2e5a1a",emoji:"🚜",label:"Farm & Outdoor"},
-  club:{color:"#7c3aed",bg:"#f3effe",text:"#5b21b6",emoji:"🏋️",label:"Health Club"},
-  unique:{color:"#d4a843",bg:"#fdf5e4",text:"#92400e",emoji:"🌟",label:"Unique Venue"},
-  leisure:{color:"#e0762d",bg:"#fdeade",text:"#b04010",emoji:"🏢",label:"Leisure Centre"},
-};
-
-const PC={
-  // ── Specific districts (high priority – venue locations) ──
-  "CV37":[52.194,-1.706],"CV34":[52.28,-1.586],"CV36":[52.062,-1.645],
-  "CV47":[52.265,-1.479],"CV8":[52.346,-1.469],"CV2":[52.416,-1.482],
-  "B80":[52.261,-1.897],"B31":[52.39,-1.981],"B73":[52.548,-1.845],
-  "B33":[52.476,-1.757],"B16":[52.473,-1.915],"B1":[52.48,-1.9],
-  "B78":[52.587,-1.656],"B70":[52.519,-1.991],
-  "DE13":[52.818,-1.736],"DE24":[52.91,-1.434],
-  "LE4":[52.655,-1.13],"LE1":[52.636,-1.131],
-  "NG6":[52.986,-1.171],"NG1":[52.954,-1.146],
-  "NN10":[52.303,-0.612],"NN1":[52.237,-0.896],"NN17":[52.49,-0.648],
-  "WV13":[52.591,-2.085],
-  "SW6":[51.475,-0.186],"SW18":[51.455,-0.187],"SW19":[51.42,-0.203],
-  "SW3":[51.489,-0.163],"SW11":[51.468,-0.165],"SW12":[51.445,-0.15],
-  "SW7":[51.497,-0.177],"SW2":[51.457,-0.116],
-  "NW4":[51.576,-0.22],"NW1":[51.529,-0.143],"NW3":[51.545,-0.173],
-  "N14":[51.63,-0.12],"N12":[51.613,-0.18],"N16":[51.56,-0.077],
-  "N7":[51.553,-0.113],"N1":[51.536,-0.101],
-  "E20":[51.538,-0.014],"E14":[51.508,-0.013],"E17":[51.589,-0.019],
-  "E1":[51.515,0.072],
-  "SE10":[51.481,0.001],"SE5":[51.477,-0.089],"SE18":[51.487,0.073],
-  "SE7":[51.487,0.053],"SE1":[51.504,-0.088],
-  "EC1A":[51.52,-0.101],"EC1":[51.524,-0.101],"EC2":[51.517,-0.088],
-  "WC1":[51.523,-0.122],"WC2":[51.512,-0.121],
-  "W1":[51.514,-0.147],"W12":[51.507,-0.225],"W2":[51.513,-0.186],
-  "TW8":[51.488,-0.306],"TW2":[51.438,-0.369],"TW14":[51.46,-0.398],
-  "HP10":[51.598,-0.724],"HP1":[51.757,-0.444],
-  "CM13":[51.611,0.324],"CM3":[51.699,0.615],
-  "SN6":[51.637,-1.765],"SN1":[51.556,-1.782],
-  "IG7":[51.628,0.095],"EN4":[51.659,-0.175],"EN9":[51.7,-0.003],
-  "LU6":[51.874,-0.493],"LU1":[51.878,-0.416],
-  "IP9":[52.038,1.088],"IP1":[52.058,1.152],
-  "M1":[53.48,-2.24],"M16":[53.459,-2.238],"M13":[53.467,-2.224],
-  "M11":[53.481,-2.19],"M3":[53.483,-2.249],"M17":[53.46,-2.316],
-  "L10":[53.467,-2.948],"L1":[53.404,-2.982],
-  "LS1":[53.800,-1.549],"LS2":[53.801,-1.545],"LS3":[53.800,-1.558],"LS4":[53.807,-1.578],"LS6":[53.816,-1.568],"LS7":[53.814,-1.536],"LS8":[53.824,-1.506],
-  "LS9":[53.800,-1.520],"LS10":[53.773,-1.530],"LS11":[53.785,-1.555],"LS12":[53.798,-1.581],"LS13":[53.806,-1.636],"LS14":[53.834,-1.476],"LS15":[53.812,-1.461],
-  "LS16":[53.847,-1.578],"LS17":[53.852,-1.510],"LS18":[53.845,-1.618],"LS19":[53.863,-1.659],"LS20":[53.880,-1.691],"LS21":[53.908,-1.657],
-  "LS22":[53.935,-1.380],"LS23":[53.893,-1.340],"LS24":[53.862,-1.273],"LS25":[53.777,-1.381],"LS26":[53.748,-1.471],"LS27":[53.747,-1.568],"LS28":[53.810,-1.661],"LS29":[53.913,-1.779],
-  "S9":[53.399,-1.427],"S10":[53.374,-1.5],"S1":[53.38,-1.467],
-  "SE3":[51.467,0.011],"CR0":[51.374,-0.099],"BR3":[51.407,-0.016],
-  "RM1":[51.576,0.18],"KT19":[51.337,-0.254],"RH9":[51.244,-0.065],
-  "AL4":[51.729,-0.303],"WD23":[51.647,-0.349],"WD17":[51.655,-0.396],
-  "ME14":[51.274,0.524],"SG12":[51.812,-0.038],
-  "RG1":[51.455,-0.96],"RG12":[51.405,-0.754],
-  "RM20":[51.49,0.287],"NW1":[51.529,-0.143],
-  "PO15":[50.85,-1.231],"PO1":[50.797,-1.089],
-  "BS1":[51.454,-2.597],"BS3":[51.44,-2.609],"BS13":[51.404,-2.618],
-  "BS16":[51.496,-2.527],"BS5":[51.459,-2.557],
-  "CF24":[51.497,-3.18],"CF1":[51.482,-3.179],
-  "PL1":[50.37,-4.143],
-  "G13":[55.869,-4.311],"G3":[55.86,-4.27],"G11":[55.867,-4.295],
-  "G1":[55.861,-4.25],"G62":[55.943,-4.32],
-  "ML1":[55.783,-3.988],"PA3":[55.836,-4.427],
-  "SA1":[51.621,-3.939],
-  "CH1":[53.19,-2.893],
-  "EH1":[55.95,-3.19],"EH3":[55.948,-3.205],
-  "SE10":[51.481,0.001],
-
-  // ── Area-level fallbacks (first 2 letters = entire city/region) ──
-  // England – Midlands
-  "CV":[52.408,-1.510],  // Coventry
-  "B":[52.480,-1.900],   // Birmingham
-  "DE":[52.922,-1.478],  // Derby
-  "LE":[52.636,-1.131],  // Leicester
-  "NG":[52.954,-1.146],  // Nottingham
-  "NN":[52.237,-0.896],  // Northampton
-  "WV":[52.586,-2.128],  // Wolverhampton
-  "WS":[52.586,-1.983],  // Walsall
-  "DY":[52.507,-2.091],  // Dudley
-  "ST":[52.998,-2.179],  // Stoke-on-Trent
-  "TF":[52.705,-2.448],  // Telford
-  "HR":[52.056,-2.716],  // Hereford
-  "WR":[52.191,-2.220],  // Worcester (fallback)
-  "WR1":[52.191,-2.220],"WR2":[52.183,-2.249],"WR3":[52.207,-2.216],"WR4":[52.199,-2.194],"WR5":[52.171,-2.201],  // Worcester city
-  "WR6":[52.239,-2.365],"WR7":[52.179,-2.128],"WR8":[52.095,-2.142],"WR9":[52.264,-2.152],"WR10":[52.102,-2.045],  // Worcestershire
-  "WR11":[52.090,-1.941],"WR12":[52.034,-1.851],"WR13":[52.058,-2.340],"WR14":[52.115,-2.318],"WR15":[52.319,-2.560],  // South Worcestershire incl Evesham/Honeybourne
-  "GL56":[51.989,-1.697],  "GL55":[52.083,-1.768],  "GL54":[51.955,-1.846],  // Cotswolds district
-  "GL7":[51.715,-1.970],  // Cirencester
-  "GL50":[51.901,-2.074],  "GL51":[51.886,-2.098],  "GL52":[51.920,-2.055],  "GL53":[51.878,-2.030],  // Cheltenham
-  "GL5":[51.745,-2.271],  "GL6":[51.762,-2.211],  // Stroud
-  "GL":[51.867,-2.238],  // Gloucester (fallback)
-  "OX1":[51.752,-1.258],"OX2":[51.762,-1.273],"OX3":[51.761,-1.213],"OX4":[51.739,-1.229],  // Oxford city
-  "OX7":[51.928,-1.567],"OX15":[52.075,-1.391],"OX16":[52.063,-1.340],"OX17":[52.132,-1.374],  // N Oxfordshire/Cotswold border
-  "OX9":[51.748,-0.920],"OX10":[51.608,-1.137],"OX11":[51.596,-1.241],"OX12":[51.607,-1.488],"OX13":[51.660,-1.336],"OX14":[51.674,-1.281],  // S Oxfordshire
-  "OX18":[51.774,-1.574],"OX20":[51.849,-1.484],"OX25":[51.890,-1.132],"OX26":[51.899,-1.151],"OX27":[51.934,-1.063],"OX28":[51.786,-1.493],"OX29":[51.803,-1.535],  // W & rural
-  "OX":[51.752,-1.258],  // Oxford (fallback)
-  "MK":[52.041,-0.759],  // Milton Keynes
-  "LU":[51.878,-0.416],  // Luton
-  "SG":[51.902,-0.218],  // Stevenage
-  "AL":[51.752,-0.336],  // St Albans
-  "HP":[51.757,-0.444],  // Hemel Hempstead / High Wycombe
-  "WD":[51.655,-0.396],  // Watford
-  "EN":[51.652,-0.083],  // Enfield
-  // England – London
-  "SW":[51.470,-0.160],
-  "SE":[51.480,-0.060],
-  "NW":[51.550,-0.170],
-  "N":[51.550,-0.110],
-  "E":[51.530,-0.030],
-  "W":[51.510,-0.200],
-  "WC":[51.517,-0.121],
-  "EC":[51.518,-0.095],
-  "SM":[51.401,-0.199],
-  "CR":[51.374,-0.099],
-  "BR":[51.407,-0.016],
-  "KT":[51.411,-0.301],
-  "TW":[51.449,-0.327],
-  "UB":[51.533,-0.476],
-  "HA":[51.579,-0.333],
-  "IG":[51.558,0.075],
-  "RM":[51.576,0.180],
-  "DA":[51.441,0.218],
-  // England – South East
-  "RG":[51.455,-0.960],  // Reading
-  "GU":[51.236,-0.571],  // Guildford
-  "RH":[51.236,-0.179],  // Redhill
-  "BN":[50.829,-0.139],  // Brighton
-  "TN":[51.009,0.267],   // Tunbridge Wells
-  "ME":[51.274,0.524],   // Maidstone
-  "CT":[51.280,1.082],   // Canterbury
-  "SO":[50.904,-1.404],  // Southampton
-  "PO":[50.797,-1.089],  // Portsmouth
-  "SP":[51.067,-1.793],  // Salisbury
-  "SN":[51.556,-1.782],  // Swindon
-  "SL":[51.511,-0.595],  // Slough
-  "OX":[51.752,-1.258],  // Oxford
-  "HP":[51.757,-0.444],  // HP area
-  // England – South West
-  "BS":[51.454,-2.597],  // Bristol
-  "BA":[51.380,-2.360],  // Bath
-  "GL":[51.867,-2.238],  // Gloucester
-  "EX":[50.726,-3.527],  // Exeter
-  "TQ":[50.462,-3.524],  // Torquay
-  "PL":[50.375,-4.143],  // Plymouth
-  "TR":[50.259,-5.052],  // Truro
-  "TA":[51.011,-3.100],  // Taunton
-  "DT":[50.714,-2.441],  // Dorchester
-  "BH":[50.720,-1.880],  // Bournemouth
-  // England – East
-  "CB":[52.205,0.121],   // Cambridge
-  "IP":[52.058,1.152],   // Ipswich
-  "CO":[51.889,0.903],   // Colchester
-  "CM":[51.736,0.470],   // Chelmsford
-  "SS":[51.574,0.459],   // Southend
-  "PE":[52.574,-0.241],  // Peterborough
-  "NR":[52.631,1.299],   // Norwich
-  "NE":[54.978,-1.618],  // Newcastle (also North East)
-  // England – North West
-  "M":[53.480,-2.240],   // Manchester
-  "L":[53.400,-2.983],   // Liverpool
-  "WA":[53.391,-2.587],  // Warrington
-  "WN":[53.544,-2.632],  // Wigan
-  "BL":[53.578,-2.429],  // Bolton
-  "PR":[53.763,-2.708],  // Preston
-  "BB":[53.750,-2.484],  // Blackburn
-  "FY":[53.817,-3.050],  // Blackpool
-  "LA":[54.047,-2.801],  // Lancaster
-  "SK":[53.407,-2.158],  // Stockport
-  "OL":[53.541,-2.117],  // Oldham
-  "CH":[53.191,-2.892],  // Chester
-  "CW":[53.065,-2.444],  // Crewe
-  "WA":[53.391,-2.587],  // Warrington
-  // England – Yorkshire & Humber
-  "LS":[53.800,-1.549],  // Leeds
-  "BD":[53.793,-1.752],  // Bradford
-  "HX":[53.724,-1.864],  // Halifax
-  "HD":[53.646,-1.785],  // Huddersfield
-  "WF":[53.683,-1.499],  // Wakefield
-  "S":[53.380,-1.467],   // Sheffield
-  "DN":[53.522,-1.128],  // Doncaster
-  "HU":[53.745,-0.336],  // Hull
-  "YO":[53.960,-1.082],  // York
-  "HG":[54.003,-1.541],  // Harrogate
-  // England – North East
-  "NE":[54.978,-1.618],  // Newcastle
-  "SR":[54.905,-1.383],  // Sunderland
-  "DH":[54.778,-1.569],  // Durham
-  "TS":[54.574,-1.235],  // Teesside
-  "DL":[54.527,-1.559],  // Darlington
-  // England – East Midlands (already covered above but add gaps)
-  "LN":[53.234,-0.538],  // Lincoln
-  "NG":[52.954,-1.146],  // Nottingham
-  // Scotland
-  "G":[55.861,-4.250],   // Glasgow
-  "EH":[55.950,-3.190],  // Edinburgh
-  "KY":[56.285,-3.164],  // Kirkcaldy / Fife
-  "DD":[56.462,-2.970],  // Dundee
-  "AB":[57.149,-2.094],  // Aberdeen
-  "IV":[57.478,-4.225],  // Inverness
-  "PA":[55.836,-4.427],  // Paisley
-  "ML":[55.783,-3.988],  // Motherwell
-  "KA":[55.612,-4.496],  // Kilmarnock
-  "FK":[56.119,-3.935],  // Falkirk
-  "PH":[56.396,-3.438],  // Perth
-  "TD":[55.643,-2.787],  // Galashiels
-  "DG":[55.070,-3.606],  // Dumfries
-  // Wales
-  "CF":[51.482,-3.179],  // Cardiff
-  "SA":[51.621,-3.939],  // Swansea
-  "NP":[51.588,-3.000],  // Newport
-  "LL":[53.318,-3.824],  // Llandudno
-  "SY":[52.709,-2.750],  // Shrewsbury / mid Wales
-  "LD":[52.250,-3.380],  // Llandrindod Wells
-  "HR":[52.056,-2.716],  // Hereford border
-  // Northern Ireland
-  "BT":[54.597,-5.930],  // Belfast (all NI uses BT)
-};
-// Normalise: strip spaces, uppercase, try longest match first
-function getCoords(raw){
-  // Use outward code only (before the space) to avoid "OX1 1AA" → "OX11AA" matching OX11
-  const parts=raw.trim().toUpperCase().split(/\s+/);
-  const c=parts[0]; // e.g. "OX1" from "OX1 1AA", or "GL56" from "GL56 0DS"
-  for(let len=Math.min(c.length,5);len>=1;len--){
-    const k=c.slice(0,len);
-    if(PC[k]) return PC[k];
-  }
-  // Fallback: try full stripped string (for single-word entries like "CV37")
-  const full=raw.trim().toUpperCase().replace(/\s+/g,"");
-  for(let len=Math.min(full.length,5);len>=1;len--){
-    const k=full.slice(0,len);
-    if(PC[k]) return PC[k];
-  }
-  return null;
-}
-
-
-function hav(a,b,c,d){
-  const R=3959,dLat=(c-a)*Math.PI/180,dLng=(d-b)*Math.PI/180;
-  const x=Math.sin(dLat/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLng/2)**2;
-  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
-}
-
-// ── VENUE DATABASE ───────────────────────────────────────────────────────────
-// All strings use double quotes to avoid apostrophe conflicts
-// Little Party Finder — Complete Venue Database
-// All strings use double quotes to avoid apostrophe conflicts
-// Last updated: May 2026 — 85 venues, ids 1–85
-// Venues now load from /api/venues (single Supabase source of truth) — no inline list.
+// Venues load from /api/venues (single Supabase source of truth) — no inline list.
 
 // ── READ URL PARAM ──
 const params = new URLSearchParams(window.location.search);
@@ -400,24 +152,24 @@ const CAT_EMOJI = {
   soft:"🎪",gym:"🤸",bounce:"🦘",swim:"🏊",farm:"🌿",club:"⭐",unique:"✨",leisure:"🏛️",mobile:"🚐"
 };
 
-function slugify(name){
-  return name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-}
+// Escape text before putting it into HTML (URL parameters end up in the not-found message).
+function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
 function renderVenue(v){
   // Update page meta
-  document.getElementById("pageTitle").textContent = v.metaTitle || v.name + " Birthday Parties | Tiny Invites";
+  document.title = v.metaTitle || v.name + " Birthday Parties | Tiny Invites";
   document.getElementById("pageDesc").setAttribute("content", v.metaDesc || "");
   document.getElementById("ogTitle").setAttribute("content", v.metaTitle || v.name);
   document.getElementById("ogDesc").setAttribute("content", v.metaDesc || "");
-  const slug = slugify(v.name);
-  document.getElementById("pageCanonical").setAttribute("href", "https://tinyinvites.org/venue.html?venue=" + (v.slug||v.id));
+  // Canonical = the static venue page (venue.html?venue= only redirects there).
+  document.getElementById("pageCanonical").setAttribute("href", v.slug ? "https://tinyinvites.org/venue/" + encodeURIComponent(v.slug) + "/" : "https://tinyinvites.org/partyfinder.html");
 
   const catLabel = CAT_LABELS[v.cat] || v.cat;
   const catEmoji = CAT_EMOJI[v.cat] || "🎉";
 
-  const pkgsHtml = v.packages.map(p => `
-    <div class="pkg${(p.featured && v.packages.length > 1) ? " featured" : ""}">
+  const packages = Array.isArray(v.packages) ? v.packages : [];
+  const pkgsHtml = packages.map(p => `
+    <div class="pkg${(p.featured && packages.length > 1) ? " featured" : ""}">
       <div class="pkg-top">
         <div class="pkg-name">${p.name}</div>
         <div class="pkg-price-box">
@@ -425,7 +177,7 @@ function renderVenue(v){
           <div class="pkg-price-note">${p.priceNote || ""}</div>
         </div>
       </div>
-      <div class="pkg-kids">👶 ${p.maxKids}</div>
+      ${p.maxKids ? `<div class="pkg-kids">👶 ${p.maxKids}</div>` : ""}
       <div class="pkg-items">
         ${(p.includes||[]).map(i=>`<div class="pi"><span class="pi-dot y">✓</span>${i}</div>`).join("")}
         ${(p.excludes||[]).map(i=>`<div class="pi"><span class="pi-dot n">✗</span>${i}</div>`).join("")}
@@ -456,7 +208,7 @@ function renderVenue(v){
 
     <div class="venue-cat-tag">${catEmoji} ${catLabel}</div>
     <h1 class="venue-h1">${v.h1 || v.name + " Birthday Parties"}</h1>
-    <h2 class="venue-h2">${v.h2 || v.sub}</h2>
+    <h2 class="venue-h2">${v.h2 || v.sub || ""}</h2>
 
     <div class="venue-meta">
       <div class="vm-badge">📌 <strong>${v.city}</strong>, ${v.postcode}</div>
@@ -478,14 +230,14 @@ function renderVenue(v){
 
     <div class="divider"></div>
 
-    <h3 class="section-h3">${v.h3 || "Party Packages &amp; Prices"}</h3>
-    <div class="packages">${pkgsHtml}</div>
+    ${packages.length ? `<h3 class="section-h3">${v.h3 || "Party Packages &amp; Prices"}</h3>
+    <div class="packages">${pkgsHtml}</div>` : ""}
 
     ${extrasHtml}
     ${notesHtml}
 
     <div class="cta-section">
-      <a href="${v.website}" target="_blank" rel="noopener" class="btn-primary">Visit website &amp; book →</a>
+      ${v.website ? `<a href="${esc(v.website)}" target="_blank" rel="noopener" class="btn-primary">Visit website &amp; book →</a>` : ""}
       <a href="/partyfinder.html" class="btn-ghost">← All venues</a>
     </div>`;
 }
@@ -499,7 +251,7 @@ function findVenue(list){
 function showNotFound(){
   document.getElementById("pageContent").innerHTML = (!venueSlug && isNaN(venueIdFallback))
     ? `<div class="not-found"><h2>Venue not found</h2><p>No venue specified.</p><a href="/partyfinder.html" class="btn-primary">Browse all venues</a></div>`
-    : `<div class="not-found"><h2>Venue not found</h2><p>We couldn't find the venue "<strong>${venueSlug||venueIdFallback}</strong>".</p><a href="/partyfinder.html" class="btn-primary">Browse all venues</a></div>`;
+    : `<div class="not-found"><h2>Venue not found</h2><p>We couldn't find the venue "<strong>${esc(venueSlug||venueIdFallback)}</strong>".</p><a href="/partyfinder.html" class="btn-primary">Browse all venues</a></div>`;
 }
 (async function(){
   // Fully API-driven: venues come from the shared Supabase list (/api/venues),

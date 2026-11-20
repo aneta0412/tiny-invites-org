@@ -35,7 +35,7 @@
   /* camera */
   #stage { position:absolute; inset:0; background:#000; overflow:hidden; }
   video, #grade, #livebg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-  #livebg { display:none; }
+  #livebg { display:none; z-index:1; }
   #grade { pointer-events:none; }
   .mirror video { transform:scaleX(-1); }
   #frameline { position:absolute; inset:2.4vmin; border:1px solid rgba(255,248,232,.55); pointer-events:none; }
@@ -160,7 +160,11 @@
   #batches { display:flex; flex-wrap:wrap; gap:10px; }
   #batches .btn, #clearAll { font-size:15px; padding:10px 20px; }
   #gallery { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
-  #gallery img { height:96px; border:1px solid var(--soft); }
+  #gallery img { height:96px; border:1px solid var(--soft); display:block; }
+  .gdel { position:relative; padding:0; border:none; background:none; line-height:0; }
+  .gdel i { position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(140,47,47,.86); color:#fff; font-style:normal; font-size:13px; letter-spacing:.06em; }
+  .gdel.arm i { display:flex; }
+  #galHint { font-size:13px; color:var(--muted); padding:0 0 10px; }
   #settings .foot { display:flex; justify-content:space-between; align-items:center; margin-top:28px; gap:12px; flex-wrap:wrap; }
   #settings .foot .btn { font-size:17px; padding:13px 34px; }
 
@@ -413,9 +417,10 @@
       <div id="galCount"></div>
       <div id="galState"></div>
       <div id="batches"></div>
+      <div id="galHint">Tap a photo to delete it, then tap again to confirm.</div>
       <div id="gallery"></div>
 
-      <div id="ver">Booth version 18 &middot; pod &middot; 20 November 2026</div>
+      <div id="ver">Booth version 20 &middot; pod &middot; 20 November 2026</div>
 
       <div class="foot">
         <button class="btn line" id="newEvent" type="button">Start a new event</button>
@@ -512,7 +517,8 @@
   };
   let logoImg = null, bgImg = null, liveBg = null;
   const bgCache = new Map();
-  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', gallery:true, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, frameCol:'theme', logoOn:true, bgMode:'off', bgKey:'none', keyTol:45, cloud:'dlkwbg59c', preset:'xe9vrl1r' };
+  const delTokens = new Map();
+  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', gallery:true, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, frameCol:'theme', logoOn:true, bgMode:'off', bgKey:'none', keyTol:45, bgPreview:true, cloud:'dlkwbg59c', preset:'xe9vrl1r' };
   let cfg = Object.assign({}, DEF);
   try { Object.assign(cfg, JSON.parse(localStorage.getItem('ti_cfg') || '{}')); } catch (e) {}
   try { if (!cfg.cloud) cfg.cloud = localStorage.getItem('ti_cloud') || ''; if (!cfg.preset) cfg.preset = localStorage.getItem('ti_preset') || ''; } catch (e) {}
@@ -600,13 +606,13 @@
     o.drawImage(per, 0, 0);
   }
   function syncLive() {
-    const live = $('#livebg'), on = bgActive();
-    live.style.display = on ? '' : 'none';
-    video.style.visibility = on ? 'hidden' : '';
+    const live = $('#livebg'), on = bgActive() && cfg.bgPreview !== false;
+    live.style.display = on ? 'block' : 'none';
+    video.style.visibility = '';
     if (on) live.style.filter = fx().css;
   }
   function liveTick() {
-    if (bgActive() && (cur === 'count' || cur === null)) {
+    if (bgActive() && cfg.bgPreview !== false && (cur === 'count' || cur === null)) {
       const live = $('#livebg'), sw = grade.clientWidth, sh = grade.clientHeight;
       const w = Math.max(2, Math.round(sw * 0.5)), h = Math.max(2, Math.round(sh * 0.5));
       if (live.width !== w) { live.width = w; live.height = h; }
@@ -1053,14 +1059,20 @@
     if (busy) return; busy = true;
     try {
       bookIdx = null; lastKind = null; reviewLook = liveFilter || cfg.filter; cue.textContent = 'Get ready to move'; await countdown(3); await freshMask();
-      const gw = 400, gh = Math.round(400 * grade.clientHeight / grade.clientWidth);
-      const tmp = document.createElement('canvas'); tmp.width = gw; tmp.height = gh; const tctx = tmp.getContext('2d', { willReadFrequently:true });
+      const gw = 360, gh = Math.round(360 * grade.clientHeight / grade.clientWidth);
       show('count'); countN.textContent = ''; cue.textContent = 'Keep moving'; spin(1.1);
-      const frames = []; for (let i = 0; i < 10; i++) { drawComposite(tctx, gw, gh, cfg.watermark); frames.push(tctx.getImageData(0, 0, gw, gh)); await sleep(90); }
+      const shots = [];
+      for (let i = 0; i < 10; i++) {
+        const c = document.createElement('canvas'); c.width = gw; c.height = gh;
+        drawComposite(c.getContext('2d', { willReadFrequently:true }), gw, gh, false);
+        shots.push(c); await sleep(90);
+      }
       $('#pmsg').textContent = 'Making your boomerang'; show('proc');
       try {
-        const seq = frames.concat(frames.slice(1, -1).reverse());
-        finish([await makeGIF(seq, gw, gh, 80, 'Making your boomerang')]);
+        const framed = [];
+        for (let i = 0; i < shots.length; i++) { framed.push(framePhoto(shots[i])); shots[i] = null; }
+        const seq = framed.concat(framed.slice(1, -1).reverse());
+        finish([await makeGIF(seq, framed[0].width, framed[0].height, 80, 'Making your boomerang')]);
       } catch (e) {
         toast('The boomerang could not be finished. Saved a photo instead.');
         const still = await canvasBlob(captureCanvas(), 'image/jpeg', 0.92); const u = URL.createObjectURL(still);
@@ -1076,7 +1088,9 @@
       const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', preset1());
       if (galleryOn()) fd.append('tags', books.has(blob) ? galTag() + '-notes' : galTag());
       const r = await fetch('https://api.cloudinary.com/v1_1/' + encodeURIComponent(cfg.cloud) + '/image/upload', { method:'POST', body:fd });
-      const j = await r.json(); if (!j.secure_url) throw new Error((j.error && j.error.message) || 'upload failed'); return j.secure_url;
+      const j = await r.json(); if (!j.secure_url) throw new Error((j.error && j.error.message) || 'upload failed');
+      if (j.delete_token) delTokens.set(blob, { tok:j.delete_token, at:Date.now() });
+      return j.secure_url;
     })();
     uploads.set(blob, p); p.catch(() => uploads.delete(blob)); return p;
   }
@@ -1225,7 +1239,7 @@
   }, 3000);
   function openWall() {
     const g = $('#wallGrid'); g.innerHTML = '';
-    const list = sessionShots.filter(b => !books.has(b) && (b.type || '').indexOf('gif') < 0).slice(-60).reverse();
+    const list = sessionShots.filter(b => !books.has(b)).slice(-60).reverse();
     $('#wallNote').textContent = list.length ? (list.length + (list.length === 1 ? ' photo so far' : ' photos so far')) : 'No photos yet. Be the first.';
     list.forEach(b => { const im = new Image(); im.loading = 'lazy'; im.src = urlFor(b); g.appendChild(im); });
     show('wall');
@@ -1293,10 +1307,34 @@
     const n = sessionShots.length; $('#galCount').textContent = n ? (n + (n === 1 ? ' keepsake' : ' keepsakes') + ' saved on this iPad') : 'Nothing saved yet. Finished photos appear here.';
     const bt = $('#batches'); bt.innerHTML = '';
     for (let a = 0; a < n; a += 10) { const z = Math.min(a + 10, n); const b = document.createElement('button'); b.className = 'btn line small'; b.textContent = 'Send ' + (a + 1) + ' to ' + z; b.addEventListener('click', () => shareBlobs(sessionShots.slice(a, z), 'tinyinvites-' + (a + 1))); bt.appendChild(b); }
-    const g = $('#gallery'); g.innerHTML = ''; sessionShots.slice(-12).forEach(b => { const img = new Image(); img.src = URL.createObjectURL(b); g.appendChild(img); });
+    const g = $('#gallery'); g.innerHTML = '';
+    sessionShots.slice(-12).forEach(bl => {
+      const w = document.createElement('button'); w.className = 'gdel'; w.type = 'button';
+      const img = new Image(); img.src = urlFor(bl); w.appendChild(img);
+      const x = document.createElement('i'); x.textContent = 'delete'; w.appendChild(x);
+      w.addEventListener('click', () => removeShot(bl, w));
+      g.appendChild(w);
+    });
     $('#clearAll').style.display = n ? '' : 'none';
     const nb = bookShots().length; $('#bookCount').textContent = nb ? (nb + (nb === 1 ? ' note' : ' notes') + ' in the guest book') : 'No guest book notes yet.';
     $('#galState').textContent = galleryOn() ? (pending.size ? pending.size + ' waiting to upload to the gallery. They retry automatically.' : 'Everything is in the online gallery.') : '';
+  }
+  async function removeShot(b, el) {
+    if (el.dataset.armed !== '1') {
+      el.dataset.armed = '1'; el.classList.add('arm');
+      setTimeout(() => { el.dataset.armed = ''; el.classList.remove('arm'); }, 3500);
+      return;
+    }
+    unkeep(b);
+    const t = delTokens.get(b); let extra = '';
+    if (t && Date.now() - t.at < 9.5 * 60 * 1000) {
+      try {
+        const fd = new FormData(); fd.append('token', t.tok);
+        const r = await fetch('https://api.cloudinary.com/v1_1/' + encodeURIComponent(cfg.cloud) + '/delete_by_token', { method:'POST', body:fd });
+        extra = r.ok ? ' and from the online gallery' : '. The online copy stayed, remove it in Cloudinary';
+      } catch (e) { extra = '. The online copy stayed, remove it in Cloudinary'; }
+    } else if (t) extra = '. Over ten minutes old, so remove the online copy in Cloudinary';
+    delTokens.delete(b); renderGallery(); toast('Deleted from the iPad' + extra);
   }
   let clearArmed = false;
   $('#clearAll').addEventListener('click', () => {

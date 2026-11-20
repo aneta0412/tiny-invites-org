@@ -55,6 +55,21 @@
   .btn.line { border:1px solid var(--gold); color:var(--ink); background:var(--card); }
   .btn.small { font-size:2.1vmin; padding:1.5vmin 3.4vmin; }
   .btn.off { opacity:.3; }
+  .rdy { width:100%; max-width:84vmin; text-align:left; }
+  .rdy .title, .rdy .lede { text-align:left; }
+  #rSub:empty { display:none; }
+  #rList { list-style:none; margin:4vmin 0 3vmin; border-top:1px solid var(--soft); }
+  #rList li { display:flex; gap:2.6vmin; align-items:flex-start; padding:2.2vmin 0; border-bottom:1px solid var(--soft); font-size:2.7vmin; color:var(--ink); line-height:1.35; }
+  #rList li small { display:block; font-size:2.15vmin; font-weight:300; color:var(--muted); margin-top:.4vmin; }
+  #rList li i { flex:none; width:3.6vmin; height:3.6vmin; margin-top:.2vmin; border-radius:50%; position:relative; border:1.5px solid var(--soft); }
+  #rList li.ok i { background:var(--gold); border-color:var(--gold); }
+  #rList li.ok i::after { content:''; position:absolute; left:34%; top:18%; width:22%; height:44%; border:solid var(--card); border-width:0 .5vmin .5vmin 0; transform:rotate(45deg); }
+  #rList li.warn i { border-color:#b0664c; }
+  #rList li.warn i::after { content:'!'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:2.3vmin; font-weight:500; color:#b0664c; }
+  #rList li.wait i { border-color:var(--gold); border-top-color:transparent; animation:spinr 1s linear infinite; }
+  @keyframes spinr { to { transform:rotate(360deg); } }
+  #rTip { font-size:2.2vmin; font-weight:300; color:var(--muted); line-height:1.5; }
+  .rbtns { display:flex; gap:2vmin; justify-content:flex-end; margin-top:4vmin; }
   .link { font-size:2.3vmin; color:var(--muted); text-decoration:underline; text-underline-offset:.5vmin; padding:1.6vmin 3vmin; }
   .actions { display:flex; gap:2.6vmin; flex-wrap:wrap; justify-content:center; align-items:center; }
 
@@ -101,7 +116,11 @@
   @keyframes ring { from { stroke-dashoffset:0; } to { stroke-dashoffset:289; } }
   #countN { font-family:var(--fd); font-weight:400; font-size:30vmin; line-height:1; color:#fffaf0; text-shadow:0 .4vmin 3vmin rgba(0,0,0,.45); }
   @keyframes pop { from { transform:scale(.72); opacity:0; } to { transform:scale(1); opacity:1; } }
-  #cue { margin-top:2vmin; font-family:var(--fd); font-style:italic; font-size:5vmin; color:#fffaf0; text-shadow:0 .2vmin 1.6vmin rgba(0,0,0,.6); min-height:6vmin; }
+  #cue { margin-top:3vmin; max-width:88vw; padding:1.6vmin 5.5vmin 2.4vmin; border-radius:7vmin; font-family:var(--fd); font-style:italic; font-weight:500; font-size:9.5vmin; line-height:1.08; text-align:center; text-wrap:balance; color:#fffaf0; background:rgba(22,17,10,.36); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); text-shadow:0 .2vmin 1.4vmin rgba(0,0,0,.45); }
+  #cue:empty { visibility:hidden; }
+  #cue.in { animation:cuein .5s cubic-bezier(.2,.8,.2,1); }
+  @keyframes cuein { from { transform:translateY(2.5vmin) scale(.94); opacity:0; } to { transform:none; opacity:1; } }
+  @media (prefers-reduced-motion: reduce) { #cue.in { animation:none; } }
   #prog { position:absolute; top:6vmin; left:0; right:0; display:flex; justify-content:center; gap:1.6vmin; z-index:9; opacity:0; transition:opacity .3s; pointer-events:none; }
   #prog.on { opacity:1; }
   #prog i { width:1.5vmin; height:1.5vmin; border-radius:50%; border:1px solid #fffaf0; box-shadow:0 0 1vmin rgba(0,0,0,.4); }
@@ -223,7 +242,24 @@
   #gWall a { display:block; margin-bottom:10px; break-inside:avoid; background:var(--card); border:1px solid var(--soft); }
   #gWall a.new { animation:arrive .8s ease; }
   @keyframes arrive { from { opacity:0; transform:translateY(-8px); } }
-  #gWall img { width:100%; display:block; }
+  #gWall img { width:100%; height:100%; object-fit:cover; display:block; opacity:0; transition:opacity .5s ease; }
+  #gWall a.ready img { opacity:1; }
+  #gWall a { overflow:hidden; border-radius:3px; box-shadow:0 1px 2px rgba(60,45,20,.06), 0 8px 22px rgba(60,45,20,.07); transition:transform .2s ease; }
+  #gWall a:active { transform:scale(.98); }
+  #gView { position:fixed; inset:0; z-index:50; display:flex; flex-direction:column; background:#14100b; color:#fffaf0; }
+  #gView[hidden] { display:none; }
+  #gvTop { display:flex; align-items:center; justify-content:space-between; padding:max(12px, env(safe-area-inset-top)) 14px 6px 20px; font-size:13px; letter-spacing:.22em; text-transform:uppercase; color:rgba(255,250,240,.7); }
+  #gvStage { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; padding:4px 10px; }
+  #gvImg { max-width:100%; max-height:100%; object-fit:contain; opacity:0; transform:scale(.985); transition:opacity .3s ease, transform .3s ease; box-shadow:0 12px 50px rgba(0,0,0,.5); }
+  #gvImg.on { opacity:1; transform:none; }
+  #gvBar { display:flex; align-items:center; justify-content:center; gap:12px; padding:12px 14px max(18px, env(safe-area-inset-bottom)); }
+  #gView button { font:inherit; color:#fffaf0; background:none; border:1px solid rgba(255,250,240,.35); cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  #gvX, #gvPrev, #gvNext { width:48px; height:48px; border-radius:50%; font-size:26px; line-height:1; display:flex; align-items:center; justify-content:center; padding:0 0 3px; }
+  #gView #gvX { border-color:transparent; }
+  #gView #gvSave { flex:1; max-width:300px; height:52px; border-radius:26px; background:#f3e3bf; border-color:#f3e3bf; color:#2b2520; font-size:16px; font-weight:500; letter-spacing:.04em; }
+  #gvSave:disabled { opacity:.6; }
+  #gView button:focus-visible { outline:2px solid #f3e3bf; outline-offset:3px; }
+  @media (prefers-reduced-motion: reduce) { #gvImg, #gWall img { transition:none; } }
   #galpage footer { text-align:center; font-size:14px; font-weight:300; color:var(--muted); margin-top:32px; line-height:1.7; }
   #galpage footer em { font-family:var(--fd); font-size:17px; }
 
@@ -243,7 +279,12 @@
 <div id="galpage">
   <header><h1 id="gTitle"></h1><p id="gDate"></p><p id="gStat"></p></header>
   <div id="gWall"></div>
-  <footer>Tap a photo to open it, then press and hold to save it.<br><em>provided to you by Tiny Invites</em></footer>
+  <footer>Tap a photo to see it full size, then save or share it.<br><em>provided to you by Tiny Invites</em></footer>
+</div>
+<div id="gView" hidden>
+  <div id="gvTop"><span id="gvN"></span><button id="gvX" type="button" aria-label="Close">&times;</button></div>
+  <div id="gvStage"><img id="gvImg" alt="Photo from the booth"></div>
+  <div id="gvBar"><button id="gvPrev" type="button" aria-label="Previous photo">&lsaquo;</button><button id="gvSave" type="button">Save or share</button><button id="gvNext" type="button" aria-label="Next photo">&rsaquo;</button></div>
 </div>
 <div id="app">
   <div id="stage">
@@ -269,6 +310,15 @@
     <div id="galCard"><div id="galQR"></div><span>See all the photos</span></div>
   </div>
 
+  <div id="ready" class="screen paper">
+    <div class="rdy">
+      <div class="title" id="rTitle">Before the guests arrive</div>
+      <div class="lede" id="rSub"></div>
+      <ul id="rList"></ul>
+      <p id="rTip">Plug in the charger, then triple-click the top button (or the Home button) to turn on Guided Access.</p>
+      <div class="rbtns"><button class="btn line" id="rEdit" type="button">Edit the event</button><button class="btn fill" id="rGo" type="button">Open the booth</button></div>
+    </div>
+  </div>
   <div id="wall" class="screen paper">
     <div class="title">Photos so far</div>
     <div class="lede" id="wallNote"></div>
@@ -420,9 +470,10 @@
       <div id="galHint">Tap a photo to delete it, then tap again to confirm.</div>
       <div id="gallery"></div>
 
-      <div id="ver">Booth version 22 &middot; pod &middot; 20 November 2026</div>
+      <div id="ver">Booth version 27 &middot; pod &middot; 20 November 2026</div>
 
       <div class="foot">
+        <button class="btn line" id="checkBooth" type="button">Check the booth</button>
         <button class="btn line" id="newEvent" type="button">Start a new event</button>
         <button class="btn line" id="clearAll" type="button">Delete all saved photos</button>
         <button class="btn fill" id="closeSet" type="button">Done</button>
@@ -447,6 +498,17 @@
   const err = $('#err'), countN = $('#countN'), ring = $('#ring'), cue = $('#cue');
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const canvasBlob = (c, t, q) => new Promise(r => c.toBlob(r, t, q));
+  // iPad Safari caps the memory all canvases may use together and frees a discarded canvas
+  // only when it gets round to it. Past the cap, canvases quietly draw nothing: a black
+  // screen. So the preview reuses a few fixed canvases, and one-off ones are emptied at once.
+  const scratchPool = {};
+  function scratch(slot, w, h) {
+    let c = scratchPool[slot]; if (!c) c = scratchPool[slot] = document.createElement('canvas');
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    return c;
+  }
+  function drop(c) { if (c && !Object.values(scratchPool).includes(c)) { c.width = 0; c.height = 0; } }
+  const shotBlob = async (c, t, q) => { const b = await canvasBlob(c, t, q); drop(c); return b; };
   const FD = '"Cormorant Garamond", Georgia, "Times New Roman", serif';
   const FS = '"Jost", "Helvetica Neue", Arial, sans-serif';
   const CREDIT = 'provided to you by Tiny Invites';
@@ -475,7 +537,36 @@
     party:'smile — your photos are ready in seconds',
     corporate:'step in and strike a pose'
   };
-  const CUES = ['Get ready', 'Lovely', 'Now a silly one', 'Closer together', 'Gorgeous', 'Last one, big smile'];
+  // Six prompts per session, one per photo, in an arc: warm up, pose, silly, together, action, finale.
+  // Short enough to read and act on in two seconds; a fresh mix every session.
+  const POSES = {
+    wedding: [['Big smiles', 'Say \u201ccheers!\u201d', 'Your happiest smile'],
+              ['Strike a pose', 'Give us glamour', 'Chin up, look fabulous'],
+              ['Now a silly face', 'Pull a funny face', 'Tongues out'],
+              ['Lean in close', 'Cheek to cheek', 'Big group hug'],
+              ['Blow a kiss', 'Make a heart with your hands', 'Raise a glass', 'Hands in the air'],
+              ['Last one: big laugh', 'Last one: go wild', 'Last one: your best pose']],
+    party:   [['Big smiles', 'Party faces on', 'Say \u201ccheese!\u201d'],
+              ['Strike a pose', 'Point at the camera', 'Peace signs'],
+              ['Now a silly face', 'Pull a funny face', 'Look shocked'],
+              ['Lean in close', 'Big group hug', 'Heads together'],
+              ['Hands in the air', 'Jazz hands', 'Superhero pose', 'Dance move, then freeze'],
+              ['Last one: go wild', 'Last one: you just won', 'Last one: big laugh']],
+    corporate: [['Big smiles', 'Say \u201ccheese!\u201d', 'Your best smile'],
+              ['Strike a pose', 'Arms folded, look serious', 'Team pose'],
+              ['Now a silly face', 'Look shocked', 'Pull a funny face'],
+              ['Lean in close', 'Heads together', 'Shoulder to shoulder'],
+              ['Thumbs up', 'Hands in the air', 'Point at the camera', 'High five'],
+              ['Last one: celebrate', 'Last one: big laugh', 'Last one: your best pose']]
+  };
+  POSES.birthday = POSES.party;
+  let lastCues = [];
+  function pickCues() {
+    const set = POSES[cfg.type] || POSES.party;
+    const out = set.map((opts, i) => { const o = opts.filter(x => x !== lastCues[i]); return o[Math.floor(Math.random() * o.length)]; });
+    lastCues = out; return out;
+  }
+  function setCue(t) { cue.textContent = t; cue.classList.remove('in'); void cue.offsetWidth; if (t) cue.classList.add('in'); }
 
   /* ---------- online gallery page (opened on guests' phones) ---------- */
   const QS = new URLSearchParams(location.search);
@@ -483,8 +574,43 @@
     const tag = QS.get('g').replace(/[^a-z0-9-]/gi, ''), cloud = QS.get('c').replace(/[^a-z0-9_-]/gi, '');
     document.documentElement.classList.add('gal'); document.body.dataset.theme = THEMES[QS.get('t')] ? QS.get('t') : 'ivory';
     $('#gTitle').textContent = QS.get('n') || 'Tiny Invites'; $('#gDate').textContent = QS.get('d') || '';
-    const seen = new Set(), wall = $('#gWall'), stat = $('#gStat'); let first = true;
+    const seen = new Set(), wall = $('#gWall'), stat = $('#gStat'), shots = []; let first = true;
     const base = 'https://res.cloudinary.com/' + cloud + '/image/upload/';
+    // full-screen viewer: swipe between photos, save or share without leaving the page
+    const view = $('#gView'), vImg = $('#gvImg'), vBtn = $('#gvSave'); let vi = -1;
+    function vFile(s) {
+      return fetch(s.full).then(r => { if (!r.ok) throw new Error('x'); return r.blob(); })
+        .then(b => new File([b], 'photo-' + s.n + '.' + s.format, { type:b.type || (s.format === 'gif' ? 'image/gif' : 'image/jpeg') }));
+    }
+    function vShow(i) {
+      if (!shots.length) return;
+      vi = (i + shots.length) % shots.length; const s = shots[vi];
+      vImg.classList.remove('on'); vImg.onload = () => vImg.classList.add('on'); vImg.src = s.big;
+      $('#gvN').textContent = (vi + 1) + ' of ' + shots.length;
+      shots.forEach(o => { if (o !== s) o.file = null; });
+      if (!s.file) { s.file = vFile(s); s.file.catch(() => { s.file = null; }); }   // ready before the tap, so the share sheet opens at once
+    }
+    function vOpen(i) { vShow(i); view.hidden = false; document.body.style.overflow = 'hidden'; try { history.pushState({ v:1 }, ''); } catch (e) {} }
+    function vClose(fromBack) { if (view.hidden) return; view.hidden = true; document.body.style.overflow = ''; if (!fromBack) { try { history.back(); } catch (e) {} } }
+    window.addEventListener('popstate', () => vClose(true));
+    $('#gvX').addEventListener('click', () => vClose());
+    $('#gvPrev').addEventListener('click', () => vShow(vi - 1));
+    $('#gvNext').addEventListener('click', () => vShow(vi + 1));
+    view.addEventListener('click', e => { if (e.target === view || e.target.id === 'gvStage') vClose(); });
+    document.addEventListener('keydown', e => { if (view.hidden) return; if (e.key === 'Escape') vClose(); else if (e.key === 'ArrowLeft') vShow(vi - 1); else if (e.key === 'ArrowRight') vShow(vi + 1); });
+    let tx = null;
+    view.addEventListener('touchstart', e => { tx = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive:true });
+    view.addEventListener('touchend', e => { if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; tx = null; if (Math.abs(dx) > 48) vShow(vi + (dx < 0 ? 1 : -1)); }, { passive:true });
+    vBtn.addEventListener('click', async () => {
+      const s = shots[vi]; if (!s) return;
+      const label = vBtn.textContent; vBtn.disabled = true; vBtn.textContent = 'One moment';
+      try {
+        const f = await (s.file || (s.file = vFile(s)));
+        if (navigator.canShare && navigator.canShare({ files:[f] })) await navigator.share({ files:[f] });
+        else { const u = URL.createObjectURL(f), a = document.createElement('a'); a.href = u; a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 5000); }
+      } catch (e) { if (!e || e.name !== 'AbortError') window.open(s.full, '_blank', 'noopener'); }
+      vBtn.disabled = false; vBtn.textContent = label;
+    });
     async function load() {
       try {
         const r = await fetch('https://res.cloudinary.com/' + cloud + '/image/list/' + tag + '.json', { cache:'no-store' });
@@ -492,13 +618,20 @@
         const items = ((await r.json()).resources || []).sort((a, b) => String(a.created_at || '').localeCompare(String(b.created_at || '')));
         items.forEach(it => {
           if (seen.has(it.public_id)) return; seen.add(it.public_id);
-          const full = base + 'v' + it.version + '/' + it.public_id + '.' + it.format;
-          const a = document.createElement('a'); a.href = full; a.target = '_blank'; a.rel = 'noopener';
+          const gif = it.format === 'gif', path = 'v' + it.version + '/' + it.public_id;
+          const full = base + path + '.' + it.format;
+          const o = { full:full, format:it.format, n:seen.size, file:null, big:gif ? full : base + 'c_limit,w_1600,h_1600,q_auto/' + path + '.jpg' };
+          shots.unshift(o); if (!view.hidden) vi++;
+          const a = document.createElement('a'); a.href = full;
+          if (it.width && it.height) a.style.aspectRatio = it.width + ' / ' + it.height;
+          a.addEventListener('click', e => { e.preventDefault(); vOpen(shots.indexOf(o)); });
           const img = new Image(); img.loading = 'lazy'; img.alt = 'Photo from the booth';
-          img.src = it.format === 'gif' ? full : base + 'c_limit,w_700,q_auto/v' + it.version + '/' + it.public_id + '.jpg';
-          if (!first) a.className = 'new'; a.appendChild(img); wall.insertBefore(a, wall.firstChild);
+          img.onload = () => a.classList.add('ready');
+          img.src = gif ? full : base + 'c_limit,w_700,q_auto/' + path + '.jpg';
+          if (!first) a.classList.add('new'); a.appendChild(img); wall.insertBefore(a, wall.firstChild);
         });
         first = false;
+        if (!view.hidden) $('#gvN').textContent = (vi + 1) + ' of ' + shots.length;
       } catch (e) {}
       stat.textContent = seen.size ? (seen.size + (seen.size === 1 ? ' photo' : ' photos') + '. New ones appear here within a minute or so.') : 'No photos yet. They appear here within a minute or so of being taken.';
     }
@@ -518,7 +651,7 @@
   let logoImg = null, bgImg = null, liveBg = null;
   const bgCache = new Map();
   const delTokens = new Map();
-  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', gallery:true, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, frameCol:'theme', logoOn:true, bgMode:'off', bgKey:'none', keyTol:45, bgPreview:true, cloud:'dlkwbg59c', preset:'xe9vrl1r' };
+  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', gallery:true, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, frameCol:'theme', logoOn:true, bgMode:'off', bgKey:'none', keyTol:45, bgPreview:true, hq:true, cloud:'dlkwbg59c', preset:'xe9vrl1r' };
   let cfg = Object.assign({}, DEF);
   try { Object.assign(cfg, JSON.parse(localStorage.getItem('ti_cfg') || '{}')); } catch (e) {}
   try { if (!cfg.cloud) cfg.cloud = localStorage.getItem('ti_cloud') || ''; if (!cfg.preset) cfg.preset = localStorage.getItem('ti_preset') || ''; } catch (e) {}
@@ -570,13 +703,108 @@
     try { await seg.send({ image: segSmall }); } catch (e) {}
   }
   async function freshMask() { if (cfg.bgMode === 'ai') { if (!segReady) await initSeg(); await segSend(); } }
+  // ---- sharper cut-out for the still photos ----
+  // A photo, unlike a video call, can afford a second of thought: a larger model finds the
+  // people, then the edge is snapped to the real outline in the full-size photo and the old
+  // wall's colour is cleaned out of hair and shoulders.
+  const TV_BASE = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/';
+  const HQ_MODELS = ['https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/selfie_multiclass_256x256.tflite',
+                     'https://cdn.jsdelivr.net/npm/@stream-io/video-filters-web@0.10.1/mediapipe/models/selfie_multiclass_256x256.tflite'];
+  let hq = null, hqBusy = false, hqTried = false;
+  async function initHQ() {
+    if (hq || hqBusy || hqTried) return !!hq;
+    hqBusy = true;
+    try {
+      const tv = await import(TV_BASE + 'vision_bundle.mjs');
+      const fs = await tv.FilesetResolver.forVisionTasks(TV_BASE + 'wasm');
+      for (const url of HQ_MODELS) {
+        try {
+          hq = await tv.ImageSegmenter.createFromOptions(fs, { baseOptions:{ modelAssetPath:url, delegate:'CPU' }, runningMode:'IMAGE', outputCategoryMask:false, outputConfidenceMasks:true });
+          break;
+        } catch (e) { hq = null; }
+      }
+    } catch (e) { hq = null; }
+    hqBusy = false; hqTried = true;
+    return !!hq;
+  }
+  function boxF(src, w, h, r, tmp, dst) {     // mean over a (2r+1) square, edges handled
+    for (let y = 0; y < h; y++) { const o = y * w; let s = 0;
+      for (let x = 0; x <= r && x < w; x++) s += src[o + x];
+      for (let x = 0; x < w; x++) { const l = x - r, q = x + r; tmp[o + x] = s / ((q < w ? q : w - 1) - (l > 0 ? l : 0) + 1);
+        if (q + 1 < w) s += src[o + q + 1]; if (l >= 0) s -= src[o + l]; } }
+    for (let x = 0; x < w; x++) { let s = 0;
+      for (let y = 0; y <= r && y < h; y++) s += tmp[y * w + x];
+      for (let y = 0; y < h; y++) { const l = y - r, q = y + r; dst[y * w + x] = s / ((q < h ? q : h - 1) - (l > 0 ? l : 0) + 1);
+        if (q + 1 < h) s += tmp[(q + 1) * w + x]; if (l >= 0) s -= tmp[l * w + x]; } }
+    return dst;
+  }
+  function hqCut(o, W, H) {                   // true when it has swapped the background
+    if (!hq || !bgImg || !bgImg.width) return false;
+    let pm, mw, mh;
+    try {
+      const r = hq.segment(o.canvas), m = r.confidenceMasks && r.confidenceMasks[0];
+      if (!m) { if (r.close) r.close(); return false; }
+      mw = m.width; mh = m.height; pm = new Float32Array(m.getAsFloat32Array()); if (r.close) r.close();
+    } catch (e) { return false; }
+    // 1. a working copy at modest size
+    const LW = 400, LH = Math.max(8, Math.round(LW * H / W)), n = LW * LH;
+    const lc = document.createElement('canvas'); lc.width = LW; lc.height = LH;
+    const lx = lc.getContext('2d', { willReadFrequently:true }); lx.imageSmoothingQuality = 'high'; lx.drawImage(o.canvas, 0, 0, LW, LH);
+    const ld = lx.getImageData(0, 0, LW, LH).data;
+    const F = () => new Float32Array(n), I = F(), P = F(), t = F(), u = F();
+    for (let p = 0, i = 0; p < n; p++, i += 4) I[p] = (0.299 * ld[i] + 0.587 * ld[i + 1] + 0.114 * ld[i + 2]) / 255;
+    for (let y = 0; y < LH; y++) {            // the model's answer (channel 0 = background), resampled
+      let sy = (y + 0.5) * mh / LH - 0.5; if (sy < 0) sy = 0; if (sy > mh - 1) sy = mh - 1;
+      const y0 = sy | 0, y1 = y0 < mh - 1 ? y0 + 1 : y0, fy = sy - y0;
+      for (let x = 0; x < LW; x++) {
+        let sx = (x + 0.5) * mw / LW - 0.5; if (sx < 0) sx = 0; if (sx > mw - 1) sx = mw - 1;
+        const x0 = sx | 0, x1 = x0 < mw - 1 ? x0 + 1 : x0, fx2 = sx - x0;
+        const a = pm[y0 * mw + x0], b = pm[y0 * mw + x1], c = pm[y1 * mw + x0], e = pm[y1 * mw + x1];
+        P[y * LW + x] = 1 - ((a + (b - a) * fx2) * (1 - fy) + (c + (e - c) * fx2) * fy);
+      }
+    }
+    // 2. guided filter: let the photo's own edges decide exactly where the outline falls
+    const R = 5, EPS = 0.0016, mI = F(), mP = F(), vI = F(), cIP = F(), A = F(), B = F();
+    boxF(I, LW, LH, R, t, mI); boxF(P, LW, LH, R, t, mP);
+    for (let p = 0; p < n; p++) u[p] = I[p] * I[p]; boxF(u, LW, LH, R, t, vI);
+    for (let p = 0; p < n; p++) u[p] = I[p] * P[p]; boxF(u, LW, LH, R, t, cIP);
+    for (let p = 0; p < n; p++) { const a = (cIP[p] - mI[p] * mP[p]) / (vI[p] - mI[p] * mI[p] + EPS); u[p] = a; mI[p] = mP[p] - a * mI[p]; }
+    boxF(u, LW, LH, R, t, A); boxF(mI, LW, LH, R, t, B);
+    // 3. what colour is the wall near each edge? (so it can be taken back out of the hair)
+    const wg = F(), br = F(), bg2 = F(), bb = F(), sw = F();
+    for (let p = 0, i = 0; p < n; p++, i += 4) { let a = A[p] * I[p] + B[p]; a = a < 0 ? 0 : a > 1 ? 1 : a; const w = (1 - a) * (1 - a); wg[p] = w; br[p] = ld[i] * w; bg2[p] = ld[i + 1] * w; bb[p] = ld[i + 2] * w; }
+    boxF(wg, LW, LH, 9, t, sw); boxF(br, LW, LH, 9, t, u); br.set(u); boxF(bg2, LW, LH, 9, t, u); bg2.set(u); boxF(bb, LW, LH, 9, t, u); bb.set(u);
+    // 4. full size: finish the edge against the real pixels
+    const im = o.getImageData(0, 0, W, H), d = im.data, LO = 0.22, HI = 0.78, K = 1 / (HI - LO);
+    for (let y = 0; y < H; y++) {
+      let sy = (y + 0.5) * LH / H - 0.5; if (sy < 0) sy = 0; if (sy > LH - 1) sy = LH - 1;
+      const y0 = sy | 0, y1 = y0 < LH - 1 ? y0 + 1 : y0, fy = sy - y0, r0 = y0 * LW, r1 = y1 * LW;
+      for (let x = 0; x < W; x++) {
+        let sx = (x + 0.5) * LW / W - 0.5; if (sx < 0) sx = 0; if (sx > LW - 1) sx = LW - 1;
+        const x0 = sx | 0, x1 = x0 < LW - 1 ? x0 + 1 : x0, fx2 = sx - x0, i = (y * W + x) << 2;
+        const a = (A[r0 + x0] + (A[r0 + x1] - A[r0 + x0]) * fx2) * (1 - fy) + (A[r1 + x0] + (A[r1 + x1] - A[r1 + x0]) * fx2) * fy;
+        const b = (B[r0 + x0] + (B[r0 + x1] - B[r0 + x0]) * fx2) * (1 - fy) + (B[r1 + x0] + (B[r1 + x1] - B[r1 + x0]) * fx2) * fy;
+        let q = (a * (0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]) / 255 + b - LO) * K;
+        if (q <= 0) { d[i + 3] = 0; continue; }
+        if (q >= 1) continue;
+        q = q * q * (3 - 2 * q);
+        const p = (fy < 0.5 ? r0 : r1) + (fx2 < 0.5 ? x0 : x1), w = sw[p];
+        if (w > 0.004) { const k = (1 - q) / (q > 0.4 ? q : 0.4);
+          d[i] += (d[i] - br[p] / w) * k; d[i + 1] += (d[i + 1] - bg2[p] / w) * k; d[i + 2] += (d[i + 2] - bb[p] / w) * k; }
+        d[i + 3] = (q * 255) | 0;
+      }
+    }
+    const per = scratch('cutF', W, H); per.getContext('2d').putImageData(im, 0, 0);
+    o.clearRect(0, 0, W, H); coverCrop(o, bgImg, 0, 0, W, H); o.drawImage(per, 0, 0); drop(lc);
+    return true;
+  }
   function aiKey(px, W, H) {
     if (!lastMaskRaw) return false;
     // the model's silhouette sits a little outside the person, so a plain mask keeps a
     // ring of the old room. Shrink the edge inward, then feather it. Done small and
     // scaled up: a few thousand pixels of work instead of a few million.
     const SW = 192, SH = Math.max(8, Math.round(SW * H / W)), n = SW * SH;
-    const m = document.createElement('canvas'); m.width = SW; m.height = SH;
+    const m = scratch('mask', SW, SH);
     const mx = m.getContext('2d', { willReadFrequently:true });
     mx.imageSmoothingEnabled = true; mx.imageSmoothingQuality = 'high';
     try { mx.drawImage(lastMaskRaw, 0, 0, SW, SH); } catch (e) { return false; }
@@ -616,9 +844,9 @@
   }
   function applyBackdrop(o, W, H) {
     if (!bgImg || !bgImg.width) return;
-    const per = document.createElement('canvas'); per.width = W; per.height = H;
+    const per = scratch(W >= 700 ? 'cutF' : 'cutL', W, H);
     const px = per.getContext('2d', { willReadFrequently:true });
-    px.drawImage(o.canvas, 0, 0);
+    px.clearRect(0, 0, W, H); px.drawImage(o.canvas, 0, 0);
     let ok = false;
     if (cfg.bgMode === 'green') ok = chromaKey(px, W, H);
     else if (cfg.bgMode === 'ai') ok = aiKey(px, W, H);
@@ -669,7 +897,7 @@
   const galleryOn = () => !!(cfg.gallery && cfg.cloud && cfg.preset);
   const galURL = () => location.origin + location.pathname + '?g=' + galTag() + '&c=' + encodeURIComponent(cfg.cloud) + '&t=' + cfg.theme + (cfg.names ? '&n=' + encodeURIComponent(cfg.names) : '') + (cfg.date ? '&d=' + encodeURIComponent(cfg.date) : '');
 
-  function show(name) { cur = name; Object.keys(screens).forEach(k => screens[k].classList.toggle('active', k === name)); }
+  function show(name) { if (name === 'count') { try { localStorage.setItem('tb-last', String(Date.now())); } catch (e) {} } cur = name; Object.keys(screens).forEach(k => screens[k].classList.toggle('active', k === name)); }
   function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 2600); }
   function goHome() { commit(); liveBg = null; setBg(cfg.bgKey); committed = false; lastKind = null; reviewLook = null; bookIdx = null; clearTimeout(commitT); six.forEach(s => URL.revokeObjectURL(s.url)); six = []; selected = []; currentShots = []; signed = false; liveFilter = null; liveRetouch = null; applyCfg(); markChips(); $('#prog').classList.remove('on'); show('attract'); }
 
@@ -878,6 +1106,18 @@
     const c = document.createElement('canvas'); c.width = Math.round(cw * k); c.height = Math.round(ch * k);
     drawBase(c.getContext('2d', { willReadFrequently:true }), c.width, c.height); return c;
   }
+  function captureStill() {                 // portraits: use the sharper cut-out when it is ready
+    if (!(bgActive() && cfg.bgMode === 'ai' && cfg.hq !== false && hq)) return captureCanvas();
+    const cw = grade.clientWidth, ch = grade.clientHeight;
+    const k = Math.min(window.devicePixelRatio || 1, 2, 2400 / Math.max(cw, ch));
+    const c = document.createElement('canvas'); c.width = Math.round(cw * k); c.height = Math.round(ch * k);
+    const o = c.getContext('2d', { willReadFrequently:true }), W = c.width, H = c.height;
+    drawVideoCover(o, W, H);
+    let ok = false; try { ok = hqCut(o, W, H); } catch (e) { ok = false; }
+    if (!ok) { drawVideoCover(o, W, H); applyBackdrop(o, W, H); }
+    const rr = rtv(); if (rr !== 'off' && W >= 700) skinSmooth(o, W, H, rr === 'medium' ? 0.58 : 0.36);
+    return c;
+  }
   function loadImg(url) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; }); }
   const track = s => String(s).toUpperCase().split('').join(' ');
 
@@ -986,12 +1226,13 @@
   /* ---------- portraits: six frames, then choose ---------- */
   async function runPhotos() {
     if (busy) return; busy = true; six.forEach(s => URL.revokeObjectURL(s.url)); six = []; selected = [];
+    const CUES = pickCues();
     try {
       for (let i = 0; i < 6; i++) {
-        setProg(i, 6); cue.textContent = CUES[i];
+        setProg(i, 6); setCue(CUES[i]);
         await countdown(i === 0 ? 3 : 2);
         await freshMask();
-        const blob = await canvasBlob(captureCanvas(), 'image/jpeg', 0.92);
+        const blob = await shotBlob(captureStill(), 'image/jpeg', 0.92);
         six.push({ blob:blob, url:URL.createObjectURL(blob) });
         await sleep(200);
       }
@@ -1030,7 +1271,7 @@
     $('#pmsg').textContent = msg || 'Changing the look'; show('proc'); await sleep(40);
     try {
       const looked = []; for (const i of selected) looked.push(renderLook(await loadImg(six[i].url), reviewLook));
-      if (kind === 'photos') { const blobs = []; for (const c of looked) blobs.push(await canvasBlob(framePhoto(c), 'image/jpeg', 0.95)); finish(blobs); }
+      if (kind === 'photos') { const blobs = []; for (const c of looked) blobs.push(await shotBlob(framePhoto(c), 'image/jpeg', 0.95)); finish(blobs); }
       else if (kind === 'strip') finish([await canvasBlob(buildStrip(looked), 'image/jpeg', 0.95)]);
       else if (kind === 'square') finish([await canvasBlob(buildSquare(looked), 'image/jpeg', 0.95)]);
       else { const T = fpal(), fr = looked.map(c => slideFrame(c, T)); finish([await makeGIF(fr, fr[0].width, fr[0].height, 600, 'Making your animated photo')]); }
@@ -1080,9 +1321,9 @@
   async function runBoomerang() {
     if (busy) return; busy = true;
     try {
-      bookIdx = null; lastKind = null; reviewLook = liveFilter || cfg.filter; cue.textContent = 'Get ready to move'; await countdown(3); await freshMask();
+      bookIdx = null; lastKind = null; reviewLook = liveFilter || cfg.filter; setCue('Get ready to move'); await countdown(3); await freshMask();
       const gw = 360, gh = Math.round(360 * grade.clientHeight / grade.clientWidth);
-      show('count'); countN.textContent = ''; cue.textContent = 'Keep moving'; spin(1.1);
+      show('count'); countN.textContent = ''; setCue('Keep moving'); spin(1.1);
       const shots = [];
       for (let i = 0; i < 10; i++) {
         const c = document.createElement('canvas'); c.width = gw; c.height = gh;
@@ -1097,7 +1338,7 @@
         finish([await makeGIF(seq, framed[0].width, framed[0].height, 80, 'Making your boomerang')]);
       } catch (e) {
         toast('The boomerang could not be finished. Saved a photo instead.');
-        const still = await canvasBlob(captureCanvas(), 'image/jpeg', 0.92); const u = URL.createObjectURL(still);
+        const still = await shotBlob(captureCanvas(), 'image/jpeg', 0.92); const u = URL.createObjectURL(still);
         const img = await loadImg(u); URL.revokeObjectURL(u); finish([await canvasBlob(framePhoto(img), 'image/jpeg', 0.95)]);
       }
     } finally { busy = false; }
@@ -1310,6 +1551,7 @@
     $('#stage').classList.toggle('mirror', !!cfg.mirror);
     video.style.filter = fx().css; renderGrade(); syncLive();
     if (cfg.bgMode === 'ai' && !segReady && !segBusy) initSeg();
+    if (cfg.bgMode === 'ai' && cfg.hq !== false && !hq && !hqBusy && !hqTried) initHQ();
     $('#aNames').textContent = cfg.names || 'Tiny Invites';
     $('#aDate').textContent = cfg.date || ''; $('#aDate').style.display = cfg.date ? '' : 'none';
     $('#aTag').textContent = TAGS[cfg.type] || TAGS.party;
@@ -1389,7 +1631,7 @@
   let newArmed = false;
   $('#newEvent').addEventListener('click', () => {
     const b = $('#newEvent');
-    if (!newArmed) { newArmed = true; b.textContent = 'Tap again: this deletes everything on the iPad'; setTimeout(() => { newArmed = false; b.textContent = 'Start a new event'; }, 4000); return; }
+    if (!newArmed) { newArmed = true; b.textContent = pending.size ? ('Tap again. ' + pending.size + (pending.size === 1 ? ' photo has' : ' photos have') + ' not reached the online gallery yet and will be lost') : 'Tap again: this clears the iPad. The online gallery stays'; setTimeout(() => { newArmed = false; b.textContent = 'Start a new event'; }, 4000); return; }
     newArmed = false; b.textContent = 'Start a new event';
     sessionShots.length = 0; recent = []; urlCache.forEach(u => URL.revokeObjectURL(u)); urlCache.clear(); keys.clear(); pending.clear(); idbClear();
     cfg.event = ''; cfg.names = ''; cfg.date = ''; save(); applyCfg(); renderGallery();
@@ -1439,7 +1681,50 @@
   loadLogo(); buildBgChips(); buildChips(); setBg(cfg.bgKey); applyCfg(); markChips(); liveTick(); setTimeout(showLogo, 300);
   (async () => { db = await idbOpen(); const all = await idbAll(); all.forEach(e => { const r = e.rec; if (r && r.blob) { sessionShots.push(r.blob); keys.set(r.blob, Promise.resolve(e.key)); if (r.book) books.add(r.blob); if (!r.book && (r.blob.type || '').indexOf('gif') < 0) recent.push(r.blob); if (r.up === false && r.tag && galleryOn()) push(r.blob); } }); recent = recent.slice(-14); })();
   startCamera().then(renderGrade);
-  window.__booth = { cfg:cfg, apply:applyCfg, state:() => ({ cur:cur, busy:busy, six:six.length, shots:sessionShots.length, pending:pending.size }) };
+
+  /* ---------- ready check: what the host sees when the booth app is opened ---------- */
+  const standalone = () => !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
+  const TYPE_NAME = { wedding:'Wedding', birthday:'Birthday', party:'Party', corporate:'Corporate' };
+  let rTimer = null;
+  async function readyRows() {
+    const rows = [];
+    const camOk = !!video.videoWidth;
+    rows.push(camOk ? ['ok', 'Camera on'] : ['warn', 'Camera not on yet', 'Allow the camera when the iPad asks. If it never asks: Settings, Safari, Camera, Allow.']);
+    const ev = [cfg.names, cfg.date, TYPE_NAME[cfg.type]].filter(Boolean).join(', ');
+    rows.push(cfg.names && cfg.date ? ['ok', 'The event is set up', ev] : ['warn', cfg.names || cfg.date ? 'The event is half set up' : 'No event set up yet', 'Add the names and date in Edit the event. They go on every photo.']);
+    if (galleryOn()) {
+      if (!navigator.onLine) rows.push(['warn', 'No internet right now', 'Photos are kept on the iPad and go to the online gallery when it comes back.']);
+      else if (pending.size) rows.push(['wait', 'Sending ' + pending.size + (pending.size === 1 ? ' photo' : ' photos') + ' to the online gallery']);
+      else rows.push(['ok', 'Online gallery connected', 'Gallery name: ' + galTag().replace(/^ti-/, '')]);
+    }
+    let off = false;
+    try {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller && window.caches) {
+        off = !!(await caches.match(new URL('index.html', location.href).href) || await caches.match(new URL('./', location.href).href));
+        if (off && cfg.bgMode === 'ai') off = !!(await caches.match(MP_BASE + 'selfie_segmentation.tflite'));
+      }
+    } catch (e) {}
+    rows.push(off ? ['ok', 'Works without internet'] : ['warn', 'Not saved for offline use yet', 'Open the booth once with internet' + (cfg.bgMode === 'ai' ? ' and the AI backdrop on' : '') + ', then reopen it.']);
+    if (cfg.bgMode === 'ai') rows.push(segReady || hq ? ['ok', 'AI backdrop loaded'] : (segBusy || hqBusy ? ['wait', 'Loading the AI backdrop'] : ['warn', 'AI backdrop not loaded', 'It needs the internet the first time.']));
+    let kept = false; try { kept = !!(navigator.storage && navigator.storage.persisted && await navigator.storage.persisted()); } catch (e) {}
+    if (standalone()) rows.push(['ok', 'Running as an app', kept ? 'Photos are kept safely on this iPad.' : 'Photos stay on this iPad until you start a new event.']);
+    else rows.push(['warn', 'Running in Safari', 'Add it to the Home Screen: Share, then Add to Home Screen. It opens full screen, and Safari can clear saved photos after a week unused. The Home Screen app starts empty, so set the event up there.']);
+    return rows;
+  }
+  async function paintReady() {
+    $('#rTitle').textContent = cfg.names ? ('Ready for ' + cfg.names + '?') : 'Before the guests arrive';
+    $('#rSub').textContent = cfg.date || '';
+    const rows = await readyRows(), ul = $('#rList'); ul.innerHTML = '';
+    rows.forEach(([k, t, sub]) => { const li = document.createElement('li'); li.className = k; li.innerHTML = '<i></i><span></span>'; li.lastChild.textContent = t; if (sub) { const sm = document.createElement('small'); sm.textContent = sub; li.lastChild.appendChild(sm); } ul.appendChild(li); });
+  }
+  function openReady() { show('ready'); paintReady(); clearInterval(rTimer); rTimer = setInterval(() => { if (cur === 'ready') paintReady(); else clearInterval(rTimer); }, 2000); }
+  $('#rGo').addEventListener('click', () => { clearInterval(rTimer); try { localStorage.setItem('tb-last', String(Date.now())); } catch (e) {} goHome(); });
+  $('#rEdit').addEventListener('click', () => { clearInterval(rTimer); renderGallery(); show('settings'); });
+  $('#checkBooth').addEventListener('click', openReady);
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
+  // a fresh launch opens the check; a reload in the middle of an event goes straight back to the guests
+  (() => { let last = 0; try { last = +localStorage.getItem('tb-last') || 0; } catch (e) {} if (Date.now() - last > 45 * 60 * 1000) openReady(); })();
+  window.__booth = { cfg:cfg, apply:applyCfg, ready:paintReady, hqReady:() => !!hq, state:() => ({ cur:cur, busy:busy, six:six.length, shots:sessionShots.length, pending:pending.size }) };
 })();
 
 </script>

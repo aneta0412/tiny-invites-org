@@ -83,8 +83,35 @@
   .wallbtn { margin-top:3.4vmin; font-family:var(--fd); font-style:italic; font-size:3.4vmin; color:var(--ink); background:var(--card); border:1px solid var(--soft); border-radius:999px; padding:1.6vmin 6vmin; }
   .wallbtn:active { transform:scale(.97); }
   #wall { justify-content:flex-start; overflow:auto; padding-top:6vmin; }
-  #wallGrid { columns:3; column-gap:1.6vmin; width:100%; max-width:120vmin; margin:3vmin 0; }
-  #wallGrid img { width:100%; display:block; margin-bottom:1.6vmin; break-inside:avoid; border:1px solid var(--soft); background:var(--card); }
+  #wallGrid { display:grid; grid-template-columns:repeat(3, 1fr); gap:2vmin; width:100%; max-width:120vmin; margin:3vmin 0 4vmin; }
+  .tile, .gthumb { aspect-ratio:3 / 4; padding:1.2vmin; display:flex; align-items:center; justify-content:center; overflow:hidden; background:var(--card); border:1px solid var(--soft); border-radius:.6vmin; box-shadow:0 .2vmin .5vmin rgba(60,45,20,.06), 0 1.2vmin 3vmin rgba(60,45,20,.07); transition:transform .15s ease; -webkit-tap-highlight-color:transparent; }
+  .tile:active, .gthumb:active { transform:scale(.97); }
+  .tile img, .gthumb img { max-width:100%; max-height:100%; object-fit:contain; display:block; opacity:0; transition:opacity .4s ease; }
+  .tile img.on, .gthumb img.on { opacity:1; }
+  .tile:focus-visible, .gthumb:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+  #pv { background:#14100b; color:#fffaf0; justify-content:flex-start; padding:0; }
+  #pvTop { width:100%; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:2.4vmin 3vmin .6vmin; }
+  #pvN { font-size:1.9vmin; letter-spacing:.24em; text-transform:uppercase; color:rgba(255,250,240,.66); }
+  #pvX { justify-self:start; display:flex; align-items:center; gap:1.2vmin; min-height:8vmin; padding:0 2vmin; font-family:var(--fs); font-size:2.4vmin; letter-spacing:.04em; color:#fffaf0; background:none; border:none; }
+  #pvX b { font-weight:300; font-size:5vmin; line-height:1; margin-top:-.6vmin; }
+  #pvStage { position:relative; flex:1; min-height:0; width:100%; display:flex; align-items:center; justify-content:center; padding:1vmin 12vmin; }
+  #pvImg { max-width:100%; max-height:100%; object-fit:contain; display:block; box-shadow:0 2vmin 7vmin rgba(0,0,0,.55); opacity:0; transform:scale(.985); transition:opacity .3s ease, transform .3s ease; }
+  #pvImg.on { opacity:1; transform:none; }
+  #pvPrev, #pvNext { position:absolute; top:50%; margin-top:-4.5vmin; width:9vmin; height:9vmin; border-radius:50%; border:1px solid rgba(255,250,240,.32); background:rgba(20,16,11,.35); color:#fffaf0; font-size:5.4vmin; line-height:1; display:flex; align-items:center; justify-content:center; padding:0 0 .7vmin; }
+  #pvPrev { left:1.6vmin; } #pvNext { right:1.6vmin; }
+  #pvQR { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(20,16,11,.74); }
+  #pvQR[hidden] { display:none; }
+  #pvCard { width:46vmin; background:#fff; color:#2b2520; padding:3.4vmin 3.4vmin 2.6vmin; border-radius:1.2vmin; text-align:center; font-size:2.3vmin; line-height:1.45; box-shadow:0 2vmin 7vmin rgba(0,0,0,.5); }
+  #pvCard canvas, #pvCard img { width:100% !important; height:auto !important; display:block; }
+  #pvCard p { margin-top:1.8vmin; }
+  #pvCard p:only-child { margin:0; }
+  #pvBar { width:100%; display:flex; gap:2vmin; justify-content:center; flex-wrap:wrap; padding:2.6vmin 4vmin 4.6vmin; }
+  #pvShare { background:#f3e3bf; color:#2b2520; }
+  #pvCode, #pvDel { background:none; color:#fffaf0; border:1px solid rgba(255,250,240,.42); }
+  #pvDel.arm { background:#a8443a; border-color:#a8443a; }
+  #pv:not(.host) #pvDel { display:none; }
+  #pv button:focus-visible { outline:2px solid #f3e3bf; outline-offset:3px; }
+  @media (prefers-reduced-motion: reduce) { #pvImg, .tile img, .gthumb img { transition:none; } }
   #attract .names { font-family:var(--fd); font-weight:500; font-size:9.4vmin; line-height:1; letter-spacing:-.01em; color:var(--ink); }
   #attract.personal .names { font-style:italic; font-size:8.8vmin; }
   #attract .rule { display:flex; align-items:center; gap:2vmin; margin:2.6vmin 0 2.2vmin; }
@@ -178,11 +205,8 @@
   #galCount { font-size:16px; color:var(--muted); padding:12px 0; }
   #batches { display:flex; flex-wrap:wrap; gap:10px; }
   #batches .btn, #clearAll { font-size:15px; padding:10px 20px; }
-  #gallery { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
-  #gallery img { height:96px; border:1px solid var(--soft); display:block; }
-  .gdel { position:relative; padding:0; border:none; background:none; line-height:0; }
-  .gdel i { position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(140,47,47,.86); color:#fff; font-style:normal; font-size:13px; letter-spacing:.06em; }
-  .gdel.arm i { display:flex; }
+  #gallery { display:grid; grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); gap:10px; margin:14px 0; }
+  #gallery .gthumb { padding:5px; border-radius:4px; }
   #galHint { font-size:13px; color:var(--muted); padding:0 0 10px; }
   #settings .foot { display:flex; justify-content:space-between; align-items:center; margin-top:28px; gap:12px; flex-wrap:wrap; }
   #settings .foot .btn { font-size:17px; padding:13px 34px; }
@@ -269,7 +293,7 @@
     #attract .startpill { margin-top:3vmin; font-size:4vmin; padding:2vmin 7vmin; }
     .wallbtn { margin-top:2.4vmin; font-size:2.6vmin; }
     #attract .tag { max-width:none; margin-top:2.2vmin; font-size:3vmin; }
-    #wallGrid { columns:5; }
+    #wallGrid { grid-template-columns:repeat(5, 1fr); }
   }
   @media (prefers-reduced-motion:reduce) { #attract .startpill, .dots i { animation:none; } }
 </style>
@@ -324,6 +348,21 @@
     <div class="lede" id="wallNote"></div>
     <div id="wallGrid"></div>
     <button class="btn fill" id="wallBack" type="button">Back</button>
+  </div>
+
+  <div id="pv" class="screen">
+    <div id="pvTop"><button id="pvX" type="button"><b>&lsaquo;</b> <span id="pvBack">All photos</span></button><span id="pvN"></span><span></span></div>
+    <div id="pvStage">
+      <img id="pvImg" alt="Photo from the booth">
+      <button id="pvPrev" type="button" aria-label="Previous photo">&lsaquo;</button>
+      <button id="pvNext" type="button" aria-label="Next photo">&rsaquo;</button>
+      <div id="pvQR" hidden><div id="pvCard"></div></div>
+    </div>
+    <div id="pvBar">
+      <button class="btn" id="pvShare" type="button">AirDrop or save</button>
+      <button class="btn" id="pvCode" type="button">Scan to download</button>
+      <button class="btn" id="pvDel" type="button">Delete</button>
+    </div>
   </div>
 
   <div id="choose" class="screen paper">
@@ -467,10 +506,10 @@
       <div id="galCount"></div>
       <div id="galState"></div>
       <div id="batches"></div>
-      <div id="galHint">Tap a photo to delete it, then tap again to confirm.</div>
+      <div id="galHint">Newest first. Tap a photo to open it: you can send it, show its download code, or delete it.</div>
       <div id="gallery"></div>
 
-      <div id="ver">Booth version 27 &middot; pod &middot; 20 November 2026</div>
+      <div id="ver">Booth version 28 &middot; pod &middot; 20 November 2026</div>
 
       <div class="foot">
         <button class="btn line" id="checkBooth" type="button">Check the booth</button>
@@ -904,7 +943,8 @@
   /* ---------- storage that survives a reload ---------- */
   function idbOpen() { return new Promise(res => { try { const r = indexedDB.open('ti_booth', 1); r.onupgradeneeded = () => r.result.createObjectStore('shots', { autoIncrement:true }); r.onsuccess = () => res(r.result); r.onerror = () => res(null); } catch (e) { res(null); } }); }
   function idbAdd(rec) { return new Promise(res => { if (!db) return res(null); try { const q = db.transaction('shots', 'readwrite').objectStore('shots').add(rec); q.onsuccess = () => res(q.result); q.onerror = () => res(null); } catch (e) { res(null); } }); }
-  function idbMark(key) { if (!db || key == null) return; try { const st = db.transaction('shots', 'readwrite').objectStore('shots'), q = st.get(key); q.onsuccess = () => { const r = q.result; if (r) { r.up = true; st.put(r, key); } }; } catch (e) {} }
+  function idbMark(key, url) { if (!db || key == null) return; try { const st = db.transaction('shots', 'readwrite').objectStore('shots'), q = st.get(key); q.onsuccess = () => { const r = q.result; if (r) { r.up = true; if (url) r.url = url; st.put(r, key); } }; } catch (e) {} }
+  const links = new WeakMap(), upDone = new WeakSet();   // keepsake -> its online address
   function idbAll() { return new Promise(res => { if (!db) return res([]); const out = []; try { const q = db.transaction('shots').objectStore('shots').openCursor(); q.onsuccess = () => { const c = q.result; if (c) { out.push({ key:c.key, rec:c.value }); c.continue(); } else res(out); }; q.onerror = () => res(out); } catch (e) { res(out); } }); }
   function idbClear() { if (!db) return; try { db.transaction('shots', 'readwrite').objectStore('shots').clear(); } catch (e) {} }
 
@@ -1353,11 +1393,13 @@
       const r = await fetch('https://api.cloudinary.com/v1_1/' + encodeURIComponent(cfg.cloud) + '/image/upload', { method:'POST', body:fd });
       const j = await r.json(); if (!j.secure_url) throw new Error((j.error && j.error.message) || 'upload failed');
       if (j.delete_token) delTokens.set(blob, { tok:j.delete_token, at:Date.now() });
+      links.set(blob, j.secure_url); upDone.add(blob);
+      const kp = keys.get(blob); if (kp) kp.then(k => idbMark(k, j.secure_url));
       return j.secure_url;
     })();
     uploads.set(blob, p); p.catch(() => uploads.delete(blob)); return p;
   }
-  function push(blob) { pending.add(blob); upload(blob).then(() => { pending.delete(blob); const kp = keys.get(blob); if (kp) kp.then(idbMark); }).catch(() => {}); }
+  function push(blob) { pending.add(blob); upload(blob).then(() => { pending.delete(blob); }).catch(() => {}); }
   setInterval(() => { if (!busy && galleryOn()) pending.forEach(push); }, 45000);
   const bookShots = () => sessionShots.filter(b => books.has(b));
   function blobURLData(b) { return new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); }); }
@@ -1500,11 +1542,113 @@
     inc.onload = () => { inc.style.zIndex = ++ztop; inc.classList.add('on'); slot = slot === 0 ? 1 : 0; setTimeout(() => outg.classList.remove('on'), 1000); };
     inc.src = urlFor(recent[ri]);
   }, 3000);
+  const thumbs = new Map(); let thumbQ = Promise.resolve();
+  const thumbWanted = () => cur === 'wall' || cur === 'pv' || cur === 'settings';
+  function thumbFor(b) {
+    if ((b.type || '').indexOf('gif') >= 0) return Promise.resolve(urlFor(b));   // small already, and it should move
+    if (thumbs.has(b)) return thumbs.get(b);
+    const p = thumbQ.then(async () => {
+      if (!thumbWanted()) { thumbs.delete(b); return null; }                      // gallery closed: stop working
+      const u = URL.createObjectURL(b);
+      try {
+        const im = await loadImg(u), k = Math.min(1, 520 / im.width);
+        const c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+        const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(im, 0, 0, c.width, c.height);
+        return URL.createObjectURL(await shotBlob(c, 'image/jpeg', 0.82));
+      } finally { URL.revokeObjectURL(u); }
+    }).catch(() => urlFor(b));
+    thumbQ = p; thumbs.set(b, p); return p;
+  }
+  function forgetThumb(b) { const p = thumbs.get(b); if (p) { thumbs.delete(b); p.then(u => { if (u && u !== urlCache.get(b)) URL.revokeObjectURL(u); }); } }
+  function forgetThumbs() { [...thumbs.keys()].forEach(forgetThumb); }
+  function tileFor(b, onTap, cls) {
+    const t = document.createElement('button'); t.type = 'button'; t.className = cls; t.setAttribute('aria-label', 'Open this photo');
+    const im = new Image(); im.alt = ''; im.onload = () => im.classList.add('on'); t.appendChild(im);
+    thumbFor(b).then(u => { if (u) im.src = u; });
+    t.addEventListener('click', onTap); return t;
+  }
+
+  /* ---------- photo viewer on the iPad: open, AirDrop, QR code; delete for the host ---------- */
+  const pv = $('#pv'), pvImg = $('#pvImg'), pvQR = $('#pvQR'), pvDel = $('#pvDel');
+  let pvList = [], pvI = 0, pvFrom = 'wall', pvDelArmed = false, pvDelT;
+  async function linkFor(b) {
+    if (links.has(b)) return links.get(b);
+    if (uploads.has(b)) return uploads.get(b);
+    if (upDone.has(b)) throw new Error('known');          // online already, from before this version kept links
+    if (!(cfg.cloud && preset1())) throw new Error('off');
+    return upload(b);
+  }
+  function pvDisarm() { pvDelArmed = false; clearTimeout(pvDelT); pvDel.textContent = 'Delete'; pvDel.classList.remove('arm'); }
+  function pvShow(i) {
+    if (!pvList.length) return pvClose();
+    pvI = (i + pvList.length) % pvList.length; const b = pvList[pvI];
+    const u = urlFor(b); pvImg.classList.remove('on'); pvImg.onload = () => pvImg.classList.add('on');
+    if (pvImg.getAttribute('src') === u && pvImg.complete) requestAnimationFrame(() => pvImg.classList.add('on')); else pvImg.src = u;
+    $('#pvN').textContent = (pvI + 1) + ' of ' + pvList.length;
+    const many = pvList.length > 1; $('#pvPrev').style.visibility = many ? '' : 'hidden'; $('#pvNext').style.visibility = many ? '' : 'hidden';
+    $('#pvCode').style.display = cfg.cloud && preset1() ? '' : 'none';
+    pvDisarm(); if (!pvQR.hidden) pvCode(true);
+  }
+  function pvOpen(list, i, from) {
+    pvList = list.slice(); pvFrom = from; pv.classList.toggle('host', from === 'settings');
+    $('#pvBack').textContent = from === 'settings' ? 'Back to settings' : 'All photos';
+    pvQR.hidden = true; $('#pvCode').textContent = 'Scan to download'; show('pv'); pvShow(i);
+  }
+  function pvClose() {
+    pvQR.hidden = true; pvDisarm();
+    if (pvFrom === 'settings') { renderGallery(); show('settings'); } else openWall();
+  }
+  async function pvCode(refresh) {
+    if (!refresh && !pvQR.hidden) { pvQR.hidden = true; $('#pvCode').textContent = 'Scan to download'; return; }
+    const b = pvList[pvI], card = $('#pvCard'); pvQR.hidden = false; $('#pvCode').textContent = 'Hide the code';
+    card.innerHTML = '<p>Preparing the code</p>';
+    try {
+      const url = await linkFor(b);
+      if (pvList[pvI] !== b || pvQR.hidden) return;
+      const box = document.createElement('div'); card.innerHTML = '';
+      if (!renderQR(box, url)) throw new Error('no qr');
+      card.appendChild(box); const l = document.createElement('p'); l.textContent = 'Scan with your phone camera to download'; card.appendChild(l);
+    } catch (e) {
+      if (pvList[pvI] !== b) return;
+      card.innerHTML = '<p></p>';
+      card.firstChild.textContent = e && e.message === 'known' ? 'This one is in the online gallery. To send it from here, use AirDrop.'
+        : (navigator.onLine ? 'The code could not be made. Use AirDrop instead.' : 'No internet right now, so there is no code yet. Use AirDrop instead.');
+    }
+  }
+  async function deleteShot(b) {
+    unkeep(b); forgetThumb(b);
+    const t = delTokens.get(b); let extra = '';
+    if (t && Date.now() - t.at < 9.5 * 60 * 1000) {
+      try {
+        const fd = new FormData(); fd.append('token', t.tok);
+        const r = await fetch('https://api.cloudinary.com/v1_1/' + encodeURIComponent(cfg.cloud) + '/delete_by_token', { method:'POST', body:fd });
+        extra = r.ok ? ' and from the online gallery' : '. The online copy stayed, remove it in Cloudinary';
+      } catch (e) { extra = '. The online copy stayed, remove it in Cloudinary'; }
+    } else if (t || upDone.has(b)) extra = '. Remove the online copy in Cloudinary';
+    delTokens.delete(b); toast('Deleted from the iPad' + extra);
+  }
+  $('#pvX').addEventListener('click', pvClose);
+  $('#pvPrev').addEventListener('click', () => pvShow(pvI - 1));
+  $('#pvNext').addEventListener('click', () => pvShow(pvI + 1));
+  $('#pvShare').addEventListener('click', () => { const b = pvList[pvI]; if (b) shareBlobs([b], 'tinyinvites'); });
+  $('#pvCode').addEventListener('click', () => pvCode(false));
+  pvQR.addEventListener('click', () => { pvQR.hidden = true; $('#pvCode').textContent = 'Scan to download'; });
+  pvDel.addEventListener('click', async () => {
+    if (!pvDelArmed) { pvDelArmed = true; pvDel.textContent = 'Tap again to delete'; pvDel.classList.add('arm'); pvDelT = setTimeout(pvDisarm, 3500); return; }
+    pvDisarm(); const b = pvList[pvI]; if (!b) return;
+    pvList.splice(pvI, 1); await deleteShot(b);
+    if (pvList.length) pvShow(pvI); else pvClose();
+  });
+  let pvX0 = null;
+  $('#pvStage').addEventListener('touchstart', e => { pvX0 = e.touches.length === 1 && pvQR.hidden ? e.touches[0].clientX : null; }, { passive:true });
+  $('#pvStage').addEventListener('touchend', e => { if (pvX0 === null) return; const dx = e.changedTouches[0].clientX - pvX0; pvX0 = null; if (Math.abs(dx) > 50) pvShow(pvI + (dx < 0 ? 1 : -1)); }, { passive:true });
+  document.addEventListener('keydown', e => { if (cur !== 'pv') return; if (e.key === 'ArrowLeft') pvShow(pvI - 1); else if (e.key === 'ArrowRight') pvShow(pvI + 1); else if (e.key === 'Escape') pvClose(); });
+
   function openWall() {
     const g = $('#wallGrid'); g.innerHTML = '';
-    const list = sessionShots.filter(b => !books.has(b)).slice(-60).reverse();
-    $('#wallNote').textContent = list.length ? (list.length + (list.length === 1 ? ' photo so far' : ' photos so far')) : 'No photos yet. Be the first.';
-    list.forEach(b => { const im = new Image(); im.loading = 'lazy'; im.src = urlFor(b); g.appendChild(im); });
+    const list = sessionShots.filter(b => !books.has(b)).slice(-120).reverse();
+    $('#wallNote').textContent = list.length ? (list.length + (list.length === 1 ? ' photo so far. Tap it to open it.' : ' photos so far. Tap one to open it.')) : 'No photos yet. Be the first.';
+    list.forEach((b, i) => g.appendChild(tileFor(b, () => pvOpen(list, i, 'wall'), 'tile')));
     show('wall');
   }
 
@@ -1572,39 +1716,17 @@
     const bt = $('#batches'); bt.innerHTML = '';
     for (let a = 0; a < n; a += 10) { const z = Math.min(a + 10, n); const b = document.createElement('button'); b.className = 'btn line small'; b.textContent = 'Send ' + (a + 1) + ' to ' + z; b.addEventListener('click', () => shareBlobs(sessionShots.slice(a, z), 'tinyinvites-' + (a + 1))); bt.appendChild(b); }
     const g = $('#gallery'); g.innerHTML = '';
-    sessionShots.slice(-12).forEach(bl => {
-      const w = document.createElement('button'); w.className = 'gdel'; w.type = 'button';
-      const img = new Image(); img.src = urlFor(bl); w.appendChild(img);
-      const x = document.createElement('i'); x.textContent = 'delete'; w.appendChild(x);
-      w.addEventListener('click', () => removeShot(bl, w));
-      g.appendChild(w);
-    });
+    const all = sessionShots.slice().reverse();
+    all.slice(0, 24).forEach((bl, i) => g.appendChild(tileFor(bl, () => pvOpen(all, i, 'settings'), 'gthumb')));
     $('#clearAll').style.display = n ? '' : 'none';
     const nb = bookShots().length; $('#bookCount').textContent = nb ? (nb + (nb === 1 ? ' note' : ' notes') + ' in the guest book') : 'No guest book notes yet.';
     $('#galState').textContent = galleryOn() ? (pending.size ? pending.size + ' waiting to upload to the gallery. They retry automatically.' : 'Everything is in the online gallery.') : '';
-  }
-  async function removeShot(b, el) {
-    if (el.dataset.armed !== '1') {
-      el.dataset.armed = '1'; el.classList.add('arm');
-      setTimeout(() => { el.dataset.armed = ''; el.classList.remove('arm'); }, 3500);
-      return;
-    }
-    unkeep(b);
-    const t = delTokens.get(b); let extra = '';
-    if (t && Date.now() - t.at < 9.5 * 60 * 1000) {
-      try {
-        const fd = new FormData(); fd.append('token', t.tok);
-        const r = await fetch('https://api.cloudinary.com/v1_1/' + encodeURIComponent(cfg.cloud) + '/delete_by_token', { method:'POST', body:fd });
-        extra = r.ok ? ' and from the online gallery' : '. The online copy stayed, remove it in Cloudinary';
-      } catch (e) { extra = '. The online copy stayed, remove it in Cloudinary'; }
-    } else if (t) extra = '. Over ten minutes old, so remove the online copy in Cloudinary';
-    delTokens.delete(b); renderGallery(); toast('Deleted from the iPad' + extra);
   }
   let clearArmed = false;
   $('#clearAll').addEventListener('click', () => {
     const b = $('#clearAll');
     if (!clearArmed) { clearArmed = true; b.textContent = 'Tap again to delete everything'; setTimeout(() => { clearArmed = false; b.textContent = 'Delete all saved photos'; }, 3500); return; }
-    clearArmed = false; b.textContent = 'Delete all saved photos'; sessionShots.length = 0; recent = []; urlCache.forEach(u => URL.revokeObjectURL(u)); urlCache.clear(); idbClear(); renderGallery(); toast('All saved photos deleted');
+    clearArmed = false; b.textContent = 'Delete all saved photos'; sessionShots.length = 0; recent = []; forgetThumbs(); urlCache.forEach(u => URL.revokeObjectURL(u)); urlCache.clear(); idbClear(); renderGallery(); toast('All saved photos deleted');
   });
 
   /* ---------- wiring ---------- */
@@ -1633,7 +1755,7 @@
     const b = $('#newEvent');
     if (!newArmed) { newArmed = true; b.textContent = pending.size ? ('Tap again. ' + pending.size + (pending.size === 1 ? ' photo has' : ' photos have') + ' not reached the online gallery yet and will be lost') : 'Tap again: this clears the iPad. The online gallery stays'; setTimeout(() => { newArmed = false; b.textContent = 'Start a new event'; }, 4000); return; }
     newArmed = false; b.textContent = 'Start a new event';
-    sessionShots.length = 0; recent = []; urlCache.forEach(u => URL.revokeObjectURL(u)); urlCache.clear(); keys.clear(); pending.clear(); idbClear();
+    sessionShots.length = 0; recent = []; forgetThumbs(); urlCache.forEach(u => URL.revokeObjectURL(u)); urlCache.clear(); keys.clear(); pending.clear(); idbClear();
     cfg.event = ''; cfg.names = ''; cfg.date = ''; save(); applyCfg(); renderGallery();
     $('#bookOut').textContent = 'Cleared. Set the new names, date and gallery name above.';
     toast('Ready for a new event');
@@ -1679,7 +1801,7 @@
   if (document.fonts && document.fonts.load) { ['italic 500 40px "Cormorant Garamond"', 'italic 400 40px "Cormorant Garamond"', '400 20px "Jost"'].forEach(f => document.fonts.load(f).catch(() => {})); }
 
   loadLogo(); buildBgChips(); buildChips(); setBg(cfg.bgKey); applyCfg(); markChips(); liveTick(); setTimeout(showLogo, 300);
-  (async () => { db = await idbOpen(); const all = await idbAll(); all.forEach(e => { const r = e.rec; if (r && r.blob) { sessionShots.push(r.blob); keys.set(r.blob, Promise.resolve(e.key)); if (r.book) books.add(r.blob); if (!r.book && (r.blob.type || '').indexOf('gif') < 0) recent.push(r.blob); if (r.up === false && r.tag && galleryOn()) push(r.blob); } }); recent = recent.slice(-14); })();
+  (async () => { db = await idbOpen(); const all = await idbAll(); all.forEach(e => { const r = e.rec; if (r && r.blob) { sessionShots.push(r.blob); keys.set(r.blob, Promise.resolve(e.key)); if (r.book) books.add(r.blob); if (r.url) links.set(r.blob, r.url); if (r.up) upDone.add(r.blob); if (!r.book && (r.blob.type || '').indexOf('gif') < 0) recent.push(r.blob); if (r.up === false && r.tag && galleryOn()) push(r.blob); } }); recent = recent.slice(-14); })();
   startCamera().then(renderGrade);
 
   /* ---------- ready check: what the host sees when the booth app is opened ---------- */

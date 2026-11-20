@@ -1,7 +1,7 @@
 const CACHE = 'tinybooth-podbg-v17';
 const PREFIX = 'tinybooth-podbg-';
 const MP = 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1675465747/';
-const FILES = ['./', './index.html', './manifest.json', './icon.png'];
+const FILES = ['./', './index.html'];
 // the AI backdrop model, so it works with no internet at the venue
 const AI = ['selfie_segmentation.js', 'selfie_segmentation_solution_simd_wasm_bin.js',
             'selfie_segmentation_solution_simd_wasm_bin.wasm', 'selfie_segmentation_solution_simd_wasm_bin.data',

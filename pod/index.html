@@ -187,6 +187,11 @@
   #galQR canvas + img, .qr canvas + img { }
   .qr { width:22vmin; }
   #ver { font-size:13px; color:var(--muted); padding:22px 0 0; letter-spacing:.04em; }
+  .logobits { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+  .logobits input[type=file] { max-width:46vw; font-size:13px; color:var(--muted); }
+  #logoPrev { display:flex; justify-content:flex-end; padding:6px 0 12px; }
+  #logoPrev:empty { display:none; }
+  #logoPrev img { height:54px; max-width:60%; object-fit:contain; background:#fff; border:1px solid var(--soft); border-radius:6px; padding:6px; }
   #bookCount { font-size:16px; color:var(--muted); padding:12px 0; }
   .rowbtns { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:6px; }
   #galLink, #galState, #galTest, #bookOut { font-size:14px; color:var(--muted); padding:12px 0; word-break:break-all; -webkit-user-select:text; user-select:text; line-height:1.5; }
@@ -306,6 +311,7 @@
       <button class="btn fill off" id="asPhotos" type="button">Keep as photos</button>
       <button class="btn fill off" id="asStrip" type="button">Photo strip</button>
       <button class="btn fill off" id="asSquare" type="button">Square print</button>
+      <button class="btn fill off" id="asGif" type="button">Animated photo</button>
     </div>
     <button class="link" id="retake" type="button">Take them again</button>
   </div>
@@ -364,6 +370,12 @@
 
       <h3>Keepsakes</h3>
       <div class="row"><label>Keepsake border<small>A print-style border with the names and date</small></label><div class="toggle" data-k="frame"></div></div>
+      <div class="row"><label>Frame colour<small>The border around photos, strips and prints</small></label>
+        <select data-k="frameCol"><option value="theme">Match the colours above</option><option value="white">White</option><option value="cream">Cream</option><option value="pink">Pink</option><option value="green">Green</option><option value="blue">Blue</option><option value="black">Black</option></select></div>
+      <div class="row"><label>Logo on photos<small>Printed under every photo, strip and print</small></label><div class="toggle" data-k="logoOn"></div></div>
+      <div class="row"><label>Logo image<small>A PNG with a see-through background works best</small></label>
+        <span class="logobits"><input type="file" id="logoFile" accept="image/*"><button class="btn line small" id="logoClear" type="button">Remove</button></span></div>
+      <div id="logoPrev"></div>
       <div class="row"><label>Tiny Invites credit<small>&ldquo;provided to you by Tiny Invites&rdquo;</small></label><div class="toggle" data-k="watermark"></div></div>
       <div class="row"><label>Guest book<small>Guests can handwrite a note that is saved with their photo</small></label><div class="toggle" data-k="guestbook"></div></div>
       <div class="row"><label>Sounds</label><div class="toggle" data-k="sounds"></div></div>
@@ -393,7 +405,7 @@
       <div id="batches"></div>
       <div id="gallery"></div>
 
-      <div id="ver">Booth version 15 &middot; offline build &middot; 17 November 2026</div>
+      <div id="ver">Booth version 16 &middot; offline &middot; 20 November 2026</div>
 
       <div class="foot">
         <button class="btn line" id="newEvent" type="button">Start a new event</button>
@@ -478,13 +490,26 @@
   }
 
   /* ---------- settings ---------- */
-  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', gallery:true, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, cloud:'dlkwbg59c', preset:'xe9vrl1r' };
+  const FRAMES = {
+    white: { card:'#ffffff', ink:'#2b2520', gold:'#b4955c', soft:'#e3dccf', muted:'#8f8271' },
+    cream: { card:'#fffdf8', ink:'#2b2520', gold:'#b4955c', soft:'#dccba6', muted:'#8f8271' },
+    pink:  { card:'#f6c9d8', ink:'#3a1f2a', gold:'#a8566f', soft:'#e0a6bb', muted:'#7a4a59' },
+    green: { card:'#bdd0b4', ink:'#1f2b1c', gold:'#5c7a4e', soft:'#a0b897', muted:'#4d6044' },
+    blue:  { card:'#bdcfe2', ink:'#17202b', gold:'#4d6a8a', soft:'#9fb7cd', muted:'#4a5d70' },
+    black: { card:'#141214', ink:'#f1e8d6', gold:'#c9ac74', soft:'#5d5140', muted:'#a3998a' }
+  };
+  let logoImg = null;
+  const DEF = { type:'party', names:'', date:'', theme:'ivory', filter:'portra', retouch:'light', gallery:true, event:'', mirror:true, watermark:true, frame:true, guestbook:true, sounds:true, recent:true, frameCol:'theme', logoOn:true, cloud:'dlkwbg59c', preset:'xe9vrl1r' };
   let cfg = Object.assign({}, DEF);
   try { Object.assign(cfg, JSON.parse(localStorage.getItem('ti_cfg') || '{}')); } catch (e) {}
   try { if (!cfg.cloud) cfg.cloud = localStorage.getItem('ti_cloud') || ''; if (!cfg.preset) cfg.preset = localStorage.getItem('ti_preset') || ''; } catch (e) {}
   if (!cfg.cloud) cfg.cloud = DEF.cloud; if (!cfg.preset) cfg.preset = DEF.preset;
   function save() { try { localStorage.setItem('ti_cfg', JSON.stringify(cfg)); } catch (e) {} }
   const theme = () => THEMES[cfg.theme] || THEMES.ivory;
+  const fpal = () => FRAMES[cfg.frameCol] || theme();
+  const logoReady = () => !!(cfg.logoOn && logoImg && logoImg.width);
+  function drawLogo(o, cx, yTop, hh) { if (!logoReady()) return; const w = Math.round(logoImg.width * hh / logoImg.height); o.drawImage(logoImg, Math.round(cx - w / 2), Math.round(yTop), w, hh); }
+  function loadLogo() { let d = null; try { d = localStorage.getItem('ti_logo'); } catch (e) {} if (!d) { logoImg = null; return; } const im = new Image(); im.onload = () => { logoImg = im; }; im.onerror = () => { logoImg = null; }; im.src = d; }
   let liveFilter = null, liveRetouch = null;
   const fx = () => FILTERS[liveFilter || cfg.filter] || FILTERS.portra;
   const rtv = () => liveRetouch || cfg.retouch;
@@ -663,33 +688,61 @@
 
   // one photo, presented as a keepsake print
   function framePhoto(img) {
-    const T = theme(), w = img.width, h = img.height;
+    const T = fpal(), w = img.width, h = img.height;
     if (!cfg.frame) { const c0 = document.createElement('canvas'); c0.width = w; c0.height = h; const o0 = c0.getContext('2d'); o0.drawImage(img, 0, 0); if (cfg.watermark) stamp(o0, w, h); return c0; }
-    const m = Math.round(w * 0.05), band = Math.round(w * (cfg.names ? 0.21 : 0.12));
+    const m = Math.round(w * 0.05), gap = Math.round(w * 0.016);
+    const fName = Math.round(w * 0.082), fDate = Math.round(w * 0.032), fCred = Math.round(w * 0.030);
+    const rows = bandRows(w * 0.10, fName, fDate, fCred);
+    let band = Math.round(w * 0.05); rows.forEach(r => band += r[1] + gap);
     const c = document.createElement('canvas'); c.width = w + m * 2; c.height = h + m + band; const o = c.getContext('2d');
     o.fillStyle = T.card; o.fillRect(0, 0, c.width, c.height);
     o.drawImage(img, m, m); o.strokeStyle = T.soft; o.lineWidth = Math.max(1, w * 0.0012); o.strokeRect(m, m, w, h);
-    o.textAlign = 'center'; o.textBaseline = 'alphabetic'; const cx = c.width / 2, y0 = m + h;
-    if (cfg.names) {
-      o.fillStyle = T.ink; o.font = 'italic 500 ' + Math.round(w * 0.066) + 'px ' + FD; o.fillText(cfg.names, cx, y0 + band * 0.46);
-      if (cfg.date) { o.fillStyle = T.gold; o.font = '400 ' + Math.round(w * 0.021) + 'px ' + FS; o.fillText(track(cfg.date), cx, y0 + band * 0.66); }
-      if (cfg.watermark) { o.fillStyle = T.muted; o.font = 'italic 400 ' + Math.round(w * 0.024) + 'px ' + FD; o.fillText(CREDIT, cx, y0 + band * 0.88); }
-    } else {
-      o.fillStyle = T.muted; o.font = 'italic 500 ' + Math.round(w * 0.036) + 'px ' + FD; o.fillText(cfg.watermark ? CREDIT : 'Tiny Invites', cx, y0 + band * 0.62);
-    }
+    drawBand(o, T, rows, c.width / 2, m + h + Math.round(w * 0.032), gap, fName, fDate, fCred);
+    return c;
+  }
+  function bandRows(logoH, fName, fDate, fCred) {
+    const rows = [];
+    if (logoReady()) rows.push(['logo', Math.round(logoH)]);
+    if (cfg.names) rows.push(['names', Math.round(fName * 1.2)]);
+    if (cfg.date) rows.push(['date', Math.round(fDate * 1.5)]);
+    if (cfg.watermark) rows.push(['credit', Math.round(fCred * 1.5)]);
+    if (!rows.length) rows.push(['credit', Math.round(fCred * 1.5)]);
+    return rows;
+  }
+  function drawBand(o, T, rows, cx, y, gap, fName, fDate, fCred) {
+    o.textAlign = 'center'; o.textBaseline = 'top';
+    rows.forEach(r => {
+      if (r[0] === 'logo') drawLogo(o, cx, y, r[1]);
+      else if (r[0] === 'names') { o.fillStyle = T.ink; o.font = 'italic 500 ' + fName + 'px ' + FD; o.fillText(cfg.names, cx, y); }
+      else if (r[0] === 'date') { o.fillStyle = T.gold; o.font = '400 ' + fDate + 'px ' + FS; o.fillText(track(cfg.date), cx, y); }
+      else { o.fillStyle = T.muted; o.font = 'italic 400 ' + fCred + 'px ' + FD; o.fillText(CREDIT, cx, y); }
+      y += r[1] + gap;
+    });
+  }
+  function slideFrame(look, T) {
+    const W = 560, m = 30, pw = W - m * 2, gap = 8, fName = 40, fDate = 20, fCred = 19;
+    const rows = bandRows(48, fName, fDate, fCred);
+    let band = 22; rows.forEach(r => band += r[1] + gap);
+    const c = document.createElement('canvas'); c.width = W; c.height = m + pw + band; const o = c.getContext('2d');
+    o.fillStyle = T.card; o.fillRect(0, 0, c.width, c.height);
+    coverCrop(o, look, m, m, pw, pw); o.strokeStyle = T.soft; o.lineWidth = 1.5; o.strokeRect(m, m, pw, pw);
+    drawBand(o, T, rows, W / 2, m + pw + 14, gap, fName, fDate, fCred);
     return c;
   }
   function coverCrop(o, img, x, y, w, h) { const ar = w / h; let sw = img.width, sh = sw / ar; if (sh > img.height) { sh = img.height; sw = sh * ar; } const sx = (img.width - sw) / 2, sy = (img.height - sh) * 0.28; o.drawImage(img, sx, sy, sw, sh, x, y, w, h); }
   // four photos as a classic strip
   function buildStrip(imgs) {
-    const T = theme(), W = 1200, pad = 64, gap = 28, pw = W - pad * 2, ph = pw;
-    const headH = 250, footH = cfg.watermark ? 130 : 70, H = headH + imgs.length * ph + (imgs.length - 1) * gap + footH;
+    const T = fpal(), W = 1200, pad = 64, gap = 28, pw = W - pad * 2, ph = pw;
+    const L = logoReady() ? 120 : 0;
+    const headH = 250 + L, footH = cfg.watermark ? 130 : 70, H = headH + imgs.length * ph + (imgs.length - 1) * gap + footH;
     const c = document.createElement('canvas'); c.width = W; c.height = H; const o = c.getContext('2d');
-    o.fillStyle = T.card; o.fillRect(0, 0, W, H); o.textAlign = 'center'; o.textBaseline = 'alphabetic';
-    o.fillStyle = T.ink; o.font = 'italic 500 92px ' + FD; o.fillText(cfg.names || 'Tiny Invites', W / 2, 138);
-    o.fillStyle = T.gold; o.font = '400 25px ' + FS; o.fillText(track(cfg.date || 'Photo Booth'), W / 2, 194);
+    o.fillStyle = T.card; o.fillRect(0, 0, W, H); o.textAlign = 'center';
+    if (L) { o.textBaseline = 'top'; drawLogo(o, W / 2, 46, L - 26); }
+    o.textBaseline = 'alphabetic';
+    o.fillStyle = T.ink; o.font = 'italic 500 92px ' + FD; o.fillText(cfg.names || 'Tiny Invites', W / 2, 138 + L);
+    o.fillStyle = T.gold; o.font = '400 34px ' + FS; o.fillText(track(cfg.date || 'Photo Booth'), W / 2, 198 + L);
     let y = headH; imgs.forEach(im => { coverCrop(o, im, pad, y, pw, ph); o.strokeStyle = T.soft; o.lineWidth = 1.5; o.strokeRect(pad, y, pw, ph); y += ph + gap; });
-    if (cfg.watermark) { o.fillStyle = T.muted; o.font = 'italic 400 34px ' + FD; o.fillText(CREDIT, W / 2, H - 52); }
+    if (cfg.watermark) { o.fillStyle = T.muted; o.font = 'italic 400 36px ' + FD; o.fillText(CREDIT, W / 2, H - 52); }
     return c;
   }
   // photo + handwritten note, for the couple's guest book
@@ -765,14 +818,16 @@
     $('#asPhotos').classList.toggle('off', !(n === 1 || n === 2));
     $('#asStrip').classList.toggle('off', n !== 3);
     $('#asSquare').classList.toggle('off', n !== 4);
+    $('#asGif').classList.toggle('off', !(n === 3 || n === 4));
     $('#selhint').textContent = n === 0 ? 'Tap the ones you like: one or two for photos, three for a strip, four for a square print.'
       : n === 1 ? 'One chosen. Keep it as a photo, or pick more.'
       : n === 2 ? 'Two chosen. Keep them as photos, or pick one more for a strip.'
-      : n === 3 ? 'Three chosen, ready for a photo strip. One more makes a square print.'
-      : 'Four chosen, ready for a square print.';
+      : n === 3 ? 'Three chosen, ready for a photo strip or an animated photo.'
+      : 'Four chosen, ready for a square print or an animated photo.';
   }
   async function outPhotos() { const n = selected.length; if (n < 1 || n > 2) { toast('Choose one or two photos'); return; } reviewLook = liveFilter || cfg.filter; await buildOutput('photos', 'Finishing your photos'); }
   async function outStrip() { if (selected.length !== 3) { toast('Choose three photos for a strip'); return; } reviewLook = liveFilter || cfg.filter; await buildOutput('strip', 'Making your photo strip'); }
+  async function outGif() { const n = selected.length; if (n < 3 || n > 4) { toast('Choose three or four photos'); return; } reviewLook = liveFilter || cfg.filter; await buildOutput('gif', 'Making your animated photo'); }
   async function outSquare() { if (selected.length !== 4) { toast('Choose four photos for a square print'); return; } reviewLook = liveFilter || cfg.filter; await buildOutput('square', 'Making your square print'); }
   async function buildOutput(kind, msg) {
     lastKind = kind; bookIdx = selected[0];
@@ -781,13 +836,15 @@
       const looked = []; for (const i of selected) looked.push(renderLook(await loadImg(six[i].url), reviewLook));
       if (kind === 'photos') { const blobs = []; for (const c of looked) blobs.push(await canvasBlob(framePhoto(c), 'image/jpeg', 0.95)); finish(blobs); }
       else if (kind === 'strip') finish([await canvasBlob(buildStrip(looked), 'image/jpeg', 0.95)]);
-      else finish([await canvasBlob(buildSquare(looked), 'image/jpeg', 0.95)]);
+      else if (kind === 'square') finish([await canvasBlob(buildSquare(looked), 'image/jpeg', 0.95)]);
+      else { const T = fpal(), fr = looked.map(c => slideFrame(c, T)); finish([await makeGIF(fr, fr[0].width, fr[0].height, 600, 'Making your animated photo')]); }
     } catch (e) { toast('That look could not be applied'); show('review'); }
   }
 
   /* ---------- boomerang ---------- */
   function buildSquare(imgs) {
-    const T = theme(), S = 1800, m = 60, foot = 150, gap = 18;
+    const T = fpal(), S = 1800, m = 60, gap = 18;
+    const L = logoReady() ? 92 : 0, foot = 170 + L;
     const cell = Math.floor(Math.min((S - m * 2 - gap) / 2, (S - m * 2 - foot - gap) / 2));
     const gw = cell * 2 + gap, x0 = Math.round((S - gw) / 2), y0 = m;
     const c = document.createElement('canvas'); c.width = S; c.height = S; const o = c.getContext('2d');
@@ -796,32 +853,48 @@
       const x = x0 + (i % 2) * (cell + gap), y = y0 + Math.floor(i / 2) * (cell + gap);
       coverCrop(o, im, x, y, cell, cell); o.strokeStyle = T.soft; o.lineWidth = 1.5; o.strokeRect(x, y, cell, cell);
     });
-    const fy = y0 + cell * 2 + gap;
-    o.textAlign = 'center'; o.textBaseline = 'alphabetic';
-    o.fillStyle = T.ink; o.font = 'italic 500 60px ' + FD; o.fillText(cfg.names || 'Tiny Invites', S / 2, fy + 74);
-    if (cfg.date) { o.fillStyle = T.gold; o.font = '400 22px ' + FS; o.fillText(track(cfg.date), S / 2, fy + 110); }
-    if (cfg.watermark) { o.fillStyle = T.muted; o.font = 'italic 400 26px ' + FD; o.fillText(CREDIT, S / 2, fy + 146); }
+    let fy = y0 + cell * 2 + gap + 16;
+    o.textAlign = 'center'; o.textBaseline = 'top';
+    if (L) { drawLogo(o, S / 2, fy, L - 18); fy += L; }
+    o.fillStyle = T.ink; o.font = 'italic 500 66px ' + FD; o.fillText(cfg.names || 'Tiny Invites', S / 2, fy); fy += 82;
+    if (cfg.date) { o.fillStyle = T.gold; o.font = '400 32px ' + FS; o.fillText(track(cfg.date), S / 2, fy); fy += 48; }
+    if (cfg.watermark) { o.fillStyle = T.muted; o.font = 'italic 400 30px ' + FD; o.fillText(CREDIT, S / 2, fy); }
     return c;
+  }
+  async function gifWorker() {
+    if (gifWorkerURL) return gifWorkerURL;
+    if (window.__GIFW) gifWorkerURL = URL.createObjectURL(new Blob([atob(window.__GIFW)], { type:'text/javascript' }));
+    else gifWorkerURL = URL.createObjectURL(await (await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js')).blob());
+    return gifWorkerURL;
+  }
+  function makeGIF(frames, w, h, delay, label) {
+    return new Promise(async (res, rej) => {
+      let done = false, timer = null;
+      try {
+        if (typeof GIF === 'undefined') throw new Error('the GIF tool is not loaded');
+        const gif = new GIF({ workers:1, quality:15, dither:false, width:w, height:h, workerScript:await gifWorker() });
+        timer = setTimeout(() => { if (!done) { done = true; try { gif.abort(); } catch (e) {} rej(new Error('timed out')); } }, 30000);
+        gif.on('progress', pr => { if (!done) $('#pmsg').textContent = label + ' ' + Math.round(pr * 100) + '%'; });
+        gif.on('finished', b => { if (done) return; done = true; clearTimeout(timer); res(b); });
+        frames.forEach(f => gif.addFrame(f, { delay:delay, copy:true }));
+        gif.render();
+      } catch (e) { done = true; if (timer) clearTimeout(timer); rej(e); }
+    });
   }
   async function runBoomerang() {
     if (busy) return; busy = true;
     try {
       bookIdx = null; lastKind = null; reviewLook = liveFilter || cfg.filter; cue.textContent = 'Get ready to move'; await countdown(3);
-      const gw = 480, gh = Math.round(480 * grade.clientHeight / grade.clientWidth);
+      const gw = 400, gh = Math.round(400 * grade.clientHeight / grade.clientWidth);
       const tmp = document.createElement('canvas'); tmp.width = gw; tmp.height = gh; const tctx = tmp.getContext('2d', { willReadFrequently:true });
       show('count'); countN.textContent = ''; cue.textContent = 'Keep moving'; spin(1.1);
-      const frames = []; for (let i = 0; i < 12; i++) { drawComposite(tctx, gw, gh, cfg.watermark); frames.push(tctx.getImageData(0, 0, gw, gh)); await sleep(80); }
+      const frames = []; for (let i = 0; i < 10; i++) { drawComposite(tctx, gw, gh, cfg.watermark); frames.push(tctx.getImageData(0, 0, gw, gh)); await sleep(90); }
       $('#pmsg').textContent = 'Making your boomerang'; show('proc');
       try {
-        if (typeof GIF === 'undefined') throw new Error('gif library not loaded');
         const seq = frames.concat(frames.slice(1, -1).reverse());
-        if (!gifWorkerURL) gifWorkerURL = URL.createObjectURL(new Blob([atob(window.__GIFW)], { type:'text/javascript' }));
-        const gif = new GIF({ workers:2, quality:10, width:gw, height:gh, workerScript:gifWorkerURL });
-        seq.forEach(f => gif.addFrame(f, { delay:80, copy:true }));
-        const b = await new Promise(r => { gif.on('finished', r); gif.render(); });
-        finish([b]);
+        finish([await makeGIF(seq, gw, gh, 80, 'Making your boomerang')]);
       } catch (e) {
-        toast('Boomerang needs the internet. Saved a photo instead.');
+        toast('The boomerang could not be finished. Saved a photo instead.');
         const still = await canvasBlob(captureCanvas(), 'image/jpeg', 0.92); const u = URL.createObjectURL(still);
         const img = await loadImg(u); URL.revokeObjectURL(u); finish([await canvasBlob(framePhoto(img), 'image/jpeg', 0.95)]);
       }
@@ -1057,6 +1130,7 @@
   $('#asPhotos').addEventListener('click', outPhotos);
   $('#asStrip').addEventListener('click', outStrip);
   $('#asSquare').addEventListener('click', outSquare);
+  $('#asGif').addEventListener('click', outGif);
   $('#wallBtn').addEventListener('click', e => { e.stopPropagation(); openWall(); });
   $('#wallBack').addEventListener('click', () => show('attract'));
   $('#retake').addEventListener('click', runPhotos);
@@ -1078,6 +1152,21 @@
     $('#bookOut').textContent = 'Cleared. Set the new names, date and gallery name above.';
     toast('Ready for a new event');
   });
+  $('#logoFile').addEventListener('change', async e => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    try {
+      const u = URL.createObjectURL(f); const im = await loadImg(u); URL.revokeObjectURL(u);
+      const k = Math.min(1, 400 / im.width); const cc = document.createElement('canvas');
+      cc.width = Math.max(1, Math.round(im.width * k)); cc.height = Math.max(1, Math.round(im.height * k));
+      cc.getContext('2d').drawImage(im, 0, 0, cc.width, cc.height);
+      const d = cc.toDataURL('image/png');
+      localStorage.setItem('ti_logo', d);
+      logoImg = await loadImg(d); cfg.logoOn = true; save(); applyCfg(); showLogo(); toast('Logo saved');
+    } catch (err) { toast('That image could not be saved. Try a smaller one.'); }
+    e.target.value = '';
+  });
+  $('#logoClear').addEventListener('click', () => { try { localStorage.removeItem('ti_logo'); } catch (e) {} logoImg = null; save(); applyCfg(); showLogo(); toast('Logo removed'); });
+  function showLogo() { const p = $('#logoPrev'); p.innerHTML = ''; if (logoImg) { const i = new Image(); i.src = logoImg.src; p.appendChild(i); } $('#logoClear').style.display = logoImg ? '' : 'none'; }
   $('#galTestBtn').addEventListener('click', testCloud);
   $('#rescue').addEventListener('click', () => { renderGallery(); show('settings'); });
   $('#camSel').addEventListener('change', e => startCamera(e.target.value));
@@ -1090,7 +1179,7 @@
   if ('wakeLock' in navigator) { const wl = () => navigator.wakeLock.request('screen').catch(() => {}); document.addEventListener('click', wl, { once:true }); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') wl(); }); }
   if (document.fonts && document.fonts.load) { ['italic 500 40px "Cormorant Garamond"', 'italic 400 40px "Cormorant Garamond"', '400 20px "Jost"'].forEach(f => document.fonts.load(f).catch(() => {})); }
 
-  buildChips(); applyCfg(); markChips();
+  loadLogo(); buildChips(); applyCfg(); markChips(); setTimeout(showLogo, 300);
   (async () => { db = await idbOpen(); const all = await idbAll(); all.forEach(e => { const r = e.rec; if (r && r.blob) { sessionShots.push(r.blob); keys.set(r.blob, Promise.resolve(e.key)); if (r.book) books.add(r.blob); if (!r.book && (r.blob.type || '').indexOf('gif') < 0) recent.push(r.blob); if (r.up === false && r.tag && galleryOn()) push(r.blob); } }); recent = recent.slice(-14); })();
   startCamera().then(renderGrade);
   window.__booth = { cfg:cfg, apply:applyCfg, state:() => ({ cur:cur, busy:busy, six:six.length, shots:sessionShots.length, pending:pending.size }) };

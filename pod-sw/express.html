@@ -668,7 +668,7 @@
       <div id="galHint">Newest first. Shared with the full booth on this iPad. Tap a photo to send it, show its code, or delete it.</div>
       <div id="gallery"></div>
 
-      <div id="ver">Quick booth version 4 &middot; pod &middot; 22 November 2026</div>
+      <div id="ver">Quick booth version 5 &middot; pod &middot; 24 November 2026</div>
 
       <div class="foot">
         <a class="btn line" href="index.html" style="text-decoration:none">Switch to the full booth</a>
@@ -1132,26 +1132,42 @@
   function coverCrop(o, img, x, y, w, h) { const ar = w / h; let sw = img.width, sh = sw / ar; if (sh > img.height) { sh = img.height; sw = sh * ar; } const sx = (img.width - sw) / 2, sy = (img.height - sh) * 0.28; o.drawImage(img, sx, sy, sw, sh, x, y, w, h); }
 
   function fitFont(o, text, style, px, fam, maxW) { let s = px; o.font = style + Math.round(s) + 'px ' + fam; while (o.measureText(text).width > maxW && s > 6) { s *= 0.95; o.font = style + Math.round(s) + 'px ' + fam; } }
-  // the square print: the photos uncropped, then (for printing) two centred lines just under them,
-  // inside the middle 80% of the width: the event and date, then the web address. The logo comes last.
+  // the square print: the photos uncropped. The web address sits INSIDE the bottom-right photo,
+  // so it survives printing even when the paper edges cannot be printed; the event and date go on a
+  // centred line just under the photos, inside the middle 80% of the width. The logo comes last.
   function buildSquare(imgs, S) {
     S = S || 1800; const k = S / 1800, T = fpal(), m = 60 * k, gap = 18 * k, A = imgs[0].height / imgs[0].width;
-    const L = logoReady() ? 120 * k : 0, below = 26 * k, textH = 132 * k;
+    const L = logoReady() ? 120 * k : 0, below = 26 * k, textH = 84 * k;
     let ch = (S - m * 1.6 - gap - below - textH - L) / 2, cw = ch / A;
     if (cw * 2 + gap > S - m * 2) { cw = (S - m * 2 - gap) / 2; ch = cw * A; }
     cw = Math.floor(cw); ch = Math.floor(ch);
     const block = ch * 2 + gap + below + textH + L, x0 = Math.round((S - cw * 2 - gap) / 2), y0 = Math.round(Math.max(m, (S - block) / 2));
     const c = document.createElement('canvas'); c.width = S; c.height = S; const o = c.getContext('2d');
     o.fillStyle = T.card; o.fillRect(0, 0, S, S); o.imageSmoothingEnabled = true; o.imageSmoothingQuality = 'high';
+    let last = null;
     imgs.slice(0, 4).forEach((im, i) => {
       const x = (imgs.length === 3 && i === 2) ? Math.round((S - cw) / 2) : x0 + (i % 2) * (cw + gap), y = y0 + Math.floor(i / 2) * (ch + gap);
       coverCrop(o, im, x, y, cw, ch); o.strokeStyle = T.soft; o.lineWidth = Math.max(1, 1.5 * k); o.strokeRect(x, y, cw, ch);
+      if (!last || y + ch >= last.y + last.h) last = { x:x, y:y, w:cw, h:ch };
     });
+    // the web address, on the picture itself at the bottom right, so printing can never cut it off
+    if (last) {
+      const pad = 24 * k, band = Math.round(ch * 0.17);
+      o.save();
+      const g = o.createLinearGradient(0, last.y + last.h - band, 0, last.y + last.h);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.52)');
+      o.fillStyle = g; o.fillRect(last.x, last.y + last.h - band, last.w, band);
+      o.textAlign = 'right'; o.textBaseline = 'alphabetic';
+      fitFont(o, CREDIT, 'italic 400 ', 34 * k, FD, last.w - pad * 2);
+      o.shadowColor = 'rgba(0,0,0,.6)'; o.shadowBlur = 8 * k; o.shadowOffsetY = 1 * k;
+      o.fillStyle = 'rgba(255,255,255,.97)';
+      o.fillText(CREDIT, last.x + last.w - pad, last.y + last.h - pad);
+      o.restore();
+    }
     const maxW = S * 0.8; let ty = y0 + ch * 2 + gap + below;
     o.textAlign = 'center'; o.textBaseline = 'top';
     const l1 = [cfg.names, cfg.date].filter(Boolean).join('  ·  ') || 'Tiny Invites';
     o.fillStyle = T.ink; fitFont(o, l1, 'italic 500 ', 60 * k, FD, maxW); o.fillText(l1, S / 2, ty); ty += 74 * k;
-    o.fillStyle = T.muted; fitFont(o, CREDIT, 'italic 400 ', 40 * k, FD, maxW); o.fillText(CREDIT, S / 2, ty); ty += 58 * k;
     if (L) drawLogo(o, S / 2, ty + 12 * k, Math.round(L - 34 * k));
     return c;
   }

@@ -1,6 +1,6 @@
 // Tiny Invites photo booth: keeps the booth pages on the iPad so they open instantly
 // and keep working when the venue internet is slow or drops out.
-const CACHE = 'ti-pod-v33';
+const CACHE = 'ti-pod-v34';
 const PAGES = ['express.html', 'index.html', './'];
 // the guest book PDF tool is fetched once from this address, then kept for offline use
 const KEEP_EXTERNAL = ['https://cdnjs.cloudflare.com/ajax/libs/jspdf/'];
